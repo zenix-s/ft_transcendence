@@ -1,7 +1,3 @@
-export interface ICommand {
-    execute(): Promise<void>;
-}
-
-export interface ICommandHandler<T extends ICommand> {
-    handle(command: T): Promise<void>;
+export interface ICommand<TRequest = void, TResult = void> {
+    execute(request?: TRequest): Promise<TResult>;
 }

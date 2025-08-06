@@ -6,7 +6,7 @@ const port: number = 3000;
 
 const server = fastify();
 
-server.register(userRoutes, { prefix: "/users" });
+server.register(app);
 
 server.listen({ port }, (err, address) => {
     if (err) {

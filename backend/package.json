@@ -1,0 +1,23 @@
+{
+    "type": "module",
+    "name": "backend",
+    "version": "1.0.0",
+    "description": "backend ft_transcendence serferna danjimen isainz-r",
+    "main": "dist/server.js",
+    "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "start": "node dist/server.js",
+        "dev": "nodemon --watch src --exec ts-node src/server.ts"
+    },
+    "author": "serferna/danjimen/insainz-r",
+    "license": "ISC",
+    "dependencies": {
+        "fastify": "^5.4.0"
+    },
+    "devDependencies": {
+        "@types/node": "^24.2.0",
+        "nodemon": "^3.1.10",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.9.2"
+    }
+}

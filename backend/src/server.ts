@@ -1,12 +1,12 @@
+import userRoutes from "@features/users/users.presentation";
+import app from "./app";
 import fastify from "fastify";
 
 const port: number = 3000;
 
 const server = fastify();
 
-server.get("/", async (request, reply) => {
-    return { message: "Hola mundo" };
-});
+server.register(userRoutes, { prefix: "/users" });
 
 server.listen({ port }, (err, address) => {
     if (err) {

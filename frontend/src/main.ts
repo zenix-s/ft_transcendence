@@ -1,9 +1,29 @@
-import "./style.css";
-import typescriptLogo from "./typescript.svg";
+import "./styles/global.css";
+import "./styles/style.css";
+/* import typescriptLogo from "./typescript.svg";
 import viteLogo from "/vite.svg";
-import { setupCounter } from "./counter.ts";
+import { setupCounter } from "./components/counter.ts"; */
 
-document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
+function navigateTo(page: string) {
+  fetch(`/src/pages/${page}.html`)
+    .then((response) => response.text())
+    .then((html) => {
+      document.getElementById('app')!.innerHTML = html;
+    });
+}
+
+document.addEventListener('click', (event) => {
+  const target = event.target as HTMLElement;
+  if (target.dataset.page) {
+    event.preventDefault();
+    navigateTo(target.dataset.page!);
+  }
+});
+
+// Cargar la página inicial
+navigateTo('home');
+
+/* document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   <div>
     <a href="https://vite.dev" target="_blank">
       <img src="${viteLogo}" class="logo" alt="Vite logo" />
@@ -21,4 +41,4 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   </div>
 `;
 
-setupCounter(document.querySelector<HTMLButtonElement>("#counter")!);
+setupCounter(document.querySelector<HTMLButtonElement>("#counter")!); */

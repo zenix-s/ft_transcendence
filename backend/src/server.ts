@@ -1,4 +1,4 @@
-import userRoutes from "@features/users/users.presentation";
+import userRoutes from "@features/Users/Users.presentation";
 import app from "./app";
 import fastify from "fastify";
 

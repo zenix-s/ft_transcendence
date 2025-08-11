@@ -1,7 +1,6 @@
 import { IQuery } from "@shared/application/IQuery.interface";
-import { IUserRepository } from "../User.IRepository";
-import { UserRepository } from "../user.repository";
-import Result from "@shared/abstractions/Result";
+import { IUserRepository } from "@features/Users/Application/Repositories/User.IRepository";
+import { Result } from "@shared/abstractions/Result";
 
 export interface IGetUsersRequest {
     page?: number;
@@ -14,28 +13,26 @@ export interface IGetUsersResponse {
         username: string;
         email: string;
     }>;
-    totalCount: number;
 }
 
 export default class GetUsersQuery
     implements IQuery<IGetUsersRequest, IGetUsersResponse>
 {
+    constructor(private readonly userRepository: IUserRepository) {}
+
     public async execute(
         request: IGetUsersRequest = { page: 1, limit: 10 },
     ): Promise<Result<IGetUsersResponse>> {
-        const userRepository: IUserRepository = await UserRepository.create();
         const { page, limit } = request;
 
-        const users = await userRepository.getAllUsers();
-        const totalCount: number = users.length;
+        const users = await this.userRepository.getAllUsers();
 
         return Result.success({
             users: users.map((user) => ({
                 id: user.id,
-                username: "juan",
-                email: "pedro",
+                username: user.username,
+                email: user.email,
             })),
-            totalCount: totalCount,
-        } as IGetUsersResponse);
+        });
     }
 }

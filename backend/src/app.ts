@@ -1,29 +1,21 @@
-import type {
-    FastifyInstance,
-    FastifyPluginOptions,
-    FastifyReply,
-    FastifyRequest,
-} from "fastify";
+import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import fp from "fastify-plugin";
-import userRoutes from "@features/users/users.presentation";
-import { DBConnectionFactory } from "@shared/infraestructure/DBConnectionFactory";
+import dbPlugin from "@shared/infrastructure/db/db";
+import usersRoutes from "@features/Users/Users.presentation";
 
-async function App(fastify: FastifyInstance, options: FastifyPluginOptions) {
-    DBConnectionFactory.stablishConnection()
-        .then(() => {
-            fastify.log.info("Database connection established successfully.");
-        })
-        .catch((error) => {
-            fastify.log.error(
-                "Failed to establish database connection:",
-                error,
-            );
-            throw error;
-        });
-
+async function App(fastify: FastifyInstance) {
     fastify.setErrorHandler(
         (error: Error, req: FastifyRequest, res: FastifyReply) => {
             fastify.log.error(error);
+
+            if (error.message.includes("Database")) {
+                res.status(503).send({
+                    statusCode: 503,
+                    error: "Service Unavailable",
+                    message: "Database connection error",
+                });
+                return;
+            }
 
             res.status(500).send({
                 statusCode: 500,
@@ -33,8 +25,9 @@ async function App(fastify: FastifyInstance, options: FastifyPluginOptions) {
         },
     );
 
-    // Register endpoints
-    fastify.register(userRoutes, { prefix: "/users" });
+    await fastify.register(dbPlugin);
+
+    await fastify.register(usersRoutes, { prefix: "/users" });
 }
 
 export default fp(App);

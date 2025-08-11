@@ -1,7 +1,8 @@
 import { User } from "../../domain/User.entity";
+import { ICreateUserDto } from "../dto/CreateUserDto.interface";
 
 export interface IUserRepository {
-    createUser(user: Omit<User, "id">): Promise<User>;
+    createUser(user: ICreateUserDto): Promise<User>;
     getAllUsers(page?: number, limit?: number): Promise<User[]>;
     countUsers(): Promise<number>;
 }

@@ -14,13 +14,15 @@ export default fp(async (fastify: FastifyInstance) => {
         CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT,
-        email TEXT
+        email TEXT,
+        friends NUMBER
     )
   `);
 
     fastify.decorate("dbConnection", connection);
 
     fastify.addHook("onClose", async () => {
+        fastify.log.debug("closed db");
         await connection.disconnect();
     });
 });

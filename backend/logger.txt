@@ -1,0 +1,18 @@
+{"level":30,"time":1754914661831,"pid":23034,"hostname":"fedora","msg":"Server listening at http://[::1]:3000"}
+{"level":30,"time":1754914661833,"pid":23034,"hostname":"fedora","msg":"Server listening at http://127.0.0.1:3000"}
+{"level":30,"time":1754914739105,"pid":23255,"hostname":"fedora","msg":"Server listening at http://[::1]:3000"}
+{"level":30,"time":1754914739110,"pid":23255,"hostname":"fedora","msg":"Server listening at http://127.0.0.1:3000"}
+{"level":30,"time":1754914763442,"pid":23367,"hostname":"fedora","msg":"Server listening at http://[::1]:3000"}
+{"level":30,"time":1754914763443,"pid":23367,"hostname":"fedora","msg":"Server listening at http://127.0.0.1:3000"}
+{"level":30,"time":1754914832226,"pid":23509,"hostname":"fedora","msg":"Server listening at http://[::1]:3000"}
+{"level":30,"time":1754914832228,"pid":23509,"hostname":"fedora","msg":"Server listening at http://127.0.0.1:3000"}
+{"level":30,"time":1754914833911,"pid":23509,"hostname":"fedora","reqId":"req-1","req":{"method":"GET","url":"/users","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":32918},"msg":"incoming request"}
+{"level":30,"time":1754914833916,"pid":23509,"hostname":"fedora","reqId":"req-1","res":{"statusCode":200},"responseTime":5.142575999721885,"msg":"request completed"}
+{"level":30,"time":1754914833952,"pid":23509,"hostname":"fedora","reqId":"req-2","req":{"method":"GET","url":"/favicon.ico","host":"127.0.0.1:3000","remoteAddress":"127.0.0.1","remotePort":32932},"msg":"incoming request"}
+{"level":30,"time":1754914833952,"pid":23509,"hostname":"fedora","reqId":"req-2","msg":"Route GET:/favicon.ico not found"}
+{"level":30,"time":1754914833952,"pid":23509,"hostname":"fedora","reqId":"req-2","res":{"statusCode":404},"responseTime":0.6115450002253056,"msg":"request completed"}
+{"level":30,"time":1754918749439,"pid":24719,"hostname":"fedora","msg":"Server listening at http://[::1]:3000"}
+{"level":30,"time":1754918749440,"pid":24719,"hostname":"fedora","msg":"Server listening at http://127.0.0.1:3000"}
+{"level":30,"time":1754918750671,"pid":24719,"hostname":"fedora","msg":"Closed connection"}
+{"level":30,"time":1754919861390,"pid":25797,"hostname":"fedora","msg":"Server listening at http://[::1]:3000"}
+{"level":30,"time":1754919861392,"pid":25797,"hostname":"fedora","msg":"Server listening at http://127.0.0.1:3000"}

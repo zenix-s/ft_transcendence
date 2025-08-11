@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import GetUsersQuery from "./application/query/getUsers/GetUsers.handler";
+import GetUsersQuery from "./application/query/GetUsers.query";
 import { UserRepository } from "./infrastructure/User.repository";
 
 export default async function usersRoutes(fastify: FastifyInstance) {

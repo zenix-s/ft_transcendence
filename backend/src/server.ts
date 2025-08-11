@@ -5,10 +5,26 @@ import { loadEnvFile } from "node:process";
 
 const port: number = 3000;
 
-const server = fastify();
+const server = fastify({
+    logger: {
+        file: "logger.txt",
+    },
+});
 
 const start = async () => {
     loadEnvFile();
+
+    server.addHook("preClose", () => {
+        server.log.info("Closed connection");
+    });
+
+    const signals = ["SIGTERM", "SIGINT"];
+
+    signals.forEach((signal) => {
+        process.once(signal, async () => {
+            await server.close();
+        });
+    });
 
     try {
         await server.register(app);

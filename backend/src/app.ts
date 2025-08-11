@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import fp from "fastify-plugin";
 import dbPlugin from "@shared/infrastructure/db/db";
-import usersRoutes from "@features/Users/Users.presentation";
+import usersRoutes from "@features/users/Users.presentation";
 
 async function App(fastify: FastifyInstance) {
     fastify.setErrorHandler(

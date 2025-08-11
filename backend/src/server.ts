@@ -1,17 +1,20 @@
+import userRoutes from "@features/Users/Users.presentation";
+import app from "./app";
 import fastify from "fastify";
 
 const port: number = 3000;
 
 const server = fastify();
 
-server.get("/", async (request, reply) => {
-    return { message: "Hola mundo" };
-});
-
-server.listen({ port }, (err, address) => {
-    if (err) {
-        console.error(err);
+const start = async () => {
+    try {
+        await server.register(app);
+        await server.listen({ port });
+        console.log(`Server is running at http://localhost:${port}`);
+    } catch (err) {
+        server.log.error(err);
         process.exit(1);
     }
-    console.log(`Server is running at ${address}`);
-});
+};
+
+await start();

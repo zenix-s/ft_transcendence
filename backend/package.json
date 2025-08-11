@@ -5,19 +5,22 @@
     "description": "backend ft_transcendence serferna danjimen isainz-r",
     "main": "dist/server.js",
     "scripts": {
-        "build": "tsc -p tsconfig.json",
+        "build": "tsc -p tsconfig.json && tsc-alias",
         "start": "node dist/server.js",
-        "dev": "nodemon --watch src --exec ts-node src/server.ts"
+        "dev": "tsx watch src/server.ts"
     },
     "author": "serferna/danjimen/insainz-r",
     "license": "ISC",
     "dependencies": {
-        "fastify": "^5.4.0"
+        "fastify": "^5.4.0",
+        "fastify-plugin": "^5.0.1"
     },
     "devDependencies": {
         "@types/node": "^24.2.0",
         "nodemon": "^3.1.10",
         "ts-node": "^10.9.2",
+        "tsc-alias": "^1.8.8",
+        "tsx": "^4.7.1",
         "typescript": "^5.9.2"
     }
 }

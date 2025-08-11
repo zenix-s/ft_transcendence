@@ -1,48 +1,28 @@
 {
-    // Visit https://aka.ms/tsconfig to read more about this file
     "compilerOptions": {
-        // File Layout
-        "rootDir": "./src",
+        "target": "es2022",
+        "module": "esnext",
+        "moduleResolution": "bundler",
         "outDir": "./dist",
-
-        // Environment Settings
-        // See also https://aka.ms/tsconfig/module
-        "module": "ESNext",
-        "target": "ESNext",
-        "moduleResolution": "node",
-        "types": [],
-        "baseUrl": "./src",
-        // For nodejs:
-        // "lib": ["esnext"],
-        // "types": ["node"],
-        // and npm install -D @types/node
-
-        // Other Outputs
-        "sourceMap": true,
+        "rootDir": "./src",
+        "strict": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "resolveJsonModule": true,
         "declaration": true,
         "declarationMap": true,
-
-        // Stricter Typechecking Options
-        "noUncheckedIndexedAccess": true,
-        "exactOptionalPropertyTypes": true,
-
-        // Style Options
-        // "noImplicitReturns": true,
-        // "noImplicitOverride": true,
-        // "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        // "noFallthroughCasesInSwitch": true,
-        // "noPropertyAccessFromIndexSignature": true,
-
-        // Recommended Options
-        "strict": true,
-        "jsx": "react-jsx",
-        "verbatimModuleSyntax": true,
-        "isolatedModules": true,
-        "noUncheckedSideEffectImports": true,
-        "moduleDetection": "force",
-        "skipLibCheck": true,
-
-        "paths": {}
-    }
+        "sourceMap": true,
+        "baseUrl": "./src",
+        "paths": {
+            "@config/*": ["config/*"],
+            "@shared/*": ["shared/*"],
+            "@features/*": ["features/*"]
+        }
+    },
+    "include": ["src/**/*.ts"],
+    "exclude": ["node_modules", "dist"]
 }

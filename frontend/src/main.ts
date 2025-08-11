@@ -38,6 +38,30 @@ document.addEventListener('click', (event) => {
   }
 });
 
+/* async function loadUsers() {
+  const response = await fetch("http://localhost:3000/api/users");
+  const users = await response.json();
+
+  const userList = users.map((user: { id: number; name: string }) => {
+    return `<li>${user.name}</li>`;
+  }).join("");
+
+  const userSection = document.createElement("div");
+  userSection.innerHTML = `
+    <h2>Usuarios registrados:</h2>
+    <ul>${userList}</ul>
+  `;
+  document.getElementById("app")!.appendChild(userSection);
+}
+
+// Llamar a la función cuando se navegue a login
+document.addEventListener("click", (event) => {
+  const target = event.target as HTMLElement;
+  if (target.dataset.page === "login") {
+    loadUsers();
+  }
+}); */
+
 // Cargar la página inicial
 //navigateTo('home');
 

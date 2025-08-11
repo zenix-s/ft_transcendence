@@ -44,6 +44,22 @@ body{
   position: float;
   margin-left: 37%;
   cursor: pointer;
+  transition: all 1s ease;
+  text-shadow:
+    0px 0 0 red,
+    0px 0 0 blue;
+  box-shadow:
+    0px 0 0 red,
+    0px 0 0 blue;
+}
+
+#button:hover{
+  text-shadow:
+    5px 0 0 red,
+    -5px 0 0 blue;
+  box-shadow:
+    5px 0 5px red,
+    -5px 0 5px blue;
 }
 
 @keyframes glitch{

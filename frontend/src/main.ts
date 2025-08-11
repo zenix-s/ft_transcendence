@@ -5,12 +5,30 @@ import viteLogo from "/vite.svg";
 import { setupCounter } from "./components/counter.ts"; */
 
 function navigateTo(page: string) {
+  // Actualizar la URL sin recargar la página
+  history.pushState({}, "", `/${page}`);
+
+  // Cargar el contenido de la página
   fetch(`/src/pages/${page}.html`)
     .then((response) => response.text())
     .then((html) => {
       document.getElementById('app')!.innerHTML = html;
     });
 }
+
+// Detectar la página inicial según la URL actual
+const initialPage = location.pathname.replace("/", "") || "home";
+fetch(`/src/pages/${initialPage}.html`)
+  .then((response) => response.text())
+  .then((html) => {
+    document.getElementById('app')!.innerHTML = html;
+  });
+
+// Manejar el evento popstate para la navegación con el botón "Atrás"
+window.addEventListener("popstate", () => {
+  const page = location.pathname.replace("/", "") || "home";
+  navigateTo(page);
+});
 
 document.addEventListener('click', (event) => {
   const target = event.target as HTMLElement;
@@ -21,7 +39,7 @@ document.addEventListener('click', (event) => {
 });
 
 // Cargar la página inicial
-navigateTo('home');
+//navigateTo('home');
 
 /* document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   <div>

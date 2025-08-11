@@ -1,6 +1,6 @@
 // src/features/users/user.repository.ts
-import { User } from "../Domain/User.entity";
-import { IUserRepository } from "@features/Users/Application/Repositories/User.IRepository";
+import { User } from "../domain/User.entity";
+import { IUserRepository } from "@features/users/application/repositories/User.IRepository";
 import { IConnection } from "@shared/infrastructure/db/IConnection.interface";
 export class UserRepository implements IUserRepository {
     constructor(private readonly connection: IConnection) {}

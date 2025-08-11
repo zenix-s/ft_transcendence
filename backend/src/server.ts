@@ -1,4 +1,4 @@
-import userRoutes from "@features/Users/Users.presentation";
+import userRoutes from "@features/users/Users.presentation";
 import app from "./app";
 import fastify from "fastify";
 import { loadEnvFile } from "node:process";

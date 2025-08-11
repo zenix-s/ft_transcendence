@@ -1,5 +1,5 @@
 import { IQuery } from "@shared/application/abstractions/IQuery.interface";
-import { IUserRepository } from "@features/Users/Application/Repositories/User.IRepository";
+import { IUserRepository } from "@features/users/application/repositories/User.IRepository";
 import { Result } from "@shared/abstractions/Result";
 
 export interface IGetUsersRequest {

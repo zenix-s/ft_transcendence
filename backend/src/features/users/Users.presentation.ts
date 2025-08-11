@@ -1,7 +1,6 @@
 import { FastifyInstance } from "fastify";
-import GetUsersQuery from "./Application/Queries/getUsers/GetUsers.handler";
-import { IUserRepository } from "./Application/Repositories/User.IRepository";
-import { UserRepository } from "./Infrastructure/User.repository";
+import GetUsersQuery from "./application/query/getUsers/GetUsers.handler";
+import { UserRepository } from "./infrastructure/User.repository";
 
 export default async function usersRoutes(fastify: FastifyInstance) {
     const userRepository = new UserRepository(fastify.dbConnection);

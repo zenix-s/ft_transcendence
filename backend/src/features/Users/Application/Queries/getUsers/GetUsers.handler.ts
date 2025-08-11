@@ -1,4 +1,4 @@
-import { IQuery } from "@shared/application/IQuery.interface";
+import { IQuery } from "@shared/application/abstractions/IQuery.interface";
 import { IUserRepository } from "@features/Users/Application/Repositories/User.IRepository";
 import { Result } from "@shared/abstractions/Result";
 

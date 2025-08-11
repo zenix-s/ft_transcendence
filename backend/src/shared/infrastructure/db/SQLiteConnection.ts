@@ -43,7 +43,7 @@ export class SQLiteConnection implements IConnection {
     async execute(
         sql: string,
         params: any[] = [],
-    ): Promise<{ affectedRows: number; insertId?: number }> {
+    ): Promise<{ affectedRows: number | bigint; insertId?: number }> {
         this.ensureConnected();
         const stmt = this.db!.prepare(sql);
         const result = stmt.run(...params);

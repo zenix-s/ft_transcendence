@@ -1,10 +1,12 @@
 // src/shared/infrastructure/plugins/db.plugin.ts
 import fp from "fastify-plugin";
 import { FastifyInstance } from "fastify";
-import { SQLiteConnection } from "@shared/infrastructure/dataBase/SQLiteConnection";
+import { SQLiteConnection } from "@shared/infrastructure/db/SQLiteConnection";
 
 export default fp(async (fastify: FastifyInstance) => {
-    const connection = new SQLiteConnection(process.env.DB_PATH || "db/dev.db");
+    const connection = new SQLiteConnection(
+        process.env.DB_PATH || "bbdd/dev.db",
+    );
     await connection.connect();
 
     // Optional schema creation

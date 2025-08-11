@@ -12,7 +12,7 @@ export interface IConnection {
     execute(
         sql: string,
         params?: any[],
-    ): Promise<{ affectedRows: number; insertId?: number }>;
+    ): Promise<{ affectedRows: number | bigint; insertId?: number }>;
 
     selectOne<T = any>(sql: string, params?: any[]): Promise<T | null>;
     selectMany<T = any>(sql: string, params?: any[]): Promise<T[]>;

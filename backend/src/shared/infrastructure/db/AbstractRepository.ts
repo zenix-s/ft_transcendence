@@ -1,4 +1,4 @@
-import { IConnection } from "../db/IConnection";
+import { IConnection } from "../db/IConnection.interface";
 
 export abstract class AbstractRepository {
     constructor(protected readonly connection: IConnection) {}
@@ -14,7 +14,7 @@ export abstract class AbstractRepository {
     protected run(
         sql: string,
         params: any[] = [],
-    ): Promise<{ affectedRows: number; insertId?: number }> {
+    ): Promise<{ affectedRows: number | bigint; insertId?: number }> {
         return this.connection.execute(sql, params);
     }
 }

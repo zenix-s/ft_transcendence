@@ -1,4 +1,4 @@
-import "./styles/global.css";
+import "./styles/output.css";
 import "./styles/style.css";
 /* import typescriptLogo from "./typescript.svg";
 import viteLogo from "/vite.svg";

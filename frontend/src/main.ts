@@ -38,9 +38,16 @@ document.addEventListener('click', (event) => {
   }
 });
 
-/* async function loadUsers() {
-  const response = await fetch("http://localhost:3000/api/users");
-  const users = await response.json();
+async function loadUsers() {
+  fetch("http://localhost:3000/users")
+  .then(data => data.json())
+  .then(data => {
+    console.log(data);
+  })
+  .catch(error => {
+    console.error(error)
+  });
+  /* const users = await response.json();
 
   const userList = users.map((user: { id: number; name: string }) => {
     return `<li>${user.name}</li>`;
@@ -51,7 +58,7 @@ document.addEventListener('click', (event) => {
     <h2>Usuarios registrados:</h2>
     <ul>${userList}</ul>
   `;
-  document.getElementById("app")!.appendChild(userSection);
+  document.getElementById("app")!.appendChild(userSection); */
 }
 
 // Llamar a la función cuando se navegue a login
@@ -60,7 +67,7 @@ document.addEventListener("click", (event) => {
   if (target.dataset.page === "login") {
     loadUsers();
   }
-}); */
+});
 
 // Cargar la página inicial
 //navigateTo('home');

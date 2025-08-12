@@ -2,6 +2,8 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import fp from "fastify-plugin";
 import dbPlugin from "@shared/infrastructure/db/db";
 import usersRoutes from "@features/users/Users.presentation";
+import { fastifyWebsocket } from "@fastify/websocket";
+import gameRoutes from "@features/game/pong/Pong.presentation";
 
 async function App(fastify: FastifyInstance) {
     fastify.setErrorHandler(
@@ -25,9 +27,12 @@ async function App(fastify: FastifyInstance) {
         },
     );
 
+    fastify.register(fastifyWebsocket);
+
     await fastify.register(dbPlugin);
 
     await fastify.register(usersRoutes, { prefix: "/users" });
+    await fastify.register(gameRoutes, { prefix: "/game" });
 }
 
 export default fp(App);

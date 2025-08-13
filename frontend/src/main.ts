@@ -13,6 +13,9 @@ function navigateTo(page: string) {
     .then((response) => response.text())
     .then((html) => {
       document.getElementById('app')!.innerHTML = html;
+      if (page === "home") {
+        loadUsers();
+      }
     });
 }
 
@@ -22,6 +25,9 @@ fetch(`/src/pages/${initialPage}.html`)
   .then((response) => response.text())
   .then((html) => {
     document.getElementById('app')!.innerHTML = html;
+    if (initialPage === "home") {
+      loadUsers();
+    }
   });
 
 // Manejar el evento popstate para la navegación con el botón "Atrás"
@@ -39,7 +45,7 @@ document.addEventListener('click', (event) => {
 });
 
 async function loadUsers() {
-  fetch("http://localhost:3000/users")
+  fetch("http://localhost:3000/users") // http://localhost:3000/users
   .then(data => data.json())
   .then(data => {
     console.log(data);

@@ -1,7 +1,9 @@
 import userRoutes from "@features/users/Users.presentation";
 import app from "./app";
 import fastify from "fastify";
+import cors from '@fastify/cors'
 import { loadEnvFile } from "node:process";
+
 
 const port: number = 3000;
 
@@ -26,6 +28,9 @@ const start = async () => {
 
     try {
         await server.register(app);
+        await server.register(cors, {
+            origin:"*"
+        });
         await server.listen({ port, host: "0.0.0.0" });
         console.log(`Server is running at http://localhost:${port}`);
     } catch (err) {

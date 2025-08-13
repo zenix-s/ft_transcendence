@@ -6,9 +6,7 @@ import { loadEnvFile } from "node:process";
 const port: number = 3000;
 
 const server = fastify({
-    logger: {
-        file: "logger.txt",
-    },
+    logger: true,
 });
 
 const start = async () => {
@@ -36,4 +34,4 @@ const start = async () => {
     }
 };
 
-await start();
+start();

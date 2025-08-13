@@ -26,7 +26,7 @@ const start = async () => {
 
     try {
         await server.register(app);
-        await server.listen({ port });
+        await server.listen({ port, host: "0.0.0.0" });
         console.log(`Server is running at http://localhost:${port}`);
     } catch (err) {
         server.log.error(err);

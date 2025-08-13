@@ -8,8 +8,7 @@ RUN apk --no-cache add --virtual builds-deps build-base gcompat python3 make g++
 RUN npm install
 RUN npm rebuild better-sqlite3
 RUN mkdir -p bbdd
-RUN npm run build
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]

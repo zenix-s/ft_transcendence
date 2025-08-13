@@ -1,20 +1,20 @@
-import { DatabaseSync } from "node:sqlite";
 import { IConnection, IQueryResult } from "./IConnection.interface";
+import Sqlite, { Database } from "better-sqlite3";
 
 export class SQLiteConnection implements IConnection {
-    private db: DatabaseSync | null = null;
+    private db: Database | null = null;
     private connected = false;
 
     constructor(private dbPath: string) {}
 
     async connect(): Promise<void> {
         try {
-            this.db = new DatabaseSync(this.dbPath);
+            this.db = new Sqlite(this.dbPath);
             this.db.exec("PRAGMA journal_mode = WAL;");
             this.db.exec("PRAGMA foreign_keys = ON;");
             this.connected = true;
-        } catch (err) {
-            throw new Error(`SQLite connection failed: ${err}`);
+        } catch (error) {
+            throw new Error(`SQLite connection failed: ${error}`);
         }
     }
 

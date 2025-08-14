@@ -1,27 +1,22 @@
 @import url('https://fonts.googleapis.com/css?family=Fira+Mono:400');
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body{ 
   display: flex;
   max-width: 100vw;
-  height: 100vh;
-  align-items: center;
+  min-height: 100vh; /* ✅ para que crezca con el contenido */
+  align-items: center; /* ✅ para que no fuerce el centrado vertical */
   justify-content: center;
   margin: 0;
+  padding: 0;
   background: #131313;
   color: #fff;
-  font-size: 96px;
   font-family: 'Fira Mono', monospace;
-  letter-spacing: -7px;
 }
 
 #title{
   animation: glitch 1s linear infinite;
+  font-size: 96px;
+  letter-spacing: -7px;
 }
 
 #subtitle{
@@ -31,12 +26,12 @@ body{
   animation: glitch 1s linear infinite;
 }
 
-#button{
+.my_button{
   animation: glitch 1s linear infinite;
   background: none;
   color: white;
   border: 1px solid;
-  padding: 1rem;
+  padding: 1rem 2rem;
   font-family: 'Fira Mono', monospace;
   font-size: 48px;
   transform: skew(5deg);
@@ -53,7 +48,7 @@ body{
     0px 0 0 blue;
 }
 
-#button:hover{
+.my_button:hover{
   text-shadow:
     5px 0 0 red,
     -5px 0 0 blue;
@@ -78,8 +73,8 @@ body{
 #title:after,
 #subtitle:before,
 #subtitle:after,
-#button:before,
-#button:after{
+.my_button:before,
+.my_button:after{
   content: attr(title);
   position: absolute;
   right: 0;
@@ -87,7 +82,7 @@ body{
 
 #title:before,
 #subtitle:before,
-#button:before{
+.my_button:before{
   animation: glitchTop 1s linear infinite;
   clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
   -webkit-clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
@@ -107,7 +102,7 @@ body{
 
 #title:after,
 #subtitle:after,
-#button:after{
+.my_button:after{
   animation: glitchBotom 1.5s linear infinite;
   clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
   -webkit-clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);

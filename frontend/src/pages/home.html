@@ -1,7 +1,23 @@
 <div id="title" title="ft_transcendence">ft_transcendence</div>
 <div id="subtitle" title="danjimen, isainz-r, serferna">danjimen, isainz-r, serferna</div>
-<script>loadUsers();</script>
+
 <div class="scanlines"></div>
 <button class="my_button" data-page="login">
     Start
 </button>
+
+<div class="flex flex-col justify-center items-center">
+    <span id="user-name" class="text-amber-500 text-3xl"></span>
+    <span id="user-city" class="text-amber-700"></span>
+    <span id="user-website" class="text-amber-900 font-bold"></span>
+</div>
+
+<script type="module" src="/src/main.ts"></script>
+<script>
+  // Rellena cada selector con el campo indicado
+  window.loadAndRender(2, {
+    "name": "#user-name",
+    "address.city": "#user-city",
+    "website": "#user-website"
+  });
+</script>

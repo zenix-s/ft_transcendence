@@ -3,76 +3,92 @@
 import viteLogo from "/vite.svg";
 import { setupCounter } from "./components/counter.ts"; */
 
-function navigateTo(page: string) {
-  // Actualizar la URL sin recargar la página
-  history.pushState({}, "", `/${page}`);
+import { navigateTo, handlePopState } from "./navigation";
+import { setupEventListeners } from "./events";
+import { loadAndRender, loadUserForCode } from "./users";
 
-  // Cargar el contenido de la página
-  fetch(`/src/pages/${page}.html`)
-    .then((response) => response.text())
-    .then((html) => {
-      document.getElementById('app')!.innerHTML = html;
-      if (page === "home") {
-        loadUsers();
-      }
-    });
-}
+// Exponer utilidades al ámbito global
+(window as any).loadAndRender = loadAndRender;
+(window as any).loadUserForCode = loadUserForCode;
 
 // Detectar la página inicial según la URL actual
 const initialPage = location.pathname.replace("/", "") || "home";
-fetch(`/src/pages/${initialPage}.html`)
-  .then((response) => response.text())
-  .then((html) => {
-    document.getElementById('app')!.innerHTML = html;
-    if (initialPage === "home") {
-      loadUsers();
-    }
-  });
+navigateTo(initialPage);
+
+// Configurar los eventos
+setupEventListeners();
+window.addEventListener("popstate", handlePopState);
+
+// function navigateTo(page: string) {
+//   // Actualizar la URL sin recargar la página
+//   history.pushState({}, "", `/${page}`);
+
+//   // Cargar el contenido de la página
+//   fetch(`/src/pages/${page}.html`)
+//     .then((response) => response.text())
+//     .then((html) => {
+//       document.getElementById('app')!.innerHTML = html;
+//       if (page === "home") {
+//         loadUsers();
+//       }
+//     });
+// }
+
+// Detectar la página inicial según la URL actual
+// const initialPage = location.pathname.replace("/", "") || "home";
+// fetch(`/src/pages/${initialPage}.html`)
+//   .then((response) => response.text())
+//   .then((html) => {
+//     document.getElementById('app')!.innerHTML = html;
+//     if (initialPage === "home") {
+//       loadUsers();
+//     }
+//   });
 
 // Manejar el evento popstate para la navegación con el botón "Atrás"
-window.addEventListener("popstate", () => {
-  const page = location.pathname.replace("/", "") || "home";
-  navigateTo(page);
-});
+// window.addEventListener("popstate", () => {
+//   const page = location.pathname.replace("/", "") || "home";
+//   navigateTo(page);
+// });
 
-document.addEventListener('click', (event) => {
-  const target = event.target as HTMLElement;
-  if (target.dataset.page) {
-    event.preventDefault();
-    navigateTo(target.dataset.page!);
-  }
-});
+// document.addEventListener('click', (event) => {
+//   const target = event.target as HTMLElement;
+//   if (target.dataset.page) {
+//     event.preventDefault();
+//     navigateTo(target.dataset.page!);
+//   }
+// });
 
-async function loadUsers() {
-  fetch("http://localhost:3000/users") // http://localhost:3000/users
-  .then(data => data.json())
-  .then(data => {
-    console.log(data);
-  })
-  .catch(error => {
-    console.error(error)
-  });
-  /* const users = await response.json();
+// async function loadUsers() {
+//   fetch("http://localhost:3000/users") // http://localhost:3000/users
+//   .then(data => data.json())
+//   .then(data => {
+//     console.log(data);
+//   })
+//   .catch(error => {
+//     console.error(error)
+//   });
+//   /* const users = await response.json();
 
-  const userList = users.map((user: { id: number; name: string }) => {
-    return `<li>${user.name}</li>`;
-  }).join("");
+//   const userList = users.map((user: { id: number; name: string }) => {
+//     return `<li>${user.name}</li>`;
+//   }).join("");
 
-  const userSection = document.createElement("div");
-  userSection.innerHTML = `
-    <h2>Usuarios registrados:</h2>
-    <ul>${userList}</ul>
-  `;
-  document.getElementById("app")!.appendChild(userSection); */
-}
+//   const userSection = document.createElement("div");
+//   userSection.innerHTML = `
+//     <h2>Usuarios registrados:</h2>
+//     <ul>${userList}</ul>
+//   `;
+//   document.getElementById("app")!.appendChild(userSection); */
+// }
 
 // Llamar a la función cuando se navegue a login
-document.addEventListener("click", (event) => {
-  const target = event.target as HTMLElement;
-  if (target.dataset.page === "login") {
-    loadUsers();
-  }
-});
+// document.addEventListener("click", (event) => {
+//   const target = event.target as HTMLElement;
+//   if (target.dataset.page === "login") {
+//     loadUsers();
+//   }
+// });
 
 // Cargar la página inicial
 //navigateTo('home');

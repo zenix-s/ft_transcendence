@@ -6,6 +6,7 @@ import { loadEnvFile } from "node:process";
 
 
 const port: number = 3000;
+const host = '0.0.0.0'; // Cambiar de '127.0.0.1' a '0.0.0.0'
 
 const server = fastify({
     logger: true,
@@ -31,7 +32,7 @@ const start = async () => {
         await server.register(cors, {
             origin:"*"
         });
-        await server.listen({ port, host: "0.0.0.0" });
+        await server.listen({ port, host});
         console.log(`Server is running at http://localhost:${port}`);
     } catch (err) {
         server.log.error(err);

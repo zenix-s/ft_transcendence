@@ -17,6 +17,7 @@ services:
       - NODE_ENV=development
     stdin_open: true
     tty: true
+    restart: always
 
   frontend:
     container_name:
@@ -35,6 +36,7 @@ services:
       - NODE_ENV=development
     stdin_open: true
     tty: true
+    restart: always
 
 # networks:
 #   app-network:

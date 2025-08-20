@@ -1,0 +1,28 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000" # Cambia el puerto si es necesario
+    volumes:
+      - ./backend:/back # Sincroniza los archivos locales con el contenedor
+      - /back/node_modules # Evita conflictos con dependencias locales
+    environment:
+      - NODE_ENV=development
+    stdin_open: true
+    tty: true
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173" # Cambia el puerto si es necesario (por ejemplo, para Vite)
+    volumes:
+      - ./frontend:/app # Sincroniza los archivos locales con el contenedor
+      - /app/node_modules # Evita conflictos con dependencias locales
+    environment:
+      - NODE_ENV=development
+    stdin_open: true
+    tty: true

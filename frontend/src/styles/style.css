@@ -13,14 +13,14 @@
 
 #title{
   animation: glitch 1s linear infinite;
-  font-size: 96px;
-  letter-spacing: -7px;
+  /* font-size: 96px; */
+  /* letter-spacing: -7px; */
 }
 
 #subtitle{
-  font-size: 24px;
-  letter-spacing: 2px;
-  text-align: right;
+  /* font-size: 24px; */
+  /* letter-spacing: 2px; */
+  /* text-align: right; */
   animation: glitch 1s linear infinite;
 }
 

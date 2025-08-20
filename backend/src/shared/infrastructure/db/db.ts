@@ -13,19 +13,20 @@ export default fp(async (fastify: FastifyInstance) => {
     await connection.execute(`
         CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT,
-        email TEXT,
+        username TEXT UNIQUE,
+        email TEXT UNIQUE,
         friends NUMBER
     )
   `);
-
+ 
   // Insertar usuarios de prueba {DEBUG ONLY}
     await connection.execute(`
-        INSERT INTO users (username, email, friends)
+        INSERT OR IGNORE INTO users (username, email, friends)
         VALUES 
             ('testuser1', 'test1@example.com', 5),
             ('testuser2', 'test2@example.com', 10)
     `);
+    //await connection.execute(`DELETE FROM users`);
 
     fastify.decorate("dbConnection", connection);
 

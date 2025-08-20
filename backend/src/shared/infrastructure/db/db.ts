@@ -19,6 +19,14 @@ export default fp(async (fastify: FastifyInstance) => {
     )
   `);
 
+  // Insertar usuarios de prueba {DEBUG ONLY}
+    await connection.execute(`
+        INSERT INTO users (username, email, friends)
+        VALUES 
+            ('testuser1', 'test1@example.com', 5),
+            ('testuser2', 'test2@example.com', 10)
+    `);
+
     fastify.decorate("dbConnection", connection);
 
     fastify.addHook("onClose", async () => {

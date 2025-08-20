@@ -45,7 +45,7 @@ function renderMessageToSelectors(mapping: Record<string, string | Element>, msg
 
 /** Fetch robusto: admite backend que devuelva un array directamente o { value: { users: [...] } } */
 async function fetchUsersFromBackend(): Promise<any[]> {
-  const res = await fetch("api/users"); // http://localhost:3000/users
+  const res = await fetch("http://localhost:3000/users"); // http://localhost:3000/users
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const data = await res.json();
   // Si el backend devuelve { value: { users: [...] } }

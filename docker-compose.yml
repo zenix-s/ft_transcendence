@@ -30,8 +30,8 @@ services:
     # networks:
     #   - app-network
     volumes:
-      - ./frontend:/front # Sincroniza los archivos locales con el contenedor
-      - /front/node_modules # Evita conflictos con dependencias locales
+      - ./frontend:/app # Sincroniza los archivos locales con el contenedor
+      - /app/node_modules # Evita conflictos con dependencias locales
     environment:
       - NODE_ENV=development
     stdin_open: true

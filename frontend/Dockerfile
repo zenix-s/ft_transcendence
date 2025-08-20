@@ -11,7 +11,7 @@ COPY package*.json ./
 RUN npm install
 
 # Copia el resto del proyecto al contenedor
-COPY . .
+# COPY . .
 
 # Expone el puerto (si estás ejecutando un servidor, como Vite)
 EXPOSE 5173

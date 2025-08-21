@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IConnection } from "../db/IConnection.interface";
 
 export abstract class AbstractRepository {

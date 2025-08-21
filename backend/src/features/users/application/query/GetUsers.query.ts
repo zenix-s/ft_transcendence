@@ -1,6 +1,6 @@
-import { IQuery } from "@shared/application/abstractions/IQuery.interface";
-import { IUserRepository } from "@features/users/application/repositories/User.IRepository";
-import { Result } from "@shared/abstractions/Result";
+import { IQuery } from '@shared/application/abstractions/IQuery.interface';
+import { IUserRepository } from '@features/users/application/repositories/User.IRepository';
+import { Result } from '@shared/abstractions/Result';
 
 export interface IGetUsersRequest {
     page?: number;
@@ -21,14 +21,27 @@ export default class GetUsersQuery
     constructor(private readonly userRepository: IUserRepository) {}
 
     public async execute(
-        request: IGetUsersRequest = { page: 1, limit: 10 },
+        request: IGetUsersRequest = { page: 1, limit: 10 }
     ): Promise<Result<IGetUsersResponse>> {
-        const { page, limit } = request;
+        let { page, limit } = request;
+        page ??= 1;
+        limit ??= 10;
 
         const users = await this.userRepository.getAllUsers();
 
+        if (!users || users.length === 0)
+            return Result.failure('404', 'No users found');
+
+        // Pagination logic
+        const start: number = (page - 1) * limit;
+        const end: number = start + limit;
+
+        const paginatedUsers = users.slice(start, end);
+        if (paginatedUsers.length === 0)
+            return Result.failure('404', 'No users found for the given page');
+
         return Result.success({
-            users: users.map((user) => ({
+            users: paginatedUsers.map((user) => ({
                 id: user.id,
                 username: user.username,
                 email: user.email,

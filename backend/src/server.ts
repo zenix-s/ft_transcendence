@@ -1,9 +1,7 @@
-import userRoutes from "@features/users/Users.presentation";
-import app from "./app";
-import fastify from "fastify";
-import cors from '@fastify/cors'
-import { loadEnvFile } from "node:process";
-
+import app from './app';
+import fastify from 'fastify';
+import cors from '@fastify/cors';
+import { loadEnvFile } from 'node:process';
 
 const port: number = 3000;
 const host = '0.0.0.0'; // Cambiar de '127.0.0.1' a '0.0.0.0'
@@ -15,11 +13,11 @@ const server = fastify({
 const start = async () => {
     loadEnvFile();
 
-    server.addHook("preClose", () => {
-        server.log.info("Closed connection");
+    server.addHook('preClose', () => {
+        server.log.info('Closed connection');
     });
 
-    const signals = ["SIGTERM", "SIGINT"];
+    const signals = ['SIGTERM', 'SIGINT'];
 
     signals.forEach((signal) => {
         process.once(signal, async () => {
@@ -30,7 +28,7 @@ const start = async () => {
     try {
         await server.register(app);
         await server.register(cors, {
-            origin:"*"
+            origin: '*',
         });
         await server.listen({ port, host});
         console.log(`Server is running at http://localhost:${port}`);

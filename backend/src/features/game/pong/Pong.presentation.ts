@@ -1,6 +1,6 @@
-import { WebSocket } from "@fastify/websocket";
-import assert from "node:assert";
-import { FastifyInstance, FastifyRequest } from "fastify";
+import { WebSocket } from '@fastify/websocket';
+import assert from 'node:assert';
+import { FastifyInstance, FastifyRequest } from 'fastify';
 // import GetUsersQuery from "./application/query/GetUsers.query";
 // import { UserRepository } from "./infrastructure/User.repository";
 
@@ -16,11 +16,11 @@ interface Conversation {
 
 function validarMensaje(data: any): data is Mensaje {
     try {
-        assert.equal(typeof data, "object");
+        assert.equal(typeof data, 'object');
         assert.notEqual(data, null);
-        assert.equal(typeof data.accion, "string");
+        assert.equal(typeof data.accion, 'string');
         assert.ok(
-            typeof data.valor === "string" || typeof data.valor === "number",
+            typeof data.valor === 'string' || typeof data.valor === 'number'
         );
         return true;
     } catch (error) {
@@ -39,7 +39,7 @@ export default async function gameRoutes(fastify: FastifyInstance) {
     //
 
     fastify.get(
-        "/",
+        '/',
         { websocket: true },
         (socket: WebSocket, req: FastifyRequest) => {
             // let conversations: Conversation[] = [
@@ -57,40 +57,40 @@ export default async function gameRoutes(fastify: FastifyInstance) {
 
             const conversation: string[] = [];
 
-            socket.on("message", (message) => {
+            socket.on('message', (message) => {
                 try {
                     const json = JSON.parse(message.toString());
 
                     if (validarMensaje(json)) {
-                        if (json.accion === "1") {
+                        if (json.accion === '1') {
                             // Agregar mensaje a la conversación
                             conversation.push(json.valor.toString());
-                            socket.send("Mensaje enviado correctamente");
-                        } else if (json.accion === "2") {
+                            socket.send('Mensaje enviado correctamente');
+                        } else if (json.accion === '2') {
                             // Obtener la conversación completa
                             if (conversation.length > 0) {
                                 socket.send(
                                     JSON.stringify({
                                         conversation: conversation,
-                                    }),
+                                    })
                                 );
                             } else {
                                 socket.send(
                                     JSON.stringify({
-                                        error: "No hay mensajes en la conversación",
-                                    }),
+                                        error: 'No hay mensajes en la conversación',
+                                    })
                                 );
                             }
                         }
                     } else {
                         socket.send(
-                            JSON.stringify({ error: "Formato inválido" }),
+                            JSON.stringify({ error: 'Formato inválido' })
                         );
                     }
                 } catch (err) {
-                    socket.send(JSON.stringify({ error: "JSON inválido" }));
+                    socket.send(JSON.stringify({ error: 'JSON inválido' }));
                 }
             });
-        },
+        }
     );
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IConnection, IQueryResult } from "./IConnection.interface";
 import Sqlite, { Database } from "better-sqlite3";
 

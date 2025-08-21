@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: danjimen <danjimen@student.42madrid.com    +#+  +:+       +#+         #
+#    By: danjimen,isainz-r,serferna <ft_transcen    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/20 09:04:48 by danjimen,is       #+#    #+#              #
-#    Updated: 2025/08/20 16:13:55 by danjimen         ###   ########.fr        #
+#    Updated: 2025/08/21 10:49:14 by danjimen,is      ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 

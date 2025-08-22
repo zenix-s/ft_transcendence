@@ -20,6 +20,24 @@ export default class GetUsersQuery
 {
     constructor(private readonly userRepository: IUserRepository) {}
 
+    public validate(request?: IGetUsersRequest): Result<void> {
+        if (!request) {
+            return Result.success(undefined);
+        }
+
+        const { page, limit } = request;
+
+        if (page !== undefined && page < 1) {
+            return Result.failure('400', 'Page must be greater than 0');
+        }
+
+        if (limit !== undefined && limit < 1) {
+            return Result.failure('400', 'Limit must be greater than 0');
+        }
+
+        return Result.success(undefined);
+    }
+
     public async execute(
         request: IGetUsersRequest = { page: 1, limit: 10 }
     ): Promise<Result<IGetUsersResponse>> {

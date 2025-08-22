@@ -6,6 +6,7 @@ import { setupCounter } from "./components/counter.ts"; */
 import { navigateTo, handlePopState } from "./navigation";
 import { setupEventListeners } from "./events";
 import { loadAndRender, loadUserForCode } from "./users";
+import { startGame } from "./game";
 
 // Exponer utilidades al ámbito global
 (window as any).loadAndRender = loadAndRender;
@@ -15,9 +16,13 @@ import { loadAndRender, loadUserForCode } from "./users";
 const initialPage = location.pathname.replace("/", "") || "home";
 navigateTo(initialPage);
 
+if (initialPage === "game")
+  startGame();
+
 // Configurar los eventos
 setupEventListeners();
 window.addEventListener("popstate", handlePopState);
+
 
 // function navigateTo(page: string) {
 //   // Actualizar la URL sin recargar la página

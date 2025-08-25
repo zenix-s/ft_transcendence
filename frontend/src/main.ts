@@ -8,6 +8,12 @@ import { setupEventListeners } from "./events";
 import { loadAndRender, loadUserForCode } from "./users";
 import { startGame } from "./game";
 
+// Components
+import { GlitchButton } from "./components/GlitchButton";
+
+// lo expongo para usarlo en <script>
+(window as any).GlitchButton = GlitchButton;
+
 // Exponer utilidades al ámbito global
 (window as any).loadAndRender = loadAndRender;
 (window as any).loadUserForCode = loadUserForCode;

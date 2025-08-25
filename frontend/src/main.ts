@@ -11,12 +11,10 @@ import { startGame } from "./game";
 // Components
 import { GlitchButton } from "./components/GlitchButton";
 
-// lo expongo para usarlo en <script>
-(window as any).GlitchButton = GlitchButton;
-
 // Exponer utilidades al ámbito global
 (window as any).loadAndRender = loadAndRender;
 (window as any).loadUserForCode = loadUserForCode;
+(window as any).GlitchButton = GlitchButton;
 
 // Detectar la página inicial según la URL actual
 const initialPage = location.pathname.replace("/", "") || "home";

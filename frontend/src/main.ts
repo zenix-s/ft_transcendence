@@ -6,7 +6,7 @@ import { setupCounter } from "./components/counter.ts"; */
 import { navigateTo, handlePopState } from "./navigation";
 import { setupEventListeners } from "./events";
 import { loadAndRender, loadUserForCode } from "./users";
-import { startGame } from "./game";
+//import { startGame } from "./game";
 
 // Components
 import { GlitchButton } from "./components/GlitchButton";
@@ -20,8 +20,13 @@ import { GlitchButton } from "./components/GlitchButton";
 const initialPage = location.pathname.replace("/", "") || "home";
 navigateTo(initialPage);
 
-if (initialPage === "game")
-  startGame();
+if (initialPage === "game") {
+  import("./game").then(module => {
+    requestAnimationFrame(() => {
+      module.startGame();
+    });
+  });
+}
 
 // Configurar los eventos
 setupEventListeners();

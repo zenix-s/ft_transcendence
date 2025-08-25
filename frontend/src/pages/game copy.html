@@ -1,0 +1,20 @@
+<div class="relative inline-block">
+  <!-- Game canvas -->
+  <canvas id="gameCanvas" width="1200" height="1000"
+          class="border-6 border-white bg-black"></canvas>
+
+  <!-- Left fading glow (blue) -->
+  <div class="absolute inset-y-1.5 left-1.5 w-24
+              bg-gradient-to-r from-blue-500/60 to-transparent
+              pointer-events-none"></div>
+
+  <!-- Right fading glow (red) -->
+  <div class="absolute inset-y-1.5 right-1.5 w-24
+              bg-gradient-to-l from-red-500/60 to-transparent
+              pointer-events-none"></div>
+
+  <!-- This script will contain or load your TypeScript -->
+  <!-- <script src="game.js"></script> -->
+  <script type="module" src="/src/game.ts"></script>
+
+</div>

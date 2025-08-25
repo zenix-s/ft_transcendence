@@ -1,13 +1,26 @@
 
 export function startGame()
 {
+	console.log("hola");
+	// document.addEventListener("DOMContentLoaded", () => {
+	// 	const canv = document.getElementById("#gameCanvas") as HTMLCanvasElement;
+	// 	console.log(canv); // ✅ ya no es null
+	//   });
+	  
+
+	console.log(document.getElementById("app"));
+	const div = document.getElementById("app");
+	console.log(div?.children);
 	const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
+	console.log(canvas);
+	//const patata = document.getElementById("patata");
+	//patata.style.color = newColor;
 	if (!canvas)
 	{
-		console.log("Error: no canvas");
+		console.log("Error: no canvassss");
 		return ;
 	}
-	const ctx = canvas.getContext("2d")!;
+	const ctx = canvas.getContext("2d")!; // as CanvasRenderingContext2D
 
 	/* Optional: handle device pixel ratio */
 	const dpr = Math.max(1, window.devicePixelRatio || 1);

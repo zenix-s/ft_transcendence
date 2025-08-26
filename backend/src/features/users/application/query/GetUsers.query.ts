@@ -12,6 +12,8 @@ export interface IGetUsersResponse {
         id: number;
         username: string;
         email: string;
+        password: string; // ONLY FOR TESTING
+        friends: number;
     }>;
 }
 
@@ -63,6 +65,8 @@ export default class GetUsersQuery
                 id: user.id,
                 username: user.username,
                 email: user.email,
+                password: user.password,
+                friends: user.friends,
             })),
         });
     }

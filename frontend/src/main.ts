@@ -7,7 +7,7 @@ import "./styles/global.css";
 
 import { navigateTo, handlePopState } from "./navigation";
 import { setupEventListeners } from "./events";
-import { loadAndRender, loadUserForCode, setupRegisterForm } from "./users";
+import { loadAndRender, loadUserForCode, setupRegisterForm, validateLogin } from "./users";
 //import { startGame } from "./game";
 
 // Components
@@ -39,6 +39,7 @@ window.addEventListener("popstate", handlePopState);
 // Ejecutar el setup del registro tras cada navegación
 window.addEventListener("DOMContentLoaded", () => {
   if (location.pathname.includes("login")) {
+    validateLogin();
     setupRegisterForm();
   }
 });

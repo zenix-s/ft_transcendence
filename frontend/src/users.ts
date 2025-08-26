@@ -1,3 +1,5 @@
+import { navigateTo } from "./navigation";
+
 /**
  * Utilities to fetch users and render arbitrary fields into arbitrary DOM selectors/elements.
  * - fetchUserById(userId): returns user object or null
@@ -206,4 +208,131 @@ export function setupRegisterForm() {
       }
     });
   }, 100); // Espera breve para asegurar que el HTML está en el DOM
+}
+
+/* LOG-IN */
+/** Devuelve el usuario con el username indicado o null */
+export async function fetchUserByUsername(username: string) {
+  if (!username) return null;
+  try {
+    const users = await fetchUsersFromBackend();
+    return users.find((u: { username: string }) => u.username === username) ?? null;
+  } catch (err) {
+    console.error("fetchUserByUsername error:", err);
+    throw err;
+  }
+}
+
+/** Devuelve el usuario con el email indicado o null */
+export async function fetchUserByEmail(email: string) {
+  if (!email) return null;
+  try {
+    const users = await fetchUsersFromBackend();
+    return users.find((u: { email: string }) => u.email === email) ?? null;
+  } catch (err) {
+    console.error("fetchUserByEmail error:", err);
+    throw err;
+  }
+}
+
+/** Igual que loadAndRender pero buscando por username */
+export async function loadAndRenderByUsername(username: string, mapping: Record<string, string | Element>) {
+  try {
+    const users = await fetchUsersFromBackend();
+    if (!Array.isArray(users) || users.length === 0) {
+      renderMessageToSelectors(mapping, "No hay usuarios disponibles.");
+      return;
+    }
+
+    const user = users.find((u: { username: string }) => u.username === username);
+    if (!user) {
+      renderMessageToSelectors(mapping, `Usuario con username "${username}" no encontrado.`);
+      return;
+    }
+
+    for (const [fieldPath, selectorOrEl] of Object.entries(mapping)) {
+      const value = getNested(user, fieldPath);
+      setContent(selectorOrEl, value == null ? 'Información no disponible' : String(value));
+    }
+  } catch (err) {
+    console.error('loadAndRenderByUsername error:', err);
+    renderMessageToSelectors(mapping, 'Error al cargar usuario.');
+  }
+}
+
+/** Igual que loadAndRender pero buscando por email */
+export async function loadAndRenderByEmail(email: string, mapping: Record<string, string | Element>) {
+  try {
+    const users = await fetchUsersFromBackend();
+    if (!Array.isArray(users) || users.length === 0) {
+      renderMessageToSelectors(mapping, "No hay usuarios disponibles.");
+      return;
+    }
+
+    const user = users.find((u: { email: string }) => u.email === email);
+    if (!user) {
+      renderMessageToSelectors(mapping, `Usuario con email "${email}" no encontrado.`);
+      return;
+    }
+
+    for (const [fieldPath, selectorOrEl] of Object.entries(mapping)) {
+      const value = getNested(user, fieldPath);
+      setContent(selectorOrEl, value == null ? 'Información no disponible' : String(value));
+    }
+  } catch (err) {
+    console.error('loadAndRenderByEmail error:', err);
+    renderMessageToSelectors(mapping, 'Error al cargar usuario.');
+  }
+}
+
+export function validateLogin() {
+  setTimeout(() => {
+    const forms = document.querySelectorAll("form");
+    const loginForm = forms[0];
+    if (!loginForm) return;
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(loginForm);
+      const name_email = formData.get("user-email") as string;
+      const password = formData.get("password") as string;
+
+      if (!name_email || !password) {
+        alert("Por favor, rellena todos los campos.");
+        return;
+      }
+
+      try {
+        // Primero intentamos buscar por username
+        let user = await fetchUserByUsername(name_email);
+
+         // Si no existe por username, probamos por email
+        if (!user) {
+          user = await fetchUserByEmail(name_email);
+        }
+
+        if (!user) {
+          alert("Usuario o email no encontrado.");
+          return;
+        }
+
+         // ⚠️ Ojo: esto es provisional (password en claro)
+        if (user.password !== password) {
+          alert("Contraseña incorrecta.");
+          return;
+        }
+
+         // Si pasa todo → login OK
+        alert(`Bienvenido ${user.username}!`);
+
+        // Aquí podrías guardar en localStorage, redirigir, etc.
+        // localStorage.setItem("user", JSON.stringify(user));
+        navigateTo("dashboard");
+
+      } catch (err) {
+        console.error("Error en login:", err);
+        alert("Error al intentar iniciar sesión.");
+      }
+    });
+  }, 100);
 }

@@ -3,6 +3,8 @@
 import viteLogo from "/vite.svg";
 import { setupCounter } from "./components/counter.ts"; */
 
+import "./styles/global.css";
+
 import { navigateTo, handlePopState } from "./navigation";
 import { setupEventListeners } from "./events";
 import { loadAndRender, loadUserForCode } from "./users";

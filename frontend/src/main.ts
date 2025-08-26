@@ -16,6 +16,8 @@ import { GlitchButton } from "./components/GlitchButton";
 (window as any).loadUserForCode = loadUserForCode;
 (window as any).GlitchButton = GlitchButton;
 
+console.log("✅ main.ts cargado");
+
 // Detectar la página inicial según la URL actual
 const initialPage = location.pathname.replace("/", "") || "home";
 navigateTo(initialPage);
@@ -31,6 +33,33 @@ if (initialPage === "game") {
 // Configurar los eventos
 setupEventListeners();
 window.addEventListener("popstate", handlePopState);
+
+
+// Toggle dark mode
+const toggle = document.getElementById("dark_mode_toggle");
+
+
+console.log("🔍 toggle encontrado:", toggle);
+
+
+if (toggle) {
+  toggle.addEventListener("click", () => {
+    console.log("👉 Botón clicado!");
+    document.documentElement.classList.toggle("dark");
+
+    // Guardar preferencia
+    if (document.documentElement.classList.contains("dark")) {
+      localStorage.setItem("theme", "dark");
+    } else {
+      localStorage.setItem("theme", "light");
+    }
+  });
+}
+
+// Aplicar preferencia previa al cargar
+if (localStorage.getItem("theme") === "dark") {
+  document.documentElement.classList.add("dark");
+}
 
 
 // function navigateTo(page: string) {

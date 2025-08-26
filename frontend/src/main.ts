@@ -6,7 +6,7 @@ import { setupCounter } from "./components/counter.ts"; */
 import "./styles/global.css";
 
 import { navigateTo, handlePopState } from "./navigation";
-import { setupEventListeners } from "./events";
+import { setupEventListeners, setupRegisterForm } from "./events";
 import { loadAndRender, loadUserForCode } from "./users";
 //import { startGame } from "./game";
 
@@ -35,6 +35,13 @@ if (initialPage === "game") {
 // Configurar los eventos
 setupEventListeners();
 window.addEventListener("popstate", handlePopState);
+
+// Ejecutar el setup del registro tras cada navegación
+window.addEventListener("DOMContentLoaded", () => {
+  if (location.pathname.includes("login")) {
+    setupRegisterForm();
+  }
+});
 
 
 // Toggle dark mode

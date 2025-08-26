@@ -6,8 +6,8 @@ import { setupCounter } from "./components/counter.ts"; */
 import "./styles/global.css";
 
 import { navigateTo, handlePopState } from "./navigation";
-import { setupEventListeners, setupRegisterForm } from "./events";
-import { loadAndRender, loadUserForCode } from "./users";
+import { setupEventListeners } from "./events";
+import { loadAndRender, loadUserForCode, setupRegisterForm } from "./users";
 //import { startGame } from "./game";
 
 // Components

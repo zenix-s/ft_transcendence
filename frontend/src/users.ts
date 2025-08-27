@@ -176,10 +176,10 @@ export function setupRegisterForm() {
     registerForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const formData = new FormData(registerForm);
-      const username = formData.get("user");
-      const email = formData.get("email");
-      const password = formData.get("password");
-      const repeatPassword = formData.get("repeat_password");
+      const username = formData.get("username") as string;
+      const email = formData.get("email") as string;
+      const password = formData.get("password") as string;
+      const repeatPassword = formData.get("repeat_password") as string;
 
       if (!username || !email || !password || !repeatPassword) {
         alert("Por favor, rellena todos los campos.");
@@ -201,6 +201,7 @@ export function setupRegisterForm() {
           alert(data.error?.message || "Error al crear usuario");
         } else {
           alert("Usuario creado correctamente");
+          console.log(`password send = "${password}"`); // DB
           registerForm.reset();
         }
       } catch (err) {

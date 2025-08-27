@@ -1,3 +1,5 @@
+import {loadUsers, setupRegisterForm, validateLogin } from "./users";
+
 export async function navigateTo(page: string) {
   console.log("navigation");
   console.log(page);
@@ -24,9 +26,13 @@ export async function navigateTo(page: string) {
       document.head.removeChild(inline);
     }
   }
-	/* if (page === "home") {
-	loadUsers();
-	} */
+	if (page === "home") {
+	  loadUsers();
+	}
+  if (page === "login") {
+    validateLogin();
+    setupRegisterForm();
+  }
 
   // Cada vez que la página en la que estemos sea game, se ejecuta el script
   if (page === "game") {

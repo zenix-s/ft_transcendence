@@ -1,4 +1,6 @@
 export async function navigateTo(page: string) {
+  console.log("navigation");
+  console.log(page);
   // Actualizar la URL sin recargar la página
   history.pushState({}, "", `/${page}`);
 
@@ -26,6 +28,14 @@ export async function navigateTo(page: string) {
 	loadUsers();
 	} */
 
+  // Cada vez que la página en la que estemos sea game, se ejecuta el script
+  if (page === "game") {
+    import("./game").then(module => {
+      requestAnimationFrame(() => {
+        module.startGame();
+      });
+    });
+  }
 }
 
 export function handlePopState() {

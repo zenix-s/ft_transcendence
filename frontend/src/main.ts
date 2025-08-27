@@ -24,14 +24,6 @@ console.log("✅ main.ts cargado");
 const initialPage = location.pathname.replace("/", "") || "home";
 navigateTo(initialPage);
 
-if (initialPage === "game") {
-  import("./game").then(module => {
-    requestAnimationFrame(() => {
-      module.startGame();
-    });
-  });
-}
-
 // Configurar los eventos
 setupEventListeners();
 window.addEventListener("popstate", handlePopState);

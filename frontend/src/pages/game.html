@@ -1,11 +1,28 @@
 <!-- Background lines -->
 <div class="scanlines"></div>
 
+<!-- NEED TO CHANGE FOR LIGHT/DARK MODE, AND EVERYTHING ALSO -->
+<div>
+        <div id="score1" class="relative text-9xl text-white font-medium inline-block w-263 h-50">PLAYER 1: </div>
+        <div class="relative text-9xl text-white font-medium inline-block w-150 h-50">SCORE</div>
+        <div id="score2" class="relative text-9xl text-white font-medium inline-block w-250 h-50">PLAYER 2: </div>
+</div>
+
+<div class="relative inline-block">
   <!-- Game canvas -->
-  <canvas id="gameCanvas" width="1200" height="1000"
-          class="border-2 border-white bg-black z-50"></canvas>
+  <canvas id="gameCanvas" width="2500" height="1500"
+          class="border-6 border-white bg-black z-50"></canvas>
 
-  <!-- This script will contain or load your TypeScript -->
-  <!-- <script src="game.js"></script> -->
-  <!-- <script type="module"  src="/src/game.ts"></script> -->
+  <div id="player1" class="absolute bg-white left-25 w-4 h-33 top-1/2 -translate-y-1/2 "></div>
+  <div id="player2" class="absolute bg-white right-25 w-4 h-33 top-1/2 -translate-y-1/2 "></div>
 
+  <!-- Left fading glow (blue) -->
+  <div class="absolute inset-y-1.5 left-1.5 w-24
+              bg-gradient-to-r from-blue-500/60 to-transparent
+              pointer-events-none"></div>
+
+  <!-- Right fading glow (red) -->
+  <div class="absolute inset-y-1.5 right-1.5 w-24
+              bg-gradient-to-l from-red-500/60 to-transparent
+              pointer-events-none"></div>
+</div>

@@ -7,7 +7,7 @@ export class UserRepository implements IUserRepository {
     async createUser(user: Omit<User, 'id'>): Promise<User> {
         // SQLite example:
         await this.connection.execute(
-            'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
+            'INSERT INTO users (username, email, password, friends) VALUES (?, ?, ?, 0)',
             [user.username, user.email, user.password]
         );
 

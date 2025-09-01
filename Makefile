@@ -3,15 +3,24 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: danjimen,isainz-r,serferna <ft_transcen    +#+  +:+       +#+         #
+#    By: danjimen <danjimen@student.42madrid.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/20 09:04:48 by danjimen,is       #+#    #+#              #
-#    Updated: 2025/08/21 10:49:14 by danjimen,is      ###   ########.fr        #
+#    Updated: 2025/09/01 10:55:37 by danjimen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
+all: build
+
+# Create HTTPS certs
+certs:
+	mkdir -p backend/certs frontend/certs
+	openssl req -x509 -newkey rsa:4096 -keyout backend/certs/key.pem -out backend/certs/cert.pem -days 365 -nodes -subj "/CN=localhost"
+	cp backend/certs/key.pem frontend/certs/key.pem
+	cp backend/certs/cert.pem frontend/certs/cert.pem
+
 # Construir los contenedores
-build:
+build: certs
 	docker compose build
 
 # Levantar los contenedores

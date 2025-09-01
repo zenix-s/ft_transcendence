@@ -11,6 +11,7 @@ services:
     #   - app-network
     volumes:
       - ./backend:/back # Sincroniza los archivos locales con el contenedor
+      - ./backend/certs:/back/certs
       - /back/node_modules # Evita conflictos con dependencias locales
       - ./bbdd:/back/bbdd # Sincroniza la base de datos local con el contenedor
     environment:
@@ -31,6 +32,7 @@ services:
     #   - app-network
     volumes:
       - ./frontend:/app # Sincroniza los archivos locales con el contenedor
+      - ./frontend/certs:/app/certs
       - /app/node_modules # Evita conflictos con dependencias locales
     environment:
       - NODE_ENV=development

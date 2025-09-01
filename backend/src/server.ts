@@ -2,12 +2,21 @@ import app from './app';
 import fastify from 'fastify';
 import cors from '@fastify/cors';
 import { loadEnvFile } from 'node:process';
+import fs from 'fs';
 
 const port: number = 3000;
 const host = '0.0.0.0'; // Cambiar de '127.0.0.1' a '0.0.0.0'
 
+/* const server = fastify({
+    logger: true,
+}); */
+
 const server = fastify({
     logger: true,
+    https: {
+        key: fs.readFileSync('./certs/key.pem'),
+        cert: fs.readFileSync('./certs/cert.pem'),
+    }
 });
 
 const start = async () => {

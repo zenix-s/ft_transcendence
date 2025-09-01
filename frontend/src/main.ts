@@ -15,7 +15,7 @@ import { loadAndRender, loadUserForCode, setupRegisterForm, validateLogin } from
 import { GlitchButton } from "./components/GlitchButton";
 
 // i18n
-import { setLanguage, updateTexts, t, currentLang } from "./i18n";
+import { setLanguage, t, currentLang } from "./i18n";
 
 // Exponer utilidades al ámbito global
 (window as any).loadAndRender = loadAndRender;

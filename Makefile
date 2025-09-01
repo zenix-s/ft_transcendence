@@ -6,16 +6,24 @@
 #    By: danjimen <danjimen@student.42madrid.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/20 09:04:48 by danjimen,is       #+#    #+#              #
-#    Updated: 2025/09/01 10:55:37 by danjimen         ###   ########.fr        #
+#    Updated: 2025/09/01 11:51:04 by danjimen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 all: build
 
 # Create HTTPS certs
-certs:
-	mkdir -p backend/certs frontend/certs
-	openssl req -x509 -newkey rsa:4096 -keyout backend/certs/key.pem -out backend/certs/cert.pem -days 365 -nodes -subj "/CN=localhost"
+certs: backend/certs/cert.pem frontend/certs/cert.pem
+
+backend/certs/cert.pem backend/certs/key.pem:
+	mkdir -p backend/certs
+	openssl req -x509 -newkey rsa:4096 \
+		-keyout backend/certs/key.pem \
+		-out backend/certs/cert.pem \
+		-days 365 -nodes -subj "/CN=localhost"
+
+frontend/certs/cert.pem frontend/certs/key.pem: backend/certs/cert.pem backend/certs/key.pem
+	mkdir -p frontend/certs
 	cp backend/certs/key.pem frontend/certs/key.pem
 	cp backend/certs/cert.pem frontend/certs/cert.pem
 

@@ -8,10 +8,14 @@ import "./styles/global.css";
 import { navigateTo, handlePopState } from "./navigation";
 import { setupEventListeners } from "./events";
 import { loadAndRender, loadUserForCode, setupRegisterForm, validateLogin } from "./users";
+
 //import { startGame } from "./game";
 
 // Components
 import { GlitchButton } from "./components/GlitchButton";
+
+// i18n
+import { setLanguage, updateTexts, t, currentLang } from "./i18n";
 
 // Exponer utilidades al ámbito global
 (window as any).loadAndRender = loadAndRender;
@@ -36,13 +40,12 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-
-// Toggle dark mode
+// ====================
+// 🌙 Toggle dark mode
+// ====================
 const toggle = document.getElementById("dark_mode_toggle");
 
-
 console.log("🔍 toggle encontrado:", toggle);
-
 
 if (toggle) {
   toggle.addEventListener("click", () => {
@@ -63,6 +66,49 @@ if (localStorage.getItem("theme") === "dark") {
   document.documentElement.classList.add("dark");
 }
 
+
+// ====================
+// 🌐 Idiomas
+// ====================
+const savedLang = localStorage.getItem("lang") as "en" | "es" | "fr" | null;
+if (savedLang) {
+  setLanguage(savedLang);
+} else {
+  setLanguage("en");
+}
+
+// 👇 Aquí forzamos render inicial de botones
+renderButtons();
+
+// Conectar selector del DOM
+const langSelector = document.getElementById("lang_selector") as HTMLSelectElement | null;
+if (langSelector) {
+  langSelector.value = savedLang || currentLang;
+  langSelector.addEventListener("change", (e) => {
+    setLanguage((e.target as HTMLSelectElement).value as any);
+  });
+}
+
+// ====================
+// 🕹️ Botones traducidos
+// ====================
+export function renderButtons() {
+  document.querySelectorAll<HTMLElement>("[data-button]").forEach((container) => {
+    const key = container.dataset.button!;   // ejemplo: "start", "game"
+    const page = container.dataset.page || "";
+
+    container.innerHTML = "";
+    container.appendChild(GlitchButton(t(key), "", page));
+  });
+}
+
+// Render inicial
+renderButtons();
+
+// Cuando cambie idioma, vuelve a renderizar
+document.addEventListener("i18n-updated", () => {
+  renderButtons();
+});
 
 // function navigateTo(page: string) {
 //   // Actualizar la URL sin recargar la página

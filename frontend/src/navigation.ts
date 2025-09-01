@@ -1,4 +1,5 @@
 import {loadUsers, setupRegisterForm, validateLogin } from "./users";
+import { renderButtons } from "./main";
 
 export async function navigateTo(page: string) {
   console.log("navigation");
@@ -28,6 +29,7 @@ export async function navigateTo(page: string) {
   }
 	if (page === "home") {
 	  loadUsers();
+    renderButtons();
 	}
   if (page === "login") {
     validateLogin();

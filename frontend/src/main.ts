@@ -68,9 +68,9 @@ if (localStorage.getItem("theme") === "dark") {
 
 
 // ====================
-// 🌐 Idiomas
+// 🌐 Languajes
 // ====================
-const savedLang = localStorage.getItem("lang") as "en" | "es" | "fr" | null;
+const savedLang = (localStorage.getItem("lang") as "en" | "es" | "fr" | null);
 if (savedLang) {
   setLanguage(savedLang);
 } else {
@@ -90,7 +90,7 @@ if (langSelector) {
 }
 
 // ====================
-// 🕹️ Botones traducidos
+// 🕹️ Translated buttons
 // ====================
 export function renderButtons() {
   document.querySelectorAll<HTMLElement>("[data-button]").forEach((container) => {

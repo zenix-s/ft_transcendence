@@ -1,5 +1,6 @@
 import {loadUsers, setupRegisterForm, validateLogin } from "./users";
 import { renderButtons } from "./main";
+import { updateTexts } from "./i18n";
 
 export async function navigateTo(page: string) {
   console.log("navigation");
@@ -35,6 +36,9 @@ export async function navigateTo(page: string) {
     validateLogin();
     setupRegisterForm();
   }
+
+  // Actualizar los textos al cambiar de página
+  updateTexts();
 
   // Cada vez que la página en la que estemos sea game, se ejecuta el script
   if (page === "game") {

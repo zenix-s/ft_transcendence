@@ -12,6 +12,7 @@
     "author": "serferna/danjimen/insainz-r",
     "license": "ISC",
     "dependencies": {
+        "@fastify/auth": "^5.0.2",
         "@fastify/cors": "^11.1.0",
         "@fastify/websocket": "^11.2.0",
         "better-sqlite3": "^12.2.0",

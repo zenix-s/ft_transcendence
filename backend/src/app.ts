@@ -1,19 +1,38 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
 import dbPlugin from '@shared/infrastructure/db/db';
-import usersRoutes from '@features/users/Users.presentation';
 import { fastifyWebsocket } from '@fastify/websocket';
 import gameRoutes from '@features/game/pong/Pong.presentation';
 import fastifyAuth from '@fastify/auth';
+import fastifyJWT from '@fastify/jwt';
+import authRoutes from '@features/authentication/Authentication.presentation';
+import { handleError } from '@shared/utils/error.utils';
 
 async function App(fastify: FastifyInstance) {
-    fastify.decorate(
-        'verifyUser',
-        function (request: FastifyRequest, reply: FastifyReply) {
-            const isAuthenticated = true;
+    // Register JWT plugin
+    fastify.register(fastifyJWT, {
+        secret:
+            process.env.JWT_SECRET ||
+            'your-secret-key-change-this-in-production',
+        sign: {
+            expiresIn: '24h',
+        },
+    });
 
-            if (!isAuthenticated) {
-                reply.status(401).send({ error: 'Unauthorized' });
+    // Decorate request with authenticate method
+    fastify.decorate(
+        'authenticate',
+        async function (request: FastifyRequest, reply: FastifyReply) {
+            try {
+                await request.jwtVerify();
+            } catch (err) {
+                const result = handleError(
+                    err,
+                    'Unauthorized',
+                    fastify.log,
+                    '401'
+                );
+                reply.status(401).send({ error: result.error!.message });
             }
         }
     );
@@ -44,10 +63,15 @@ async function App(fastify: FastifyInstance) {
 
     fastify.register(dbPlugin);
 
-    fastify.addHook('preHandler', fastify.auth([fastify.verifyUser]));
+    // Register public routes first (no auth required)
+    fastify.register(authRoutes, { prefix: '/auth' });
 
-    fastify.register(usersRoutes, { prefix: '/users' });
-    fastify.register(gameRoutes, { prefix: '/game' });
+    // Register routes that require authentication
+    fastify.register(async function authenticatedContext(fastify) {
+        fastify.addHook('preHandler', fastify.auth([fastify.authenticate]));
+
+        fastify.register(gameRoutes, { prefix: '/game' });
+    });
 }
 
 export default fp(App);

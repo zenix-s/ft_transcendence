@@ -2,6 +2,7 @@
 import fp from 'fastify-plugin';
 import { FastifyInstance } from 'fastify';
 import { SQLiteConnection } from '@shared/infrastructure/db/SQLiteConnection';
+import { PasswordUtils } from '@shared/utils/password.utils';
 
 export default fp(async (fastify: FastifyInstance) => {
     const connection = new SQLiteConnection(
@@ -15,18 +16,23 @@ export default fp(async (fastify: FastifyInstance) => {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE,
         email TEXT UNIQUE,
-        password TEXT,
-        friends NUMBER
+        password TEXT
     )
   `);
 
     // Insertar usuarios de prueba {DEBUG ONLY}
-    await connection.execute(`
-        INSERT OR IGNORE INTO users (username, email, password, friends)
-        VALUES 
-            ('testuser1', 'test1@example.com', '1234', 5),
-            ('testuser2', 'test2@example.com', '1234', 10)
-    `);
+    const hashedPassword1 = await PasswordUtils.hashPassword('1234');
+    const hashedPassword2 = await PasswordUtils.hashPassword('1234');
+
+    await connection.execute(
+        `
+        INSERT OR IGNORE INTO users (username, email, password)
+        VALUES
+            ('testuser1', 'test1@example.com', ?),
+            ('testuser2', 'test2@example.com', ?)
+    `,
+        [hashedPassword1, hashedPassword2]
+    );
     // await connection.execute(`DELETE FROM users`);
 
     fastify.decorate('dbConnection', connection);

@@ -19,4 +19,7 @@ export default defineConfig({
       },
     },
   },
-})
+  optimizeDeps: {
+    include: ['chart.js'], // fuerza que vite procese este módulo
+  },
+});

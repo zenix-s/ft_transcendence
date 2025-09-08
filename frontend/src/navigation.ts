@@ -1,6 +1,7 @@
 import {loadUsers, setupRegisterForm, validateLogin } from "./users";
 import { renderButtons } from "./main";
 import { updateTexts } from "./i18n";
+import { loadChart } from "./components/graph"
 
 export async function navigateTo(page: string) {
   console.log("navigation");
@@ -35,6 +36,9 @@ export async function navigateTo(page: string) {
   if (page === "login") {
     validateLogin();
     setupRegisterForm();
+  }
+  if (page === "dashboard") {
+    loadChart();
   }
 
   // Actualizar los textos al cambiar de página

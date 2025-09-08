@@ -35,50 +35,45 @@ document.addEventListener("keydown", (event) => {
 // 	}
 // }
 
+
 export async function startGame()
 {
-	console.log("hola");
-
 	const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
+	const ctx = canvas.getContext("2d")!; // as CanvasRenderingContext2D
 	console.log(canvas);
 	if (!canvas)
-	{
+		{
 		console.log("Error: no canvas");
 		return ;
 	}
-	const ctx = canvas.getContext("2d")!; // as CanvasRenderingContext2D
-
-	// Internal drawing size (for drawing API)
-	console.log("Canvas width:", canvas.width, "Canvas height:", canvas.height);
-
+	
 	// const paddle1 = document.getElementById("player1") as HTMLElement;
 	// const paddle2 = document.getElementById("player2") as HTMLElement;
 	// const player1 = new Player(paddle1);
 	// const player2 = new Player(paddle2);
 	// console.log(player1);
 	// console.log(player2);
-
-/*to remove*/
+	
+	/*to remove*/
 	/* Optional: handle device pixel ratio */
-	const dpr = Math.max(1, window.devicePixelRatio || 1);
 	const cssW = canvas.clientWidth;
 	const cssH = canvas.clientHeight;
-	canvas.width = Math.round(cssW * dpr);
-	canvas.height = Math.round(cssH * dpr);
-	ctx.scale(dpr, dpr);
 
+	console.log(cssW);
+	console.log(cssH);
+	
 	// Center of the canvas (CSS pixels)
 	const centerX = cssW / 2;
 	const centerY = cssH / 2;
-
+	
 	console.log("patataassss");
-
+	
 	// Draw a white dot in the center
 	ctx.fillStyle = "white";
 	ctx.beginPath();
 	ctx.arc(centerX, centerY, 5, 0, Math.PI * 2); // radius = 5
 	ctx.fill();
-
+	
 	for (let index = 5; index < 15; index++) {
 		ctx.fillStyle = "white";
 		ctx.beginPath();

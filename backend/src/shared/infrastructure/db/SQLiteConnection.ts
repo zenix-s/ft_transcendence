@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IConnection, IQueryResult } from "./IConnection.interface";
-import Sqlite, { Database } from "better-sqlite3";
+import { IConnection, IQueryResult } from './IConnection.interface';
+import Sqlite, { Database } from 'better-sqlite3';
 
 export class SQLiteConnection implements IConnection {
     private db: Database | null = null;
@@ -11,8 +11,8 @@ export class SQLiteConnection implements IConnection {
     async connect(): Promise<void> {
         try {
             this.db = new Sqlite(this.dbPath);
-            this.db.exec("PRAGMA journal_mode = WAL;");
-            this.db.exec("PRAGMA foreign_keys = ON;");
+            this.db.exec('PRAGMA journal_mode = WAL;');
+            this.db.exec('PRAGMA foreign_keys = ON;');
             this.connected = true;
         } catch (error) {
             throw new Error(`SQLite connection failed: ${error}`);
@@ -31,22 +31,21 @@ export class SQLiteConnection implements IConnection {
         return this.connected;
     }
 
-    async query<T = any>(
-        sql: string,
-        params: any[] = [],
-    ): Promise<IQueryResult<T>> {
+    async query<T = any>(sql: string, params: any[] = []): Promise<IQueryResult<T>> {
         this.ensureConnected();
-        const stmt = this.db!.prepare(sql);
+        if (!this.db) throw new Error('Database not initialized');
+        const stmt = this.db.prepare(sql);
         const rows = stmt.all(...params) as T[];
         return { rows, rowCount: rows.length };
     }
 
     async execute(
         sql: string,
-        params: any[] = [],
+        params: any[] = []
     ): Promise<{ affectedRows: number | bigint; insertId?: number }> {
         this.ensureConnected();
-        const stmt = this.db!.prepare(sql);
+        if (!this.db) throw new Error('Database not initialized');
+        const stmt = this.db.prepare(sql);
         const result = stmt.run(...params);
         return {
             affectedRows: result.changes,
@@ -54,10 +53,7 @@ export class SQLiteConnection implements IConnection {
         };
     }
 
-    async selectOne<T = any>(
-        sql: string,
-        params: any[] = [],
-    ): Promise<T | null> {
+    async selectOne<T = any>(sql: string, params: any[] = []): Promise<T | null> {
         const res = await this.query<T>(sql, params);
         return res.rows[0] ?? null;
     }
@@ -69,7 +65,7 @@ export class SQLiteConnection implements IConnection {
 
     async ping(): Promise<boolean> {
         try {
-            await this.query("SELECT 1");
+            await this.query('SELECT 1');
             return true;
         } catch {
             return false;
@@ -78,7 +74,7 @@ export class SQLiteConnection implements IConnection {
 
     private ensureConnected() {
         if (!this.isConnected()) {
-            throw new Error("Database not connected");
+            throw new Error('Database not connected');
         }
     }
 }

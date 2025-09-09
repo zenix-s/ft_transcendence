@@ -1,28 +1,25 @@
-// src/shared/infrastructure/plugins/db.plugin.ts
 import fp from 'fastify-plugin';
 import { FastifyInstance } from 'fastify';
 import { SQLiteConnection } from '@shared/infrastructure/db/SQLiteConnection';
-import { PasswordUtils } from '@shared/utils/password.utils';
+import { hashPassword } from '@shared/utils/password.utils';
 
 export default fp(async (fastify: FastifyInstance) => {
-    const connection = new SQLiteConnection(
-        process.env.DB_PATH || 'bbdd/dev.db'
-    );
+    const connection = new SQLiteConnection(process.env.DB_PATH || 'bbdd/dev.db');
     await connection.connect();
 
-    // Optional schema creation
+    // USER
     await connection.execute(`
-        CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE,
-        email TEXT UNIQUE,
-        password TEXT
-    )
-  `);
+            CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE,
+            email TEXT UNIQUE,
+            password TEXT
+        )
+    `);
 
     // Insertar usuarios de prueba {DEBUG ONLY}
-    const hashedPassword1 = await PasswordUtils.hashPassword('1234');
-    const hashedPassword2 = await PasswordUtils.hashPassword('1234');
+    const hashedPassword1 = await hashPassword('1234');
+    const hashedPassword2 = await hashPassword('1234');
 
     await connection.execute(
         `
@@ -33,7 +30,19 @@ export default fp(async (fastify: FastifyInstance) => {
     `,
         [hashedPassword1, hashedPassword2]
     );
-    // await connection.execute(`DELETE FROM users`);
+
+    // GAME data
+    await connection.execute(`
+        CREATE TABLE IF NOT EXISTS games (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            player1_id INTEGER,
+            player2_id INTEGER,
+            player1_score INTEGER DEFAULT 0,
+            player2_score INTEGER DEFAULT 0,
+            winner_id INTEGER,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    `);
 
     fastify.decorate('dbConnection', connection);
 
@@ -42,9 +51,3 @@ export default fp(async (fastify: FastifyInstance) => {
         await connection.disconnect();
     });
 });
-
-declare module 'fastify' {
-    interface FastifyInstance {
-        dbConnection: SQLiteConnection;
-    }
-}

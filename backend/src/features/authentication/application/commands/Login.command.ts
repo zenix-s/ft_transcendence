@@ -1,18 +1,37 @@
-import { Result } from '@shared/abstractions/Result';
+import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { IUserRepository } from '../repositories/User.IRepository';
-import { PasswordUtils } from '@shared/utils/password.utils';
+import { verifyPassword } from '@shared/utils/password.utils';
 import { FastifyInstance } from 'fastify';
-import {
-    ILoginRequest,
-    IAuthResponse,
-    AUTH_ERRORS,
-} from '../../types/auth.types';
 import { handleError } from '@shared/utils/error.utils';
+import { badRequestError } from '@shared/Errors';
 
-export default class LoginCommand
-    implements ICommand<ILoginRequest, IAuthResponse>
-{
+const invalidCredentialsError: ErrorResult = {
+    code: 'invalidCredentialsError',
+    message: 'Invalid email or password',
+};
+
+const invalidRequestError: ErrorResult = {
+    code: 'invalidRequestError',
+    message: 'Email and password are required',
+};
+
+interface IAuthResponse {
+    message: string;
+    token: string;
+    user: {
+        id: number;
+        username: string;
+        email: string;
+    };
+}
+
+export interface ILoginRequest {
+    email: string;
+    password: string;
+}
+
+export default class LoginCommand implements ICommand<ILoginRequest, IAuthResponse> {
     constructor(
         private readonly userRepository: IUserRepository,
         private readonly fastify: FastifyInstance
@@ -20,48 +39,34 @@ export default class LoginCommand
 
     validate(request?: ILoginRequest): Result<void> {
         if (!request) {
-            return Result.failure('400', 'Request body is required');
+            return Result.error(badRequestError);
         }
 
         const { email, password } = request;
 
         if (!email || !password) {
-            return Result.failure('400', 'Email and password are required');
+            return Result.error(invalidRequestError);
         }
 
         return Result.success(undefined);
     }
 
     async execute(request?: ILoginRequest): Promise<Result<IAuthResponse>> {
-        if (!request) {
-            return Result.failure('400', 'Request is required');
-        }
-
+        if (!request) return Result.error(badRequestError);
         const { email, password } = request;
 
         try {
-            // Find user by email
-            const user = await this.userRepository.getUserByEmail(email);
-            if (!user) {
-                return Result.failure(
-                    AUTH_ERRORS.INVALID_CREDENTIALS.code,
-                    AUTH_ERRORS.INVALID_CREDENTIALS.message
-                );
+            const userResult = await this.userRepository.getUserByEmail(email);
+            if (!userResult.isSuccess || !userResult.value) {
+                return Result.error(invalidCredentialsError);
             }
 
-            // Verify password
-            const isPasswordValid = await PasswordUtils.verifyPassword(
-                password,
-                user.password
-            );
+            const user = userResult.value;
+            const isPasswordValid = await verifyPassword(password, user.password);
             if (!isPasswordValid) {
-                return Result.failure(
-                    AUTH_ERRORS.INVALID_CREDENTIALS.code,
-                    AUTH_ERRORS.INVALID_CREDENTIALS.message
-                );
+                return Result.error(invalidCredentialsError);
             }
 
-            // Generate JWT token
             const token = this.fastify.jwt.sign({
                 id: user.id,
                 username: user.username,
@@ -78,11 +83,7 @@ export default class LoginCommand
                 },
             });
         } catch (error) {
-            return handleError<IAuthResponse>(
-                error,
-                'Login failed',
-                this.fastify.log
-            );
+            return handleError<IAuthResponse>(error, 'Login failed', this.fastify.log, '500');
         }
     }
 }

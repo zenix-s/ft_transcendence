@@ -1,57 +1,52 @@
-import { Result } from '@shared/abstractions/Result';
+import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { IQuery } from '@shared/application/abstractions/IQuery.interface';
 import { IUserRepository } from '../repositories/User.IRepository';
-import { IUserPublic } from '@shared/types';
-import { AUTH_ERRORS } from '../../types/auth.types';
 import { FastifyInstance } from 'fastify';
 import { handleError } from '@shared/utils/error.utils';
+import { User } from '@shared/domain/entity/User.entity';
+import { badRequestError } from '@shared/Errors';
+
+const userNotFoundError: ErrorResult = {
+    code: 'userNotFoundError',
+    message: 'User not found',
+};
+
+const invalidRequestError: ErrorResult = {
+    code: 'invalidRequestError',
+    message: 'Valid user ID is required',
+};
 
 export interface IGetCurrentUserRequest {
     userId: number;
 }
 
 export interface IGetCurrentUserResponse {
-    user: IUserPublic;
+    user: User;
 }
 
-export default class GetCurrentUserQuery
-    implements IQuery<IGetCurrentUserRequest, IGetCurrentUserResponse>
-{
+export default class GetCurrentUserQuery implements IQuery<IGetCurrentUserRequest, IGetCurrentUserResponse> {
     constructor(
         private readonly userRepository: IUserRepository,
         private readonly fastify: FastifyInstance
     ) {}
 
     validate(request?: IGetCurrentUserRequest): Result<void> {
-        if (!request) {
-            return Result.failure('400', 'Request is required');
-        }
+        if (!request) return Result.error(badRequestError);
 
-        if (!request.userId || typeof request.userId !== 'number') {
-            return Result.failure('400', 'Valid user ID is required');
-        }
+        if (!request.userId || typeof request.userId !== 'number') return Result.error(invalidRequestError);
 
         return Result.success(undefined);
     }
 
-    async execute(
-        request?: IGetCurrentUserRequest
-    ): Promise<Result<IGetCurrentUserResponse>> {
-        if (!request) {
-            return Result.failure('400', 'Request is required');
-        }
+    async execute(request?: IGetCurrentUserRequest): Promise<Result<IGetCurrentUserResponse>> {
+        if (!request) return Result.error(badRequestError);
 
         try {
-            const user = await this.userRepository.getUserById(request.userId);
+            const userResult = await this.userRepository.getUserById(request.userId);
+            if (!userResult.isSuccess || !userResult.value) return Result.error(userNotFoundError);
 
-            if (!user) {
-                return Result.failure(
-                    AUTH_ERRORS.USER_NOT_FOUND.code,
-                    AUTH_ERRORS.USER_NOT_FOUND.message
-                );
-            }
+            const user = userResult.value;
 
-            // Return user without password
             return Result.success({
                 user: {
                     id: user.id,
@@ -60,11 +55,7 @@ export default class GetCurrentUserQuery
                 },
             });
         } catch (error) {
-            return handleError<IGetCurrentUserResponse>(
-                error,
-                'Failed to get user',
-                this.fastify.log
-            );
+            return handleError<IGetCurrentUserResponse>(error, 'Failed to get user', this.fastify.log, '500');
         }
     }
 }

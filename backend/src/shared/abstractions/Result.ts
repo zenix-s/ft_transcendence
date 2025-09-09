@@ -14,20 +14,15 @@ export class Result<T> {
     }
 
     public static failure<U>(code: string, message: string): Result<U> {
-        return new Result<U>(false, new ErrorResult(code, message));
+        return new Result<U>(false, { code, message });
+    }
+
+    public static error<U>(error: ErrorResult): Result<U> {
+        return new Result<U>(false, error);
     }
 }
 
-export class ErrorResult {
-    public code: string;
-    public message: string;
-
-    constructor(code: string, message: string) {
-        this.code = code;
-        this.message = message;
-    }
-
-    public toString(): string {
-        return `Error ${this.code}: ${this.message}`;
-    }
+export interface ErrorResult {
+    code: string;
+    message: string;
 }

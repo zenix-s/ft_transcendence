@@ -1,18 +1,52 @@
-import { Result } from '@shared/abstractions/Result';
-import { ICommand } from '@shared/application/abstractions/ICommand.interface';
-import { IUserRepository } from '../repositories/User.IRepository';
-import { PasswordUtils } from '@shared/utils/password.utils';
 import { FastifyInstance } from 'fastify';
-import {
-    IRegisterRequest,
-    IAuthResponse,
-    AUTH_ERRORS,
-} from '../../types/auth.types';
+import { IUserRepository } from '@features/authentication/application/repositories/User.IRepository';
+import { ErrorResult, Result } from '@shared/abstractions/Result';
+import { ICommand } from '@shared/application/abstractions/ICommand.interface';
+import { hashPassword } from '@shared/utils/password.utils';
 import { handleError } from '@shared/utils/error.utils';
+import { badRequestError } from '@shared/Errors';
 
-export default class CreateUserCommand
-    implements ICommand<IRegisterRequest, IAuthResponse>
-{
+export const userNotFoundError: ErrorResult = {
+    code: 'userNotFoundError',
+    message: 'User not found',
+};
+
+export const userAlredyExistsError: ErrorResult = {
+    code: 'userAlredyExistsError',
+    message: 'User with this email already exists',
+};
+
+export const userCreationError: ErrorResult = {
+    code: 'userCreationError',
+    message: 'User creation failed',
+};
+
+export interface IRegisterRequest {
+    username: string;
+    email: string;
+    password: string;
+}
+
+export interface IAuthResponse {
+    message: string;
+    token: string;
+    user: {
+        id: number;
+        username: string;
+        email: string;
+    };
+}
+
+export default class CreateUserCommand implements ICommand<IRegisterRequest, IAuthResponse> {
+    private invalidRequestError = (error: string): ErrorResult => {
+        const errorResult: ErrorResult = {
+            code: '400',
+            message: error,
+        };
+
+        return errorResult;
+    };
+
     constructor(
         private readonly userRepository: IUserRepository,
         private readonly fastify: FastifyInstance
@@ -20,71 +54,63 @@ export default class CreateUserCommand
 
     validate(request?: IRegisterRequest): Result<void> {
         if (!request) {
-            return Result.failure('400', 'Request body is required');
+            return Result.error(badRequestError);
         }
 
         const { username, email, password } = request;
 
-        if (!username || !email || !password) {
-            return Result.failure(
-                '400',
-                'Username, email, and password are required'
-            );
+        let error = '';
+
+        if (!username) error += 'Username is required. ';
+        if (!email) error += 'Email is required. ';
+        if (!password) error += 'Password is required. ';
+
+        if (error) {
+            return Result.error(this.invalidRequestError(error.trim()));
         }
 
         return Result.success(undefined);
     }
 
     async execute(request?: IRegisterRequest): Promise<Result<IAuthResponse>> {
-        if (!request) {
-            return Result.failure('400', 'Request is required');
-        }
-
+        if (!request) return Result.error(badRequestError);
         const { username, email, password } = request;
 
         try {
-            // Check if user already exists
-            const existingUser =
-                await this.userRepository.getUserByEmail(email);
+            const existingUser = await this.userRepository.getUserByEmail(email);
             if (existingUser) {
-                return Result.failure(
-                    AUTH_ERRORS.USER_ALREADY_EXISTS.code,
-                    AUTH_ERRORS.USER_ALREADY_EXISTS.message
-                );
+                return Result.error(userAlredyExistsError);
             }
 
-            // Hash password
-            const hashedPassword = await PasswordUtils.hashPassword(password);
+            const hashedPassword = await hashPassword(password);
 
-            // Create user
             const user = await this.userRepository.createUser({
                 username,
                 email,
                 password: hashedPassword,
             });
 
-            // Generate JWT token
+            if (!user.isSuccess || !user.value) {
+                return Result.error(userCreationError);
+            }
+
             const token = this.fastify.jwt.sign({
-                id: user.id,
-                username: user.username,
-                email: user.email,
+                id: user.value.id,
+                username: user.value.username,
+                email: user.value.email,
             });
 
             return Result.success({
                 message: 'User registered successfully',
                 token,
                 user: {
-                    id: user.id,
-                    username: user.username,
-                    email: user.email,
+                    id: user.value.id,
+                    username: user.value.username,
+                    email: user.value.email,
                 },
             });
         } catch (error) {
-            return handleError<IAuthResponse>(
-                error,
-                'Registration failed',
-                this.fastify.log
-            );
+            return handleError<IAuthResponse>(error, 'Registration failed', this.fastify.log, '500');
         }
     }
 }

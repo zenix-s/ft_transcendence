@@ -11,52 +11,40 @@ import { handleError } from '@shared/utils/error.utils';
 async function App(fastify: FastifyInstance) {
     // Register JWT plugin
     fastify.register(fastifyJWT, {
-        secret:
-            process.env.JWT_SECRET ||
-            'your-secret-key-change-this-in-production',
+        secret: process.env.JWT_SECRET || 'your-secret-key-change-this-in-production',
         sign: {
             expiresIn: '24h',
         },
     });
 
     // Decorate request with authenticate method
-    fastify.decorate(
-        'authenticate',
-        async function (request: FastifyRequest, reply: FastifyReply) {
-            try {
-                await request.jwtVerify();
-            } catch (err) {
-                const result = handleError(
-                    err,
-                    'Unauthorized',
-                    fastify.log,
-                    '401'
-                );
-                reply.status(401).send({ error: result.error!.message });
-            }
+    fastify.decorate('authenticate', async function (request: FastifyRequest, reply: FastifyReply) {
+        try {
+            await request.jwtVerify();
+        } catch (err) {
+            const result = handleError(err, 'Unauthorized', fastify.log, '401');
+            reply.status(401).send({ error: result.error?.message });
         }
-    );
+    });
 
-    fastify.setErrorHandler(
-        (error: Error, req: FastifyRequest, res: FastifyReply) => {
-            fastify.log.error(error);
+    fastify.setErrorHandler((error: Error, req: FastifyRequest, res: FastifyReply) => {
+        fastify.log.error(error);
 
-            if (error.message.includes('Database')) {
-                res.status(503).send({
-                    statusCode: 503,
-                    error: 'Service Unavailable',
-                    message: 'Database connection error',
-                });
-                return;
-            }
-
-            res.status(500).send({
-                statusCode: 500,
-                error: 'Internal Server Error',
-                message: 'An unexpected error occurred.',
+        if (error.message.includes('Database')) {
+            res.status(503).send({
+                statusCode: 503,
+                error: 'Service Unavailable',
+                message: 'Database connection error',
             });
+            return;
         }
-    );
+
+        res.status(500).send({
+            statusCode: 500,
+            error: 'Internal Server Error',
+            message: 'An unexpected error occurred.',
+        });
+    });
 
     fastify.register(fastifyWebsocket);
     fastify.register(fastifyAuth);

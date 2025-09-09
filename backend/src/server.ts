@@ -4,7 +4,7 @@ import cors from '@fastify/cors';
 import { loadEnvFile } from 'node:process';
 import fs from 'fs';
 
-const port: number = 3000;
+const port = 3000;
 const host = '0.0.0.0'; // Cambiar de '127.0.0.1' a '0.0.0.0'
 
 /* const server = fastify({
@@ -16,7 +16,7 @@ const server = fastify({
     https: {
         key: fs.readFileSync('./certs/key.pem'),
         cert: fs.readFileSync('./certs/cert.pem'),
-    }
+    },
 });
 
 const start = async () => {
@@ -39,7 +39,7 @@ const start = async () => {
         await server.register(cors, {
             origin: '*',
         });
-        await server.listen({ port, host});
+        await server.listen({ port, host });
         console.log(`Server is running at http://localhost:${port}`);
     } catch (err) {
         server.log.error(err);

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IConnection } from "../db/IConnection.interface";
+import { IConnection } from '../db/IConnection.interface';
 
 export abstract class AbstractRepository {
     constructor(protected readonly connection: IConnection) {}
@@ -14,7 +14,7 @@ export abstract class AbstractRepository {
 
     protected run(
         sql: string,
-        params: any[] = [],
+        params: any[] = []
     ): Promise<{ affectedRows: number | bigint; insertId?: number }> {
         return this.connection.execute(sql, params);
     }

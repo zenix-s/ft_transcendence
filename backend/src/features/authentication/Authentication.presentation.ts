@@ -3,39 +3,33 @@ import { UserRepository } from './infrastructure/User.repository';
 import CreateUserCommand from './application/commands/CreateUser.command';
 import LoginCommand from './application/commands/Login.command';
 import GetCurrentUserQuery from './application/queries/GetCurrentUser.query';
-import { ILoginRequest, IRegisterRequest } from './types/auth.types';
+import { ILoginRequest } from './application/commands/Login.command';
+import { IRegisterRequest } from './application/commands/CreateUser.command';
 
 export default async function authRoutes(fastify: FastifyInstance) {
     const userRepository = new UserRepository(fastify.dbConnection);
 
-    // Register endpoint
     fastify.post(
         '/register',
-        async (
-            req: FastifyRequest<{ Body: IRegisterRequest }>,
-            reply: FastifyReply
-        ) => {
-            const createUserCommand = new CreateUserCommand(
-                userRepository,
-                fastify
-            );
+        async (req: FastifyRequest<{ Body: IRegisterRequest }>, reply: FastifyReply) => {
+            const createUserCommand = new CreateUserCommand(userRepository, fastify);
 
             const validationResult = createUserCommand.validate(req.body);
             if (!validationResult.isSuccess) {
                 return reply.status(400).send({
                     error: {
-                        code: validationResult.error!.code,
-                        message: validationResult.error!.message,
+                        code: validationResult.error?.code,
+                        message: validationResult.error?.message,
                     },
                 });
             }
 
             const result = await createUserCommand.execute(req.body);
             if (!result.isSuccess) {
-                return reply.status(parseInt(result.error!.code)).send({
+                return reply.status(409).send({
                     error: {
-                        code: result.error!.code,
-                        message: result.error!.message,
+                        code: result.error?.code,
+                        message: result.error?.message,
                     },
                 });
             }
@@ -44,50 +38,39 @@ export default async function authRoutes(fastify: FastifyInstance) {
         }
     );
 
-    // Login endpoint
-    fastify.post(
-        '/login',
-        async (
-            req: FastifyRequest<{ Body: ILoginRequest }>,
-            reply: FastifyReply
-        ) => {
-            const loginCommand = new LoginCommand(userRepository, fastify);
+    fastify.post('/login', async (req: FastifyRequest<{ Body: ILoginRequest }>, reply: FastifyReply) => {
+        const loginCommand = new LoginCommand(userRepository, fastify);
 
-            const validationResult = loginCommand.validate(req.body);
-            if (!validationResult.isSuccess) {
-                return reply.status(400).send({
-                    error: {
-                        code: validationResult.error!.code,
-                        message: validationResult.error!.message,
-                    },
-                });
-            }
-
-            const result = await loginCommand.execute(req.body);
-            if (!result.isSuccess) {
-                return reply.status(parseInt(result.error!.code)).send({
-                    error: {
-                        code: result.error!.code,
-                        message: result.error!.message,
-                    },
-                });
-            }
-
-            return reply.status(200).send(result.value);
+        const validationResult = loginCommand.validate(req.body);
+        if (!validationResult.isSuccess) {
+            return reply.status(400).send({
+                error: {
+                    code: validationResult.error?.code,
+                    message: validationResult.error?.message,
+                },
+            });
         }
-    );
 
-    // Get current user endpoint
+        const result = await loginCommand.execute(req.body);
+        if (!result.isSuccess) {
+            return reply.status(409).send({
+                error: {
+                    code: result.error?.code,
+                    message: result.error?.message,
+                },
+            });
+        }
+
+        return reply.status(200).send(result.value);
+    });
+
     fastify.get(
         '/me',
         {
             preHandler: [fastify.authenticate],
         },
         async (req: FastifyRequest, reply: FastifyReply) => {
-            const getCurrentUserQuery = new GetCurrentUserQuery(
-                userRepository,
-                fastify
-            );
+            const getCurrentUserQuery = new GetCurrentUserQuery(userRepository, fastify);
 
             const validationResult = getCurrentUserQuery.validate({
                 userId: req.user.id,
@@ -95,8 +78,8 @@ export default async function authRoutes(fastify: FastifyInstance) {
             if (!validationResult.isSuccess) {
                 return reply.status(400).send({
                     error: {
-                        code: validationResult.error!.code,
-                        message: validationResult.error!.message,
+                        code: validationResult.error?.code,
+                        message: validationResult.error?.message,
                     },
                 });
             }
@@ -105,10 +88,10 @@ export default async function authRoutes(fastify: FastifyInstance) {
                 userId: req.user.id,
             });
             if (!result.isSuccess) {
-                return reply.status(parseInt(result.error!.code)).send({
+                return reply.status(409).send({
                     error: {
-                        code: result.error!.code,
-                        message: result.error!.message,
+                        code: result.error?.code,
+                        message: result.error?.message,
                     },
                 });
             }

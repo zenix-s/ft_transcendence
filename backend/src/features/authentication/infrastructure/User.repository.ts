@@ -1,35 +1,61 @@
-import { User } from '../domain/User.entity';
-import { IUserRepository } from '../application/repositories/User.IRepository';
+import { Result, ErrorResult } from '@shared/abstractions/Result';
+import {
+    AuthenticationUserDto,
+    CreateUserDto,
+    IUserRepository,
+} from '../application/repositories/User.IRepository';
 import { IConnection } from '@shared/infrastructure/db/IConnection.interface';
+
+const userNotFoundError: ErrorResult = {
+    code: 'UserNotFound',
+    message: 'User not found',
+};
 
 export class UserRepository implements IUserRepository {
     constructor(private readonly connection: IConnection) {}
 
-    async createUser(user: Omit<User, 'id'>): Promise<User> {
-        await this.connection.execute(
-            'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
-            [user.username, user.email, user.password]
-        );
+    async createUser(user: CreateUserDto): Promise<Result<AuthenticationUserDto>> {
+        await this.connection.execute('INSERT INTO users (username, email, password) VALUES (?, ?, ?)', [
+            user.username,
+            user.email,
+            user.password,
+        ]);
 
-        const row = await this.connection.selectOne<User>(
+        const row = await this.connection.selectOne<AuthenticationUserDto>(
             'SELECT * FROM users WHERE email = ?',
             [user.email]
         );
 
-        return row!;
+        if (!row) {
+            return Result.error(userNotFoundError);
+        }
+
+        return Result.success(row);
     }
 
-    async getUserByEmail(email: string): Promise<User | null> {
-        return this.connection.selectOne<User>(
+    async getUserByEmail(email: string): Promise<Result<AuthenticationUserDto>> {
+        const row = await this.connection.selectOne<AuthenticationUserDto>(
             'SELECT * FROM users WHERE email = ?',
             [email]
         );
+
+        if (!row) {
+            return Result.error(userNotFoundError);
+        }
+
+        return Result.success(row);
     }
 
-    async getUserById(id: number): Promise<User | null> {
-        return this.connection.selectOne<User>(
+    async getUserById(id: number): Promise<Result<AuthenticationUserDto>> {
+        const row = await this.connection.selectOne<AuthenticationUserDto>(
             'SELECT * FROM users WHERE id = ?',
             [id]
         );
+
+        if (!row) {
+            return Result.error(userNotFoundError);
+        }
+
+        return Result.success(row);
     }
 }

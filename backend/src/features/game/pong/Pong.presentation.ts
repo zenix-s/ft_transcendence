@@ -1,28 +1,10 @@
 import { WebSocket } from '@fastify/websocket';
 import assert from 'node:assert';
 import { FastifyInstance } from 'fastify';
+import { pongPlayer } from './Player';
 // import GetUsersQuery from "./application/query/GetUsers.query";
 // import { UserRepository } from "./infrastructure/User.repository";
-
-enum Acciones {
-    CREAR_JUEGO = 0,
-    SOLICITAR_ESTADO = 1,
-    EMPEZAR_JUEGO = 2,
-    UNIRSE_JUEGO = 3,
-    MOVER_ARRIBA = 4,
-    MOVER_ABAJO = 5,
-    SALIR_JUEGO = 6,
-}
-
-const PossibleActions: Acciones[] = [
-    Acciones.CREAR_JUEGO,
-    Acciones.SOLICITAR_ESTADO,
-    Acciones.EMPEZAR_JUEGO,
-    Acciones.UNIRSE_JUEGO,
-    Acciones.MOVER_ARRIBA,
-    Acciones.MOVER_ABAJO,
-    Acciones.SALIR_JUEGO,
-];
+import { PossibleActions, Acciones } from './Pong.types';
 
 interface Mensaje {
     accion: Acciones;
@@ -30,19 +12,8 @@ interface Mensaje {
     gameId?: string;
 }
 
-class pongPlayer {
-    private name: string;
-    private score: number = 0;
-    private position: number = 0;
-    private speed: number = 1;
-
-    constructor(name: string) {
-        this.name = name;
-    }
-}
-
 class pongGame {
-    private gameIdent: string = '';
+    private gameIdentification: string = '';
     private isRunning: boolean = false;
     private player1?: pongPlayer;
     private player2?: pongPlayer;
@@ -51,7 +22,7 @@ class pongGame {
     private intervalId?: NodeJS.Timeout;
 
     constructor(gameid: string) {
-        this.gameIdent = gameid;
+        this.gameIdentification = gameid;
     }
 
     static createGame(): { gameId: string; game: pongGame } {
@@ -90,7 +61,7 @@ class pongGame {
 
             if (this.contador > 10) {
                 this.isRunning = false;
-                Games.delete(this.gameIdent);
+                Games.delete(this.gameIdentification);
                 clearInterval(this.intervalId);
             }
 
@@ -115,7 +86,7 @@ function validarMensaje(data: any): data is Mensaje {
     }
 }
 
-const Games: Map<string, pongGame> = new Map();
+const Games = new Map<string, pongGame>();
 
 export default async function gameRoutes(fastify: FastifyInstance) {
     fastify.get('/', { websocket: true }, (socket: WebSocket) => {
@@ -141,16 +112,12 @@ export default async function gameRoutes(fastify: FastifyInstance) {
 
                 if (json.accion === Acciones.EMPEZAR_JUEGO) {
                     if (!json.gameId) {
-                        socket.send(
-                            JSON.stringify({ error: 'Faltan parámetros' })
-                        );
+                        socket.send(JSON.stringify({ error: 'Faltan parámetros' }));
                         return;
                     }
                     const game = Games.get(json.gameId);
                     if (!game) {
-                        socket.send(
-                            JSON.stringify({ error: 'Juego no encontrado' })
-                        );
+                        socket.send(JSON.stringify({ error: 'Juego no encontrado' }));
                         return;
                     }
                     game.startGame();
@@ -163,17 +130,13 @@ export default async function gameRoutes(fastify: FastifyInstance) {
 
                 if (json.accion === Acciones.UNIRSE_JUEGO) {
                     if (!json.gameId) {
-                        socket.send(
-                            JSON.stringify({ error: 'Faltan parámetros' })
-                        );
+                        socket.send(JSON.stringify({ error: 'Faltan parámetros' }));
                         return;
                     }
                     const userId = crypto.randomUUID();
                     const game = Games.get(json.gameId);
                     if (!game) {
-                        socket.send(
-                            JSON.stringify({ error: 'Juego no encontrado' })
-                        );
+                        socket.send(JSON.stringify({ error: 'Juego no encontrado' }));
                         return;
                     }
                     const added = game.addPlayer(userId);
@@ -191,16 +154,12 @@ export default async function gameRoutes(fastify: FastifyInstance) {
 
                 if (json.accion === Acciones.SOLICITAR_ESTADO) {
                     if (!json.gameId) {
-                        socket.send(
-                            JSON.stringify({ error: 'Faltan parámetros' })
-                        );
+                        socket.send(JSON.stringify({ error: 'Faltan parámetros' }));
                         return;
                     }
                     const game = Games.get(json.gameId);
                     if (!game) {
-                        socket.send(
-                            JSON.stringify({ error: 'Juego no encontrado' })
-                        );
+                        socket.send(JSON.stringify({ error: 'Juego no encontrado' }));
                         return;
                     }
                     socket.send(
@@ -235,9 +194,7 @@ export default async function gameRoutes(fastify: FastifyInstance) {
                 }
 
                 if (!PossibleActions.includes(json.accion)) {
-                    socket.send(
-                        JSON.stringify({ error: 'Acción desconocida' })
-                    );
+                    socket.send(JSON.stringify({ error: 'Acción desconocida' }));
                 }
             } catch (err) {
                 socket.send(JSON.stringify({ error: 'JSON inválido' }));

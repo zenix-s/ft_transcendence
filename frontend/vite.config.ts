@@ -15,6 +15,7 @@ export default defineConfig({
       '/api': {
         target: 'https://backend:3000', // URL del backend (nombre del servicio Docker)
         changeOrigin: true,
+        secure: false, // <-- IMPORTANTE para certificados locales
         rewrite: (path) => path.replace(/^\/api/, ''), // Opcional: elimina el prefijo '/api'
       },
     },

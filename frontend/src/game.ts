@@ -1,10 +1,4 @@
 
-/*to remove*/
-async function sleep(ms: number): Promise<void> {
-    return new Promise(
-        (resolve) => setTimeout(resolve, ms));
-}
-
 document.addEventListener("keydown", (event) => {
 	const key = event.key;
 	console.log(key);
@@ -66,20 +60,14 @@ export async function startGame()
 	const centerX = cssW / 2;
 	const centerY = cssH / 2;
 	
+	console.log(centerX);
+	console.log(centerY);
+
 	console.log("patataassss");
 	
 	// Draw a white dot in the center
 	ctx.fillStyle = "white";
 	ctx.beginPath();
-	ctx.arc(centerX, centerY, 5, 0, Math.PI * 2); // radius = 5
+	ctx.arc(centerX, centerY, 15, 0, Math.PI * 2); // radius = 5
 	ctx.fill();
-	
-	for (let index = 5; index < 15; index++) {
-		ctx.fillStyle = "white";
-		ctx.beginPath();
-		ctx.arc(centerX, centerY, index, 0, Math.PI * 2); // radius = 15 -> OK
-		ctx.fill();
-		await sleep(2000);
-		console.log("wait");
-	}
 }

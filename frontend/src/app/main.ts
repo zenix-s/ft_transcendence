@@ -10,7 +10,7 @@ import { navigateTo, handlePopState } from "@/app/navigation";
 //import { setupEventListeners } from "./events";
 import { setupEventListeners } from "@/app/events";
 //import { loadAndRender, loadUserForCode, setupRegisterForm, validateLogin } from "./users";
-import { loadAndRender, loadUserForCode, setupRegisterForm, validateLogin } from "@/modules/users";
+import { loadAndRender, loadUserForCode } from "@/modules/users";
 
 //import { startGame } from "./game";
 

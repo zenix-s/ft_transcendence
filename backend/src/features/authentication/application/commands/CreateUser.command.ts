@@ -78,7 +78,7 @@ export default class CreateUserCommand implements ICommand<IRegisterRequest, IAu
 
         try {
             const existingUser = await this.userRepository.getUserByEmail(email);
-            if (existingUser) {
+            if (existingUser.isSuccess) {
                 return Result.error(userAlredyExistsError);
             }
 

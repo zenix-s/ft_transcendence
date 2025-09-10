@@ -36,7 +36,7 @@ export async function startGame()
 	const ctx = canvas.getContext("2d")!; // as CanvasRenderingContext2D
 	console.log(canvas);
 	if (!canvas)
-		{
+	{
 		console.log("Error: no canvas");
 		return ;
 	}
@@ -47,27 +47,20 @@ export async function startGame()
 	// const player2 = new Player(paddle2);
 	// console.log(player1);
 	// console.log(player2);
-	
-	/*to remove*/
-	/* Optional: handle device pixel ratio */
-	const cssW = canvas.clientWidth;
-	const cssH = canvas.clientHeight;
 
-	console.log(cssW);
-	console.log(cssH);
+	/* Optional: handle device pixel ratio */
+	const cssW = 2000;
+	const cssH = 1250;
 	
 	// Center of the canvas (CSS pixels)
 	const centerX = cssW / 2;
 	const centerY = cssH / 2;
-	
-	console.log(centerX);
-	console.log(centerY);
 
 	console.log("patataassss");
 	
 	// Draw a white dot in the center
 	ctx.fillStyle = "white";
 	ctx.beginPath();
-	ctx.arc(centerX, centerY, 15, 0, Math.PI * 2); // radius = 5
+	ctx.arc(centerX, centerY, 15, 0, Math.PI * 2);
 	ctx.fill();
 }

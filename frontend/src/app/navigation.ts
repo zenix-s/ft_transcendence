@@ -4,11 +4,13 @@ import { updateTexts } from "@/app/i18n";
 import { loadChart } from "@/components/graph"
 import { startGame } from "@/modules/game/game.ts";
 
-export async function navigateTo(page: string) {
+export async function navigateTo(page: string, skipPushState = false) {
   console.log("navigation");
   console.log(page);
   // Actualizar la URL sin recargar la página
-  history.pushState({}, "", `/${page}`);
+  if (!skipPushState) {
+    history.pushState({}, "", `/${page}`);
+  }
 
   // Cargar el contenido de la página
   const response = await fetch(`/src/pages/${page}.html`);
@@ -53,5 +55,5 @@ export async function navigateTo(page: string) {
 
 export function handlePopState() {
   const page = location.pathname.replace("/", "") || "home";
-  navigateTo(page);
+  navigateTo(page, true);
 }

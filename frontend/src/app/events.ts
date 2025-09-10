@@ -18,8 +18,8 @@ export function setupEventListeners() {
     }
   });
 
-  window.addEventListener("popstate", () => {
+ /*  window.addEventListener("popstate", () => {
     const page = location.pathname.replace("/", "") || "home";
     navigateTo(page);
-  });
+  }); */
 }

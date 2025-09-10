@@ -58,7 +58,7 @@ clean:
 # Limpiar todo: contenedores, imágenes, volúmenes y redes no utilizadas
 fclean:
 	docker compose down --rmi all --volumes --remove-orphans
-	sudo rm -rf bbdd/
+	rm -rf bbdd/
 
 # Reconstruir todo desde cero
 rebuild: fclean build

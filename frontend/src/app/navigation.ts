@@ -2,6 +2,7 @@ import {loadUsers, setupRegisterForm, validateLogin } from "@/modules/users";
 import { renderButtons } from "@/app/main";
 import { updateTexts } from "@/app/i18n";
 import { loadChart } from "@/components/graph"
+import { startGame } from "@/modules/game/game.ts";
 
 export async function navigateTo(page: string) {
   console.log("navigation");
@@ -46,11 +47,7 @@ export async function navigateTo(page: string) {
 
   // Cada vez que la página en la que estemos sea game, se ejecuta el script
   if (page === "game") {
-    import("@/modules/game/game").then(module => {
-      requestAnimationFrame(() => {
-        module.startGame();
-      });
-    });
+        startGame();
   }
 }
 

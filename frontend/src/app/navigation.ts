@@ -1,12 +1,16 @@
-import {loadUsers, setupRegisterForm, validateLogin } from "./users";
-import { renderButtons } from "./main";
-import { updateTexts } from "./i18n";
+import {loadUsers, setupRegisterForm, validateLogin } from "@/modules/users";
+import { renderButtons } from "@/app/main";
+import { updateTexts } from "@/app/i18n";
+import { loadChart } from "@/components/graph"
+import { startGame } from "@/modules/game/game.ts";
 
-export async function navigateTo(page: string) {
+export async function navigateTo(page: string, skipPushState = false) {
   console.log("navigation");
   console.log(page);
   // Actualizar la URL sin recargar la página
-  history.pushState({}, "", `/${page}`);
+  if (!skipPushState) {
+    history.pushState({}, "", `/${page}`);
+  }
 
   // Cargar el contenido de la página
   const response = await fetch(`/src/pages/${page}.html`);
@@ -36,21 +40,20 @@ export async function navigateTo(page: string) {
     validateLogin();
     setupRegisterForm();
   }
+  if (page === "dashboard") {
+    loadChart();
+  }
 
   // Actualizar los textos al cambiar de página
   updateTexts();
 
   // Cada vez que la página en la que estemos sea game, se ejecuta el script
   if (page === "game") {
-    import("./game").then(module => {
-      requestAnimationFrame(() => {
-        module.startGame();
-      });
-    });
+        startGame();
   }
 }
 
 export function handlePopState() {
   const page = location.pathname.replace("/", "") || "home";
-  navigateTo(page);
+  navigateTo(page, true);
 }

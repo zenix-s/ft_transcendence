@@ -1,5 +1,5 @@
-import { navigateTo } from "./navigation";
-import { loadUsers } from "./users";
+import { navigateTo } from "@/app/navigation";
+import { loadUsers } from "@/modules/users";
 
 /**
  * The `setupEventListeners` function adds event listeners for click and popstate events to handle
@@ -18,8 +18,8 @@ export function setupEventListeners() {
     }
   });
 
-  window.addEventListener("popstate", () => {
+ /*  window.addEventListener("popstate", () => {
     const page = location.pathname.replace("/", "") || "home";
     navigateTo(page);
-  });
+  }); */
 }

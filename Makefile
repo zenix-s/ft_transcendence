@@ -6,7 +6,7 @@
 #    By: danjimen <danjimen@student.42madrid.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/20 09:04:48 by danjimen,is       #+#    #+#              #
-#    Updated: 2025/09/01 11:51:04 by danjimen         ###   ########.fr        #
+#    Updated: 2025/09/09 12:35:04 by danjimen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -58,6 +58,7 @@ clean:
 # Limpiar todo: contenedores, imágenes, volúmenes y redes no utilizadas
 fclean:
 	docker compose down --rmi all --volumes --remove-orphans
+	rm -rf bbdd/
 
 # Reconstruir todo desde cero
 rebuild: fclean build

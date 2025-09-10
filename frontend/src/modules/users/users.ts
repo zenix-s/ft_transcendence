@@ -1,4 +1,4 @@
-import { navigateTo } from "./navigation";
+//import { navigateTo } from "./navigation";
 
 /**
  * Utilities to fetch users and render arbitrary fields into arbitrary DOM selectors/elements.
@@ -12,13 +12,13 @@ import { navigateTo } from "./navigation";
  *     - loadUsers(id, mapping) -> delegates to loadAndRender
  */
 
-/** Obtener valor anidado por path tipo "address.city" */
-function getNested(obj: any, path: string) {
+/** Obtener valor anidado por path tipo "address.city" */ // Moved to → ui.ts
+/* function getNested(obj: any, path: string) {
   return path.split('.').reduce((o, k) => (o == null ? undefined : o[k]), obj);
-}
+} */
 
-/** Asigna texto a un selector CSS o a un Element pasado directamente */
-function setContent(target: string | Element, text: string) {
+/** Asigna texto a un selector CSS o a un Element pasado directamente */ // Moved to → ui.ts
+/* function setContent(target: string | Element, text: string) {
   if (typeof target === 'string') {
     const el = document.querySelector<HTMLElement>(target);
     if (el) {
@@ -29,10 +29,10 @@ function setContent(target: string | Element, text: string) {
     return;
   }
   (target as HTMLElement).textContent = text;
-}
+} */
 
 /** Muestra un mensaje (error/info) en todas las entradas del mapping; si mapping vacío, lo añade al body */
-function renderMessageToSelectors(mapping: Record<string, string | Element>, msg: string) {
+/* function renderMessageToSelectors(mapping: Record<string, string | Element>, msg: string) {
   const entries = Object.entries(mapping);
   if (entries.length === 0) {
     const el = document.createElement('div');
@@ -43,11 +43,11 @@ function renderMessageToSelectors(mapping: Record<string, string | Element>, msg
   for (const [, selectorOrEl] of entries) {
     setContent(selectorOrEl, msg);
   }
-}
+} */
 
-/** Fetch robusto: admite backend que devuelva un array directamente o { value: { users: [...] } } */
-async function fetchUsersFromBackend(): Promise<any[]> {
-  const res = await fetch("https://localhost:3000/users"); // https://localhost:3000/users
+/** Fetch robusto: admite backend que devuelva un array directamente o { value: { users: [...] } } */ // Moved to → api.ts
+/* async function fetchUsersFromBackend(): Promise<any[]> {
+  const res = await fetch("/api/users"); // https://localhost:3000/users
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const data = await res.json();
   // Si el backend devuelve { value: { users: [...] } }
@@ -58,10 +58,10 @@ async function fetchUsersFromBackend(): Promise<any[]> {
   if (data && Array.isArray(data.users)) return data.users;
   // No es el formato esperado
   throw new Error("Respuesta de backend con formato inesperado");
-}
+} */
 
-/** Devuelve el usuario con el id indicado o null */
-export async function fetchUserById(userId: number) {
+/** Devuelve el usuario con el id indicado o null */ // Moved to → api.ts
+/* export async function fetchUserById(userId: number) {
   if (typeof userId !== 'number' || Number.isNaN(userId)) return null;
   try {
     const users = await fetchUsersFromBackend();
@@ -70,13 +70,13 @@ export async function fetchUserById(userId: number) {
     console.error("fetchUserById error:", err);
     throw err;
   }
-}
+} */
 
 /**
  * Carga un usuario por id y renderiza los campos indicados en mapping.
  * mapping: { "name": "#user-name", "address.city": "#user-city", "website": ".site" }
- */
-export async function loadAndRender(userId: number, mapping: Record<string, string | Element>) {
+ */  // Moved to → ui.ts
+/* export async function loadAndRender(userId: number, mapping: Record<string, string | Element>) {
   if (typeof userId !== 'number' || Number.isNaN(userId)) {
     console.warn('loadAndRender ignorado: userId inválido', userId);
     return;
@@ -103,12 +103,12 @@ export async function loadAndRender(userId: number, mapping: Record<string, stri
     console.error('loadAndRender error:', err);
     renderMessageToSelectors(mapping, 'Error al cargar usuario.');
   }
-}
+} */
 
 /** Conveniencia: obtener el objeto usuario para manipularlo en código */
-export async function loadUserForCode(userId: number) {
+/* export async function loadUserForCode(userId: number) {
   return await fetchUserById(userId);
-}
+} */
 
 /**
  * Compatibilidad: exportar loadUsers para quien lo importe.
@@ -118,7 +118,7 @@ export async function loadUserForCode(userId: number) {
  * - loadUsers(id, fieldsArray) => renders into document.body (legacy simple rendering)
  * - loadUsers(id, mapping) => delegates to loadAndRender
  */
-export async function loadUsers(userId?: number, fieldsOrMapping?: string[] | Record<string, string | Element>) {
+/* export async function loadUsers(userId?: number, fieldsOrMapping?: string[] | Record<string, string | Element>) {
   // Sin argumentos: devolver array de usuarios
   if (typeof userId === 'undefined') {
     return await fetchUsersFromBackend();
@@ -164,10 +164,10 @@ export async function loadUsers(userId?: number, fieldsOrMapping?: string[] | Re
 
   // Si solo se pasa userId: devolver objeto usuario
   return await fetchUserById(userId as number);
-}
+} */
 
 /* REGISTER NEW USER */
-export function setupRegisterForm() {
+/* export function setupRegisterForm() {
   setTimeout(() => {
     const forms = document.querySelectorAll("form");
     const registerForm = forms[1];
@@ -191,7 +191,7 @@ export function setupRegisterForm() {
       }
 
       try {
-        const response = await fetch("https://localhost:3000/users", {
+        const response = await fetch("/api/users", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, email, password }),
@@ -209,11 +209,10 @@ export function setupRegisterForm() {
       }
     });
   }, 100); // Espera breve para asegurar que el HTML está en el DOM
-}
+} */
 
-/* LOG-IN */
-/** Devuelve el usuario con el username indicado o null */
-export async function fetchUserByUsername(username: string) {
+/** Devuelve el usuario con el username indicado o null */ // Moved to → api.ts
+/* export async function fetchUserByUsername(username: string) {
   if (!username) return null;
   try {
     const users = await fetchUsersFromBackend();
@@ -222,10 +221,10 @@ export async function fetchUserByUsername(username: string) {
     console.error("fetchUserByUsername error:", err);
     throw err;
   }
-}
+} */
 
-/** Devuelve el usuario con el email indicado o null */
-export async function fetchUserByEmail(email: string) {
+/** Devuelve el usuario con el email indicado o null */ // Moved to → api.ts
+/* export async function fetchUserByEmail(email: string) {
   if (!email) return null;
   try {
     const users = await fetchUsersFromBackend();
@@ -234,10 +233,10 @@ export async function fetchUserByEmail(email: string) {
     console.error("fetchUserByEmail error:", err);
     throw err;
   }
-}
+} */
 
 /** Igual que loadAndRender pero buscando por username */
-export async function loadAndRenderByUsername(username: string, mapping: Record<string, string | Element>) {
+/* export async function loadAndRenderByUsername(username: string, mapping: Record<string, string | Element>) {
   try {
     const users = await fetchUsersFromBackend();
     if (!Array.isArray(users) || users.length === 0) {
@@ -259,10 +258,10 @@ export async function loadAndRenderByUsername(username: string, mapping: Record<
     console.error('loadAndRenderByUsername error:', err);
     renderMessageToSelectors(mapping, 'Error al cargar usuario.');
   }
-}
+} */
 
 /** Igual que loadAndRender pero buscando por email */
-export async function loadAndRenderByEmail(email: string, mapping: Record<string, string | Element>) {
+/* export async function loadAndRenderByEmail(email: string, mapping: Record<string, string | Element>) {
   try {
     const users = await fetchUsersFromBackend();
     if (!Array.isArray(users) || users.length === 0) {
@@ -284,9 +283,10 @@ export async function loadAndRenderByEmail(email: string, mapping: Record<string
     console.error('loadAndRenderByEmail error:', err);
     renderMessageToSelectors(mapping, 'Error al cargar usuario.');
   }
-}
+} */
 
-export function validateLogin() {
+/* LOG-IN */
+/* export function validateLogin() {
   setTimeout(() => {
     const forms = document.querySelectorAll("form");
     const loginForm = forms[0];
@@ -336,4 +336,4 @@ export function validateLogin() {
       }
     });
   }, 100);
-}
+} */

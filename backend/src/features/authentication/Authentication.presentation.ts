@@ -1,10 +1,10 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { UserRepository } from './infrastructure/User.repository';
-import CreateUserCommand from './application/commands/CreateUser.command';
-import LoginCommand from './application/commands/Login.command';
-import GetCurrentUserQuery from './application/queries/GetCurrentUser.query';
-import { ILoginRequest } from './application/commands/Login.command';
-import { IRegisterRequest } from './application/commands/CreateUser.command';
+import CreateUserCommand from './application/mediators/CreateUser.command';
+import LoginCommand from './application/mediators/Login.command';
+import GetCurrentUserQuery from './application/mediators/GetCurrentUser.query';
+import { ILoginRequest } from './application/mediators/Login.command';
+import { IRegisterRequest } from './application/mediators/CreateUser.command';
 
 export default async function authRoutes(fastify: FastifyInstance) {
     const userRepository = new UserRepository(fastify.dbConnection);

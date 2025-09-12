@@ -18,8 +18,6 @@ export async function loadChart() {
 
     // 2. Obtener el canvas
     const ctx = document.getElementById("donutChart") as HTMLCanvasElement;
-    console.log("1: ", document.getElementById("donutChart"))
-    console.log(ctx)
     if (!ctx)
     {
       console.log("no donut");

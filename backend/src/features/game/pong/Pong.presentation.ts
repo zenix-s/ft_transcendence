@@ -1,125 +1,382 @@
 import { WebSocket } from '@fastify/websocket';
-import assert from 'node:assert';
-import { FastifyInstance } from 'fastify';
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { GameRepository } from './infrastructure/Game.repository';
+import CreateGameCommand from './application/mediadores/CreateGame.command';
+import JoinGameCommand from './application/mediadores/JoinGame.command';
+import SetPlayerReadyCommand from './application/mediadores/SetPlayerReady.command';
+import GetGameStateQuery from './application/mediadores/GetGameState.query';
 import { PossibleActions, Acciones } from './Pong.types';
-import { Games, PongGame } from './dominio/PongGame';
+import { Result } from '@shared/abstractions/Result';
 
-interface Mensaje {
+interface WebSocketMessage {
     accion: Acciones;
     userId?: string;
     gameId?: string;
 }
 
-function validarMensaje(data: any): data is Mensaje {
-    try {
-        assert.ok(PossibleActions.includes(data.accion));
-        if (data.userId) assert.equal(typeof data.userId, 'string');
-        if (data.gameId) assert.equal(typeof data.gameId, 'string');
+interface JoinGameRequest {
+    Body: {
+        userId?: string;
+    };
+    Params: {
+        gameId: string;
+    };
+}
 
-        return true;
-    } catch (error) {
-        return false;
+interface GameActionRequest {
+    Params: {
+        gameId: string;
+    };
+}
+
+function validateWebSocketMessage(data: unknown): data is WebSocketMessage {
+    if (!data || typeof data !== 'object') return false;
+    const obj = data as Record<string, unknown>;
+    if (!PossibleActions.includes(obj.accion as Acciones)) return false;
+    if (obj.userId !== undefined && typeof obj.userId !== 'string') return false;
+    if (obj.gameId !== undefined && typeof obj.gameId !== 'string') return false;
+    return true;
+}
+
+// Helper function to handle command/query execution and responses
+async function handleCommand<TRequest, TResponse>(
+    commandOrQuery: {
+        validate(request?: TRequest): Result<void>;
+        execute(request?: TRequest): Promise<Result<TResponse>>;
+    },
+    request: TRequest | undefined,
+    reply: FastifyReply,
+    successStatus = 200
+): Promise<FastifyReply> {
+    const validationResult = commandOrQuery.validate(request);
+    if (!validationResult.isSuccess) {
+        return reply.status(400).send({
+            error: {
+                code: validationResult.error?.code,
+                message: validationResult.error?.message,
+            },
+        });
     }
+
+    const result = await commandOrQuery.execute(request);
+    if (!result.isSuccess) {
+        return reply.status(409).send({
+            error: {
+                code: result.error?.code,
+                message: result.error?.message,
+            },
+        });
+    }
+
+    return reply.status(successStatus).send(result.value);
 }
 
 export default async function gameRoutes(fastify: FastifyInstance) {
-    // HTTP
-    fastify.post('/create', async (request, reply) => {
-        const { gameId, game } = PongGame.createGame();
-        Games.set(gameId, game);
-        return reply.send({
-            mensaje: `Juego creado con ID: ${gameId}`,
-            gameId: gameId,
-        });
+    const gameRepository = new GameRepository();
+
+    // Create a new game
+    fastify.post('/create', async (req: FastifyRequest, reply: FastifyReply) => {
+        const createGameCommand = new CreateGameCommand(gameRepository, fastify);
+        return handleCommand(createGameCommand, undefined, reply, 201);
     });
 
-    fastify.post('/join/:gameId', async (request, reply) => {
-        const { gameId } = request.params as { gameId: string };
-        const userId = crypto.randomUUID();
-        const game = Games.get(gameId);
-        if (!game) {
-            return reply.code(404).send({ error: 'Juego no encontrado' });
-        }
-        const added = game.addPlayer(userId);
-        if (!added) {
-            return reply.code(400).send({ error: 'Juego lleno' });
-        }
-        return reply.send({
-            mensaje: `Te has unido al juego ${gameId}`,
-            userId: userId,
-        });
+    // Join a game
+    fastify.post('/join/:gameId', async (req: FastifyRequest<JoinGameRequest>, reply: FastifyReply) => {
+        const { gameId } = req.params;
+        const userId = req.body?.userId;
+        const joinGameCommand = new JoinGameCommand(gameRepository, fastify);
+        return handleCommand(joinGameCommand, { gameId, userId }, reply);
     });
 
-    fastify.post('/start/:gameId', async (request, reply) => {
-        const { gameId } = request.params as { gameId: string };
-        const game = Games.get(gameId);
-        if (!game) {
-            return reply.code(404).send({ error: 'Juego no encontrado' });
-        }
-        game.startGame();
-        return reply.send({
-            mensaje: `Juego ${gameId} empezado`,
-        });
+    // Get game state
+    fastify.get('/state/:gameId', async (req: FastifyRequest<GameActionRequest>, reply: FastifyReply) => {
+        const { gameId } = req.params;
+        const getGameStateQuery = new GetGameStateQuery(gameRepository, fastify);
+        return handleCommand(getGameStateQuery, { gameId }, reply);
     });
 
-    // WebSocket endpoint
+    // WebSocket endpoint for real-time game updates
     fastify.get('/', { websocket: true }, (socket: WebSocket) => {
-        socket.on('message', (message) => {
-            try {
-                const json = JSON.parse(message.toString());
+        let currentGameId: string | null = null;
+        let currentUserId: string | null = null;
 
-                if (!validarMensaje(json)) {
-                    socket.send(JSON.stringify({ error: 'Formato inválido' }));
+        socket.on('message', async (message) => {
+            try {
+                const data = JSON.parse(message.toString());
+
+                if (!validateWebSocketMessage(data)) {
+                    socket.send(
+                        JSON.stringify({
+                            error: 'Invalid message format',
+                            code: 'InvalidFormat',
+                        })
+                    );
                     return;
                 }
 
-                if (json.accion === Acciones.SOLICITAR_ESTADO) {
-                    if (!json.gameId) {
-                        socket.send(JSON.stringify({ error: 'Faltan parámetros' }));
-                        return;
+                const { accion, userId, gameId } = data;
+
+                switch (accion) {
+                    case Acciones.SOLICITAR_ESTADO: {
+                        if (!gameId) {
+                            socket.send(
+                                JSON.stringify({
+                                    error: 'Game ID required',
+                                    code: 'MissingGameId',
+                                })
+                            );
+                            return;
+                        }
+
+                        const gameResult = await gameRepository.getGame(gameId);
+                        if (!gameResult.isSuccess) {
+                            socket.send(
+                                JSON.stringify({
+                                    error: 'Game not found',
+                                    code: 'GameNotFound',
+                                })
+                            );
+                            return;
+                        }
+
+                        currentGameId = gameId;
+                        currentUserId = userId || null;
+
+                        const game = gameResult.value;
+                        if (!game) {
+                            socket.send(
+                                JSON.stringify({
+                                    error: 'Game data not available',
+                                    code: 'GameDataError',
+                                })
+                            );
+                            return;
+                        }
+                        socket.send(
+                            JSON.stringify({
+                                type: 'gameState',
+                                gameId: gameId,
+                                state: game.getGameState(),
+                            })
+                        );
+                        break;
                     }
-                    const game = Games.get(json.gameId);
-                    if (!game) {
-                        socket.send(JSON.stringify({ error: 'Juego no encontrado' }));
-                        return;
+
+                    case Acciones.MOVER_ARRIBA:
+                    case Acciones.MOVER_ABAJO: {
+                        if (!currentGameId || !currentUserId) {
+                            socket.send(
+                                JSON.stringify({
+                                    error: 'Must request game state first',
+                                    code: 'NoActiveGame',
+                                })
+                            );
+                            return;
+                        }
+
+                        const moveGameResult = await gameRepository.getGame(currentGameId);
+                        if (!moveGameResult.isSuccess) {
+                            socket.send(
+                                JSON.stringify({
+                                    error: 'Game not found',
+                                    code: 'GameNotFound',
+                                })
+                            );
+                            return;
+                        }
+
+                        const moveGame = moveGameResult.value;
+                        if (!moveGame) {
+                            socket.send(
+                                JSON.stringify({
+                                    error: 'Game data not available',
+                                    code: 'GameDataError',
+                                })
+                            );
+                            return;
+                        }
+                        const direction = accion === Acciones.MOVER_ARRIBA ? 'up' : 'down';
+                        const moved = moveGame.movePlayer(currentUserId, direction);
+
+                        if (!moved) {
+                            socket.send(
+                                JSON.stringify({
+                                    error: 'Player not in game',
+                                    code: 'PlayerNotInGame',
+                                })
+                            );
+                            return;
+                        }
+
+                        await gameRepository.updateGame(currentGameId, moveGame);
+
+                        socket.send(
+                            JSON.stringify({
+                                type: 'moveConfirmed',
+                                direction: direction,
+                            })
+                        );
+                        break;
                     }
-                    socket.send(
-                        JSON.stringify({
-                            mensaje: `Contador de ${json.gameId}: ${game['contador']}`,
-                        })
-                    );
-                }
 
-                if (json.accion === Acciones.MOVER_ARRIBA) {
-                    socket.send(
-                        JSON.stringify({
-                            mensaje: `Arriba`,
-                        })
-                    );
-                }
+                    case Acciones.INDICAR_LISTO: {
+                        if (!currentGameId || !currentUserId) {
+                            socket.send(
+                                JSON.stringify({
+                                    error: 'Must request game state first',
+                                    code: 'NoActiveGame',
+                                })
+                            );
+                            return;
+                        }
 
-                if (json.accion === Acciones.MOVER_ABAJO) {
-                    socket.send(
-                        JSON.stringify({
-                            mensaje: `Abajo`,
-                        })
-                    );
-                }
+                        const setReadyCommand = new SetPlayerReadyCommand(gameRepository, fastify);
+                        const readyResult = await setReadyCommand.execute({
+                            gameId: currentGameId,
+                            playerId: currentUserId,
+                            isReady: true,
+                        });
 
-                if (json.accion === Acciones.SALIR_JUEGO) {
-                    socket.send(
-                        JSON.stringify({
-                            mensaje: `Salir`,
-                        })
-                    );
-                }
+                        if (!readyResult.isSuccess) {
+                            socket.send(
+                                JSON.stringify({
+                                    error: readyResult.error?.message,
+                                    code: readyResult.error?.code,
+                                })
+                            );
+                            return;
+                        }
 
-                if (!PossibleActions.includes(json.accion)) {
-                    socket.send(JSON.stringify({ error: 'Acción desconocida' }));
+                        socket.send(
+                            JSON.stringify({
+                                type: 'readyConfirmed',
+                                ...readyResult.value,
+                            })
+                        );
+
+                        // If game started, begin the game loop
+                        if (readyResult.value?.gameStarted) {
+                            startGameLoop(currentGameId, gameRepository);
+                        }
+                        break;
+                    }
+
+                    case Acciones.SALIR_JUEGO: {
+                        if (!currentGameId || !currentUserId) {
+                            socket.send(
+                                JSON.stringify({
+                                    type: 'leftGame',
+                                    message: 'No active game to leave',
+                                })
+                            );
+                            return;
+                        }
+
+                        const leaveGameResult = await gameRepository.getGame(currentGameId);
+                        if (leaveGameResult.isSuccess && leaveGameResult.value) {
+                            const leaveGame = leaveGameResult.value;
+                            leaveGame.removePlayer(currentUserId);
+
+                            // Stop the game if a player leaves
+                            if (leaveGame.isGameRunning()) {
+                                leaveGame.stop();
+                            }
+
+                            await gameRepository.updateGame(currentGameId, leaveGame);
+                        }
+
+                        currentGameId = null;
+                        currentUserId = null;
+
+                        socket.send(
+                            JSON.stringify({
+                                type: 'leftGame',
+                                message: 'Successfully left the game',
+                            })
+                        );
+                        break;
+                    }
+
+                    default:
+                        socket.send(
+                            JSON.stringify({
+                                error: 'Unknown action',
+                                code: 'UnknownAction',
+                            })
+                        );
                 }
-            } catch (err) {
-                socket.send(JSON.stringify({ error: 'JSON inválido' }));
+            } catch {
+                socket.send(
+                    JSON.stringify({
+                        error: 'Invalid JSON',
+                        code: 'InvalidJSON',
+                    })
+                );
+            }
+        });
+
+        socket.on('close', async () => {
+            // Clean up when socket closes
+            if (currentGameId && currentUserId) {
+                const gameResult = await gameRepository.getGame(currentGameId);
+                if (gameResult.isSuccess && gameResult.value) {
+                    const game = gameResult.value;
+                    game.removePlayer(currentUserId);
+
+                    if (game.isGameRunning()) {
+                        game.stop();
+                    }
+
+                    await gameRepository.updateGame(currentGameId, game);
+                }
             }
         });
     });
 }
+
+// Game loop management
+const gameLoops = new Map<string, NodeJS.Timeout>();
+
+function startGameLoop(gameId: string, repository: GameRepository) {
+    // Clear any existing loop for this game
+    const existingLoop = gameLoops.get(gameId);
+    if (existingLoop) {
+        clearInterval(existingLoop);
+    }
+
+    const loop = setInterval(async () => {
+        const gameResult = await repository.getGame(gameId);
+        if (!gameResult.isSuccess) {
+            clearInterval(loop);
+            gameLoops.delete(gameId);
+            return;
+        }
+
+        const game = gameResult.value;
+        if (!game) {
+            clearInterval(loop);
+            gameLoops.delete(gameId);
+            return;
+        }
+
+        if (!game.isGameRunning()) {
+            clearInterval(loop);
+            gameLoops.delete(gameId);
+            return;
+        }
+
+        game.update();
+        await repository.updateGame(gameId, game);
+
+        // Optional: Broadcast game state to connected WebSocket clients
+        // This would require maintaining a list of connected sockets per game
+    }, 16); // ~60 FPS
+
+    gameLoops.set(gameId, loop);
+}
+
+// Clean up game loops on server shutdown
+process.on('SIGINT', () => {
+    gameLoops.forEach((loop) => clearInterval(loop));
+    gameLoops.clear();
+});

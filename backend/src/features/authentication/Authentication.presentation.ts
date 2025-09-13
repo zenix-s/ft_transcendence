@@ -53,7 +53,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
         const result = await loginCommand.execute(req.body);
         if (!result.isSuccess) {
-            return reply.status(409).send({
+            return reply.status(401).send({
                 error: {
                     code: result.error?.code,
                     message: result.error?.message,
@@ -88,7 +88,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
                 userId: req.user.id,
             });
             if (!result.isSuccess) {
-                return reply.status(409).send({
+                return reply.status(404).send({
                     error: {
                         code: result.error?.code,
                         message: result.error?.message,

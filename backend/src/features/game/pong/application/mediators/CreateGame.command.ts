@@ -2,13 +2,10 @@ import { FastifyInstance } from 'fastify';
 import { IGameRepository } from '../repositories/Game.IRepository';
 import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
-import { PongGame } from '../../dominio/PongGame';
+import { PongGame } from '../../domain/PongGame';
 import { handleError } from '@shared/utils/error.utils';
 
-export const gameCreationError: ErrorResult = {
-    code: 'gameCreationError',
-    message: 'Failed to create game',
-};
+export const gameCreationError: ErrorResult = 'gameCreationError';
 
 export interface ICreateGameResponse {
     message: string;

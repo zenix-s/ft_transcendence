@@ -1,26 +1,11 @@
 import { ErrorResult } from './abstractions/Result';
 
-export const notFoundError: ErrorResult = {
-    code: '401',
-    message: 'Resource not found',
-};
+export const notFoundError: ErrorResult = '401';
 
-export const badRequestError: ErrorResult = {
-    code: '400',
-    message: 'Bad request',
-};
+export const badRequestError: ErrorResult = '400';
 
-export const unauthorizedError: ErrorResult = {
-    code: '403',
-    message: 'Unauthorized',
-};
+export const unauthorizedError: ErrorResult = '403';
 
-export const conflictError: ErrorResult = {
-    code: '409',
-    message: 'Conflict',
-};
+export const conflictError: ErrorResult = '409';
 
-export const internalServerError: ErrorResult = {
-    code: '500',
-    message: 'Internal server error',
-};
+export const internalServerError: ErrorResult = '500';

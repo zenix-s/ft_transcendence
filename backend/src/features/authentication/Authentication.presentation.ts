@@ -17,20 +17,14 @@ export default async function authRoutes(fastify: FastifyInstance) {
             const validationResult = createUserCommand.validate(req.body);
             if (!validationResult.isSuccess) {
                 return reply.status(400).send({
-                    error: {
-                        code: validationResult.error?.code,
-                        message: validationResult.error?.message,
-                    },
+                    error: validationResult.error,
                 });
             }
 
             const result = await createUserCommand.execute(req.body);
             if (!result.isSuccess) {
                 return reply.status(409).send({
-                    error: {
-                        code: result.error?.code,
-                        message: result.error?.message,
-                    },
+                    error: result.error,
                 });
             }
 
@@ -44,20 +38,14 @@ export default async function authRoutes(fastify: FastifyInstance) {
         const validationResult = loginCommand.validate(req.body);
         if (!validationResult.isSuccess) {
             return reply.status(400).send({
-                error: {
-                    code: validationResult.error?.code,
-                    message: validationResult.error?.message,
-                },
+                error: validationResult.error,
             });
         }
 
         const result = await loginCommand.execute(req.body);
         if (!result.isSuccess) {
             return reply.status(401).send({
-                error: {
-                    code: result.error?.code,
-                    message: result.error?.message,
-                },
+                error: result.error,
             });
         }
 
@@ -77,10 +65,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
             });
             if (!validationResult.isSuccess) {
                 return reply.status(400).send({
-                    error: {
-                        code: validationResult.error?.code,
-                        message: validationResult.error?.message,
-                    },
+                    error: validationResult.error,
                 });
             }
 
@@ -89,10 +74,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
             });
             if (!result.isSuccess) {
                 return reply.status(404).send({
-                    error: {
-                        code: result.error?.code,
-                        message: result.error?.message,
-                    },
+                    error: result.error,
                 });
             }
 

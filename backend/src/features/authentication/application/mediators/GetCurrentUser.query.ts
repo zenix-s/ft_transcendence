@@ -6,15 +6,9 @@ import { handleError } from '@shared/utils/error.utils';
 import { User } from '@shared/domain/entity/User.entity';
 import { badRequestError } from '@shared/Errors';
 
-const userNotFoundError: ErrorResult = {
-    code: 'userNotFoundError',
-    message: 'User not found',
-};
+const userNotFoundError: ErrorResult = 'userNotFoundError';
 
-const invalidRequestError: ErrorResult = {
-    code: 'invalidRequestError',
-    message: 'Valid user ID is required',
-};
+const invalidRequestError: ErrorResult = 'invalidRequestError';
 
 export interface IGetCurrentUserRequest {
     userId: number;

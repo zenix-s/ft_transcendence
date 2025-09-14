@@ -11,7 +11,7 @@ export class PongPlayer {
     constructor(playerId: string) {
         this.playerId = playerId;
         this.state = {
-            position: 50, // Center position
+            position: 50,
             score: 0,
             isReady: false,
         };
@@ -86,24 +86,12 @@ export class PongGame {
         return false;
     }
 
-    public removePlayer(playerId: string): boolean {
-        if (this.player1?.getId() === playerId) {
-            this.player1 = undefined;
-            return true;
-        } else if (this.player2?.getId() === playerId) {
-            this.player2 = undefined;
-            return true;
-        }
-        return false;
-    }
-
     public setPlayerReady(playerId: string, ready: boolean): boolean {
         const player = this.getPlayerById(playerId);
         if (!player) return false;
 
         player.setReady(ready);
 
-        // Auto-start the game if both players are ready
         if (this.arePlayersReady() && !this.isRunning) {
             this.start();
         }
@@ -149,13 +137,11 @@ export class PongGame {
         this.ball.position.x += this.ball.velocity.x * deltaTime * 60;
         this.ball.position.y += this.ball.velocity.y * deltaTime * 60;
 
-        // Bounce off top and bottom walls
         if (this.ball.position.y <= 0 || this.ball.position.y >= 100) {
             this.ball.velocity.y = -this.ball.velocity.y;
             this.ball.position.y = Math.max(0, Math.min(100, this.ball.position.y));
         }
 
-        // Check for scoring
         if (this.ball.position.x <= 0) {
             this.player2?.incrementScore();
             this.resetBall();
@@ -171,7 +157,6 @@ export class PongGame {
         const player1State = this.player1.getState();
         const player2State = this.player2.getState();
 
-        // Player 1 paddle collision (left side)
         if (this.ball.position.x <= 5 && this.ball.position.x >= 0) {
             if (Math.abs(this.ball.position.y - player1State.position) <= 10) {
                 this.ball.velocity.x = Math.abs(this.ball.velocity.x);
@@ -179,7 +164,6 @@ export class PongGame {
             }
         }
 
-        // Player 2 paddle collision (right side)
         if (this.ball.position.x >= 95 && this.ball.position.x <= 100) {
             if (Math.abs(this.ball.position.y - player2State.position) <= 10) {
                 this.ball.velocity.x = -Math.abs(this.ball.velocity.x);

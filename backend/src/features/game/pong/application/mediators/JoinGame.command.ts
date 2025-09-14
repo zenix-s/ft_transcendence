@@ -5,20 +5,11 @@ import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { handleError } from '@shared/utils/error.utils';
 import { badRequestError } from '@shared/Errors';
 
-export const gameNotFoundError: ErrorResult = {
-    code: 'gameNotFoundError',
-    message: 'Game not found',
-};
+export const gameNotFoundError: ErrorResult = 'gameNotFoundError';
 
-export const gameFullError: ErrorResult = {
-    code: 'gameFullError',
-    message: 'Game is already full',
-};
+export const gameFullError: ErrorResult = 'gameFullError';
 
-export const invalidRequestError: ErrorResult = {
-    code: 'invalidRequestError',
-    message: 'Game ID is required',
-};
+export const invalidRequestError: ErrorResult = 'invalidRequestError';
 
 export interface IJoinGameRequest {
     gameId: string;
@@ -84,10 +75,7 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
             // Update the game in the repository
             const updateResult = await this.gameRepository.updateGame(gameId, game);
             if (!updateResult.isSuccess) {
-                return Result.error({
-                    code: 'gameUpdateError',
-                    message: 'Failed to update game',
-                });
+                return Result.error('gameUpdateError');
             }
 
             return Result.success({

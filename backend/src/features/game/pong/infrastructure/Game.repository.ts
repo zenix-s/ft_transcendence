@@ -1,16 +1,10 @@
 import { Result, ErrorResult } from '@shared/abstractions/Result';
 import { IGameRepository } from '../application/repositories/Game.IRepository';
-import { PongGame } from '../dominio/PongGame';
+import { PongGame } from '../domain/PongGame';
 
-const gameNotFoundError: ErrorResult = {
-    code: 'GameNotFound',
-    message: 'Game not found',
-};
+const gameNotFoundError: ErrorResult = 'GameNotFound';
 
-const gameCreationError: ErrorResult = {
-    code: 'GameCreationError',
-    message: 'Failed to create game',
-};
+const gameCreationError: ErrorResult = 'GameCreationError';
 
 export class GameRepository implements IGameRepository {
     private games: Map<string, PongGame>;

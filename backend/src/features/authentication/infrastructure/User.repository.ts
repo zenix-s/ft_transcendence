@@ -6,10 +6,7 @@ import {
 } from '../application/repositories/User.IRepository';
 import { IConnection } from '@shared/infrastructure/db/IConnection.interface';
 
-const userNotFoundError: ErrorResult = {
-    code: 'UserNotFound',
-    message: 'User not found',
-};
+const userNotFoundError: ErrorResult = 'UserNotFound';
 
 export class UserRepository implements IUserRepository {
     constructor(private readonly connection: IConnection) {}

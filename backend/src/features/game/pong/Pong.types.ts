@@ -1,15 +1,13 @@
-export enum Acciones {
-    SOLICITAR_ESTADO,
-    MOVER_ARRIBA,
-    MOVER_ABAJO,
-    SALIR_JUEGO,
-    INDICAR_LISTO,
+export enum Actions {
+    REQUEST_STATE,
+    MOVE_UP,
+    MOVE_DOWN,
+    SET_READY,
 }
 
-export const PossibleActions: Acciones[] = [
-    Acciones.SOLICITAR_ESTADO,
-    Acciones.MOVER_ARRIBA,
-    Acciones.MOVER_ABAJO,
-    Acciones.SALIR_JUEGO,
-    Acciones.INDICAR_LISTO,
+export const PossibleActions: Actions[] = [
+    Actions.REQUEST_STATE,
+    Actions.MOVE_UP,
+    Actions.MOVE_DOWN,
+    Actions.SET_READY,
 ];

@@ -6,20 +6,11 @@ import { hashPassword } from '@shared/utils/password.utils';
 import { handleError } from '@shared/utils/error.utils';
 import { badRequestError } from '@shared/Errors';
 
-export const userNotFoundError: ErrorResult = {
-    code: 'userNotFoundError',
-    message: 'User not found',
-};
+export const userNotFoundError: ErrorResult = 'userNotFoundError';
 
-export const userAlredyExistsError: ErrorResult = {
-    code: 'userAlredyExistsError',
-    message: 'User with this email already exists',
-};
+export const userAlredyExistsError: ErrorResult = 'userAlredyExistsError';
 
-export const userCreationError: ErrorResult = {
-    code: 'userCreationError',
-    message: 'User creation failed',
-};
+export const userCreationError: ErrorResult = 'userCreationError';
 
 export interface IRegisterRequest {
     username: string;
@@ -38,13 +29,8 @@ export interface IAuthResponse {
 }
 
 export default class CreateUserCommand implements ICommand<IRegisterRequest, IAuthResponse> {
-    private invalidRequestError = (error: string): ErrorResult => {
-        const errorResult: ErrorResult = {
-            code: '400',
-            message: error,
-        };
-
-        return errorResult;
+    private invalidRequestError = (): ErrorResult => {
+        return '400';
     };
 
     constructor(
@@ -66,7 +52,7 @@ export default class CreateUserCommand implements ICommand<IRegisterRequest, IAu
         if (!password) error += 'Password is required. ';
 
         if (error) {
-            return Result.error(this.invalidRequestError(error.trim()));
+            return Result.error(this.invalidRequestError());
         }
 
         return Result.success(undefined);

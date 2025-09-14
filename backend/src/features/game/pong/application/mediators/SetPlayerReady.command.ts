@@ -5,20 +5,11 @@ import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { handleError } from '@shared/utils/error.utils';
 import { badRequestError } from '@shared/Errors';
 
-export const gameNotFoundError: ErrorResult = {
-    code: 'gameNotFoundError',
-    message: 'Game not found',
-};
+export const gameNotFoundError: ErrorResult = 'gameNotFoundError';
 
-export const playerNotInGameError: ErrorResult = {
-    code: 'playerNotInGameError',
-    message: 'Player is not in this game',
-};
+export const playerNotInGameError: ErrorResult = 'playerNotInGameError';
 
-export const invalidRequestError: ErrorResult = {
-    code: 'invalidRequestError',
-    message: 'Game ID and player ID are required',
-};
+export const invalidRequestError: ErrorResult = 'invalidRequestError';
 
 export interface ISetPlayerReadyRequest {
     gameId: string;
@@ -34,7 +25,9 @@ export interface ISetPlayerReadyResponse {
     gameStarted: boolean;
 }
 
-export default class SetPlayerReadyCommand implements ICommand<ISetPlayerReadyRequest, ISetPlayerReadyResponse> {
+export default class SetPlayerReadyCommand
+    implements ICommand<ISetPlayerReadyRequest, ISetPlayerReadyResponse>
+{
     constructor(
         private readonly gameRepository: IGameRepository,
         private readonly fastify: FastifyInstance
@@ -50,10 +43,7 @@ export default class SetPlayerReadyCommand implements ICommand<ISetPlayerReadyRe
         }
 
         if (typeof request.isReady !== 'boolean') {
-            return Result.error({
-                code: 'invalidRequestError',
-                message: 'isReady must be a boolean',
-            });
+            return Result.error('invalidRequestError');
         }
 
         return Result.success(undefined);
@@ -82,10 +72,7 @@ export default class SetPlayerReadyCommand implements ICommand<ISetPlayerReadyRe
             // Update the game in the repository
             const updateResult = await this.gameRepository.updateGame(gameId, game);
             if (!updateResult.isSuccess) {
-                return Result.error({
-                    code: 'gameUpdateError',
-                    message: 'Failed to update game',
-                });
+                return Result.error('gameUpdateError');
             }
 
             // Check if game started automatically
@@ -103,7 +90,12 @@ export default class SetPlayerReadyCommand implements ICommand<ISetPlayerReadyRe
                 gameStarted: gameStarted,
             });
         } catch (error) {
-            return handleError<ISetPlayerReadyResponse>(error, 'Failed to set player ready status', this.fastify.log, '500');
+            return handleError<ISetPlayerReadyResponse>(
+                error,
+                'Failed to set player ready status',
+                this.fastify.log,
+                '500'
+            );
         }
     }
 }

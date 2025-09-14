@@ -1,5 +1,5 @@
 import { Result } from '@shared/abstractions/Result';
-import { PongGame } from '../../dominio/PongGame';
+import { PongGame } from '../../domain/PongGame';
 
 export interface IGameRepository {
     createGame(game: PongGame): Promise<Result<string>>;

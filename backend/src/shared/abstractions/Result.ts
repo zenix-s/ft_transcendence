@@ -13,8 +13,8 @@ export class Result<T> {
         return new Result<U>(true, undefined, value);
     }
 
-    public static failure<U>(code: string, message: string): Result<U> {
-        return new Result<U>(false, { code, message });
+    public static failure<U>(code: string): Result<U> {
+        return new Result<U>(false, code);
     }
 
     public static error<U>(error: ErrorResult): Result<U> {
@@ -22,7 +22,4 @@ export class Result<T> {
     }
 }
 
-export interface ErrorResult {
-    code: string;
-    message: string;
-}
+export type ErrorResult = string;

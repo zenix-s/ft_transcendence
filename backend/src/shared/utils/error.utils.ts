@@ -7,10 +7,5 @@ export interface ILogger {
 export function handleError<T>(error: unknown, context: string, logger: ILogger, code: string): Result<T> {
     logger.error(error);
 
-    const errorMessage =
-        process.env.NODE_ENV === 'development'
-            ? `${context}: ${error instanceof Error ? error.message : 'Unknown error'}`
-            : 'Internal server error';
-
-    return Result.failure(code, errorMessage);
+    return Result.failure(code);
 }

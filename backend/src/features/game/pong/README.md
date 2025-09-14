@@ -15,7 +15,7 @@ The Pong game feature has been refactored to follow a clean architecture pattern
 
 ## Architecture Components
 
-### 1. Domain Layer (`/dominio`)
+### 1. Domain Layer (`/domain`)
 
 - **PongGame.ts**: Pure domain entity representing a pong game
   - No infrastructure dependencies
@@ -105,11 +105,10 @@ The Pong game feature has been refactored to follow a clean architecture pattern
 
 ### WebSocket Actions
 
-- `SOLICITAR_ESTADO` - Subscribe to game state updates
-- `INDICAR_LISTO` - Indicate player is ready to start
-- `MOVER_ARRIBA` - Move paddle up
-- `MOVER_ABAJO` - Move paddle down
-- `SALIR_JUEGO` - Leave the current game
+- `REQUEST_STATE` - Subscribe to game state updates
+- `SET_READY` - Indicate player is ready to start
+- `MOVE_UP` - Move paddle up
+- `MOVE_DOWN` - Move paddle down
 
 ## Extension Points
 

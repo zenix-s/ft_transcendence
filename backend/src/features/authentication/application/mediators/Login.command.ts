@@ -6,15 +6,9 @@ import { FastifyInstance } from 'fastify';
 import { handleError } from '@shared/utils/error.utils';
 import { badRequestError } from '@shared/Errors';
 
-const invalidCredentialsError: ErrorResult = {
-    code: 'invalidCredentialsError',
-    message: 'Invalid email or password',
-};
+const invalidCredentialsError: ErrorResult = 'invalidCredentialsError';
 
-const invalidRequestError: ErrorResult = {
-    code: 'invalidRequestError',
-    message: 'Email and password are required',
-};
+const invalidRequestError: ErrorResult = 'invalidRequestError';
 
 interface IAuthResponse {
     message: string;

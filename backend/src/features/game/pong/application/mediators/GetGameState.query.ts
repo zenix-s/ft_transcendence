@@ -5,15 +5,9 @@ import { IQuery } from '@shared/application/abstractions/IQuery.interface';
 import { handleError } from '@shared/utils/error.utils';
 import { badRequestError } from '@shared/Errors';
 
-export const gameNotFoundError: ErrorResult = {
-    code: 'gameNotFoundError',
-    message: 'Game not found',
-};
+export const gameNotFoundError: ErrorResult = 'gameNotFoundError';
 
-export const invalidRequestError: ErrorResult = {
-    code: 'invalidRequestError',
-    message: 'Game ID is required',
-};
+export const invalidRequestError: ErrorResult = 'invalidRequestError';
 
 export interface IGetGameStateRequest {
     gameId: string;

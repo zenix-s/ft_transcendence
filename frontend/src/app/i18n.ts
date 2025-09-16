@@ -16,6 +16,8 @@ export const translations: Record<Language, Record<string, string>> = {
     Email: "Email",
     Repeat_Password: "Repeat Password",
     score: "SCORE",
+    played_games: "games",
+    logout: "logout",
   },
   es: {
     start: "Comenzar",
@@ -31,6 +33,8 @@ export const translations: Record<Language, Record<string, string>> = {
     Email: "Email",
     Repeat_Password: "Repetir Contraseña",
     score: "PUNTOS",
+    played_games: "partidas",
+    logout: "cerrar sesión",
   },
   fr: {
     start: "Démarrer",
@@ -46,6 +50,8 @@ export const translations: Record<Language, Record<string, string>> = {
     Email: "Email",
     Repeat_Password: "Répéter le mot de passe",
     score: "POINTS",
+    played_games: "jeux",
+    logout: "se déconnecter",
   },
 };
 

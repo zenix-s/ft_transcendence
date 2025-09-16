@@ -16,6 +16,12 @@ export function setupEventListeners() {
     if (target.dataset.page === "login") {
       loadUsers();
     }
+
+    if (target.dataset.page === "logout") {
+      localStorage.removeItem("access_token");
+      console.log("Token eliminado");
+      navigateTo("login");
+    }
   });
 
  /*  window.addEventListener("popstate", () => {

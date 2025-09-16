@@ -2,7 +2,7 @@
 /* Login, register y validaciones → Aquí irían las funciones relacionadas con autenticación. */
 /*********************************************************************************************/
 
-import { fetchUserByUsername, fetchUserByEmail } from "@/modules/users";
+// import { fetchUserByUsername, fetchUserByEmail } from "@/modules/users";
 import { navigateTo } from "@/app/navigation";
 
 /* REGISTER NEW USER */
@@ -43,8 +43,11 @@ export function setupRegisterForm() {
           return;
         }
 
+        // Eliminar token anterior
+        // localStorage.removeItem("access_token");
+
         // ✅ Guardar el token recibido
-        localStorage.setItem("access_token", data.access_token);
+        localStorage.setItem("access_token", data.token);
 
         alert("Usuario creado correctamente");
         //console.log(`password send = "${password}"`); // DB
@@ -88,12 +91,14 @@ export function validateLogin() {
         const data = await response.json();
 
         if (!response.ok) {
-          alert(data.error || "Credenciales incorrectas");
+          const errorMsg = data.error?.message || data.message || "Credenciales incorrectas";
+          alert(errorMsg);
           return;
         }
 
         // ✅ Guardar el token recibido
-        localStorage.setItem("access_token", data.access_token);
+        console.log("Respuesta completa del login:", data); // DB
+        localStorage.setItem("access_token", data.token);
 
         alert(`Bienvenido!`);
         navigateTo("dashboard");
@@ -106,54 +111,40 @@ export function validateLogin() {
   }, 100);
 }
 
-/* export function validateLogin() {
-  setTimeout(() => {
-	const forms = document.querySelectorAll("form");
-	const loginForm = forms[0];
-	if (!loginForm) return;
+/* GET USER */
+export async function getCurrentUser() {
+  const token = localStorage.getItem("access_token");
 
-	loginForm.addEventListener("submit", async (e) => {
-	  e.preventDefault();
-	  const formData = new FormData(loginForm);
-	  const name_email = formData.get("user-email") as string;
-	  const password = formData.get("password") as string;
+  if (!token) {
+    console.warn("No token found. User probably not logged in.");
+    alert("No token found. User probably not logged in.");
+    navigateTo("login");
+    return null;
+  }
 
-	  if (!name_email || !password) {
-		alert("Por favor, rellena todos los campos.");
-		return;
-	  }
+  console.log("HOLA!!"); // DB
+  console.log("Token actual:", token); // DB
+  try {
+    const response = await fetch("/api/auth/me", {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+      },
+    });
 
-	  try {
-		// Primero intentamos buscar por username
-		let user = await fetchUserByUsername(name_email);
+    console.log("Respuesta cruda:", response);
+    if (response.status === 401) {
+      // Token expirado o inválido
+      alert("Sesión expirada o inválida. Por favor, inicia sesión nuevamente.");
+      localStorage.removeItem("access_token");
+      navigateTo("login");
+      return null;
+    }
 
-		 // Si no existe por username, probamos por email
-		if (!user) {
-		  user = await fetchUserByEmail(name_email);
-		}
-
-		if (!user) {
-		  alert("Usuario o email no encontrado.");
-		  return;
-		}
-
-		 // ⚠️ Ojo: esto es provisional (password en claro)
-		if (user.password !== password) {
-		  alert("Contraseña incorrecta.");
-		  return;
-		}
-
-		 // Si pasa todo → login OK
-		alert(`Bienvenido ${user.username}!`);
-
-		// Aquí podrías guardar en localStorage, redirigir, etc.
-		// localStorage.setItem("user", JSON.stringify(user));
-		navigateTo("dashboard");
-
-	  } catch (err) {
-		console.error("Error en login:", err);
-		alert("Error al intentar iniciar sesión.");
-	  }
-	});
-  }, 100);
-} */
+    const result = await response.json();
+    console.log("Contenido devuelto:", result); // DB
+    return result;
+  } catch (err) {
+    console.error("Error al obtener el perfil:", err);
+    return null;
+  }
+}

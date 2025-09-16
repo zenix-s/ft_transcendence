@@ -35,14 +35,24 @@ export function setupRegisterForm() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, email, password }),
         });
+
         const data = await response.json();
+
         if (!response.ok) {
           alert(data.error?.message || "Error al crear usuario");
-        } else {
-          alert("Usuario creado correctamente");
-          console.log(`password send = "${password}"`); // DB
-          registerForm.reset();
+          return;
         }
+
+        // ✅ Guardar el token recibido
+        localStorage.setItem("access_token", data.access_token);
+
+        alert("Usuario creado correctamente");
+        //console.log(`password send = "${password}"`); // DB
+        registerForm.reset();
+
+        // Redirigir al dashboard
+        navigateTo("dashboard");
+
       } catch (err) {
         alert("Error de red o servidor");
       }
@@ -52,6 +62,51 @@ export function setupRegisterForm() {
 
 /* LOG-IN */
 export function validateLogin() {
+  setTimeout(() => {
+    const forms = document.querySelectorAll("form");
+    const loginForm = forms[0];
+    if (!loginForm) return;
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(loginForm);
+      const email = formData.get("email") as string;
+      const password = formData.get("password") as string;
+
+      if (!email || !password) {
+      alert("Por favor, rellena todos los campos.");
+      return;
+      }
+
+       try {
+        const response = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          alert(data.error || "Credenciales incorrectas");
+          return;
+        }
+
+        // ✅ Guardar el token recibido
+        localStorage.setItem("access_token", data.access_token);
+
+        alert(`Bienvenido!`);
+        navigateTo("dashboard");
+
+      } catch (err) {
+        console.error("Error en login:", err);
+        alert("Error al intentar iniciar sesión.");
+      }
+    });
+  }, 100);
+}
+
+/* export function validateLogin() {
   setTimeout(() => {
 	const forms = document.querySelectorAll("form");
 	const loginForm = forms[0];
@@ -101,4 +156,4 @@ export function validateLogin() {
 	  }
 	});
   }, 100);
-}
+} */

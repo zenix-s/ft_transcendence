@@ -8,20 +8,32 @@ import { loadUsers } from "@/modules/users";
 export function setupEventListeners() {
   document.addEventListener("click", (event) => {
     const target = event.target as HTMLElement;
+
+    // 🔹 1. Caso especial: LOGOUT
+    if (target.dataset.page === "logout") {
+      event.preventDefault(); // Frena navegación automática
+      const confirmed = confirm("Are you sure you want to logout?");
+      if (!confirmed) return;
+
+      localStorage.removeItem("access_token");
+      console.log("Token eliminado");
+      navigateTo("login");
+      return; // Muy importante: evita seguir ejecutando el resto del handler
+    }
+
+    // 🔹 2. Caso LOGIN
+    if (target.dataset.page === "login") {
+      loadUsers();
+      navigateTo("login");
+      return;
+    }
+
+    // 🔹 3. Navegación genérica
     if (target.dataset.page) {
       event.preventDefault();
       navigateTo(target.dataset.page!);
     }
 
-    if (target.dataset.page === "login") {
-      loadUsers();
-    }
-
-    if (target.dataset.page === "logout") {
-      localStorage.removeItem("access_token");
-      console.log("Token eliminado");
-      navigateTo("login");
-    }
   });
 
  /*  window.addEventListener("popstate", () => {

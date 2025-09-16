@@ -27,7 +27,7 @@ import { setLanguage, t, currentLang } from "@/app/i18n";
 (window as any).loadUserForCode = loadUserForCode;
 (window as any).GlitchButton = GlitchButton;
 
-console.log("✅ main.ts cargado");
+// console.log("✅ main.ts cargado"); // DB
 
 // Detectar la página inicial según la URL actual
 const initialPage = location.pathname.replace("/", "") || "home";
@@ -50,11 +50,11 @@ window.addEventListener("popstate", handlePopState);
 // ====================
 const toggle = document.getElementById("dark_mode_toggle");
 
-console.log("🔍 toggle encontrado:", toggle);
+// console.log("🔍 toggle encontrado:", toggle); // DB
 
 if (toggle) {
   toggle.addEventListener("click", () => {
-    console.log("👉 Botón clicado!");
+    // console.log("👉 Botón clicado!"); // DB
     document.documentElement.classList.toggle("dark");
 
     // Guardar preferencia

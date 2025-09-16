@@ -1,5 +1,6 @@
 import { navigateTo } from "@/app/navigation";
 import { loadUsers } from "@/modules/users";
+import { t } from "@/app/i18n";
 
 /**
  * The `setupEventListeners` function adds event listeners for click and popstate events to handle
@@ -12,11 +13,11 @@ export function setupEventListeners() {
     // 🔹 1. Caso especial: LOGOUT
     if (target.dataset.page === "logout") {
       event.preventDefault(); // Frena navegación automática
-      const confirmed = confirm("Are you sure you want to logout?");
+      const confirmed = confirm(t("logout_confirm"));
       if (!confirmed) return;
 
       localStorage.removeItem("access_token");
-      console.log("Token eliminado");
+      console.log(t("token_removed")); // 
       navigateTo("login");
       return; // Muy importante: evita seguir ejecutando el resto del handler
     }

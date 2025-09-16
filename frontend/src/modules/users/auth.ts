@@ -4,6 +4,7 @@
 
 // import { fetchUserByUsername, fetchUserByEmail } from "@/modules/users";
 import { navigateTo } from "@/app/navigation";
+import { t } from "@/app/i18n";
 
 /* REGISTER NEW USER */
 export function setupRegisterForm() {
@@ -21,11 +22,11 @@ export function setupRegisterForm() {
       const repeatPassword = formData.get("repeat_password") as string;
 
       if (!username || !email || !password || !repeatPassword) {
-        alert("Por favor, rellena todos los campos.");
+        alert(t("fillAllFields"));
         return;
       }
       if (password !== repeatPassword) {
-        alert("Las contraseñas no coinciden.");
+        alert(t("passwordDoNotMatch"));
         return;
       }
 
@@ -39,17 +40,15 @@ export function setupRegisterForm() {
         const data = await response.json();
 
         if (!response.ok) {
-          alert(data.error?.message || "Error al crear usuario");
+          const errorcode = data.error?.code || data.code || "ErrorCreatingUser";
+          alert(t(errorcode));
           return;
         }
-
-        // Eliminar token anterior
-        // localStorage.removeItem("access_token");
 
         // ✅ Guardar el token recibido
         localStorage.setItem("access_token", data.token);
 
-        alert("Usuario creado correctamente");
+        alert(t("UserCreatedSuccessfully"));
         //console.log(`password send = "${password}"`); // DB
         registerForm.reset();
 
@@ -57,7 +56,7 @@ export function setupRegisterForm() {
         navigateTo("dashboard");
 
       } catch (err) {
-        alert("Error de red o servidor");
+        alert(t("NetworkOrServerError"));
       }
     });
   }, 100); // Espera breve para asegurar que el HTML está en el DOM
@@ -77,7 +76,7 @@ export function validateLogin() {
       const password = formData.get("password") as string;
 
       if (!email || !password) {
-      alert("Por favor, rellena todos los campos.");
+      alert(t("fillAllFields"));
       return;
       }
 
@@ -91,21 +90,23 @@ export function validateLogin() {
         const data = await response.json();
 
         if (!response.ok) {
-          const errorMsg = data.error?.message || data.message || "Credenciales incorrectas";
-          alert(errorMsg);
+          const errorcode = data.error?.code || data.code || "invalidCredentialsError";
+          //const errorMsg = data.error?.message || data.message || "Credenciales incorrectas";
+          //alert(errorMsg);
+          alert(t(errorcode));
           return;
         }
 
         // ✅ Guardar el token recibido
-        console.log("Respuesta completa del login:", data); // DB
+        //console.log("Respuesta completa del login:", data); // DB
         localStorage.setItem("access_token", data.token);
 
-        alert(`Bienvenido!`);
+        alert(t("welcome"));
         navigateTo("dashboard");
 
       } catch (err) {
-        console.error("Error en login:", err);
-        alert("Error al intentar iniciar sesión.");
+        console.error("Login error:", err);
+        alert(t("ErrorTryingToLogIn"));
       }
     });
   }, 100);
@@ -116,14 +117,13 @@ export async function getCurrentUser() {
   const token = localStorage.getItem("access_token");
 
   if (!token) {
-    console.warn("No token found. User probably not logged in.");
-    alert("No token found. User probably not logged in.");
+    console.warn(t("NoTokenFound"));
+    alert(t("NoTokenFound"));
     navigateTo("login");
     return null;
   }
 
-  console.log("HOLA!!"); // DB
-  console.log("Token actual:", token); // DB
+  //console.log("Token actual:", token); // DB
   try {
     const response = await fetch("/api/auth/me", {
       headers: {
@@ -131,20 +131,20 @@ export async function getCurrentUser() {
       },
     });
 
-    console.log("Respuesta cruda:", response);
+    //console.log("Respuesta cruda:", response); // DB
     if (response.status === 401) {
       // Token expirado o inválido
-      alert("Sesión expirada o inválida. Por favor, inicia sesión nuevamente.");
+      alert(t("SessionExpiredOrInvalid"));
       localStorage.removeItem("access_token");
       navigateTo("login");
       return null;
     }
 
     const result = await response.json();
-    console.log("Contenido devuelto:", result); // DB
+    // console.log("Contenido devuelto:", result); // DB
     return result;
   } catch (err) {
-    console.error("Error al obtener el perfil:", err);
+    console.error(t("ErrorRetrievingProfile"), err);
     return null;
   }
 }

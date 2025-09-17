@@ -1,4 +1,4 @@
-import {loadUsers, setupRegisterForm, validateLogin } from "@/modules/users";
+import {loadUsers, setupRegisterForm, validateLogin, loadDashboard } from "@/modules/users";
 import { renderButtons } from "@/app/main";
 import { updateTexts } from "@/app/i18n";
 import { loadChart } from "@/components/graph"
@@ -41,7 +41,12 @@ export async function navigateTo(page: string, skipPushState = false) {
     setupRegisterForm();
   }
   if (page === "dashboard") {
-    loadChart();
+    // Esperar al siguiente ciclo para asegurar que el DOM ya está disponible
+    requestAnimationFrame(() => {
+      loadDashboard();
+      loadChart();
+      renderButtons();
+    });
   }
 
   // Actualizar los textos al cambiar de página

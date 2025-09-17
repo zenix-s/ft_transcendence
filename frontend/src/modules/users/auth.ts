@@ -2,8 +2,9 @@
 /* Login, register y validaciones → Aquí irían las funciones relacionadas con autenticación. */
 /*********************************************************************************************/
 
-import { fetchUserByUsername, fetchUserByEmail } from "@/modules/users";
+// import { fetchUserByUsername, fetchUserByEmail } from "@/modules/users";
 import { navigateTo } from "@/app/navigation";
+import { t } from "@/app/i18n";
 
 /* REGISTER NEW USER */
 export function setupRegisterForm() {
@@ -21,30 +22,41 @@ export function setupRegisterForm() {
       const repeatPassword = formData.get("repeat_password") as string;
 
       if (!username || !email || !password || !repeatPassword) {
-        alert("Por favor, rellena todos los campos.");
+        alert(t("fillAllFields"));
         return;
       }
       if (password !== repeatPassword) {
-        alert("Las contraseñas no coinciden.");
+        alert(t("passwordDoNotMatch"));
         return;
       }
 
       try {
-        const response = await fetch("/api/users", {
+        const response = await fetch("/api/auth/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, email, password }),
         });
+
         const data = await response.json();
+
         if (!response.ok) {
-          alert(data.error?.message || "Error al crear usuario");
-        } else {
-          alert("Usuario creado correctamente");
-          console.log(`password send = "${password}"`); // DB
-          registerForm.reset();
+          const errorcode = data.error?.code || data.code || "ErrorCreatingUser";
+          alert(t(errorcode));
+          return;
         }
+
+        // ✅ Guardar el token recibido
+        localStorage.setItem("access_token", data.token);
+
+        alert(t("UserCreatedSuccessfully"));
+        //console.log(`password send = "${password}"`); // DB
+        registerForm.reset();
+
+        // Redirigir al dashboard
+        navigateTo("dashboard");
+
       } catch (err) {
-        alert("Error de red o servidor");
+        alert(t("NetworkOrServerError"));
       }
     });
   }, 100); // Espera breve para asegurar que el HTML está en el DOM
@@ -53,52 +65,86 @@ export function setupRegisterForm() {
 /* LOG-IN */
 export function validateLogin() {
   setTimeout(() => {
-	const forms = document.querySelectorAll("form");
-	const loginForm = forms[0];
-	if (!loginForm) return;
+    const forms = document.querySelectorAll("form");
+    const loginForm = forms[0];
+    if (!loginForm) return;
 
-	loginForm.addEventListener("submit", async (e) => {
-	  e.preventDefault();
-	  const formData = new FormData(loginForm);
-	  const name_email = formData.get("user-email") as string;
-	  const password = formData.get("password") as string;
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(loginForm);
+      const email = formData.get("email") as string;
+      const password = formData.get("password") as string;
 
-	  if (!name_email || !password) {
-		alert("Por favor, rellena todos los campos.");
-		return;
-	  }
+      if (!email || !password) {
+      alert(t("fillAllFields"));
+      return;
+      }
 
-	  try {
-		// Primero intentamos buscar por username
-		let user = await fetchUserByUsername(name_email);
+       try {
+        const response = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
 
-		 // Si no existe por username, probamos por email
-		if (!user) {
-		  user = await fetchUserByEmail(name_email);
-		}
+        const data = await response.json();
 
-		if (!user) {
-		  alert("Usuario o email no encontrado.");
-		  return;
-		}
+        if (!response.ok) {
+          const errorcode = data.error?.code || data.code || "invalidCredentialsError";
+          //const errorMsg = data.error?.message || data.message || "Credenciales incorrectas";
+          //alert(errorMsg);
+          alert(t(errorcode));
+          return;
+        }
 
-		 // ⚠️ Ojo: esto es provisional (password en claro)
-		if (user.password !== password) {
-		  alert("Contraseña incorrecta.");
-		  return;
-		}
+        // ✅ Guardar el token recibido
+        //console.log("Respuesta completa del login:", data); // DB
+        localStorage.setItem("access_token", data.token);
 
-		 // Si pasa todo → login OK
-		alert(`Bienvenido ${user.username}!`);
+        alert(t("welcome"));
+        navigateTo("dashboard");
 
-		// Aquí podrías guardar en localStorage, redirigir, etc.
-		// localStorage.setItem("user", JSON.stringify(user));
-		navigateTo("dashboard");
-
-	  } catch (err) {
-		console.error("Error en login:", err);
-		alert("Error al intentar iniciar sesión.");
-	  }
-	});
+      } catch (err) {
+        console.error("Login error:", err);
+        alert(t("ErrorTryingToLogIn"));
+      }
+    });
   }, 100);
+}
+
+/* GET USER */
+export async function getCurrentUser() {
+  const token = localStorage.getItem("access_token");
+
+  if (!token) {
+    console.warn(t("NoTokenFound"));
+    alert(t("NoTokenFound"));
+    navigateTo("login");
+    return null;
+  }
+
+  //console.log("Token actual:", token); // DB
+  try {
+    const response = await fetch("/api/auth/me", {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+
+    //console.log("Respuesta cruda:", response); // DB
+    if (response.status === 401) {
+      // Token expirado o inválido
+      alert(t("SessionExpiredOrInvalid"));
+      localStorage.removeItem("access_token");
+      navigateTo("login");
+      return null;
+    }
+
+    const result = await response.json();
+    // console.log("Contenido devuelto:", result); // DB
+    return result;
+  } catch (err) {
+    console.error(t("ErrorRetrievingProfile"), err);
+    return null;
+  }
 }

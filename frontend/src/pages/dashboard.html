@@ -1,16 +1,25 @@
 
 <div class="scanlines"></div>
 <div
-  id="title"
+  id="user-id"
   title="dashboard"
-  class="relative text-8xl font-mono tracking-tight animate-[glitch_1s_linear_infinite] text-[#131313] dark:text-white"
+  class="relative text-8xl font-mono tracking-tight text-[#131313] dark:text-white"
 >
-  dashboard
 </div>
-<div class="relative z-10 flex justify-center items-center min-h-[500px] bg-gray-900">
+
+<div class="flex flex-col justify-center items-center h-64">
+  <span id="user-name" class="text-amber-500 text-3xl"></span>
+  <span id="user-email" class="text-amber-500 text-3xl"></span>
+</div>
+
+<div class="relative z-10 flex justify-center items-center min-h-[500px] bg-gray-900 text-primary">
   <div class="absolute -translate-y-6">
     <p class="text-8xl font-bold">31</p>
-    <p class="text-2xl">partidas</p>
+    <p class="text-2xl text-center" data-i18n="played_games">partidas</p>
   </div>
   <canvas id="donutChart" class="max-w-sm"></canvas>
+</div>
+
+<div class="flex flex-col items-center gap-8 mt-12">
+  <div id="logout-button" data-button="logout" data-page="logout"></div>
 </div>

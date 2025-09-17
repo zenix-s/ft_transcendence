@@ -1,25 +1,24 @@
-
 <div class="scanlines"></div>
-<div
-  id="user-id"
-  title="dashboard"
-  class="relative text-8xl font-mono tracking-tight text-[#131313] dark:text-white"
->
-</div>
-
-<div class="flex flex-col justify-center items-center h-64">
-  <span id="user-name" class="text-amber-500 text-3xl"></span>
-  <span id="user-email" class="text-amber-500 text-3xl"></span>
-</div>
-
-<div class="relative z-10 flex justify-center items-center min-h-[500px] bg-gray-900 text-primary">
-  <div class="absolute -translate-y-6">
-    <p class="text-8xl font-bold">31</p>
-    <p class="text-2xl text-center" data-i18n="played_games">partidas</p>
+<div class="flex flex-col items-center min-w-screen">
+  <div class="flex flex-col sm:flex-row gap-8 my-8 justify-center items-center">
+    <img src="/images/avatar.jpg" id="user-image"alt="avatar images" class="rounded-full max-h-24 border-2 border-secondary dark:border-primary">
+    <h1 id="user-name" class="relative text-6xl sm:text-8xl font-mono tracking-tight text-[#131313] dark:text-white"></h1>
   </div>
-  <canvas id="donutChart" class="max-w-sm"></canvas>
-</div>
-
-<div class="flex flex-col items-center gap-8 mt-12">
-  <div id="logout-button" data-button="logout" data-page="logout"></div>
+  
+  <!-- <div class="flex flex-col justify-center items-center h-64">
+    <span id="user-id" class="text-amber-500 text-3xl"></span>
+    <span id="user-email" class="text-amber-500 text-3xl"></span>
+  </div> -->
+  
+  <div class="relative -z-1 flex justify-center items-center min-h-[350px] text-primary">
+    <div class="absolute -translate-y-6">
+      <p class="text-8xl font-bold">31</p>
+      <p class="text-2xl text-center" data-i18n="played_games">partidas</p>
+    </div>
+    <canvas id="donutChart" class="max-w-sm"></canvas>
+  </div>
+  
+  <div class="flex flex-col items-center gap-8 mt-12">
+    <div id="logout-button" data-button="logout" data-page="logout"></div>
+  </div>
 </div>

@@ -7,3 +7,9 @@
   --color-primary: #FFF;
   --color-secondary: #131313;
 }
+
+@layer components{
+  .center-screen {
+    @apply flex flex-col min-w-screen min-h-screen items-center justify-center;
+  }
+}

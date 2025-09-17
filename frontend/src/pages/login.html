@@ -1,107 +1,98 @@
-<!-- <div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-  <h1 class="text-4xl font-bold text-blue-500">Login:</h1>
-  <form class="mt-6 flex flex-col items-center">
-    <input type="text" placeholder="User" class="mb-4 px-4 py-2 border rounded" />
-    <input type="password" placeholder="Password" class="mb-4 px-4 py-2 border rounded" />
-    <button id="button" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-      Login
-    </button>
-  </form>
-</div> -->
-
-<div class="min-h-screen flex items-center justify-center">
-  <div
-    class="flex flex-col md:flex-row gap-8 md:gap-12 w-full max-w-4xl justify-center items-stretch"
-  >
-    <!-- Login Form -->
+<div class="scanlines"></div>
+<div class="center-screen">
+  <div class="min-h-screen flex items-center justify-center">
     <div
-      class="flex flex-col items-center rounded-xl p-8 relative w-full md:w-aut justify-center"
+      class="flex flex-col md:flex-row gap-8 md:gap-12 w-full max-w-4xl justify-center items-stretch"
     >
-      <h1
-        title="Login"
-        class="relative text-4xl font-mono tracking-tight text-secondary mb-6 animate-[glitch_1s_linear_infinite] dark:text-primary"
-        data-i18n="form_login_title"
+      <!-- Login Form -->
+      <div
+        class="flex flex-col items-center rounded-xl p-8 relative w-full md:w-aut justify-center"
       >
-        <!-- Login -->
-      </h1>
-      <form class="flex flex-col gap-4 w-full max-w-xs">
-        <input
-          class="border border-secondary dark:border-primary rounded px-4 py-2 text-secondary bg-transparent dark:bg-primary font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
-          name="email"
-          type="email"
-          data-i18n="Email"
-          placeholder="Email"
-          autocomplete="email"
-        />
-        <input
-          class="border border-secondary dark:border-primary rounded px-4 py-2 text-secondary bg-transparent dark:bg-primary font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
-          name="password"
-          type="password"
-          data-i18n="Password"
-          placeholder="Password"
-          autocomplete="current-password"
-        />
-        <button
+        <h1
           title="Login"
-          class="relative bg-transparent text-secondary dark:text-primary border border-secondary dark:border-primary px-6 py-2 font-mono text-xl cursor-pointer transition-all duration-700 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[0px_0_0_red,-0px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] mt-2"
-          data-i18n="form_login_button"
+          class="relative text-4xl font-mono text-center tracking-tight text-secondary mb-6 animate-[glitch_1s_linear_infinite] dark:text-primary"
+          data-i18n="form_login_title"
         >
           <!-- Login -->
-        </button>
-      </form>
-    </div>
-    <!-- Register Form -->
-    <div
-      class="flex flex-col items-center rounded-xl p-8 relative w-full md:w-auto"
-    >
-      <h1
-        title="Register"
-        class="relative text-4xl font-mono tracking-tight text-secondary mb-6 animate-[glitch_1s_linear_infinite] dark:text-primary"
-        data-i18n="form_register_title"
+        </h1>
+        <form class="flex flex-col gap-4 w-full max-w-xs">
+          <input
+            class="border border-secondary dark:border-primary rounded px-4 py-2 text-secondary bg-transparent dark:bg-primary font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+            name="email"
+            type="email"
+            data-i18n="Email"
+            placeholder="Email"
+            autocomplete="email"
+          />
+          <input
+            class="border border-secondary dark:border-primary rounded px-4 py-2 text-secondary bg-transparent dark:bg-primary font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+            name="password"
+            type="password"
+            data-i18n="Password"
+            placeholder="Password"
+            autocomplete="current-password"
+          />
+          <button
+            title="Login"
+            class="relative bg-transparent text-secondary dark:text-primary border border-secondary dark:border-primary px-6 py-2 font-mono text-xl cursor-pointer transition-all duration-700 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[0px_0_0_red,-0px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] mt-2"
+            data-i18n="form_login_button"
+          >
+            <!-- Login -->
+          </button>
+        </form>
+      </div>
+      <!-- Register Form -->
+      <div
+        class="flex flex-col items-center rounded-xl p-8 relative w-full md:w-auto"
       >
-        <!-- Register -->
-      </h1>
-      <form class="flex flex-col gap-4 w-full max-w-xs">
-        <input
-          class="border border-secondary dark:border-primary rounded px-4 py-2 text-secondary bg-transparent dark:bg-primary font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
-          name="username"
-          type="text"
-          data-i18n="User"
-          placeholder="User"
-          autocomplete="username"
-        />
-        <input
-          class="border border-secondary dark:border-primary rounded px-4 py-2 text-secondary bg-transparent dark:bg-primary font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
-          name="email"
-          type="email"
-          data-i18n="Email"
-          placeholder="Email"
-          autocomplete="email"
-        />
-        <input
-          class="border border-secondary dark:border-primary rounded px-4 py-2 text-secondary bg-transparent dark:bg-primary font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
-          name="password"
-          type="password"
-          data-i18n="Password"
-          placeholder="Password"
-          autocomplete="new-password"
-        />
-        <input
-          class="border border-secondary dark:border-primary rounded px-4 py-2 text-secondary bg-transparent dark:bg-primary font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
-          name="repeat_password"
-          type="password"
-          data-i18n="Repeat_Password"
-          placeholder="Repeat_Password"
-          autocomplete="new-password"
-        />
-        <button
+        <h1
           title="Register"
-          class="relative bg-transparent text-secondary dark:text-primary border border-secondary dark:border-primary px-6 py-2 font-mono text-xl cursor-pointer transition-all duration-700 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[0px_0_0_red,-0px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] mt-2"
+          class="relative text-4xl font-mono text-center tracking-tight text-secondary mb-6 animate-[glitch_1s_linear_infinite] dark:text-primary"
+          data-i18n="form_register_title"
         >
-          Register
-        </button>
-      </form>
+          <!-- Register -->
+        </h1>
+        <form class="flex flex-col gap-4 w-full max-w-xs">
+          <input
+            class="border border-secondary dark:border-primary rounded px-4 py-2 text-secondary bg-transparent dark:bg-primary font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+            name="username"
+            type="text"
+            data-i18n="User"
+            placeholder="User"
+            autocomplete="username"
+          />
+          <input
+            class="border border-secondary dark:border-primary rounded px-4 py-2 text-secondary bg-transparent dark:bg-primary font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+            name="email"
+            type="email"
+            data-i18n="Email"
+            placeholder="Email"
+            autocomplete="email"
+          />
+          <input
+            class="border border-secondary dark:border-primary rounded px-4 py-2 text-secondary bg-transparent dark:bg-primary font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+            name="password"
+            type="password"
+            data-i18n="Password"
+            placeholder="Password"
+            autocomplete="new-password"
+          />
+          <input
+            class="border border-secondary dark:border-primary rounded px-4 py-2 text-secondary bg-transparent dark:bg-primary font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+            name="repeat_password"
+            type="password"
+            data-i18n="Repeat_Password"
+            placeholder="Repeat_Password"
+            autocomplete="new-password"
+          />
+          <button
+            title="Register"
+            class="relative bg-transparent text-secondary dark:text-primary border border-secondary dark:border-primary px-6 py-2 font-mono text-xl cursor-pointer transition-all duration-700 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[0px_0_0_red,-0px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] mt-2"
+          >
+            Register
+          </button>
+        </form>
+      </div>
     </div>
   </div>
-  <div class="scanlines"></div>
 </div>

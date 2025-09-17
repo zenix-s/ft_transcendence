@@ -24,9 +24,17 @@ export function setupEventListeners() {
 
     // 🔹 2. Caso LOGIN
     if (target.dataset.page === "login") {
-      loadUsers();
-      navigateTo("login");
-      return;
+      event.preventDefault(); // Frena navegación automática
+      const token = localStorage.getItem("access_token");
+
+      if (!token) {
+        loadUsers();
+        navigateTo("login");
+        return;
+      } else {
+        navigateTo("dashboard");
+        return;
+      }
     }
 
     // 🔹 3. Navegación genérica

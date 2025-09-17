@@ -68,91 +68,128 @@ async function handleCommand<TRequest, TResponse>(
 export default async function gameRoutes(fastify: FastifyInstance) {
     const gameRepository = new GameRepository();
 
-    fastify.post('/create', async (req: FastifyRequest, reply: FastifyReply) => {
-        const createGameCommand = new CreateGameCommand(gameRepository, fastify);
-        return handleCommand(createGameCommand, undefined, reply, 201);
-    });
+    fastify.post(
+        '/create',
+        {
+            schema: {
+                description: 'Create a new Pong game',
+                tags: ['Game'],
+                security: [{ bearerAuth: [] }],
+            },
+        },
+        async (req: FastifyRequest, reply: FastifyReply) => {
+            const createGameCommand = new CreateGameCommand(gameRepository, fastify);
+            return handleCommand(createGameCommand, undefined, reply, 201);
+        }
+    );
 
-    fastify.post('/join/:gameId', async (req: FastifyRequest<JoinGameRequest>, reply: FastifyReply) => {
-        const { gameId } = req.params;
-        const userId = req.body?.userId;
-        const joinGameCommand = new JoinGameCommand(gameRepository, fastify);
-        return handleCommand(joinGameCommand, { gameId, userId }, reply);
-    });
+    fastify.post(
+        '/join/:gameId',
+        {
+            schema: {
+                description: 'Join an existing Pong game',
+                tags: ['Game'],
+                security: [{ bearerAuth: [] }],
+            },
+        },
+        async (req: FastifyRequest<JoinGameRequest>, reply: FastifyReply) => {
+            const { gameId } = req.params;
+            const userId = req.body?.userId;
+            const joinGameCommand = new JoinGameCommand(gameRepository, fastify);
+            return handleCommand(joinGameCommand, { gameId, userId }, reply);
+        }
+    );
 
-    fastify.get('/state/:gameId', async (req: FastifyRequest<GameActionRequest>, reply: FastifyReply) => {
-        const { gameId } = req.params;
-        const getGameStateQuery = new GetGameStateQuery(gameRepository, fastify);
-        return handleCommand(getGameStateQuery, { gameId }, reply);
-    });
+    fastify.get(
+        '/state/:gameId',
+        {
+            schema: {
+                description: 'Get current state of the game',
+                tags: ['Game'],
+                security: [{ bearerAuth: [] }],
+            },
+        },
+        async (req: FastifyRequest<GameActionRequest>, reply: FastifyReply) => {
+            const { gameId } = req.params;
+            const getGameStateQuery = new GetGameStateQuery(gameRepository, fastify);
+            return handleCommand(getGameStateQuery, { gameId }, reply);
+        }
+    );
 
-    fastify.get('/', { websocket: true }, (socket: WebSocket) => {
-        let currentGameId: string | null = null;
-        let currentUserId: string | null = null;
+    fastify.get(
+        '/',
+        {
+            websocket: true,
+            schema: {
+                description: 'WebSocket endpoint for real-time Pong game actions',
+                tags: ['Game'],
+                security: [{ bearerAuth: [] }],
+            },
+        },
+        (socket: WebSocket) => {
+            let currentGameId: string | null = null;
+            let currentUserId: string | null = null;
 
-        socket.on('message', async (message) => {
-            try {
-                const data = JSON.parse(message.toString());
+            socket.on('message', async (message) => {
+                try {
+                    const data = JSON.parse(message.toString());
 
-                if (!validateWebSocketMessage(data)) {
-                    socket.send(
-                        JSON.stringify({
-                            error: WS_ERRORS.INVALID_FORMAT,
-                        })
-                    );
-                    return;
-                }
+                    if (!validateWebSocketMessage(data)) {
+                        socket.send(JSON.stringify({ error: WS_ERRORS.INVALID_FORMAT }));
+                        return;
+                    }
 
-                const { action, userId, gameId } = data;
+                    const { action, userId, gameId } = data;
 
-                switch (action) {
-                    case Actions.REQUEST_STATE: {
-                        const response = await handleRequestState(gameId, userId, gameRepository);
-                        socket.send(response);
+                    switch (action) {
+                        case Actions.REQUEST_STATE: {
+                            const response = await handleRequestState(gameId, userId, gameRepository);
+                            socket.send(response);
 
-                        if (gameId && !response.includes('error')) {
-                            currentGameId = gameId;
-                            currentUserId = userId || null;
+                            if (gameId && !response.includes('error')) {
+                                currentGameId = gameId;
+                                currentUserId = userId || null;
+                            }
+                            break;
                         }
-                        break;
-                    }
 
-                    case Actions.MOVE_UP:
-                    case Actions.MOVE_DOWN: {
-                        const direction = action === Actions.MOVE_UP ? 'up' : 'down';
-                        const response = await handleMoverPaddle(
-                            direction,
-                            currentGameId,
-                            currentUserId,
-                            gameRepository
-                        );
-                        socket.send(response);
-                        break;
-                    }
-
-                    case Actions.SET_READY: {
-                        const { response, gameStarted } = await handleSetReady(
-                            currentGameId,
-                            currentUserId,
-                            gameRepository,
-                            fastify
-                        );
-                        socket.send(response);
-
-                        if (gameStarted && currentGameId) {
-                            startGameLoop(currentGameId, gameRepository);
+                        case Actions.MOVE_UP:
+                        case Actions.MOVE_DOWN: {
+                            const direction = action === Actions.MOVE_UP ? 'up' : 'down';
+                            const response = await handleMoverPaddle(
+                                direction,
+                                currentGameId,
+                                currentUserId,
+                                gameRepository
+                            );
+                            socket.send(response);
+                            break;
                         }
-                        break;
-                    }
 
-                    default:
-                        socket.send(JSON.stringify({ error: WS_ERRORS.UNKNOWN_ACTION }));
+                        case Actions.SET_READY: {
+                            const { response, gameStarted } = await handleSetReady(
+                                currentGameId,
+                                currentUserId,
+                                gameRepository,
+                                fastify
+                            );
+                            socket.send(response);
+
+                            if (gameStarted && currentGameId) {
+                                startGameLoop(currentGameId, gameRepository);
+                            }
+                            break;
+                        }
+
+                        default:
+                            socket.send(JSON.stringify({ error: WS_ERRORS.UNKNOWN_ACTION }));
+                    }
+                } catch {
+                    socket.send(JSON.stringify({ error: WS_ERRORS.INVALID_JSON }));
                 }
-            } catch {
-                socket.send(JSON.stringify({ error: WS_ERRORS.INVALID_JSON }));
-            }
-        });
-    });
+            });
+        }
+    );
 }
 
 const gameLoops = new Map<string, NodeJS.Timeout>();

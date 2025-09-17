@@ -7,6 +7,8 @@ import fastifyAuth from '@fastify/auth';
 import fastifyJWT from '@fastify/jwt';
 import authRoutes from '@features/authentication/Authentication.presentation';
 import { handleError } from '@shared/utils/error.utils';
+import fastifySwagger from '@fastify/swagger';
+import fastifySwaggerUi from '@fastify/swagger-ui';
 
 async function App(fastify: FastifyInstance) {
     // Register JWT plugin
@@ -23,7 +25,7 @@ async function App(fastify: FastifyInstance) {
             await request.jwtVerify();
         } catch (err) {
             const result = handleError(err, 'Unauthorized', fastify.log, '401');
-            reply.status(401).send({ error: result.error?.message });
+            reply.status(401).send({ error: result.error });
         }
     });
 
@@ -44,6 +46,23 @@ async function App(fastify: FastifyInstance) {
             error: 'Internal Server Error',
             message: 'An unexpected error occurred.',
         });
+    });
+
+    fastify.register(fastifySwagger, {
+        openapi: {
+            components: {
+                securitySchemes: {
+                    bearerAuth: {
+                        type: 'http',
+                        scheme: 'bearer',
+                        bearerFormat: 'JWT',
+                    },
+                },
+            },
+        },
+    });
+    fastify.register(fastifySwaggerUi, {
+        routePrefix: '/documentation',
     });
 
     fastify.register(fastifyWebsocket);

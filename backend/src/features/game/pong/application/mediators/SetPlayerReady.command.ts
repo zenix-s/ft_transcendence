@@ -55,7 +55,6 @@ export default class SetPlayerReadyCommand
         try {
             const { gameId, playerId, isReady } = request;
 
-            // Get the game from repository
             const gameResult = await this.gameRepository.getGame(gameId);
             if (!gameResult.isSuccess || !gameResult.value) {
                 return Result.error(gameNotFoundError);
@@ -63,19 +62,16 @@ export default class SetPlayerReadyCommand
 
             const game = gameResult.value;
 
-            // Set player ready status
             const success = game.setPlayerReady(playerId, isReady);
             if (!success) {
                 return Result.error(playerNotInGameError);
             }
 
-            // Update the game in the repository
             const updateResult = await this.gameRepository.updateGame(gameId, game);
             if (!updateResult.isSuccess) {
                 return Result.error('gameUpdateError');
             }
 
-            // Check if game started automatically
             const gameStarted = game.isGameRunning();
 
             return Result.success({

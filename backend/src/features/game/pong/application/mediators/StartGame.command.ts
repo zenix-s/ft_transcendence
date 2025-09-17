@@ -5,25 +5,13 @@ import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { handleError } from '@shared/utils/error.utils';
 import { badRequestError } from '@shared/Errors';
 
-export const gameNotFoundError: ErrorResult = {
-    code: 'gameNotFoundError',
-    message: 'Game not found',
-};
+export const gameNotFoundError: ErrorResult = 'gameNotFoundError';
 
-export const cannotStartGameError: ErrorResult = {
-    code: 'cannotStartGameError',
-    message: 'Game requires two players to start',
-};
+export const cannotStartGameError: ErrorResult = 'cannotStartGameError';
 
-export const gameAlreadyRunningError: ErrorResult = {
-    code: 'gameAlreadyRunningError',
-    message: 'Game is already running',
-};
+export const gameAlreadyRunningError: ErrorResult = 'gameAlreadyRunningError';
 
-export const invalidRequestError: ErrorResult = {
-    code: 'invalidRequestError',
-    message: 'Game ID is required',
-};
+export const invalidRequestError: ErrorResult = 'invalidRequestError';
 
 export interface IStartGameRequest {
     gameId: string;
@@ -80,10 +68,7 @@ export default class StartGameCommand implements ICommand<IStartGameRequest, ISt
             // Update the game in the repository
             const updateResult = await this.gameRepository.updateGame(gameId, game);
             if (!updateResult.isSuccess) {
-                return Result.error({
-                    code: 'gameUpdateError',
-                    message: 'Failed to update game',
-                });
+                return Result.error('gameUpdateError');
             }
 
             return Result.success({

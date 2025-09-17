@@ -62,7 +62,6 @@ export default class GetGameStateQuery implements IQuery<IGetGameStateRequest, I
         try {
             const { gameId } = request;
 
-            // Get the game from repository
             const gameResult = await this.gameRepository.getGame(gameId);
             if (!gameResult.isSuccess || !gameResult.value) {
                 return Result.error(gameNotFoundError);

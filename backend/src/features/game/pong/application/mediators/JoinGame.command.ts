@@ -48,7 +48,6 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
             const { gameId } = request;
             const userId = request.userId || crypto.randomUUID();
 
-            // Get the game from repository
             const gameResult = await this.gameRepository.getGame(gameId);
             if (!gameResult.isSuccess || !gameResult.value) {
                 return Result.error(gameNotFoundError);
@@ -56,7 +55,6 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
 
             const game = gameResult.value;
 
-            // Check if player is already in the game
             if (game.hasPlayer(userId)) {
                 return Result.success({
                     message: 'Already in the game',
@@ -66,13 +64,11 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
                 });
             }
 
-            // Try to add the player
             const added = game.addPlayer(userId);
             if (!added) {
                 return Result.error(gameFullError);
             }
 
-            // Update the game in the repository
             const updateResult = await this.gameRepository.updateGame(gameId, game);
             if (!updateResult.isSuccess) {
                 return Result.error('gameUpdateError');

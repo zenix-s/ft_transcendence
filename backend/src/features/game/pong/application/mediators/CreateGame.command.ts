@@ -19,16 +19,13 @@ export default class CreateGameCommand implements ICommand<void, ICreateGameResp
     ) {}
 
     validate(): Result<void> {
-        // No validation needed for void request
         return Result.success(undefined);
     }
 
     async execute(): Promise<Result<ICreateGameResponse>> {
         try {
-            // Create a new game instance
             const game = new PongGame();
 
-            // Save the game to the repository
             const gameIdResult = await this.gameRepository.createGame(game);
 
             if (!gameIdResult.isSuccess || !gameIdResult.value) {

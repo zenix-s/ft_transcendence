@@ -31,7 +31,7 @@ import { setLanguage, t, currentLang } from "@/app/i18n";
 
 // Detectar la página inicial según la URL actual
 const initialPage = location.pathname.replace("/", "") || "home";
-navigateTo(initialPage);
+navigateTo(initialPage, true);
 
 // Configurar los eventos
 setupEventListeners();

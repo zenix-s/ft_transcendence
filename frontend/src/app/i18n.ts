@@ -32,6 +32,8 @@ export const translations: Record<Language, Record<string, string>> = {
     SessionExpiredOrInvalid: "Session expired or invalid. Please log in again",
     ErrorRetrievingProfile: "Error retrieving profile: ",
     UserNotFound: "User not found",
+    pageNotFound: "Page not found",
+    goBack: "Go back",
   },
   es: {
     start: "Comenzar",
@@ -63,6 +65,8 @@ export const translations: Record<Language, Record<string, string>> = {
     SessionExpiredOrInvalid: "Sesión expirada o inválida. Por favor, inicia sesión nuevamente",
     ErrorRetrievingProfile: "Error al obtener el perfil: ",
     UserNotFound: "Usuario no encontrado",
+    pageNotFound: "Página no encontrada",
+    goBack: "Volver",
   },
   fr: {
     start: "Démarrer",
@@ -94,6 +98,8 @@ export const translations: Record<Language, Record<string, string>> = {
     SessionExpiredOrInvalid: "Session expirée ou invalide. Veuillez vous reconnecter",
     ErrorRetrievingProfile: "Erreur lors de la récupération du profil: ",
     UserNotFound: "Utilisateur non trouvé",
+    pageNotFound: "Page non trouvée",
+    goBack: "Retour",
   },
 };
 

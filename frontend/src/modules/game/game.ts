@@ -23,28 +23,6 @@ interface Player {
 	bottomPercentage: number,
 }
 
-class Player{
-	paddle: HTMLElement;
-	posX: number;
-	posY: number;
-	height: number;
-	width: number;
-	speed: number;
-	topPercentage: number;
-	bottomPercentage: number;
-
-	constructor(padddle: HTMLElement, posX: number){
-		this.paddle = padddle;
-		this.posX = posX;
-		this.posY = 625;
-		this.height = 32;
-		this.width = 4;
-		this.speed = 1;
-		this.topPercentage = 5.8;
-		this.bottomPercentage = 94.2;
-	}
-}
-
 interface Score {
 	scoreLeft: HTMLElement | null,
 	pointsLeft: number,
@@ -53,38 +31,12 @@ interface Score {
 	maxScore: number,
 }
 
-class Score {
-	scoreLeft: HTMLElement | null;
-	pointsLeft: number;
-	scoreRight: HTMLElement | null;
-	pointsRight: number;
-	maxScore: number;
-
-	constructor(maxScore: number) {
-		this.scoreLeft = document.getElementById("scoreLeft");
-		this.pointsLeft = 0;
-		this.scoreRight = document.getElementById("scoreRight");
-		this.pointsRight = 0;
-		this.maxScore = maxScore;
-	}
-}
-
 interface Ball {
+	prevPosX: number,
 	posX: number,
+	prevPosY: number,
 	posY: number,
 	speed: number,
-}
-
-class Ball {
-	posX: number;
-	posY: number;
-	speed: number;
-
-	constructor() {
-		this.posX = 1000;
-		this.posY = 625;
-		this.speed = 1;
-	}
 }
 
 function loopGame(canvas:HTMLCanvasElement, playerLeft: Player, playerRight: Player,
@@ -105,12 +57,14 @@ function loopGame(canvas:HTMLCanvasElement, playerLeft: Player, playerRight: Pla
 	const ctx = canvas.getContext("2d")!;
 	ctx.fillStyle = "black";
 	ctx.beginPath();
-	ctx.arc(2000/2, 1250/2, 15, 0, Math.PI * 2);
+	ctx.arc(ball.prevPosX, ball.prevPosY, 15, 0, Math.PI * 2);
 	ctx.fill();
 	ctx.fillStyle = "white";
 	ctx.beginPath();
-	ctx.arc(200, 200, 15, 0, Math.PI * 2);
+	ctx.arc(ball.posX, ball.posY, 15, 0, Math.PI * 2);
 	ctx.fill();
+	ball.prevPosX = ball.posX;
+	ball.prevPosY = ball.posY;
 
 	/* CAMBIAR PUNTUACIONES */
 	scores.pointsLeft = 10;
@@ -138,8 +92,27 @@ export async function startGame()
 		return ;
 	}
 
-	const playerLeft = new Player(paddle1, 10);
-	const playerRight = new Player(paddle2, 1990);
+	const playerLeft : Player = {
+		paddle : paddle1,
+		posX : 10,
+		posY : 625,
+		height : 32,
+		width : 4,
+		speed : 1,
+		topPercentage : 5.8,
+		bottomPercentage : 94.2
+	};
+	const playerRight : Player = {
+		paddle : paddle2,
+		posX : 1990,
+		posY : 625,
+		height : 32,
+		width : 4,
+		speed : 1,
+		topPercentage : 5.8,
+		bottomPercentage : 94.2
+
+	};
 	console.log(playerLeft);
 	console.log(playerRight);
 
@@ -149,7 +122,13 @@ export async function startGame()
 	paddle2.style.top = "50%"; //"1000px";
 
 	/* SCORE */
-	const scores = new Score(5);
+	const scores : Score = {
+		scoreLeft : document.getElementById("scoreLeft"),
+		pointsLeft : 0,
+		scoreRight : document.getElementById("scoreRight"),
+		pointsRight : 0,
+		maxScore : 5
+	};
 	if (!scores.scoreLeft || !scores.scoreRight)
 	{
 		console.log("Error: no scores");
@@ -158,7 +137,13 @@ export async function startGame()
 	console.log("Scores=", scores);
 
 	/* PELOTA GOOD */
-	const ball = new Ball();
+	const ball : Ball = {
+		prevPosX : 1000,
+		posX : 1000,
+		prevPosY : 625,
+		posY : 625,
+		speed : 1
+	};
 	console.log("ball=", ball);
 
 	console.log("patataassss");

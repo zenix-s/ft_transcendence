@@ -1,29 +1,32 @@
 <div class="scanlines"></div>
 
-<!-- Score centered on top -->
-<div class="flex justify-center items-center mt-6 gap-12">
-  <div id="scoreLeft" class="text-6xl md:text-8xl lg:text-9xl text-secondary dark:text-primary font-bold min-w-[100px] text-center">0</div>
-  <div id="score" data-i18n="score" class="text-6xl md:text-8xl lg:text-9xl text-secondary dark:text-primary font-bold text-center">SCORE</div>
-  <div id="scoreRight" class="text-6xl md:text-8xl lg:text-9xl text-secondary dark:text-primary font-bold min-w-[100px] text-center">0</div>
-</div>
+<div class="flex flex-col justify-center items-center min-h-screen min-w-screen">
 
-<!-- Game container -->
-<div class="relative mx-auto mt-6 flex justify-center">
-  <canvas id="gameCanvas"
-    width="2000" height="1250"
-    class="border-4 border-secondary dark:border-primary bg-black w-full h-full max-w-full"></canvas>
+  <!-- Score centered on top -->
+  <div class="flex justify-center items-center mt-6 gap-12">
+    <div id="scoreLeft" class="text-6xl md:text-8xl lg:text-9xl text-secondary dark:text-primary font-bold min-w-[100px] text-center">0</div>
+    <div id="score" data-i18n="score" class="text-6xl md:text-8xl lg:text-9xl text-secondary dark:text-primary font-bold text-center">SCORE</div>
+    <div id="scoreRight" class="text-6xl md:text-8xl lg:text-9xl text-secondary dark:text-primary font-bold min-w-[100px] text-center">0</div>
+  </div>
 
-  <!-- Players (overlay) -->
-  <div id="playerLeft" class="absolute bg-white w-4 h-32 left-10 top-1/2 -translate-y-1/2"></div>
-  <div id="playerRight" class="absolute bg-white w-4 h-32 right-10 top-1/2 -translate-y-1/2"></div>
+  <!-- Game container -->
+  <div class="relative mx-auto mt-6 flex justify-center">
+    <canvas id="gameCanvas"
+      width="2000" height="1250"
+      class="border-4 border-secondary dark:border-primary bg-black w-full h-full max-w-full"></canvas>
 
-  <!-- Left fading glow -->
-  <div class="absolute inset-y-1.5 left-1.5 w-24
-              bg-gradient-to-r from-blue-500/60 to-transparent
-              pointer-events-none"></div>
+    <!-- Players (overlay) -->
+    <div id="playerLeft" class="absolute bg-white w-4 h-32 left-10 top-1/2 -translate-y-1/2"></div>
+    <div id="playerRight" class="absolute bg-white w-4 h-32 right-10 top-1/2 -translate-y-1/2"></div>
 
-  <!-- Right fading glow -->
-  <div class="absolute inset-y-1.5 right-1.5 w-24
-              bg-gradient-to-l from-red-500/60 to-transparent
-              pointer-events-none"></div>
+    <!-- Left fading glow -->
+    <div class="absolute inset-y-1.5 left-1.5 w-24
+                bg-gradient-to-r from-blue-500/60 to-transparent
+                pointer-events-none"></div>
+
+    <!-- Right fading glow -->
+    <div class="absolute inset-y-1.5 right-1.5 w-24
+                bg-gradient-to-l from-red-500/60 to-transparent
+                pointer-events-none"></div>
+  </div>
 </div>

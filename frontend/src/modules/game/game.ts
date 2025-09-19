@@ -1,3 +1,4 @@
+import type { Player, Score, Ball } from "./gameData.js";
 
 document.addEventListener("keydown", (event) => {
 	const key = event.key;
@@ -12,34 +13,20 @@ document.addEventListener("keydown", (event) => {
 		console.log("s");
 });
 
-interface Player {
-	paddle: HTMLElement,
-	posX: number,
-	posY: number,
-	height: number,
-	width: number,
-	speed: number,
-	topPercentage: number,
-	bottomPercentage: number,
+function actualizeValues(posPlayerL:number, playerL:Player, posPlayerR:number, playerR:Player,
+	pointsL:number, pointsR:number, scores:Score, ballX:number, ballY:number, ball:Ball)
+{
+	playerL.posX = posPlayerL;
+	playerR.posX = posPlayerR;
+
+	scores.pointsLeft = pointsL;
+	scores.pointsRight = pointsR;
+
+	ball.posX = ballX;
+	ball.posY = ballY;
 }
 
-interface Score {
-	scoreLeft: HTMLElement | null,
-	pointsLeft: number,
-	scoreRight: HTMLElement | null,
-	pointsRight: number,
-	maxScore: number,
-}
-
-interface Ball {
-	prevPosX: number,
-	posX: number,
-	prevPosY: number,
-	posY: number,
-	speed: number,
-}
-
-function loopGame(canvas:HTMLCanvasElement, playerLeft: Player, playerRight: Player,
+function actualizeGame(canvas:HTMLCanvasElement, playerLeft: Player, playerRight: Player,
 	scores: Score , ball: Ball)
 {
 	console.log(canvas.height);
@@ -50,8 +37,8 @@ function loopGame(canvas:HTMLCanvasElement, playerLeft: Player, playerRight: Pla
 	}
 
 	/* CAMBIAR JUGADORES DE SITIO */
-	playerLeft.paddle.style.top = "5.8%"; //"500px";
-	playerRight.paddle.style.top = "94.2%"; //"1000px";
+	playerLeft.paddle.style.top = "5.8%";
+	playerRight.paddle.style.top = "94.2%";
 
 	/* CAMBIAR LA PELOTA DE SITIO */
 	const ctx = canvas.getContext("2d")!;
@@ -67,12 +54,11 @@ function loopGame(canvas:HTMLCanvasElement, playerLeft: Player, playerRight: Pla
 	ball.prevPosY = ball.posY;
 
 	/* CAMBIAR PUNTUACIONES */
-	scores.pointsLeft = 10;
 	scores.scoreLeft.textContent = scores.pointsLeft.toString();
 	scores.scoreRight.textContent = scores.pointsRight.toString();
 }
 
-export async function startGame()
+export function startGame()
 {
 	const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
 	const ctx = canvas.getContext("2d")!; // as CanvasRenderingContext2D
@@ -116,10 +102,8 @@ export async function startGame()
 	console.log(playerLeft);
 	console.log(playerRight);
 
-	console.log("hola");
-
-	paddle1.style.top = "50%"; //"500px";
-	paddle2.style.top = "50%"; //"1000px";
+	paddle1.style.top = "50%";
+	paddle2.style.top = "50%";
 
 	/* SCORE */
 	const scores : Score = {
@@ -136,7 +120,7 @@ export async function startGame()
 	}
 	console.log("Scores=", scores);
 
-	/* PELOTA GOOD */
+	/* PELOTA*/
 	const ball : Ball = {
 		prevPosX : 1000,
 		posX : 1000,
@@ -145,13 +129,12 @@ export async function startGame()
 		speed : 1
 	};
 	console.log("ball=", ball);
-
-	console.log("patataassss");
 	
 	// Draw a white dot in the center
 	ctx.fillStyle = "white";
 	ctx.beginPath();
 	ctx.arc(ball.posX, ball.posY, 15, 0, Math.PI * 2);
 	ctx.fill();
-	loopGame(canvas, playerLeft, playerRight, scores, ball);
+	actualizeValues(30, playerLeft, 1000, playerRight, 5, 100, scores, 200, 200, ball);
+	actualizeGame(canvas, playerLeft, playerRight, scores, ball);
 }

@@ -1,14 +1,14 @@
 <div class="scanlines"></div>
 <div class="flex flex-col items-center min-w-screen">
-  <div class="flex flex-col sm:flex-row gap-8 my-8 justify-center items-center">
-    <img src="/images/avatar.jpg" id="user-image"alt="avatar images" class="rounded-full max-h-24 border-2 border-secondary dark:border-primary">
+  <!-- <div class="flex flex-col sm:flex-row gap-8 my-8 justify-center items-center">
+    <img src="/images/avatar.jpg" id="user-image" alt="avatar images" class="rounded-full max-h-24 border-2 border-secondary dark:border-primary">
     <h1 id="user-name" class="relative text-6xl sm:text-8xl font-mono tracking-tight text-[#131313] dark:text-white"></h1>
   </div>
   
-  <!-- <div class="flex flex-col justify-center items-center h-64">
+  <div class="flex flex-col justify-center items-center h-64">
     <span id="user-id" class="text-amber-500 text-3xl"></span>
     <span id="user-email" class="text-amber-500 text-3xl"></span>
-  </div> -->
+  </div>
   
   <div class="relative -z-1 flex justify-center items-center min-h-[350px] text-primary">
     <div class="absolute -translate-y-6">
@@ -20,5 +20,90 @@
   
   <div class="flex flex-col items-center gap-8 mt-12">
     <div id="logout-button" data-button="logout" data-page="logout"></div>
-  </div>
+  </div> -->
+
+   <!-- Barra superior -->
+    <header class="w-full max-w-5xl border border-cyan-400 p-4 flex justify-between items-center mb-16 sm:mt-24">
+      <h1 data-i18n="dashboard" class="text-3xl hidden sm:block font-bold glitch tracking-wider uppercase"><!--DASHBOARD--></h1>
+      <div class="flex flex-col justify-center items-center gap-4">
+        <div id="user-data" class="flex flex-row w-full justify-start sm:justify-end items-center gap-4">
+          <img id="user-avatar" src="https://via.placeholder.com/40" alt="Avatar" class="w-10 h-10 rounded-full border border-cyan-400" />
+          <span id="user-name" class="text-lg"><!--USER NAME--></span>
+        </div>
+        <nav class="flex text-lg w-full">
+          <!-- LANDSCAPE -->
+          <div id="lanscape" class="w-full hidden sm:flex flex-row gap-4 justify-start sm:justify-end items-center">
+            <a href="#" data-i18n="settings" class="text-secondary dark:text-primary hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] transition-all duration-300 capitalize"><!--Settings--></a>
+            <span>|</span>
+            <a href="#" data-page="logout" data-i18n="logout" class="text-secondary dark:text-primary hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] transition-all duration-300 capitalize"><!--Logout--></a>
+          </div>
+
+          <!-- MOVILE -->
+          <div id="movile" class="w-full sm:hidden flex flex-row gap-4 justify-start sm:justify-end items-center">
+            <a href="#" class="text-xl text-secondary hover:text-cyan dark:text-primary transition fa-solid fa-chart-pie"></a> <!-- Graphs -->
+            <span>|</span>
+            <a href="#" class="text-xl text-secondary hover:text-cyan dark:text-primary transition fa-solid fa-gear"></a> <!-- Settings -->
+            <span>|</span>
+            <a href="#" class="text-xl text-secondary hover:text-cyan dark:text-primary transition fa-solid fa-right-from-bracket" data-page="logout"></a> <!-- Logout -->
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Texto central -->
+    <div data-i18n="welcome" class="w-full max-w-5xl text-5xl md:text-7xl font-bold glitch mb-12 tracking-widest text-center uppercase text-shadow-[-2px_-1px_0_cyan,2px_1px_0_magenta]">
+      WELCOME
+    </div>
+
+    <!-- Botones principales -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl w-full px-4">
+      <!-- Botón 1 jugador -->
+      <div class="border border-cyan-400 p-8 text-center cursor-pointer hover:skew-x-[5deg] active:skew-x-[5deg] transition-all duration-300 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] active:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] hover:animate-[glitch_1s_linear_infinite] active:animate-[glitch_1s_linear_infinite]">
+        <h2 data-i18n="onePlayerGame" class="text-3xl font-bold glitch mb-2 uppercase">1 PLAYER GAME</h2>
+        <p data-i18n="playBot" class="text-sm tracking-widest uppercase">PLAY AGAINST A BOT</p>
+      </div>
+
+      <!-- Botón multijugador -->
+      <div class="border border-cyan-400 p-8 text-center cursor-pointer hover:skew-x-[5deg] active:skew-x-[5deg] transition-all duration-300 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] active:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] hover:animate-[glitch_1s_linear_infinite] active:animate-[glitch_1s_linear_infinite]">
+        <h2 data-i18n="multiplayer" class="text-3xl font-bold glitch mb-2 uppercase">MULTIPLAYER</h2>
+        <p data-i18n="playOthers" class="text-sm tracking-widest uppercase">PLAY WITH OTHERS</p>
+      </div>
+    </div>
+
 </div>
+
+<!----------->
+<!-- MODAL -->
+<!----------->
+  <!-- Include this script tag or install `@tailwindplus/elements` via npm: -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script> -->
+<!-- <button command="show-modal" commandfor="dialog" class="rounded-md bg-white/10 px-2.5 py-1.5 text-sm font-semibold text-white inset-ring inset-ring-white/5 hover:bg-white/20">Open dialog</button>
+<el-dialog>
+  <dialog id="dialog" aria-labelledby="dialog-title" class="fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent">
+    <el-dialog-backdrop class="fixed inset-0 bg-gray-900/50 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"></el-dialog-backdrop>
+
+    <div tabindex="0" class="flex min-h-full items-end justify-center p-4 text-center focus:outline-none sm:items-center sm:p-0">
+      <el-dialog-panel class="relative transform overflow-hidden rounded-lg bg-gray-800 text-left shadow-xl outline -outline-offset-1 outline-white/10 transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95">
+        <div class="bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+          <div class="sm:flex sm:items-start">
+            <div class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-500/10 sm:mx-0 sm:size-10">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="size-6 text-red-400">
+                <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
+            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+              <h3 id="dialog-title" class="text-base font-semibold text-white">Deactivate account</h3>
+              <div class="mt-2">
+                <p class="text-sm text-gray-400">Are you sure you want to deactivate your account? All of your data will be permanently removed. This action cannot be undone.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gray-700/25 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+          <button type="button" command="close" commandfor="dialog" class="inline-flex w-full justify-center rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white hover:bg-red-400 sm:ml-3 sm:w-auto">Deactivate</button>
+          <button type="button" command="close" commandfor="dialog" class="mt-3 inline-flex w-full justify-center rounded-md bg-white/10 px-3 py-2 text-sm font-semibold text-white inset-ring inset-ring-white/5 hover:bg-white/20 sm:mt-0 sm:w-auto">Cancel</button>
+        </div>
+      </el-dialog-panel>
+    </div>
+  </dialog>
+</el-dialog> -->

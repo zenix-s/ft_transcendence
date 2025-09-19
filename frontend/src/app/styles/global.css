@@ -4,8 +4,10 @@
 
 @theme {
   /* --color-mint-500: oklch(0.72 0.11 178); */
-  --color-primary: #FFF;
-  --color-secondary: #131313;
+  --color-primary: #FFF;       /* white */
+  --color-secondary: #131313;  /* dark-grey */
+  --color-cyan: #00ffff;       /* cyan */
+  --color-magenta: #ff00ff;    /* magenta */
 }
 
 @layer components{
@@ -13,3 +15,4 @@
     @apply flex flex-col min-w-screen min-h-screen items-center justify-center;
   }
 }
+

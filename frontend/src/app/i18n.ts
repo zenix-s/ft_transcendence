@@ -41,7 +41,9 @@ export const translations: Record<Language, Record<string, string>> = {
     playBot: "play against a bot",
     multiplayer: "multiplayer",
     playOthers: "play with others",
-
+    invalidUsername: "Invalid username:\n  - It must be between 3 and 20 characters long.\n  - It can only contain letters, numbers, hyphens, and underscores.",
+    invalidEmail: "Invalid email:\n  - Correct format: user@domain.TLD",
+    invalidPassword: "Incorrect password:\n  - Minimum 8 characters.\n  - At least one uppercase letter.\n  - At least one lowercase letter.\n  - At least one digit.",
   },
   es: {
     start: "Comenzar",
@@ -82,6 +84,9 @@ export const translations: Record<Language, Record<string, string>> = {
     playBot: "jugar contra un bot",
     multiplayer: "multijugador",
     playOthers: "jugar con otros/as",
+    invalidUsername: "Nombre de usuario inválido:\n  - Debe tener entre 3 y 20 caracteres.\n  - Solo puede contener letras, números, guiones y guiones bajos.",
+    invalidEmail: "Correo electrónico inválido:\n  - Formato correcto: usuario@dominio.TLD",
+    invalidPassword: "Contraseña incorrecta:\n  - Mínimo 8 caracteres.\n  - Al menos una letra mayúscula.\n  - Al menos una letra minúscula.\n  - Al menos un dígito.",
   },
   fr: {
     start: "Démarrer",
@@ -122,6 +127,9 @@ export const translations: Record<Language, Record<string, string>> = {
     playBot: "jouer contre un bot",
     multiplayer: "multijoueur",
     playOthers: "jouer avec les autres",
+    invalidUsername: "Nom d'utilisateur invalide:\n  - Il doit contenir entre 3 et 20 caractères.\n  - Il peut uniquement contenir des lettres, des chiffres, des tirets et des tirets bas.",
+    invalidEmail: "Email invalide:\n  - Format correct : utilisateur@domaine.TLD",
+    invalidPassword: "Mot de passe incorrect:\n  - Minimum 8 caractères.\n  - Au moins une lettre majuscule.\n  - Au moins une lettre minuscule.\n  - Au moins un chiffre.",
   },
 };
 

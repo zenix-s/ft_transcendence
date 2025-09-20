@@ -21,10 +21,46 @@ export function setupRegisterForm() {
       const password = formData.get("password") as string;
       const repeatPassword = formData.get("repeat_password") as string;
 
+
+      /* Validate all fields are filled */
       if (!username || !email || !password || !repeatPassword) {
         alert(t("fillAllFields"));
         return;
       }
+
+      /* Validate UserName (Regular expresion)
+      3-20 characters
+      Only letters, numbers, hyphens, and underscores
+      */
+      const usernameRegex = /^[a-zA-Z0-9_-]{3,20}$/;
+      if (!usernameRegex.test(username)) {
+        alert(t("invalidUsername"));
+        return;
+      }
+
+      /* Validate Email (Regular expresion)
+      string + '@' + string + '.' + string
+      */
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        alert(t("invalidEmail"));
+        return;
+      }
+
+      /* Validate Password (Regular expresion)
+      Minimum 8 characters.
+      At least one capital letter.
+      At least one lowercase letter.
+      At least one number.
+      Optional: At least one special character.
+      */
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+      if (!passwordRegex.test(password)) {
+        alert(t("invalidPassword"));
+        return;
+      }
+
+      /* Validate if both passwords are the same */
       if (password !== repeatPassword) {
         alert(t("passwordDoNotMatch"));
         return;
@@ -49,7 +85,6 @@ export function setupRegisterForm() {
         localStorage.setItem("access_token", data.token);
 
         alert(t("UserCreatedSuccessfully"));
-        //console.log(`password send = "${password}"`); // DB
         registerForm.reset();
 
         // Redirigir al dashboard

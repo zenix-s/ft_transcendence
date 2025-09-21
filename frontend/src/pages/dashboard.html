@@ -32,19 +32,38 @@
         </div>
         <nav class="flex text-lg w-full">
           <!-- LANDSCAPE -->
-          <div id="lanscape" class="w-full hidden sm:flex flex-row gap-4 justify-start sm:justify-end items-center">
-            <a href="#" data-i18n="settings" class="text-secondary dark:text-primary hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] transition-all duration-300 capitalize"><!--Settings--></a>
+          <div id="lanscape" class="relative w-full hidden sm:flex flex-row gap-4 justify-start sm:justify-end items-center">
+            <a href="#" data-i18n="settings" data-tooltip-target="tooltip-graph" class="text-secondary dark:text-primary hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] transition-all duration-300 capitalize"><!--Settings--></a>
+
+            <div
+              data-tooltip="tooltip-graph"
+              role="tooltip"
+              class="z-50 absolute left-ful top-1/2 translate-y-7 px-3 py-2 text-sm text-primary dark:text-secondary bg-secondary dark:bg-primary rounded-lg shadow-lg opacity-0 scale-95 transition-all duration-200 pointer-events-none w-full whitespace-pre-line"
+            >
+              <div class="relative -z-1 flex justify-center items-center min-h-[350px]">
+                <div class="absolute -translate-y-6">
+                  <p class="text-8xl font-bold">31</p>
+                  <p class="text-2xl text-center" data-i18n="played_games">partidas</p>
+                </div>
+                <canvas id="donutChart" class="max-w-sm"></canvas>
+              </div>
+              <div class="absolute left-1/2 -top-1 w-2 h-2 bg-gray-900 dark:bg-white rotate-45 -translate-x-1/2"></div>
+            </div>
+
             <span>|</span>
             <a href="#" data-page="logout" data-i18n="logout" class="text-secondary dark:text-primary hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] transition-all duration-300 capitalize"><!--Logout--></a>
           </div>
 
           <!-- MOVILE -->
           <div id="movile" class="w-full sm:hidden flex flex-row gap-4 justify-start sm:justify-end items-center">
-            <a href="#" class="text-xl text-secondary hover:text-cyan dark:text-primary transition fa-solid fa-chart-pie"></a> <!-- Graphs -->
+            <!-- Graphs -->
+            <a href="#" class="text-xl text-secondary hover:text-cyan dark:text-primary transition fa-solid fa-chart-pie"></a>
             <span>|</span>
-            <a href="#" class="text-xl text-secondary hover:text-cyan dark:text-primary transition fa-solid fa-gear"></a> <!-- Settings -->
+            <!-- Settings -->
+            <a href="#" class="text-xl text-secondary hover:text-cyan dark:text-primary transition fa-solid fa-gear"></a>
             <span>|</span>
-            <a href="#" class="text-xl text-secondary hover:text-cyan dark:text-primary transition fa-solid fa-right-from-bracket" data-page="logout"></a> <!-- Logout -->
+            <!-- Logout -->
+            <a href="#" class="text-xl text-secondary hover:text-cyan dark:text-primary transition fa-solid fa-right-from-bracket" data-page="logout"></a>
           </div>
         </nav>
       </div>

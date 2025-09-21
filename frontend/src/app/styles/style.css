@@ -21,6 +21,10 @@
   62%    { transform: translate(-22px,5px) skew(21deg); }
 }
 
+html, css {
+  overflow-x: hidden;
+}
+
 /* Pseudo-elementos glitch */
 #title:before,
 #title:after,

@@ -12,7 +12,7 @@
 
 @layer components{
   .center-screen {
-    @apply flex flex-col min-w-screen min-h-screen items-center justify-center;
+    @apply flex flex-col min-w-screen min-h-[100dvh] items-center justify-center;
   }
 }
 

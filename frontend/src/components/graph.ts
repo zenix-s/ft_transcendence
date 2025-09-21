@@ -1,6 +1,7 @@
 // import { Chart, ArcElement, Tooltip, Legend } from "chart.js";
 // declare const Chart: any;
 import Chart from 'chart.js/auto';
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
 // Registrar componentes necesarios
 //Chart.register(ArcElement, Tooltip, Legend);
@@ -20,11 +21,44 @@ export async function loadChart() {
     const ctx = document.getElementById("donutChart") as HTMLCanvasElement;
     if (!ctx)
     {
-      console.log("no donut");
+      console.log("Canvas 'donutChart' no encontrado.");
       return ;
     }
 
-    // 3. Crear gráfico tipo donut
+    // 3. Detectar si está en modo oscuro
+    const isDarkMode = document.documentElement.classList.contains("dark");
+
+    // 4. Definir colores dinámicamente según el modo
+    const colors = isDarkMode
+      ? {
+          background: [
+            "rgba(255, 159, 64, 0.6)",
+            "rgba(153, 102, 255, 0.6)",
+            "rgba(75, 192, 192, 0.6)",
+            // "rgba(255, 99, 132, 0.6)",
+            // "rgba(54, 162, 235, 0.6)"
+          ],
+          border: "#1f2937", // gris oscuro
+          legendText: "#f3f4f6", // texto claro
+          dataLabel: "#f3f4f6"
+        }
+      : {
+          background: [
+            "rgba(255, 99, 132, 0.6)",
+            "rgba(54, 162, 235, 0.6)",
+            "rgba(255, 206, 86, 0.6)"
+          ],
+          border: "#ffffff",
+          legendText: "#1f2937", // texto oscuro
+          dataLabel: "#1f2937"
+        };
+
+    // 5. Destruir gráfico previo si existe (para recargar dinámicamente)
+    if (Chart.getChart(ctx)) {
+      Chart.getChart(ctx)?.destroy();
+    }
+
+    // 6. Crear gráfico tipo donut
     new Chart(ctx, {
       type: "doughnut",
       data: {
@@ -33,30 +67,39 @@ export async function loadChart() {
           {
             label: " ",
             data: data.values,
-            backgroundColor: [
-              "rgba(255, 99, 132, 0.6)",
-              "rgba(54, 162, 235, 0.6)"
-            ],
-            borderColor: ["#fff"],
-            borderWidth: 2
-          }
+            backgroundColor: colors.background,
+            borderColor: colors.border,
+            borderWidth: 2,
+            cutout: "70%" as any
+          } as any
         ]
       },
       options: {
         responsive: true,
-        cutout: "70%", // Esto hace que sea donut
         plugins: {
           legend: {
             position: "bottom",
             labels: {
-              color: "#fff",
+              color: colors.legendText,
               font: {
                 size: 14
               }
             }
+          },
+          tooltip: {
+            enabled: false // Desactiva tooltip porque los datos son visibles
+          },
+          datalabels: {
+            color: colors.dataLabel,
+            font: {
+              weight: "bold",
+              size: 14
+            },
+            formatter: (value: number) => value, // Muestra el valor directamente
           }
         }
-      }
+      },
+      plugins: [ChartDataLabels] // 👈 Registramos el plugin aquí
     });
   } catch (error) {
     console.error("Error cargando datos:", error);

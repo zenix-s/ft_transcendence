@@ -1,16 +1,11 @@
 import { navigateTo } from "@/app/navigation";
 import { t } from "@/app/i18n";
-import { Tooltip } from "@/components/tooltip";
 
 /**
  * The `setupEventListeners` function adds event listeners for click and popstate events to handle
  * navigation and user login functionality.
  */
 export function setupEventListeners() {
-    // Inicializamos tooltips
-  const tooltip = new Tooltip();
-  tooltip.init();
-
   // Listeners de navegación
   document.addEventListener("click", (event) => {
     const target = event.target as HTMLElement;

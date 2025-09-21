@@ -28,6 +28,13 @@ interface JoinGameRequest {
     };
 }
 
+interface CreateGameRequest {
+    Body: {
+        winnerScore?: number;
+        maxGameTime?: number;
+    };
+}
+
 interface GameActionRequest {
     Params: {
         gameId: string;
@@ -72,14 +79,55 @@ export default async function gameRoutes(fastify: FastifyInstance) {
         '/create',
         {
             schema: {
-                description: 'Create a new Pong game',
+                description: 'Create a new Pong game with optional custom rules',
                 tags: ['Game'],
                 security: [{ bearerAuth: [] }],
+                body: {
+                    type: 'object',
+                    properties: {
+                        winnerScore: {
+                            type: 'number',
+                            description: 'Score required to win the game (1-100)',
+                            default: 5,
+                            minimum: 1,
+                            maximum: 100,
+                        },
+                        maxGameTime: {
+                            type: 'number',
+                            description: 'Maximum game duration in seconds (30-3600)',
+                            default: 120,
+                            minimum: 30,
+                            maximum: 3600,
+                        },
+                    },
+                },
+                response: {
+                    201: {
+                        description: 'Game created successfully',
+                        type: 'object',
+                        properties: {
+                            message: { type: 'string' },
+                            gameId: { type: 'string' },
+                        },
+                    },
+                    400: {
+                        description: 'Invalid request parameters',
+                        type: 'object',
+                        properties: {
+                            error: { type: 'string' },
+                        },
+                    },
+                },
             },
         },
-        async (req: FastifyRequest, reply: FastifyReply) => {
-            const createGameCommand = new CreateGameCommand(gameRepository, fastify);
-            return handleCommand(createGameCommand, undefined, reply, 201);
+        async (req: FastifyRequest<CreateGameRequest>, reply: FastifyReply) => {
+            const createGameCommand = new CreateGameCommand(fastify, gameRepository);
+            const request = {
+                winnerScore: req.body?.winnerScore,
+                maxGameTime: req.body?.maxGameTime,
+            };
+
+            return handleCommand(createGameCommand, request, reply, 201);
         }
     );
 
@@ -95,7 +143,7 @@ export default async function gameRoutes(fastify: FastifyInstance) {
         async (req: FastifyRequest<JoinGameRequest>, reply: FastifyReply) => {
             const { gameId } = req.params;
             const userId = req.body?.userId;
-            const joinGameCommand = new JoinGameCommand(gameRepository, fastify);
+            const joinGameCommand = new JoinGameCommand(fastify, gameRepository);
             return handleCommand(joinGameCommand, { gameId, userId }, reply);
         }
     );
@@ -111,7 +159,7 @@ export default async function gameRoutes(fastify: FastifyInstance) {
         },
         async (req: FastifyRequest<GameActionRequest>, reply: FastifyReply) => {
             const { gameId } = req.params;
-            const getGameStateQuery = new GetGameStateQuery(gameRepository, fastify);
+            const getGameStateQuery = new GetGameStateQuery(fastify, gameRepository);
             return handleCommand(getGameStateQuery, { gameId }, reply);
         }
     );
@@ -215,7 +263,7 @@ function startGameLoop(gameId: string, repository: GameRepository) {
             return;
         }
 
-        if (!game.isGameRunning()) {
+        if (!game.isGameRunning() || game.isGameOver()) {
             clearInterval(loop);
             gameLoops.delete(gameId);
             return;
@@ -223,6 +271,11 @@ function startGameLoop(gameId: string, repository: GameRepository) {
 
         game.update();
         await repository.updateGame(gameId, game);
+
+        if (game.isGameOver()) {
+            clearInterval(loop);
+            gameLoops.delete(gameId);
+        }
     }, 16);
 
     gameLoops.set(gameId, loop);

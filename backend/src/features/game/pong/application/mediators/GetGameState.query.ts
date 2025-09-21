@@ -35,13 +35,19 @@ export interface IGetGameStateResponse {
             velocity: { x: number; y: number };
         };
         arePlayersReady: boolean;
+        gameRules: {
+            winnerScore: number;
+            maxGameTime?: number;
+        };
+        isGameOver: boolean;
+        winner: string | null;
     };
 }
 
 export default class GetGameStateQuery implements IQuery<IGetGameStateRequest, IGetGameStateResponse> {
     constructor(
-        private readonly gameRepository: IGameRepository,
-        private readonly fastify: FastifyInstance
+        private readonly fastify: FastifyInstance,
+        private readonly gameRepository: IGameRepository
     ) {}
 
     validate(request?: IGetGameStateRequest): Result<void> {

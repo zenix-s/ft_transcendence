@@ -86,7 +86,7 @@ export async function handleSetReady(
         };
     }
 
-    const setReadyCommand = new SetPlayerReadyCommand(gameRepository, fastify);
+    const setReadyCommand = new SetPlayerReadyCommand(fastify, gameRepository);
     const readyResult = await setReadyCommand.execute({
         gameId: currentGameId,
         playerId: currentUserId,

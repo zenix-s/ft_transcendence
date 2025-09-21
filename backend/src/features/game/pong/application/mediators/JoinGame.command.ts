@@ -25,8 +25,8 @@ export interface IJoinGameResponse {
 
 export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoinGameResponse> {
     constructor(
+        private readonly fastify: FastifyInstance,
         private readonly gameRepository: IGameRepository,
-        private readonly fastify: FastifyInstance
     ) {}
 
     validate(request?: IJoinGameRequest): Result<void> {

@@ -29,8 +29,8 @@ export default class SetPlayerReadyCommand
     implements ICommand<ISetPlayerReadyRequest, ISetPlayerReadyResponse>
 {
     constructor(
+        private readonly fastify: FastifyInstance,
         private readonly gameRepository: IGameRepository,
-        private readonly fastify: FastifyInstance
     ) {}
 
     validate(request?: ISetPlayerReadyRequest): Result<void> {

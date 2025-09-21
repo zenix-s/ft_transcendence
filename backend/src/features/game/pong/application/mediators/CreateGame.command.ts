@@ -12,19 +12,49 @@ export interface ICreateGameResponse {
     gameId: string;
 }
 
-export default class CreateGameCommand implements ICommand<void, ICreateGameResponse> {
+export interface ICreateGameRequest {
+    winnerScore?: number;
+    maxGameTime?: number;
+}
+
+export default class CreateGameCommand implements ICommand<ICreateGameRequest, ICreateGameResponse> {
     constructor(
-        private readonly gameRepository: IGameRepository,
-        private readonly fastify: FastifyInstance
+        private readonly fastify: FastifyInstance,
+        private readonly gameRepository: IGameRepository
     ) {}
 
-    validate(): Result<void> {
+    validate(request?: ICreateGameRequest | undefined): Result<void> {
+        if (!request) return Result.success(undefined);
+
+        if (request.winnerScore !== undefined) {
+            if (
+                typeof request.winnerScore !== 'number' ||
+                request.winnerScore < 1 ||
+                request.winnerScore > 100
+            ) {
+                return Result.error('invalidWinnerScore');
+            }
+        }
+
+        if (request.maxGameTime !== undefined) {
+            if (
+                typeof request.maxGameTime !== 'number' ||
+                request.maxGameTime < 30 ||
+                request.maxGameTime > 3600
+            ) {
+                return Result.error('invalidMaxGameTime');
+            }
+        }
+
         return Result.success(undefined);
     }
 
-    async execute(): Promise<Result<ICreateGameResponse>> {
+    async execute(request?: ICreateGameRequest | undefined): Promise<Result<ICreateGameResponse>> {
         try {
-            const game = new PongGame();
+            const winnerScore = request?.winnerScore || 5;
+            const maxGameTime = request?.maxGameTime || 120;
+
+            const game = new PongGame(winnerScore, maxGameTime);
 
             const gameIdResult = await this.gameRepository.createGame(game);
 

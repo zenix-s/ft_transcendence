@@ -24,8 +24,8 @@ export interface IStartGameResponse {
 
 export default class StartGameCommand implements ICommand<IStartGameRequest, IStartGameResponse> {
     constructor(
+        private readonly fastify: FastifyInstance,
         private readonly gameRepository: IGameRepository,
-        private readonly fastify: FastifyInstance
     ) {}
 
     validate(request?: IStartGameRequest): Result<void> {

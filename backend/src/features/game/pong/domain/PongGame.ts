@@ -62,8 +62,10 @@ export class PongGame {
     private ball: BallState;
     private lastUpdate: number;
     private gameTimer: number;
+    private winnerScore: number;
+    private maxGameTime?: number;
 
-    constructor() {
+    constructor(winnerScore = 5, maxGameTime = 120) {
         this.isRunning = false;
         this.player1 = undefined;
         this.player2 = undefined;
@@ -73,6 +75,8 @@ export class PongGame {
         };
         this.lastUpdate = Date.now();
         this.gameTimer = 0;
+        this.winnerScore = winnerScore;
+        this.maxGameTime = maxGameTime;
     }
 
     public addPlayer(playerId: string): boolean {
@@ -131,6 +135,7 @@ export class PongGame {
         this.updateBall(deltaTime);
         this.checkCollisions();
         this.gameTimer += deltaTime;
+        this.checkWinConditions();
     }
 
     private updateBall(deltaTime: number): void {
@@ -216,6 +221,9 @@ export class PongGame {
                 : null,
             ball: this.ball,
             arePlayersReady: this.arePlayersReady(),
+            gameRules: this.getGameRules(),
+            isGameOver: this.isGameOver(),
+            winner: this.isGameOver() ? this.getWinner() : null,
         };
     }
 
@@ -232,5 +240,61 @@ export class PongGame {
 
     public hasPlayer(playerId: string): boolean {
         return this.player1?.getId() === playerId || this.player2?.getId() === playerId;
+    }
+
+    private checkWinConditions(): void {
+        if (!this.player1 || !this.player2) return;
+
+        const player1State = this.player1.getState();
+        const player2State = this.player2.getState();
+
+        if (player1State.score >= this.winnerScore || player2State.score >= this.winnerScore) {
+            this.stop();
+            return;
+        }
+
+        if (this.maxGameTime && this.gameTimer >= this.maxGameTime) {
+            this.stop();
+            return;
+        }
+    }
+
+    public getWinner(): string | null {
+        if (!this.player1 || !this.player2) return null;
+
+        const player1State = this.player1.getState();
+        const player2State = this.player2.getState();
+
+        if (player1State.score > player2State.score) {
+            return this.player1.getId();
+        } else if (player2State.score > player1State.score) {
+            return this.player2.getId();
+        }
+
+        return null;
+    }
+
+    public isGameOver(): boolean {
+        if (!this.player1 || !this.player2) return false;
+
+        const player1State = this.player1.getState();
+        const player2State = this.player2.getState();
+
+        if (player1State.score >= this.winnerScore || player2State.score >= this.winnerScore) {
+            return true;
+        }
+
+        if (this.maxGameTime && this.gameTimer >= this.maxGameTime) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public getGameRules() {
+        return {
+            winnerScore: this.winnerScore,
+            maxGameTime: this.maxGameTime,
+        };
     }
 }

@@ -3,6 +3,7 @@ import { renderButtons } from "@/app/main";
 import { updateTexts } from "@/app/i18n";
 import { loadChart } from "@/components/graph"
 import { startGame } from "@/modules/game/game.ts";
+import { Tooltip } from "@/components/tooltip";
 
 export async function navigateTo(page: string, skipPushState = false, replace = false) {
   console.log("navigation");
@@ -39,6 +40,10 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
 
   const app = document.getElementById('app')!;
   app.innerHTML = html;
+
+  // Inicializar tooltips después de que el DOM esté listo
+  const tooltip = new Tooltip();
+  tooltip.init();
 
   // Ejecutar solo los <script> inline (sin src)
   Array.from(app.querySelectorAll('script')).forEach(s => {

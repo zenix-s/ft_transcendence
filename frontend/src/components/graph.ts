@@ -2,6 +2,7 @@
 // declare const Chart: any;
 import Chart from 'chart.js/auto';
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import { t } from "@/app/i18n";
 
 // Registrar componentes necesarios
 //Chart.register(ArcElement, Tooltip, Legend);
@@ -30,27 +31,29 @@ export async function loadChart() {
 
     // 4. Definir colores dinámicamente según el modo
     const colors = isDarkMode
-      ? {
-          background: [
-            "rgba(255, 159, 64, 0.6)",
-            "rgba(153, 102, 255, 0.6)",
-            "rgba(75, 192, 192, 0.6)",
-            // "rgba(255, 99, 132, 0.6)",
-            // "rgba(54, 162, 235, 0.6)"
-          ],
-          border: "#1f2937", // gris oscuro
-          legendText: "#f3f4f6", // texto claro
-          dataLabel: "#f3f4f6"
-        }
-      : {
+      ? { // Dark Mode
           background: [
             "rgba(255, 99, 132, 0.6)",
             "rgba(54, 162, 235, 0.6)",
-            "rgba(255, 206, 86, 0.6)"
+            // "rgba(255, 159, 64, 0.6)",
+            // "rgba(153, 102, 255, 0.6)",
+            // "rgba(75, 192, 192, 0.6)",
           ],
-          border: "#ffffff",
-          legendText: "#1f2937", // texto oscuro
-          dataLabel: "#1f2937"
+          border: "#131313",
+          legendText: "#fff", // Win, Lose
+          dataLabel: "#fff" // Text inside doughnut
+        }
+      : { // Light Mode
+          background: [
+            "rgba(255, 99, 132, 0.6)",
+            "rgba(54, 162, 235, 0.6)",
+            // "rgba(255, 99, 132, 0.6)",
+            // "rgba(54, 162, 235, 0.6)",
+            // "rgba(255, 206, 86, 0.6)"
+          ],
+          border: "#fff",
+          legendText: "#131313", // Win, Lose
+          dataLabel: "#131313" // Text inside doughnut
         };
 
     // 5. Destruir gráfico previo si existe (para recargar dinámicamente)
@@ -62,7 +65,8 @@ export async function loadChart() {
     new Chart(ctx, {
       type: "doughnut",
       data: {
-        labels: data.labels,
+        //labels: data.labels,
+        labels: [t("win"), t("lose")],
         datasets: [
           {
             label: " ",
@@ -82,7 +86,7 @@ export async function loadChart() {
             labels: {
               color: colors.legendText,
               font: {
-                size: 14
+                size: 18
               }
             }
           },
@@ -93,7 +97,7 @@ export async function loadChart() {
             color: colors.dataLabel,
             font: {
               weight: "bold",
-              size: 14
+              size: 18
             },
             formatter: (value: number) => value, // Muestra el valor directamente
           }
@@ -105,5 +109,3 @@ export async function loadChart() {
     console.error("Error cargando datos:", error);
   }
 }
-
-//loadChart();

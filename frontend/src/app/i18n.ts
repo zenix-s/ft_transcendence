@@ -47,6 +47,8 @@ export const translations: Record<Language, Record<string, string>> = {
     toolTipUsername: "- It must be between 3 and 20 characters long.\n  - It can only contain letters, numbers, hyphens, and underscores.",
     toolTipEmail: "- Correct format: user@domain.TLD",
     toolTipPassword: "- Minimum 8 characters.\n  - At least one uppercase letter.\n  - At least one lowercase letter.\n  - At least one digit.",
+    win: "Win",
+    lose: "Lose",
   },
   es: {
     start: "Comenzar",
@@ -83,7 +85,7 @@ export const translations: Record<Language, Record<string, string>> = {
     settings: "Configuración",
     statistics: "Estadísticas",
     dashboard: "Panel de control",
-    onePlayerGame: "1 jugador",
+    onePlayerGame: "1 jugador/a",
     playBot: "jugar contra un bot",
     multiplayer: "multijugador",
     playOthers: "jugar con otros/as",
@@ -93,6 +95,8 @@ export const translations: Record<Language, Record<string, string>> = {
     toolTipUsername: "- Debe tener entre 3 y 20 caracteres.\n  - Solo puede contener letras, números, guiones y guiones bajos.",
     toolTipEmail: "- Formato correcto: usuario@dominio.TLD",
     toolTipPassword: "- Mínimo 8 caracteres.\n  - Al menos una letra mayúscula.\n  - Al menos una letra minúscula.\n  - Al menos un dígito.",
+    win: "Victórias",
+    lose: "Derrotas",
   },
   fr: {
     start: "Démarrer",
@@ -139,6 +143,8 @@ export const translations: Record<Language, Record<string, string>> = {
     toolTipUsername: "- Il doit contenir entre 3 et 20 caractères.\n  - Il peut uniquement contenir des lettres, des chiffres, des tirets et des tirets bas.",
     toolTipEmail: "- Format correct : utilisateur@domaine.TLD",
     toolTipPassword: "- Minimum 8 caractères.\n  - Au moins une lettre majuscule.\n  - Au moins une lettre minuscule.\n  - Au moins un chiffre.",
+    win: "Victoires",
+    lose: "Défaites",
   },
 };
 

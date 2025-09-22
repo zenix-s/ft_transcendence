@@ -1,6 +1,6 @@
 import { getCurrentUser } from "@/modules/users";
 import { t } from "@/app/i18n";
-import { navigateTo } from "@/app/navigation";
+//import { navigateTo } from "@/app/navigation";
 
 
 export async function loadDashboard() {

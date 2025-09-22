@@ -33,32 +33,33 @@
         <nav class="flex text-lg w-full">
           <!-- LANDSCAPE -->
           <div id="lanscape" class="relative w-full hidden sm:flex flex-row gap-4 justify-start sm:justify-end items-center">
-            <a href="#" data-i18n="settings" data-tooltip-target="tooltip-graph" class="text-secondary dark:text-primary hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] transition-all duration-300 capitalize"><!--Settings--></a>
+            <!-- <a href="#" data-i18n="settings" data-tooltip-target="tooltip-graph" class="text-secondary dark:text-primary hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] transition-all duration-300 capitalize"></a> -->
+            <a href="#" data-i18n="settings" class="text-secondary dark:text-primary hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] transition-all duration-300 capitalize"></a>
 
-            <div
+            <!-- <div
               data-tooltip="tooltip-graph"
               role="tooltip"
               class="z-50 absolute left-ful top-1/2 translate-y-7 px-3 py-2 text-sm text-primary dark:text-secondary bg-secondary dark:bg-primary rounded-lg shadow-lg opacity-0 scale-95 transition-all duration-200 pointer-events-none w-full whitespace-pre-line"
             >
               <div class="relative -z-1 flex justify-center items-center min-h-[350px]">
-                <div class="absolute -translate-y-6">
+                <div class="absolute">
                   <p class="text-8xl font-bold">31</p>
-                  <p class="text-2xl text-center" data-i18n="played_games">partidas</p>
+                  <p class="text-2xl text-center -translate-y-8" data-i18n="played_games">partidas</p>
                 </div>
                 <canvas id="donutChart" class="max-w-sm"></canvas>
               </div>
               <div class="absolute left-1/2 -top-1 w-2 h-2 bg-gray-900 dark:bg-white rotate-45 -translate-x-1/2"></div>
-            </div>
+            </div> -->
 
             <span>|</span>
-            <a href="#" data-page="logout" data-i18n="logout" class="text-secondary dark:text-primary hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] transition-all duration-300 capitalize"><!--Logout--></a>
+            <a href="#" data-page="logout" data-i18n="logout" class="text-secondary dark:text-primary hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] transition-all duration-300 capitalize"></a>
           </div>
 
           <!-- MOVILE -->
-          <div id="movile" class="w-full sm:hidden flex flex-row gap-4 justify-start sm:justify-end items-center">
+          <div id="movile" class="sm:hidden w-full flex flex-row gap-4 justify-start sm:justify-end items-center">
             <!-- Graphs -->
-            <a href="#" class="text-xl text-secondary hover:text-cyan dark:text-primary transition fa-solid fa-chart-pie"></a>
-            <span>|</span>
+            <!-- <a class="cursor-pointer text-xl text-secondary hover:text-cyan dark:text-primary transition fa-solid fa-chart-pie"></a>
+            <span>|</span> -->
             <!-- Settings -->
             <a href="#" class="text-xl text-secondary hover:text-cyan dark:text-primary transition fa-solid fa-gear"></a>
             <span>|</span>
@@ -70,12 +71,12 @@
     </header>
 
     <!-- Texto central -->
-    <div data-i18n="welcome" class="w-full max-w-5xl text-5xl md:text-7xl font-bold glitch mb-12 tracking-widest text-center uppercase text-shadow-[-2px_-1px_0_cyan,2px_1px_0_magenta]">
+    <div data-i18n="welcome" class="w-full max-w-5xl text-4xl md:text-7xl font-bold glitch mb-12 tracking-widest text-center uppercase text-shadow-[-2px_-1px_0_cyan,2px_1px_0_magenta]">
       WELCOME
     </div>
 
     <!-- Botones principales -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl w-full px-4">
+    <div class="grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(0,1fr))] gap-8 max-w-5xl w-full px-4">
       <!-- Botón 1 jugador -->
       <div class="border border-cyan-400 p-8 text-center cursor-pointer hover:skew-x-[5deg] active:skew-x-[5deg] transition-all duration-300 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] active:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] hover:animate-[glitch_1s_linear_infinite] active:animate-[glitch_1s_linear_infinite]">
         <h2 data-i18n="onePlayerGame" class="text-3xl font-bold glitch mb-2 uppercase">1 PLAYER GAME</h2>
@@ -89,6 +90,14 @@
       </div>
     </div>
 
+    <!-- Graph -->
+    <div class="relative -z-1 flex justify-center items-center min-h-[350px] text-secondary dark:text-primary">
+    <div class="absolute -translate-y-6">
+      <p class="text-8xl font-bold">31</p>
+      <p class="text-2xl text-center" data-i18n="played_games">partidas</p>
+    </div>
+    <canvas id="donutChart" class="max-w-sm"></canvas>
+  </div>
 </div>
 
 <!----------->

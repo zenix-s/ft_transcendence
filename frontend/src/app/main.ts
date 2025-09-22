@@ -17,6 +17,7 @@ import { loadAndRender, loadUserForCode } from "@/modules/users";
 // Components
 //import { GlitchButton } from "./components/GlitchButton";
 import { GlitchButton } from "@/components/GlitchButton";
+import { loadChart } from "@/components/graph";
 
 // i18n
 //import { setLanguage, t, currentLang } from "./i18n";
@@ -45,6 +46,8 @@ window.addEventListener("popstate", handlePopState);
   }
 }); */
 
+import Chart from 'chart.js/auto';
+
 // ====================
 // 🌙 Toggle dark mode
 // ====================
@@ -62,6 +65,18 @@ if (toggle) {
       localStorage.setItem("theme", "dark");
     } else {
       localStorage.setItem("theme", "light");
+    }
+
+    //Reload doughnut
+    // Obtener el canvas
+    const ctx = document.getElementById("donutChart") as HTMLCanvasElement;
+    if (!ctx)
+    {
+      console.log("Canvas 'donutChart' no encontrado.");
+      return ;
+    }
+    else {
+      loadChart();
     }
   });
 }
@@ -113,4 +128,15 @@ renderButtons();
 // Cuando cambie idioma, vuelve a renderizar
 document.addEventListener("i18n-updated", () => {
   renderButtons();
+  //Reload doughnut
+  // Obtener el canvas
+  const ctx = document.getElementById("donutChart") as HTMLCanvasElement;
+  if (!ctx)
+  {
+    console.log("Canvas 'donutChart' no encontrado.");
+    return ;
+  }
+  else {
+    loadChart();
+  }
 });

@@ -1,4 +1,5 @@
 import type { Player, Score, Ball } from "./gameData.js";
+import { fetchGameId } from "./getData.js";
 
 document.addEventListener("keydown", (event) => {
 	const key = event.key;
@@ -13,9 +14,21 @@ document.addEventListener("keydown", (event) => {
 		console.log("s");
 });
 
+async function look()
+{
+	const gameId = await fetchGameId();
+	if (!gameId)
+	{
+		console.log("No game ID");
+		return ;
+	}
+	console.log("si gameId=", gameId);
+}
+
 function actualizeValues(posPlayerL:number, playerL:Player, posPlayerR:number, playerR:Player,
 	pointsL:number, pointsR:number, scores:Score, ballX:number, ballY:number, ball:Ball)
 {
+	look();
 	playerL.posX = posPlayerL;
 	playerR.posX = posPlayerR;
 
@@ -138,3 +151,7 @@ export function startGame()
 	actualizeValues(30, playerLeft, 1000, playerRight, 5, 100, scores, 200, 200, ball);
 	actualizeGame(canvas, playerLeft, playerRight, scores, ball);
 }
+
+
+
+//fetch

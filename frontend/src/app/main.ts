@@ -46,8 +46,6 @@ window.addEventListener("popstate", handlePopState);
   }
 }); */
 
-import Chart from 'chart.js/auto';
-
 // ====================
 // 🌙 Toggle dark mode
 // ====================

@@ -1,5 +1,12 @@
+/* USUARIOS:
+ines
+hola@gmail.com
+Hola12345
+*/
+
+
 import type { Player, Score, Ball } from "./gameData.js";
-import { fetchGameId } from "./getData.js";
+import { fetchGameId, toJoinGame, fetchGameState } from "./getData.js";
 
 document.addEventListener("keydown", (event) => {
 	const key = event.key;
@@ -23,6 +30,22 @@ async function look()
 		return ;
 	}
 	console.log("si gameId=", gameId);
+
+	const gameJoin = await toJoinGame(gameId);
+	if (!gameJoin)
+	{
+		console.log("No join game");
+		return ;
+	}
+	console.log("si gameJoin=", gameJoin);
+
+	const gameState = await fetchGameState(gameId);
+	if (!gameState)
+	{
+		console.log("no gameState");
+		return ;
+	}
+	console.log("si gameState");
 }
 
 function actualizeValues(posPlayerL:number, playerL:Player, posPlayerR:number, playerR:Player,
@@ -42,7 +65,7 @@ function actualizeValues(posPlayerL:number, playerL:Player, posPlayerR:number, p
 function actualizeGame(canvas:HTMLCanvasElement, playerLeft: Player, playerRight: Player,
 	scores: Score , ball: Ball)
 {
-	console.log(canvas.height);
+	console.log("hight=", canvas.height);
 	if (canvas.height < 500)
 	{
 		playerLeft.paddle.classList.replace("h-32", "h-10");
@@ -50,18 +73,22 @@ function actualizeGame(canvas:HTMLCanvasElement, playerLeft: Player, playerRight
 	}
 
 	/* CAMBIAR JUGADORES DE SITIO */
-	playerLeft.paddle.style.top = "5.8%";
-	playerRight.paddle.style.top = "94.2%";
+	playerLeft.paddle.style.top = playerLeft.posY.toString() + "%";
+	playerRight.paddle.style.top = playerRight.posY.toString() + "%";
 
 	/* CAMBIAR LA PELOTA DE SITIO */
+	const prevPosX = ball.prevPosX * 1250 / 100;
+	const prevPosY = ball.prevPosY * 1250 / 100;
 	const ctx = canvas.getContext("2d")!;
 	ctx.fillStyle = "black";
 	ctx.beginPath();
-	ctx.arc(ball.prevPosX, ball.prevPosY, 15, 0, Math.PI * 2);
+	ctx.arc(prevPosX, prevPosY, 15, 0, Math.PI * 2);
 	ctx.fill();
+	const posX = ball.posX * 1250 / 100;
+	const posY = ball.posY * 1250 / 100;
 	ctx.fillStyle = "white";
 	ctx.beginPath();
-	ctx.arc(ball.posX, ball.posY, 15, 0, Math.PI * 2);
+	ctx.arc(posX, posY, 15, 0, Math.PI * 2);
 	ctx.fill();
 	ball.prevPosX = ball.posX;
 	ball.prevPosY = ball.posY;
@@ -94,7 +121,7 @@ export function startGame()
 	const playerLeft : Player = {
 		paddle : paddle1,
 		posX : 10,
-		posY : 625,
+		posY : 50,
 		height : 32,
 		width : 4,
 		speed : 1,
@@ -104,7 +131,7 @@ export function startGame()
 	const playerRight : Player = {
 		paddle : paddle2,
 		posX : 1990,
-		posY : 625,
+		posY : 50,
 		height : 32,
 		width : 4,
 		speed : 1,
@@ -135,10 +162,10 @@ export function startGame()
 
 	/* PELOTA*/
 	const ball : Ball = {
-		prevPosX : 1000,
-		posX : 1000,
-		prevPosY : 625,
-		posY : 625,
+		prevPosX : 50,
+		posX : 50,
+		prevPosY : 50,
+		posY : 50,
 		speed : 1
 	};
 	console.log("ball=", ball);
@@ -146,9 +173,9 @@ export function startGame()
 	// Draw a white dot in the center
 	ctx.fillStyle = "white";
 	ctx.beginPath();
-	ctx.arc(ball.posX, ball.posY, 15, 0, Math.PI * 2);
+	ctx.arc(ball.posX * 1250 / 100, ball.posY * 1250 / 100, 15, 0, Math.PI * 2);
 	ctx.fill();
-	actualizeValues(30, playerLeft, 1000, playerRight, 5, 100, scores, 200, 200, ball);
+	actualizeValues(30, playerLeft, 1000, playerRight, 5, 100, scores, 10, 10, ball);
 	actualizeGame(canvas, playerLeft, playerRight, scores, ball);
 }
 

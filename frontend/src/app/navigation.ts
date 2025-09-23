@@ -4,10 +4,17 @@ import { updateTexts } from "@/app/i18n";
 import { loadChart } from "@/components/graph"
 import { startGame } from "@/modules/game/game.ts";
 import { Tooltip } from "@/components/tooltip";
+import { loadMatchHistory } from "@/app/history";
 
 export async function navigateTo(page: string, skipPushState = false, replace = false) {
   console.log("navigation");
   console.log(page);
+
+  // 🚨 Bloquear números SOLO cuando vienen de la SPA (clicks internos)
+  if (!skipPushState && !isNaN(Number(page))) {
+    console.warn(`Ignorando navegación numérica interna: ${page}`);
+    return;
+  }
 
   // Redirección automática si el usuario ya tiene token y entra a login
   if (page === "login" && localStorage.getItem("access_token")) {
@@ -70,8 +77,12 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
       requestAnimationFrame(() => {
         loadDashboard();
         loadChart();
+        loadMatchHistory();
         renderButtons();
       });
+      break;
+    case "history":
+      loadMatchHistory();
       break;
     case "game":
       startGame();
@@ -80,34 +91,6 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
       renderButtons();
       break;
   }
-	/* if (page === "home") {
-	  //loadUsers();
-    renderButtons();
-	}
-  else if (page === "login") {
-    const token = localStorage.getItem("access_token");
-
-      if (!token) {
-        // El usuario NO está logueado → cargar el login normalmente
-        validateLogin();
-        setupRegisterForm();
-      }
-  }
-  else if (page === "dashboard") {
-    // Esperar al siguiente ciclo para asegurar que el DOM ya está disponible
-    requestAnimationFrame(() => {
-      loadDashboard();
-      loadChart();
-      renderButtons();
-    });
-  }
-  // Cada vez que la página en la que estemos sea game, se ejecuta el script
-  else if (page === "game") {
-    startGame();
-  }
-  else if (page === "404") {
-    renderButtons();
-	}  */
 
   // Actualizar los textos al cambiar de página
   updateTexts();

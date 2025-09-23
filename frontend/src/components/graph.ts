@@ -15,7 +15,7 @@ interface ChartData {
 export async function loadChart() {
   try {
     // 1. Cargar JSON dinámicamente
-    const response = await fetch("/data_test.json");
+    const response = await fetch("/data_doughnut.json");
     const data: ChartData = await response.json();
 
     // 2. Obtener el canvas

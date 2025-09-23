@@ -91,12 +91,50 @@
     </div>
 
     <!-- Graph -->
-    <div class="relative -z-1 flex justify-center items-center min-h-[350px] text-secondary dark:text-primary">
-    <div class="absolute -translate-y-6">
-      <p class="text-8xl font-bold">31</p>
-      <p class="text-2xl text-center" data-i18n="played_games">partidas</p>
-    </div>
-    <canvas id="donutChart" class="max-w-sm"></canvas>
+      <div class="relative -z-1 flex justify-center items-center min-h-[350px] text-secondary dark:text-primary">
+      <div class="absolute -translate-y-6">
+        <p class="text-8xl font-bold">31</p>
+        <p class="text-2xl text-center" data-i18n="played_games">partidas</p>
+      </div>
+      <canvas id="donutChart" class="max-w-sm"></canvas>
+      </div>
+
+    <!-- History -->
+    
+      <div class="w-full max-w-5xl mx-auto p-6">
+        <h2 class="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">
+          Historial de Partidas
+        </h2>
+        <div class="overflow-x-auto rounded-lg shadow">
+          <table
+            id="matchTable"
+            class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm"
+          >
+            <thead class="bg-gray-100 dark:bg-gray-800">
+              <tr>
+                <!-- <th class="px-4 py-2 text-left font-semibold text-gray-700 dark:text-gray-300">
+                  Jugador 1
+                </th> -->
+                <th class="px-4 py-2 text-left font-semibold text-gray-700 dark:text-gray-300">
+                  Opponent
+                </th>
+                <th class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300">
+                  Resultado
+                </th>
+                <th class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300">
+                  Ganador
+                </th>
+                <th class="px-4 py-2 text-right font-semibold text-gray-700 dark:text-gray-300">
+                  Fecha
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
   </div>
 </div>
 

@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1,
+    "player1": "Daniel",
+    "opponent": "Pepe",
+    "score": "5 - 3",
+    "winner": "Daniel",
+    "date": "2025-09-21T18:45:00Z"
+  },
+  {
+    "id": 2,
+    "player1": "María",
+    "opponent": "Daniel",
+    "score": "2 - 5",
+    "winner": "Daniel",
+    "date": "2025-09-20T10:20:00Z"
+  },
+  {
+    "id": 3,
+    "player1": "Lucas",
+    "opponent": "Pepe",
+    "score": "4 - 5",
+    "winner": "Pepe",
+    "date": "2025-09-19T09:15:00Z"
+  },
+  {
+    "id": 4,
+    "player1": "Daniel",
+    "opponent": "Pepe",
+    "score": "5 - 3",
+    "winner": "Daniel",
+    "date": "2025-09-21T18:45:00Z"
+  },
+  {
+    "id": 5,
+    "player1": "María",
+    "opponent": "Daniel",
+    "score": "2 - 5",
+    "winner": "Daniel",
+    "date": "2025-09-20T10:20:00Z"
+  },
+  {
+    "id": 6,
+    "player1": "Lucas",
+    "opponent": "Pepe",
+    "score": "4 - 5",
+    "winner": "Pepe",
+    "date": "2025-09-19T09:15:00Z"
+  },
+  {
+    "id": 7,
+    "player1": "Daniel",
+    "opponent": "Pepe",
+    "score": "5 - 3",
+    "winner": "Daniel",
+    "date": "2025-09-21T18:45:00Z"
+  },
+  {
+    "id": 8,
+    "player1": "María",
+    "opponent": "Daniel",
+    "score": "2 - 5",
+    "winner": "Daniel",
+    "date": "2025-09-20T10:20:00Z"
+  },
+  {
+    "id": 9,
+    "player1": "Lucas",
+    "opponent": "Pepe",
+    "score": "4 - 5",
+    "winner": "Pepe",
+    "date": "2025-09-19T09:15:00Z"
+  },
+  {
+    "id": 10,
+    "player1": "Daniel",
+    "opponent": "Pepe",
+    "score": "5 - 3",
+    "winner": "Daniel",
+    "date": "2025-09-21T18:45:00Z"
+  },
+  {
+    "id": 11,
+    "player1": "María",
+    "opponent": "Daniel",
+    "score": "2 - 5",
+    "winner": "Daniel",
+    "date": "2025-09-20T10:20:00Z"
+  },
+  {
+    "id": 12,
+    "player1": "Lucas",
+    "opponent": "Pepe",
+    "score": "4 - 5",
+    "winner": "Pepe",
+    "date": "2025-09-19T09:15:00Z"
+  }
+]

@@ -14,5 +14,36 @@
   .center-screen {
     @apply flex flex-col min-w-screen min-h-[100dvh] items-center justify-center;
   }
+  /* Estilos para la paginación de Simple-Datatables */
+  .datatable-pagination ul {
+    @apply flex gap-6 justify-center mt-4;
+  }
+
+  .datatable-pagination li {
+    @apply list-none;
+  }
+
+  .datatable-pagination a,
+  .datatable-pagination a * ,
+  .datatable-pagination button,
+  .datatable-pagination button * {
+    @apply px-0 py-0 rounded transition;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    display: inline-block;
+  }
+
+  .datatable-pagination .active a {
+    @apply bg-blue-500 text-white;
+  }
+
+  /* Personalizar el select de elementos por página */
+  .datatable-selector {
+    @apply bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded px-2 py-1;
+  }
+
+  .datatable-selector:focus {
+    @apply outline-none ring-2 ring-blue-400;
+  }
 }
 

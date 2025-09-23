@@ -33,6 +33,13 @@ export function setupEventListeners() {
       return;
     }
 
+    if (target.closest(".datatable-pagination a")) {
+      event.preventDefault();            // evita que siga el enlace
+      event.stopPropagation();           // Detiene la propagación hacia otros listeners
+      event.stopImmediatePropagation();  // frena Simple-Datatables y otros listeners
+      return;
+    }
+
     // 🔹 3. Navegación genérica
     if (target.dataset.page) {
       event.preventDefault();

@@ -1,15 +1,7 @@
-// import "./styles/style.css";
-/* import typescriptLogo from "./typescript.svg";
-import viteLogo from "/vite.svg";
-import { setupCounter } from "./components/counter.ts"; */
-
 import "@/app/styles/global.css";
 
-//import { navigateTo, handlePopState } from "./navigation";
 import { navigateTo, handlePopState } from "@/app/navigation";
-//import { setupEventListeners } from "./events";
 import { setupEventListeners } from "@/app/events";
-//import { loadAndRender, loadUserForCode, setupRegisterForm, validateLogin } from "./users";
 import { loadAndRender, loadUserForCode } from "@/modules/users";
 
 //import { startGame } from "./game";
@@ -37,14 +29,6 @@ navigateTo(initialPage, true);
 // Configurar los eventos
 setupEventListeners();
 window.addEventListener("popstate", handlePopState);
-
-// Ejecutar el setup del registro tras cada navegación
-/* window.addEventListener("DOMContentLoaded", () => {
-  if (location.pathname.includes("login")) {
-    validateLogin();
-    setupRegisterForm();
-  }
-}); */
 
 // ====================
 // 🌙 Toggle dark mode
@@ -83,7 +67,6 @@ if (toggle) {
 if (localStorage.getItem("theme") === "dark") {
   document.documentElement.classList.add("dark");
 }
-
 
 // ====================
 // 🌐 Languajes

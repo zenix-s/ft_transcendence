@@ -1,6 +1,6 @@
 import { DataTable } from "simple-datatables";
 // import { getCurrentUser } from "@/modules/users";
-// import { t } from "@/app/i18n";
+import { t } from "@/app/i18n";
 
 interface Match {
   id: number;
@@ -11,7 +11,9 @@ interface Match {
   date: string;
 }
 
-export async function loadMatchHistory() {
+export let matchTable: DataTable; // Variable global o de módulo
+
+export async function loadMatchHistory(perPage: number = 5) {
   try {
     /* const resp = await getCurrentUser();
     if (!resp) {
@@ -32,10 +34,10 @@ export async function loadMatchHistory() {
         (match) => `
         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
           <!-- <td class="px-4 py-2 text-gray-800 dark:text-gray-200">${match.player1}</td> -->
-          <td class="px-4 py-2 text-gray-800 dark:text-gray-200 break-words">${match.opponent}</td>
-          <td class="px-4 py-2 text-center text-gray-800 dark:text-gray-200 font-semibold">${match.score}</td>
-          <td class="px-4 py-2 text-center text-green-600 dark:text-green-400 break-words">${match.winner}</td>
-          <td class="px-4 py-2 text-right text-gray-500 dark:text-gray-400">
+          <td data-label="Opponent" class="px-4 py-2 text-center text-primary sm:text-gray-800 sm:dark:text-gray-200 font-light whitespace-nowrap">${match.opponent}</td>
+          <td data-label="Resultado" class="px-4 py-2 text-center text-primary sm:text-gray-800 sm:dark:text-gray-200 font-light whitespace-nowrap">${match.score}</td>
+          <td data-label="Ganador" class="px-4 py-2 text-center text-green-600 dark:text-green-400 whitespace-nowrap">${match.winner}</td>
+          <td data-label="Fecha" class="px-4 py-2 text-center text-gray-500 dark:text-gray-400 whitespace-nowrap">
             ${new Date(match.date).toLocaleString("es-ES", {
               dateStyle: "short",
               timeStyle: "short",
@@ -47,17 +49,21 @@ export async function loadMatchHistory() {
       .join("");
 
     // 3. Inicializar la tabla con paginación
-    new DataTable("#matchTable", {
-      perPage: 5,
+    matchTable  = new DataTable("#matchTable", {
+      perPage: perPage,
       perPageSelect: [5, 10, 20],
       searchable: false,
       sortable: false,
       labels: {
-        placeholder: "Buscar...",
+        placeholder: t("search"),
         //perPage: "{select} por página",
-        perPage: "por página",
-        noRows: "No hay partidas registradas",
-        info: "Mostrando {start} a {end} de {rows} partidas",
+        perPage: t("perPage"),
+        noRows: t("noGames"),
+        //info: "Mostrando {start} a {end} de {rows} partidas",
+        //info: "t('showing')" + " {start} " + "t('to')" + " {end} " + "t('of')" + " {rows} " + "t('games')",
+        //info: `t('showing')` + {start} + "t('to')" + " {end} " + "t('of')" + " {rows} " + t('games')`,
+        //info: "{start} - {end} (total: {rows})",
+        info: t("showing") + " {start} " + t("to") + " {end} " + t("of") + " {rows} " + t("games")
       }
     });
 

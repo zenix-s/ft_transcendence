@@ -45,5 +45,58 @@
   .datatable-selector:focus {
     @apply outline-none ring-2 ring-blue-400;
   }
+
+  .datatable-container {
+    @apply overflow-x-auto;
+  }
+
+  .datatable-info {
+    @apply text-xs sm:text-base;
+  }
+
+  /* === TABLE -> CARDS EN MOBILE === */
+  @media (max-width: 640px) {
+    /* Convertimos tabla en bloques */
+    table, thead, tbody, tr, td, th {
+      @apply block w-full;
+    }
+
+    thead {
+      @apply hidden; /* Ocultamos cabecera */
+    }
+
+    tbody {
+      @apply flex flex-col items-center gap-4 py-2; /* cards centradas */
+    }
+
+    /* Cada fila será una "card" */
+    tr {
+      @apply  rounded-xl shadow-md hover:shadow-lg transition-transform hover:-translate-y-1 overflow-hidden;
+    }
+
+    /* Colores alternos */
+    tr:nth-child(odd) {
+      @apply bg-gray-900;
+    }
+    tr:nth-child(even) {
+      @apply bg-secondary;
+    }
+
+    /* Estilo de celdas dentro de las cards */
+    td {
+      @apply flex justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700;
+    }
+
+    /* Quitamos borde al último elemento */
+    td:last-child {
+      @apply border-b-0;
+    }
+
+    /* Etiqueta de cada campo */
+    td::before {
+      content: attr(data-label);
+      @apply font-semibold text-primary;
+    }
+  }
 }
 

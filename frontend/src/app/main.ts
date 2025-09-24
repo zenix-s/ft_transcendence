@@ -10,6 +10,7 @@ import { loadAndRender, loadUserForCode } from "@/modules/users";
 //import { GlitchButton } from "./components/GlitchButton";
 import { GlitchButton } from "@/components/GlitchButton";
 import { loadChart } from "@/components/graph";
+import { matchTable, loadMatchHistory } from "@/components/history";
 
 // i18n
 //import { setLanguage, t, currentLang } from "./i18n";
@@ -107,7 +108,7 @@ export function renderButtons() {
 renderButtons();
 
 // Cuando cambie idioma, vuelve a renderizar
-document.addEventListener("i18n-updated", () => {
+document.addEventListener("i18n-updated", async () => {
   renderButtons();
   //Reload doughnut
   // Obtener el canvas
@@ -120,4 +121,20 @@ document.addEventListener("i18n-updated", () => {
   else {
     loadChart();
   }
+
+  // Reload History
+  let currentPerPage = 5; // default
+  
+  const perPageSelect = document.querySelector<HTMLSelectElement>(".datatable-selector");
+  if (perPageSelect) {
+    currentPerPage = parseInt(perPageSelect.value, 10); // lee lo que el usuario ha seleccionado
+  }
+
+  // Destruir la tabla existente si ya hay una
+  if (matchTable) {
+    matchTable.destroy();
+  }
+
+  // Volver a cargar la tabla (la misma función loadMatchHistory recrea la DataTable)
+  await loadMatchHistory(currentPerPage);
 });

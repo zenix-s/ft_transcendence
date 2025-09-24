@@ -4,7 +4,7 @@ import { updateTexts } from "@/app/i18n";
 import { loadChart } from "@/components/graph"
 import { startGame } from "@/modules/game/game.ts";
 import { Tooltip } from "@/components/tooltip";
-import { loadMatchHistory } from "@/app/history";
+import { loadMatchHistory } from "@/components/history";
 
 export async function navigateTo(page: string, skipPushState = false, replace = false) {
   console.log("navigation");

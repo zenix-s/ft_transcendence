@@ -5,6 +5,7 @@ Hola12345
 */
 
 
+import { conectWebSocket } from "./conectWebSocket.js";
 import type { Player, Score, Ball } from "./gameData.js";
 import { fetchGameId, toJoinGame, fetchGameState } from "./getData.js";
 
@@ -46,6 +47,9 @@ async function look()
 		return ;
 	}
 	console.log("si gameState");
+
+
+	conectWebSocket();
 }
 
 function actualizeValues(posPlayerL:number, playerL:Player, posPlayerR:number, playerR:Player,

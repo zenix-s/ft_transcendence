@@ -14,14 +14,14 @@ export const invalidRequestError: ErrorResult = 'invalidRequestError';
 
 export interface ISetPlayerReadyRequest {
     gameId: string;
-    playerId: string;
+    playerId: number;
     isReady: boolean;
 }
 
 export interface ISetPlayerReadyResponse {
     message: string;
     gameId: string;
-    playerId: string;
+    playerId: number;
     isReady: boolean;
     gameStarted: boolean;
 }
@@ -40,7 +40,7 @@ export default class SetPlayerReadyCommand
             return Result.error(badRequestError);
         }
 
-        if (!request.gameId || !request.playerId) {
+        if (!request.gameId || !request.playerId || typeof request.playerId !== 'number') {
             return Result.error(invalidRequestError);
         }
 

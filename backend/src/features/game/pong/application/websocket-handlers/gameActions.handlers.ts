@@ -17,9 +17,7 @@ export const WS_ERRORS = {
     NOT_AUTHENTICATED: 'NotAuthenticated' as ErrorResult,
 };
 
-export async function handleRequestState(
-    gameId: string | undefined
-): Promise<string> {
+export async function handleRequestState(gameId: string | undefined): Promise<string> {
     const gameRepository = GameRepository.getInstance();
     if (!gameId) {
         return JSON.stringify({ error: WS_ERRORS.MISSING_GAME_ID });
@@ -45,7 +43,7 @@ export async function handleRequestState(
 export async function handleMoverPaddle(
     direction: 'up' | 'down',
     currentGameId: string | null,
-    currentUserId: string | null
+    currentUserId: number | null
 ): Promise<string> {
     const gameRepository = GameRepository.getInstance();
     if (!currentGameId || !currentUserId) {
@@ -77,7 +75,7 @@ export async function handleMoverPaddle(
 
 export async function handleSetReady(
     currentGameId: string | null,
-    currentUserId: string | null,
+    currentUserId: number | null,
     fastify: FastifyInstance
 ): Promise<{ response: string; gameStarted: boolean }> {
     if (!currentGameId || !currentUserId) {

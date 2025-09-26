@@ -2,12 +2,9 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import CreateGameCommand from '../application/mediators/CreateGame.command';
 import JoinGameCommand from '../application/mediators/JoinGame.command';
 import GetGameStateQuery from '../application/mediators/GetGameState.query';
-import { Result } from '@shared/abstractions/Result';
+import { handleCommand } from '@shared/utils/http.utils';
 
 interface JoinGameRequest {
-    Body: {
-        userId?: string;
-    };
     Params: {
         gameId: string;
     };
@@ -24,28 +21,6 @@ interface GameActionRequest {
     Params: {
         gameId: string;
     };
-}
-
-async function handleCommand<TRequest, TResponse>(
-    commandOrQuery: {
-        validate(request?: TRequest): Result<void>;
-        execute(request?: TRequest): Promise<Result<TResponse>>;
-    },
-    request: TRequest | undefined,
-    reply: FastifyReply,
-    successStatus = 200
-): Promise<FastifyReply> {
-    const validationResult = commandOrQuery.validate(request);
-    if (!validationResult.isSuccess) {
-        return reply.status(400).send({ error: validationResult.error });
-    }
-
-    const result = await commandOrQuery.execute(request);
-    if (!result.isSuccess) {
-        return reply.status(409).send({ error: result.error });
-    }
-
-    return reply.status(successStatus).send(result.value);
 }
 
 export default async function pongHttpRoutes(fastify: FastifyInstance) {
@@ -97,11 +72,11 @@ export default async function pongHttpRoutes(fastify: FastifyInstance) {
         async (req: FastifyRequest<CreateGameRequest>, reply: FastifyReply) => {
             const createGameCommand = new CreateGameCommand(fastify);
             // Get authenticated user ID from JWT token
-            const userIdNum = req.user?.userId;
+            const userId = req.user?.id;
             const request = {
                 winnerScore: req.body?.winnerScore,
                 maxGameTime: req.body?.maxGameTime,
-                userId: userIdNum ? parseInt(userIdNum) : undefined,
+                userId: userId,
             };
 
             return handleCommand(createGameCommand, request, reply, 201);
@@ -120,15 +95,13 @@ export default async function pongHttpRoutes(fastify: FastifyInstance) {
         async (req: FastifyRequest<JoinGameRequest>, reply: FastifyReply) => {
             const { gameId } = req.params;
             // Get authenticated user ID from JWT token
-            const userIdNum = req.user?.userId;
-            const userId = req.body?.userId || userIdNum?.toString();
+            const userId = req.user?.id;
             const joinGameCommand = new JoinGameCommand(fastify);
             return handleCommand(
                 joinGameCommand,
                 {
                     gameId,
-                    userId,
-                    userIdNum: userIdNum ? parseInt(userIdNum) : undefined,
+                    userId: userId,
                 },
                 reply
             );

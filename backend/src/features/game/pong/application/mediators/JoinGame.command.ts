@@ -16,13 +16,12 @@ export const invalidRequestError: ErrorResult = 'invalidRequestError';
 
 export interface IJoinGameRequest {
     gameId: string;
-    userId?: string;
-    userIdNum?: number; // Numeric user ID from database
+    userId: number;
 }
 
 export interface IJoinGameResponse {
     message: string;
-    userId: string;
+    userId: number;
     gameId: string;
     alreadyJoined?: boolean;
 }
@@ -48,6 +47,10 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
             return Result.error(invalidRequestError);
         }
 
+        if (!request.userId || typeof request.userId !== 'number') {
+            return Result.error(invalidRequestError);
+        }
+
         return Result.success(undefined);
     }
 
@@ -55,11 +58,7 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
         if (!request) return Result.error(badRequestError);
 
         try {
-            const { gameId } = request;
-            // Use string ID for game logic
-            const userId = request.userId || crypto.randomUUID();
-            // Use numeric ID for database if provided
-            const userIdNum = request.userIdNum;
+            const { gameId, userId } = request;
 
             const gameResult = await this.gameRepository.getGame(gameId);
             if (!gameResult.isSuccess || !gameResult.value) {
@@ -87,23 +86,22 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
                 return Result.error('gameUpdateError');
             }
 
-            // Add player to match in database if we have a numeric user ID
-            if (userIdNum) {
-                try {
-                    const matchId = GameRepository.getInstance().getMatchId(gameId);
+            // Add player to match in database
+            try {
+                const matchId = GameRepository.getInstance().getMatchId(gameId);
 
-                    if (matchId) {
-                        await this.matchPlayerRepository.add(matchId, userIdNum);
+                if (matchId) {
+                    console.debug('userId: ' + userId);
+                    await this.matchPlayerRepository.add(matchId, userId);
 
-                        // Start match if both players joined
-                        if (game.getPlayerCount() === 2) {
-                            await this.matchRepository.start(matchId);
-                        }
+                    // Start match if both players joined
+                    if (game.getPlayerCount() === 2) {
+                        await this.matchRepository.start(matchId);
                     }
-                } catch (dbError) {
-                    // Log but don't fail - player is already added to game in memory
-                    this.fastify.log.error(dbError, 'Failed to add player to match in database');
                 }
+            } catch (dbError) {
+                // Log but don't fail - player is already added to game in memory
+                this.fastify.log.error(dbError, 'Failed to add player to match in database');
             }
 
             return Result.success({

@@ -5,10 +5,10 @@ interface PlayerState {
 }
 
 export class PongPlayer {
-    private playerId: string;
+    private playerId: number;
     private state: PlayerState;
 
-    constructor(playerId: string) {
+    constructor(playerId: number) {
         this.playerId = playerId;
         this.state = {
             position: 50,
@@ -33,7 +33,7 @@ export class PongPlayer {
         return this.state;
     }
 
-    public getId(): string {
+    public getId(): number {
         return this.playerId;
     }
 
@@ -79,7 +79,7 @@ export class PongGame {
         this.maxGameTime = maxGameTime;
     }
 
-    public addPlayer(playerId: string): boolean {
+    public addPlayer(playerId: number): boolean {
         if (!this.player1) {
             this.player1 = new PongPlayer(playerId);
             return true;
@@ -90,7 +90,7 @@ export class PongGame {
         return false;
     }
 
-    public setPlayerReady(playerId: string, ready: boolean): boolean {
+    public setPlayerReady(playerId: number, ready: boolean): boolean {
         const player = this.getPlayerById(playerId);
         if (!player) return false;
 
@@ -185,7 +185,7 @@ export class PongGame {
         };
     }
 
-    public movePlayer(playerId: string, direction: 'up' | 'down'): boolean {
+    public movePlayer(playerId: number, direction: 'up' | 'down'): boolean {
         const player = this.getPlayerById(playerId);
         if (!player) return false;
 
@@ -197,7 +197,7 @@ export class PongGame {
         return true;
     }
 
-    private getPlayerById(playerId: string): PongPlayer | undefined {
+    private getPlayerById(playerId: number): PongPlayer | undefined {
         if (this.player1?.getId() === playerId) return this.player1;
         if (this.player2?.getId() === playerId) return this.player2;
         return undefined;
@@ -209,13 +209,13 @@ export class PongGame {
             gameTimer: this.gameTimer,
             player1: this.player1
                 ? {
-                      id: this.player1.getId(),
+                      id: this.player1.getId().toString(),
                       ...this.player1.getState(),
                   }
                 : null,
             player2: this.player2
                 ? {
-                      id: this.player2.getId(),
+                      id: this.player2.getId().toString(),
                       ...this.player2.getState(),
                   }
                 : null,
@@ -238,7 +238,7 @@ export class PongGame {
         return count;
     }
 
-    public hasPlayer(playerId: string): boolean {
+    public hasPlayer(playerId: number): boolean {
         return this.player1?.getId() === playerId || this.player2?.getId() === playerId;
     }
 
@@ -266,9 +266,9 @@ export class PongGame {
         const player2State = this.player2.getState();
 
         if (player1State.score > player2State.score) {
-            return this.player1.getId();
+            return this.player1.getId().toString();
         } else if (player2State.score > player1State.score) {
-            return this.player2.getId();
+            return this.player2.getId().toString();
         }
 
         return null;

@@ -12,7 +12,6 @@ import SaveMatchHistoryCommand from '../application/mediators/SaveMatchHistory.c
 
 interface WebSocketMessage {
     action: Actions;
-    userId?: string;
     gameId?: string;
     token?: string; // JWT token for authentication
 }
@@ -21,7 +20,6 @@ function validateWebSocketMessage(data: unknown): data is WebSocketMessage {
     if (!data || typeof data !== 'object') return false;
     const obj = data as Record<string, unknown>;
     if (!PossibleActions.includes(obj.action as Actions)) return false;
-    if (obj.userId !== undefined && typeof obj.userId !== 'string') return false;
     if (obj.gameId !== undefined && typeof obj.gameId !== 'string') return false;
     return true;
 }
@@ -99,7 +97,7 @@ export default async function pongWebSocketRoutes(fastify: FastifyInstance) {
         },
         (socket: WebSocket) => {
             let currentGameId: string | null = null;
-            let currentUserId: string | null = null;
+            let currentUserId: number | null = null;
             let isAuthenticated = false;
 
             socket.on('message', async (message) => {
@@ -113,7 +111,7 @@ export default async function pongWebSocketRoutes(fastify: FastifyInstance) {
                         return;
                     }
 
-                    const { action, userId, gameId, token } = data;
+                    const { action, gameId, token } = data;
 
                     // Handle AUTH action first
                     if (action === Actions.AUTH) {
@@ -124,9 +122,9 @@ export default async function pongWebSocketRoutes(fastify: FastifyInstance) {
 
                         try {
                             // Verify JWT token
-                            const decoded = (await fastify.jwt.verify(token)) as { userId?: string };
+                            const decoded = (await fastify.jwt.verify(token)) as { id?: number };
                             isAuthenticated = true;
-                            currentUserId = decoded.userId || userId || null;
+                            currentUserId = decoded.id || null;
                             socket.send(
                                 JSON.stringify({
                                     type: 'authSuccess',
@@ -153,7 +151,7 @@ export default async function pongWebSocketRoutes(fastify: FastifyInstance) {
 
                             if (gameId && !response.includes('error')) {
                                 currentGameId = gameId;
-                                currentUserId = userId || null;
+                                // currentUserId is already set from JWT token
                             }
                             break;
                         }

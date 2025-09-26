@@ -66,7 +66,7 @@ export default class SaveMatchHistoryCommand
             const finalScores: Record<number, number> = {};
             const winnerIds: number[] = [];
 
-            // Convert player IDs to numbers and collect scores
+            // Collect scores and winner IDs (player IDs are already strings in gameState)
             if (gameState.player1) {
                 const player1Id = parseInt(gameState.player1.id);
                 if (!isNaN(player1Id)) {

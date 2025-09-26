@@ -2,7 +2,6 @@ import { SQLiteConnection } from '@shared/infrastructure/db/SQLiteConnection';
 import {
     Match,
     MatchStatus,
-    MatchWithPlayers,
     MatchWithDetails,
     CreateMatchDto,
     EndMatchDto,
@@ -22,40 +21,6 @@ export class MatchRepository {
     async findById(id: number): Promise<Match | null> {
         const result = await this.connection.selectOne<Match>('SELECT * FROM matches WHERE id = ?', [id]);
         return result;
-    }
-
-    async findByStatus(status: MatchStatus): Promise<Match[]> {
-        const result = await this.connection.selectMany<Match>(
-            'SELECT * FROM matches WHERE status = ? ORDER BY created_at DESC',
-            [status]
-        );
-        return result;
-    }
-
-    async findByGameType(gameTypeId: number): Promise<Match[]> {
-        const result = await this.connection.selectMany<Match>(
-            'SELECT * FROM matches WHERE game_type_id = ? ORDER BY created_at DESC',
-            [gameTypeId]
-        );
-        return result;
-    }
-
-    async findWithPlayers(matchId: number): Promise<MatchWithPlayers | null> {
-        const match = await this.findById(matchId);
-        if (!match) return null;
-
-        const players = await this.connection.selectMany(
-            `SELECT mp.*, u.username
-             FROM match_players mp
-             JOIN users u ON mp.user_id = u.id
-             WHERE mp.match_id = ?`,
-            [matchId]
-        );
-
-        return {
-            ...match,
-            players,
-        };
     }
 
     async findWithDetails(matchId: number): Promise<MatchWithDetails | null> {
@@ -147,15 +112,6 @@ export class MatchRepository {
         return await this.findById(matchId);
     }
 
-    async updateScore(matchId: number, userId: number, score: number): Promise<void> {
-        await this.connection.execute(
-            `UPDATE match_players
-             SET score = ?
-             WHERE match_id = ? AND user_id = ?`,
-            [score, matchId, userId]
-        );
-    }
-
     async end(dto: EndMatchDto): Promise<Match | null> {
         await this.connection.execute('BEGIN TRANSACTION');
 
@@ -185,16 +141,6 @@ export class MatchRepository {
             await this.connection.execute('ROLLBACK');
             throw error;
         }
-    }
-
-    async cancel(matchId: number): Promise<Match | null> {
-        await this.connection.execute(
-            `UPDATE matches
-             SET status = ?, ended_at = CURRENT_TIMESTAMP
-             WHERE id = ? AND status IN (?, ?)`,
-            [MatchStatus.CANCELLED, matchId, MatchStatus.PENDING, MatchStatus.IN_PROGRESS]
-        );
-        return await this.findById(matchId);
     }
 
     async delete(id: number): Promise<boolean> {

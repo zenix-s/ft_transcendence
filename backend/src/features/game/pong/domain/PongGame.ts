@@ -64,8 +64,10 @@ export class PongGame {
     private gameTimer: number;
     private winnerScore: number;
     private maxGameTime?: number;
+    private isPlayer2AI: boolean;
+    private aiDifficulty: number; // 0-1, where 1 is perfect tracking
 
-    constructor(winnerScore = 5, maxGameTime = 120) {
+    constructor(winnerScore = 5, maxGameTime = 120, isPlayer2AI = false, aiDifficulty = 0.95) {
         this.isRunning = false;
         this.player1 = undefined;
         this.player2 = undefined;
@@ -77,13 +79,20 @@ export class PongGame {
         this.gameTimer = 0;
         this.winnerScore = winnerScore;
         this.maxGameTime = maxGameTime;
+        this.isPlayer2AI = isPlayer2AI;
+        this.aiDifficulty = aiDifficulty;
     }
 
     public addPlayer(playerId: number): boolean {
         if (!this.player1) {
             this.player1 = new PongPlayer(playerId);
+            // Si es modo singleplayer, agregar automáticamente la IA como player2
+            if (this.isPlayer2AI && !this.player2) {
+                this.player2 = new PongPlayer(-1); // ID -1 para IA (usuario especial en BD)
+                this.player2.setReady(true); // IA siempre está lista
+            }
             return true;
-        } else if (!this.player2) {
+        } else if (!this.player2 && !this.isPlayer2AI) {
             this.player2 = new PongPlayer(playerId);
             return true;
         }
@@ -108,6 +117,10 @@ export class PongGame {
     }
 
     public arePlayersReady(): boolean {
+        // En modo IA, solo necesitamos que player1 esté listo
+        if (this.isPlayer2AI) {
+            return this.player1?.isReady() === true;
+        }
         return this.player1?.isReady() === true && this.player2?.isReady() === true;
     }
 
@@ -132,10 +145,54 @@ export class PongGame {
         const deltaTime = (now - this.lastUpdate) / 1000;
         this.lastUpdate = now;
 
+        // Actualizar IA si está activa
+        if (this.isPlayer2AI && this.player2) {
+            this.updateAI();
+        }
+
         this.updateBall(deltaTime);
         this.checkCollisions();
         this.gameTimer += deltaTime;
         this.checkWinConditions();
+    }
+
+    private updateAI(): void {
+        if (!this.player2 || !this.isPlayer2AI) return;
+
+        const player2State = this.player2.getState();
+        const ballY = this.ball.position.y;
+        const paddleY = player2State.position;
+
+        // Calcular la diferencia entre la posición del paddle y la pelota
+        const diff = ballY - paddleY;
+
+        // Aplicar un umbral para evitar movimientos muy pequeños
+        const threshold = 2;
+
+        // Mover la IA hacia la pelota con la dificultad configurada
+        if (Math.abs(diff) > threshold) {
+            // La velocidad de movimiento depende de la dificultad
+            const moveSpeed = this.aiDifficulty;
+
+            if (diff > 0) {
+                // Mover hacia abajo
+                const newPosition = Math.min(100, paddleY + moveSpeed);
+                // Actualizar directamente la posición en lugar de usar moveUp/moveDown
+                for (let i = 0; i < Math.ceil(moveSpeed); i++) {
+                    if (player2State.position < newPosition) {
+                        this.player2.moveDown();
+                    }
+                }
+            } else {
+                // Mover hacia arriba
+                const newPosition = Math.max(0, paddleY - moveSpeed);
+                for (let i = 0; i < Math.ceil(moveSpeed); i++) {
+                    if (player2State.position > newPosition) {
+                        this.player2.moveUp();
+                    }
+                }
+            }
+        }
     }
 
     private updateBall(deltaTime: number): void {
@@ -224,6 +281,7 @@ export class PongGame {
             gameRules: this.getGameRules(),
             isGameOver: this.isGameOver(),
             winner: this.isGameOver() ? this.getWinner() : null,
+            isSinglePlayer: this.isPlayer2AI,
         };
     }
 
@@ -296,5 +354,9 @@ export class PongGame {
             winnerScore: this.winnerScore,
             maxGameTime: this.maxGameTime,
         };
+    }
+
+    public isSinglePlayerMode(): boolean {
+        return this.isPlayer2AI;
     }
 }

@@ -69,7 +69,15 @@ export default fp(async (fastify: FastifyInstance) => {
     // Insertar usuarios de prueba
     const hashedPassword1 = await hashPassword('1234');
     const hashedPassword2 = await hashPassword('1234');
+    const hashedPasswordAI = await hashPassword('AI_SYSTEM_USER_NO_LOGIN');
 
+    // Primero insertar el usuario IA con ID -1
+    await connection.execute(
+        `INSERT OR IGNORE INTO users (id, username, email, password) VALUES (-1, 'AI_Player', 'ai@system.local', ?)`,
+        [hashedPasswordAI]
+    );
+
+    // Luego insertar usuarios de prueba normales
     await connection.execute(
         `
         INSERT OR IGNORE INTO users (username, email, password)

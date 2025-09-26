@@ -67,6 +67,49 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
 
             const game = gameResult.value;
 
+            // Check if it's a single-player game
+            if (game.isSinglePlayerMode()) {
+                // Check if player is already in the game
+                if (game.hasPlayer(userId)) {
+                    return Result.success({
+                        message: 'Already in the single-player game',
+                        userId: userId,
+                        gameId: gameId,
+                        alreadyJoined: true,
+                    });
+                }
+
+                // Check if game already has a human player (not the AI)
+                if (game.getPlayerCount() >= 2) {
+                    return Result.error('singlePlayerGameAlreadyHasPlayer');
+                }
+
+                // Allow the first human player to join
+                const added = game.addPlayer(userId);
+                if (!added) {
+                    return Result.error('cannotJoinSinglePlayerGame');
+                }
+
+                const updateResult = await this.gameRepository.updateGame(gameId, game);
+                if (!updateResult.isSuccess) {
+                    return Result.error('gameUpdateError');
+                }
+
+                // Add player to match in database
+                try {
+                    await this.matchPlayerRepository.add(gameId, userId);
+                } catch (dbError) {
+                    // Log but don't fail - player is already added to game in memory
+                    this.fastify.log.error(dbError, 'Failed to add player to match in database');
+                }
+
+                return Result.success({
+                    message: `Successfully joined single-player game ${gameId}`,
+                    userId: userId,
+                    gameId: gameId,
+                });
+            }
+
             if (game.hasPlayer(userId)) {
                 return Result.success({
                     message: 'Already in the game',

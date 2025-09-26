@@ -41,12 +41,6 @@ export interface CreateMatchDto {
     player_ids: number[];
 }
 
-export interface UpdateMatchScoreDto {
-    match_id: number;
-    user_id: number;
-    score: number;
-}
-
 export interface EndMatchDto {
     match_id: number;
     winner_ids: number[];
@@ -54,9 +48,6 @@ export interface EndMatchDto {
 }
 
 // Match with Relations
-export interface MatchWithPlayers extends Match {
-    players: MatchPlayer[];
-}
 
 export interface MatchPlayerWithUser extends MatchPlayer {
     username: string;

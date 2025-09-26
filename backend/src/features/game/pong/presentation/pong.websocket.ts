@@ -64,6 +64,7 @@ function startGameLoop(gameId: number, fastify: FastifyInstance) {
             return;
         }
 
+        // Update the game (this will also update AI if it's a single-player game)
         game.update();
         await repository.updateGame(gameId, game);
 
@@ -173,6 +174,7 @@ export default async function pongWebSocketRoutes(fastify: FastifyInstance) {
                             socket.send(response);
 
                             if (gameStarted && currentGameId) {
+                                // Start the game loop for both multiplayer and singleplayer games
                                 startGameLoop(currentGameId, fastify);
                             }
                             break;

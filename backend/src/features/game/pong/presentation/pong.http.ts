@@ -56,7 +56,7 @@ export default async function pongHttpRoutes(fastify: FastifyInstance) {
                         type: 'object',
                         properties: {
                             message: { type: 'string' },
-                            gameId: { type: 'string' },
+                            gameId: { type: 'number' },
                         },
                     },
                     400: {
@@ -90,10 +90,41 @@ export default async function pongHttpRoutes(fastify: FastifyInstance) {
                 description: 'Join an existing Pong game',
                 tags: ['Game'],
                 security: [{ bearerAuth: [] }],
+                params: {
+                    type: 'object',
+                    properties: {
+                        gameId: { type: 'string', description: 'Numeric game ID as string in URL' },
+                    },
+                },
+                response: {
+                    200: {
+                        description: 'Successfully joined game',
+                        type: 'object',
+                        properties: {
+                            message: { type: 'string' },
+                            userId: { type: 'number' },
+                            gameId: { type: 'number' },
+                            alreadyJoined: { type: 'boolean' },
+                        },
+                    },
+                    400: {
+                        description: 'Invalid request',
+                        type: 'object',
+                        properties: {
+                            error: { type: 'string' },
+                        },
+                    },
+                },
             },
         },
         async (req: FastifyRequest<JoinGameRequest>, reply: FastifyReply) => {
-            const { gameId } = req.params;
+            const gameIdStr = req.params.gameId;
+            const gameId = parseInt(gameIdStr);
+
+            if (isNaN(gameId)) {
+                return reply.status(400).send({ error: 'Invalid game ID' });
+            }
+
             // Get authenticated user ID from JWT token
             const userId = req.user?.id;
             const joinGameCommand = new JoinGameCommand(fastify);
@@ -115,10 +146,39 @@ export default async function pongHttpRoutes(fastify: FastifyInstance) {
                 description: 'Get current state of the game',
                 tags: ['Game'],
                 security: [{ bearerAuth: [] }],
+                params: {
+                    type: 'object',
+                    properties: {
+                        gameId: { type: 'string', description: 'Numeric game ID as string in URL' },
+                    },
+                },
+                response: {
+                    200: {
+                        description: 'Game state retrieved successfully',
+                        type: 'object',
+                        properties: {
+                            gameId: { type: 'number' },
+                            state: { type: 'object' },
+                        },
+                    },
+                    400: {
+                        description: 'Invalid request',
+                        type: 'object',
+                        properties: {
+                            error: { type: 'string' },
+                        },
+                    },
+                },
             },
         },
         async (req: FastifyRequest<GameActionRequest>, reply: FastifyReply) => {
-            const { gameId } = req.params;
+            const gameIdStr = req.params.gameId;
+            const gameId = parseInt(gameIdStr);
+
+            if (isNaN(gameId)) {
+                return reply.status(400).send({ error: 'Invalid game ID' });
+            }
+
             const getGameStateQuery = new GetGameStateQuery(fastify);
             return handleCommand(getGameStateQuery, { gameId }, reply);
         }

@@ -15,14 +15,14 @@ export const gameFullError: ErrorResult = 'gameFullError';
 export const invalidRequestError: ErrorResult = 'invalidRequestError';
 
 export interface IJoinGameRequest {
-    gameId: string;
+    gameId: number;
     userId: number;
 }
 
 export interface IJoinGameResponse {
     message: string;
     userId: number;
-    gameId: string;
+    gameId: number;
     alreadyJoined?: boolean;
 }
 
@@ -43,7 +43,7 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
             return Result.error(badRequestError);
         }
 
-        if (!request.gameId) {
+        if (!request.gameId || typeof request.gameId !== 'number') {
             return Result.error(invalidRequestError);
         }
 
@@ -88,16 +88,13 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
 
             // Add player to match in database
             try {
-                const matchId = GameRepository.getInstance().getMatchId(gameId);
+                // gameId is now the matchId
+                console.debug('userId: ' + userId);
+                await this.matchPlayerRepository.add(gameId, userId);
 
-                if (matchId) {
-                    console.debug('userId: ' + userId);
-                    await this.matchPlayerRepository.add(matchId, userId);
-
-                    // Start match if both players joined
-                    if (game.getPlayerCount() === 2) {
-                        await this.matchRepository.start(matchId);
-                    }
+                // Start match if both players joined
+                if (game.getPlayerCount() === 2) {
+                    await this.matchRepository.start(gameId);
                 }
             } catch (dbError) {
                 // Log but don't fail - player is already added to game in memory

@@ -13,14 +13,14 @@ export const playerNotInGameError: ErrorResult = 'playerNotInGameError';
 export const invalidRequestError: ErrorResult = 'invalidRequestError';
 
 export interface ISetPlayerReadyRequest {
-    gameId: string;
+    gameId: number;
     playerId: number;
     isReady: boolean;
 }
 
 export interface ISetPlayerReadyResponse {
     message: string;
-    gameId: string;
+    gameId: number;
     playerId: number;
     isReady: boolean;
     gameStarted: boolean;
@@ -40,7 +40,12 @@ export default class SetPlayerReadyCommand
             return Result.error(badRequestError);
         }
 
-        if (!request.gameId || !request.playerId || typeof request.playerId !== 'number') {
+        if (
+            !request.gameId ||
+            typeof request.gameId !== 'number' ||
+            !request.playerId ||
+            typeof request.playerId !== 'number'
+        ) {
             return Result.error(invalidRequestError);
         }
 

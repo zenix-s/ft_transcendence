@@ -12,7 +12,7 @@ export const gameCreationError: ErrorResult = 'gameCreationError';
 
 export interface ICreateGameResponse {
     message: string;
-    gameId: string;
+    gameId: number;
 }
 
 export interface ICreateGameRequest {
@@ -64,39 +64,35 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
             const winnerScore = request?.winnerScore || 5;
             const maxGameTime = request?.maxGameTime || 120;
 
-            const game = new PongGame(winnerScore, maxGameTime);
+            // Create match in database first
+            // Get pong game type (must exist from database initialization)
+            const gameType = await this.gameTypeRepository.findByName('pong');
+            if (!gameType) {
+                return Result.error('Pong game type not found in database');
+            }
 
-            const gameIdResult = await this.gameRepository.createGame(game);
+            // Create match record with creator as first player if provided
+            const playerIds = request?.userId ? [request.userId] : [];
+            const match = await this.matchRepository.create({
+                game_type_id: gameType.id,
+                player_ids: playerIds,
+            });
+
+            // Create game with match ID
+            const game = new PongGame(winnerScore, maxGameTime);
+            const gameIdResult = await this.gameRepository.createGame(game, match.id);
 
             if (!gameIdResult.isSuccess || !gameIdResult.value) {
+                // Delete the match if game creation failed
+                try {
+                    await this.matchRepository.delete(match.id);
+                } catch (deleteError) {
+                    this.fastify.log.error(deleteError, 'Failed to delete match after game creation failure');
+                }
                 return Result.error(gameCreationError);
             }
 
             const gameId = gameIdResult.value;
-
-            // Save match to database
-            try {
-                // Get pong game type (must exist from database initialization)
-                const gameType = await this.gameTypeRepository.findByName('pong');
-                if (!gameType) {
-                    throw new Error(
-                        'Pong game type not found in database. Database may not be properly initialized.'
-                    );
-                }
-
-                // Create match record with creator as first player if provided
-                const playerIds = request?.userId ? [request.userId] : [];
-                const match = await this.matchRepository.create({
-                    game_type_id: gameType.id,
-                    player_ids: playerIds,
-                });
-
-                // Store match ID in game repository
-                GameRepository.getInstance().setMatchId(gameId, match.id);
-            } catch (dbError) {
-                // Log but don't fail - game is already created in memory
-                this.fastify.log.error(dbError, 'Failed to save match to database');
-            }
 
             return Result.success({
                 message: `Game created successfully with ID: ${gameId}`,

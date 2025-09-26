@@ -9,7 +9,7 @@ import { IGameRepository } from '../repositories/Game.IRepository';
 export const saveMatchError: ErrorResult = 'saveMatchError';
 
 export interface ISaveMatchHistoryRequest {
-    gameId: string;
+    gameId: number;
 }
 
 export interface ISaveMatchHistoryResponse {
@@ -30,7 +30,7 @@ export default class SaveMatchHistoryCommand
     }
 
     validate(request?: ISaveMatchHistoryRequest): Result<void> {
-        if (!request || !request.gameId) {
+        if (!request || !request.gameId || typeof request.gameId !== 'number') {
             return Result.error('invalidRequest');
         }
         return Result.success(undefined);
@@ -56,11 +56,8 @@ export default class SaveMatchHistoryCommand
                 return Result.error('gameNotFinished');
             }
 
-            // Get match ID from repository
-            const matchId = GameRepository.getInstance().getMatchId(gameId);
-            if (!matchId) {
-                return Result.error('matchNotFound');
-            }
+            // gameId is now the matchId
+            const matchId = gameId;
 
             // Prepare final scores and winners
             const finalScores: Record<number, number> = {};

@@ -8,12 +8,10 @@ const gameCreationError: ErrorResult = 'GameCreationError';
 
 export class GameRepository implements IGameRepository {
     private static instance: GameRepository;
-    private games: Map<string, PongGame>;
-    private gameToMatchMap: Map<string, number>; // Maps game ID to match ID in database
+    private games: Map<number, PongGame>;
 
     private constructor() {
-        this.games = new Map<string, PongGame>();
-        this.gameToMatchMap = new Map<string, number>();
+        this.games = new Map<number, PongGame>();
     }
 
     public static getInstance(): GameRepository {
@@ -23,25 +21,16 @@ export class GameRepository implements IGameRepository {
         return GameRepository.instance;
     }
 
-    public setMatchId(gameId: string, matchId: number): void {
-        this.gameToMatchMap.set(gameId, matchId);
-    }
-
-    public getMatchId(gameId: string): number | undefined {
-        return this.gameToMatchMap.get(gameId);
-    }
-
-    async createGame(game: PongGame): Promise<Result<string>> {
+    async createGame(game: PongGame, matchId: number): Promise<Result<number>> {
         try {
-            const gameId = crypto.randomUUID();
-            this.games.set(gameId, game);
-            return Result.success(gameId);
+            this.games.set(matchId, game);
+            return Result.success(matchId);
         } catch {
             return Result.error(gameCreationError);
         }
     }
 
-    async getGame(gameId: string): Promise<Result<PongGame>> {
+    async getGame(gameId: number): Promise<Result<PongGame>> {
         const game = this.games.get(gameId);
         if (!game) {
             return Result.error(gameNotFoundError);
@@ -49,7 +38,7 @@ export class GameRepository implements IGameRepository {
         return Result.success(game);
     }
 
-    async updateGame(gameId: string, game: PongGame): Promise<Result<void>> {
+    async updateGame(gameId: number, game: PongGame): Promise<Result<void>> {
         if (!this.games.has(gameId)) {
             return Result.error(gameNotFoundError);
         }
@@ -57,20 +46,19 @@ export class GameRepository implements IGameRepository {
         return Result.success(undefined);
     }
 
-    async deleteGame(gameId: string): Promise<Result<void>> {
+    async deleteGame(gameId: number): Promise<Result<void>> {
         if (!this.games.has(gameId)) {
             return Result.error(gameNotFoundError);
         }
         this.games.delete(gameId);
-        this.gameToMatchMap.delete(gameId);
         return Result.success(undefined);
     }
 
-    async getAllGames(): Promise<Result<Map<string, PongGame>>> {
+    async getAllGames(): Promise<Result<Map<number, PongGame>>> {
         return Result.success(new Map(this.games));
     }
 
-    async exists(gameId: string): Promise<Result<boolean>> {
+    async exists(gameId: number): Promise<Result<boolean>> {
         return Result.success(this.games.has(gameId));
     }
 }

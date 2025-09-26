@@ -15,12 +15,12 @@ export const gameAlreadyRunningError: ErrorResult = 'gameAlreadyRunningError';
 export const invalidRequestError: ErrorResult = 'invalidRequestError';
 
 export interface IStartGameRequest {
-    gameId: string;
+    gameId: number;
 }
 
 export interface IStartGameResponse {
     message: string;
-    gameId: string;
+    gameId: number;
 }
 
 export default class StartGameCommand implements ICommand<IStartGameRequest, IStartGameResponse> {
@@ -35,7 +35,7 @@ export default class StartGameCommand implements ICommand<IStartGameRequest, ISt
             return Result.error(badRequestError);
         }
 
-        if (!request.gameId) {
+        if (!request.gameId || typeof request.gameId !== 'number') {
             return Result.error(invalidRequestError);
         }
 

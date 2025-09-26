@@ -2,12 +2,12 @@ import { WebSocket } from '@fastify/websocket';
 
 export interface WebSocketMessage {
     action: number;
-    gameId?: string;
+    gameId?: number;
 }
 
 export interface ConnectionInfo {
     socket: WebSocket;
-    gameId: string;
+    gameId: number;
     playerId: number;
 }
 

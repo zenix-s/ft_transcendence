@@ -12,7 +12,7 @@ import SaveMatchHistoryCommand from '../application/mediators/SaveMatchHistory.c
 
 interface WebSocketMessage {
     action: Actions;
-    gameId?: string;
+    gameId?: number;
     token?: string; // JWT token for authentication
 }
 
@@ -20,13 +20,13 @@ function validateWebSocketMessage(data: unknown): data is WebSocketMessage {
     if (!data || typeof data !== 'object') return false;
     const obj = data as Record<string, unknown>;
     if (!PossibleActions.includes(obj.action as Actions)) return false;
-    if (obj.gameId !== undefined && typeof obj.gameId !== 'string') return false;
+    if (obj.gameId !== undefined && typeof obj.gameId !== 'number') return false;
     return true;
 }
 
-const gameLoops = new Map<string, NodeJS.Timeout>();
+const gameLoops = new Map<number, NodeJS.Timeout>();
 
-function startGameLoop(gameId: string, fastify: FastifyInstance) {
+function startGameLoop(gameId: number, fastify: FastifyInstance) {
     const repository = GameRepository.getInstance();
     const existingLoop = gameLoops.get(gameId);
     if (existingLoop) {
@@ -96,7 +96,7 @@ export default async function pongWebSocketRoutes(fastify: FastifyInstance) {
             },
         },
         (socket: WebSocket) => {
-            let currentGameId: string | null = null;
+            let currentGameId: number | null = null;
             let currentUserId: number | null = null;
             let isAuthenticated = false;
 

@@ -11,11 +11,11 @@ export const gameNotFoundError: ErrorResult = 'gameNotFoundError';
 export const invalidRequestError: ErrorResult = 'invalidRequestError';
 
 export interface IGetGameStateRequest {
-    gameId: string;
+    gameId: number;
 }
 
 export interface IGetGameStateResponse {
-    gameId: string;
+    gameId: number;
     state: {
         isRunning: boolean;
         gameTimer: number;
@@ -57,7 +57,7 @@ export default class GetGameStateQuery implements IQuery<IGetGameStateRequest, I
             return Result.error(badRequestError);
         }
 
-        if (!request.gameId) {
+        if (!request.gameId || typeof request.gameId !== 'number') {
             return Result.error(invalidRequestError);
         }
 

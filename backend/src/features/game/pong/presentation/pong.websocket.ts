@@ -8,6 +8,7 @@ import {
     handleMoverPaddle,
     handleSetReady,
 } from '../application/websocket-handlers/gameActions.handlers';
+import SaveMatchHistoryCommand from '../application/mediators/SaveMatchHistory.command';
 
 interface WebSocketMessage {
     action: Actions;
@@ -56,9 +57,6 @@ function startGameLoop(gameId: string, fastify: FastifyInstance) {
             // Save match history when game ends
             if (game.isGameOver()) {
                 try {
-                    const SaveMatchHistoryCommand = (
-                        await import('../application/mediators/SaveMatchHistory.command')
-                    ).default;
                     const saveCommand = new SaveMatchHistoryCommand(fastify);
                     await saveCommand.execute({ gameId });
                 } catch (error) {
@@ -77,9 +75,6 @@ function startGameLoop(gameId: string, fastify: FastifyInstance) {
 
             // Save match history when game ends
             try {
-                const SaveMatchHistoryCommand = (
-                    await import('../application/mediators/SaveMatchHistory.command')
-                ).default;
                 const saveCommand = new SaveMatchHistoryCommand(fastify);
                 await saveCommand.execute({ gameId });
             } catch (error) {

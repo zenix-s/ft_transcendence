@@ -4,6 +4,7 @@ import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { IQuery } from '@shared/application/abstractions/IQuery.interface';
 import { handleError } from '@shared/utils/error.utils';
 import { badRequestError } from '@shared/Errors';
+import { GameRepository } from '../../infrastructure/Game.repository';
 
 export const gameNotFoundError: ErrorResult = 'gameNotFoundError';
 
@@ -45,10 +46,11 @@ export interface IGetGameStateResponse {
 }
 
 export default class GetGameStateQuery implements IQuery<IGetGameStateRequest, IGetGameStateResponse> {
-    constructor(
-        private readonly fastify: FastifyInstance,
-        private readonly gameRepository: IGameRepository
-    ) {}
+    private readonly gameRepository: IGameRepository;
+
+    constructor(private readonly fastify: FastifyInstance) {
+        this.gameRepository = GameRepository.getInstance();
+    }
 
     validate(request?: IGetGameStateRequest): Result<void> {
         if (!request) {

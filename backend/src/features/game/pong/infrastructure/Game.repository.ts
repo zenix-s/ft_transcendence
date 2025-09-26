@@ -7,10 +7,28 @@ const gameNotFoundError: ErrorResult = 'GameNotFound';
 const gameCreationError: ErrorResult = 'GameCreationError';
 
 export class GameRepository implements IGameRepository {
+    private static instance: GameRepository;
     private games: Map<string, PongGame>;
+    private gameToMatchMap: Map<string, number>; // Maps game ID to match ID in database
 
-    constructor() {
+    private constructor() {
         this.games = new Map<string, PongGame>();
+        this.gameToMatchMap = new Map<string, number>();
+    }
+
+    public static getInstance(): GameRepository {
+        if (!GameRepository.instance) {
+            GameRepository.instance = new GameRepository();
+        }
+        return GameRepository.instance;
+    }
+
+    public setMatchId(gameId: string, matchId: number): void {
+        this.gameToMatchMap.set(gameId, matchId);
+    }
+
+    public getMatchId(gameId: string): number | undefined {
+        return this.gameToMatchMap.get(gameId);
     }
 
     async createGame(game: PongGame): Promise<Result<string>> {
@@ -44,6 +62,7 @@ export class GameRepository implements IGameRepository {
             return Result.error(gameNotFoundError);
         }
         this.games.delete(gameId);
+        this.gameToMatchMap.delete(gameId);
         return Result.success(undefined);
     }
 

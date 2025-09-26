@@ -2,7 +2,9 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
 import dbPlugin from '@shared/infrastructure/db/db';
 import { fastifyWebsocket } from '@fastify/websocket';
-import gameRoutes from '@features/game/pong/Pong.presentation';
+import pongHttpRoutes from '@features/game/pong/presentation/pong.http';
+import pongWebSocketRoutes from '@features/game/pong/presentation/pong.websocket';
+import matchHistoryPresentation from '@features/match-history/MatchHistory.presentation';
 import fastifyAuth from '@fastify/auth';
 import fastifyJWT from '@fastify/jwt';
 import authRoutes from '@features/authentication/Authentication.presentation';
@@ -73,11 +75,15 @@ async function App(fastify: FastifyInstance) {
     // Register public routes first (no auth required)
     fastify.register(authRoutes, { prefix: '/auth' });
 
+    // Register WebSocket routes (no standard auth - will handle auth internally)
+    fastify.register(pongWebSocketRoutes, { prefix: '/game' });
+
     // Register routes that require authentication
     fastify.register(async function authenticatedContext(fastify) {
         fastify.addHook('preHandler', fastify.auth([fastify.authenticate]));
 
-        fastify.register(gameRoutes, { prefix: '/game' });
+        fastify.register(pongHttpRoutes, { prefix: '/game' });
+        fastify.register(matchHistoryPresentation, { prefix: '/match-history' });
     });
 }
 

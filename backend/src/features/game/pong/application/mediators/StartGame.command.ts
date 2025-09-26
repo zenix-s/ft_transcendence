@@ -4,6 +4,7 @@ import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { handleError } from '@shared/utils/error.utils';
 import { badRequestError } from '@shared/Errors';
+import { GameRepository } from '../../infrastructure/Game.repository';
 
 export const gameNotFoundError: ErrorResult = 'gameNotFoundError';
 
@@ -23,10 +24,11 @@ export interface IStartGameResponse {
 }
 
 export default class StartGameCommand implements ICommand<IStartGameRequest, IStartGameResponse> {
-    constructor(
-        private readonly fastify: FastifyInstance,
-        private readonly gameRepository: IGameRepository,
-    ) {}
+    private readonly gameRepository: IGameRepository;
+
+    constructor(private readonly fastify: FastifyInstance) {
+        this.gameRepository = GameRepository.getInstance();
+    }
 
     validate(request?: IStartGameRequest): Result<void> {
         if (!request) {

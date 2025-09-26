@@ -1,4 +1,5 @@
 export enum Actions {
+    AUTH,
     REQUEST_STATE,
     MOVE_UP,
     MOVE_DOWN,
@@ -6,6 +7,7 @@ export enum Actions {
 }
 
 export const PossibleActions: Actions[] = [
+    Actions.AUTH,
     Actions.REQUEST_STATE,
     Actions.MOVE_UP,
     Actions.MOVE_DOWN,

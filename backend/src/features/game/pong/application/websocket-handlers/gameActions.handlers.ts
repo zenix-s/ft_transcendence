@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify';
-import { IGameRepository } from '../repositories/Game.IRepository';
 import SetPlayerReadyCommand from '../mediators/SetPlayerReady.command';
 import { ErrorResult } from '@shared/abstractions/Result';
+import { GameRepository } from '../../infrastructure/Game.repository';
 
 export const WS_ERRORS = {
     INVALID_FORMAT: 'InvalidFormat' as ErrorResult,
@@ -12,13 +12,15 @@ export const WS_ERRORS = {
     PLAYER_NOT_IN_GAME: 'PlayerNotInGame' as ErrorResult,
     UNKNOWN_ACTION: 'UnknownAction' as ErrorResult,
     INVALID_JSON: 'InvalidJSON' as ErrorResult,
+    MISSING_TOKEN: 'MissingToken' as ErrorResult,
+    INVALID_TOKEN: 'InvalidToken' as ErrorResult,
+    NOT_AUTHENTICATED: 'NotAuthenticated' as ErrorResult,
 };
 
 export async function handleRequestState(
-    gameId: string | undefined,
-    userId: string | undefined,
-    gameRepository: IGameRepository
+    gameId: string | undefined
 ): Promise<string> {
+    const gameRepository = GameRepository.getInstance();
     if (!gameId) {
         return JSON.stringify({ error: WS_ERRORS.MISSING_GAME_ID });
     }
@@ -43,9 +45,9 @@ export async function handleRequestState(
 export async function handleMoverPaddle(
     direction: 'up' | 'down',
     currentGameId: string | null,
-    currentUserId: string | null,
-    gameRepository: IGameRepository
+    currentUserId: string | null
 ): Promise<string> {
+    const gameRepository = GameRepository.getInstance();
     if (!currentGameId || !currentUserId) {
         return JSON.stringify({ error: WS_ERRORS.NO_ACTIVE_GAME });
     }
@@ -76,7 +78,6 @@ export async function handleMoverPaddle(
 export async function handleSetReady(
     currentGameId: string | null,
     currentUserId: string | null,
-    gameRepository: IGameRepository,
     fastify: FastifyInstance
 ): Promise<{ response: string; gameStarted: boolean }> {
     if (!currentGameId || !currentUserId) {
@@ -86,7 +87,7 @@ export async function handleSetReady(
         };
     }
 
-    const setReadyCommand = new SetPlayerReadyCommand(fastify, gameRepository);
+    const setReadyCommand = new SetPlayerReadyCommand(fastify);
     const readyResult = await setReadyCommand.execute({
         gameId: currentGameId,
         playerId: currentUserId,

@@ -81,34 +81,28 @@ export default class CreateSinglePlayerGameCommand
             const maxGameTime = request?.maxGameTime || 120;
             const aiDifficulty = request?.aiDifficulty || 0.95;
 
-            // Get single player game type from database
             const gameType = await this.gameTypeRepository.findByName('single_player_pong');
             if (!gameType) {
                 return Result.error('Single player game type not found in database');
             }
 
-            // Create match record with both human player and AI player (ID -1)
             const playerIds = request?.userId ? [request.userId, -1] : [-1];
             const match = await this.matchRepository.create({
                 game_type_id: gameType.id,
                 player_ids: playerIds,
             });
 
-            // Create game with AI enabled
             const game = new PongGame(winnerScore, maxGameTime, true, aiDifficulty);
 
-            // Add the human player if provided (AI will be added automatically)
             if (request?.userId) {
                 game.addPlayer(request.userId);
             }
 
-            // Start the match in database since both players are present
             await this.matchRepository.start(match.id);
 
             const gameIdResult = await this.gameRepository.createGame(game, match.id);
 
             if (!gameIdResult.isSuccess || !gameIdResult.value) {
-                // Delete the match if game creation failed
                 try {
                     await this.matchRepository.delete(match.id);
                 } catch (deleteError) {

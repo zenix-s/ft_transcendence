@@ -80,7 +80,6 @@ export default async function pongHttpRoutes(fastify: FastifyInstance) {
         },
         async (req: FastifyRequest<CreateGameRequest>, reply: FastifyReply) => {
             const createGameCommand = new CreateGameCommand(fastify);
-            // Get authenticated user ID from JWT token
             const userId = req.user?.id;
             const request = {
                 winnerScore: req.body?.winnerScore,
@@ -147,7 +146,6 @@ export default async function pongHttpRoutes(fastify: FastifyInstance) {
         },
         async (req: FastifyRequest<CreateSinglePlayerGameRequest>, reply: FastifyReply) => {
             const createSinglePlayerGameCommand = new CreateSinglePlayerGameCommand(fastify);
-            // Get authenticated user ID from JWT token
             const userId = req.user?.id;
             const request = {
                 winnerScore: req.body?.winnerScore,
@@ -202,7 +200,6 @@ export default async function pongHttpRoutes(fastify: FastifyInstance) {
                 return reply.status(400).send({ error: 'Invalid game ID' });
             }
 
-            // Get authenticated user ID from JWT token
             const userId = req.user?.id;
             const joinGameCommand = new JoinGameCommand(fastify);
             return handleCommand(

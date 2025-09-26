@@ -64,11 +64,9 @@ export class MatchRepository {
     }
 
     async create(dto: CreateMatchDto): Promise<Match> {
-        // Start transaction
         await this.connection.execute('BEGIN TRANSACTION');
 
         try {
-            // Create match
             const matchResult = await this.connection.execute(
                 `INSERT INTO matches (game_type_id, status)
                  VALUES (?, ?)`,
@@ -80,7 +78,6 @@ export class MatchRepository {
                 throw new Error('Failed to get inserted match ID');
             }
 
-            // Add players
             for (const playerId of dto.player_ids) {
                 await this.connection.execute(
                     `INSERT INTO match_players (match_id, user_id)
@@ -116,7 +113,6 @@ export class MatchRepository {
         await this.connection.execute('BEGIN TRANSACTION');
 
         try {
-            // Update match status
             await this.connection.execute(
                 `UPDATE matches
                  SET status = ?, ended_at = CURRENT_TIMESTAMP
@@ -124,7 +120,6 @@ export class MatchRepository {
                 [MatchStatus.COMPLETED, dto.match_id]
             );
 
-            // Update player scores and winners
             for (const [userId, score] of Object.entries(dto.final_scores)) {
                 const isWinner = dto.winner_ids.includes(Number(userId));
                 await this.connection.execute(

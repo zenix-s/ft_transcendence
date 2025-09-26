@@ -64,26 +64,21 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
             const winnerScore = request?.winnerScore || 5;
             const maxGameTime = request?.maxGameTime || 120;
 
-            // Create match in database first
-            // Get pong game type (must exist from database initialization)
             const gameType = await this.gameTypeRepository.findByName('pong');
             if (!gameType) {
                 return Result.error('Pong game type not found in database');
             }
 
-            // Create match record with creator as first player if provided
             const playerIds = request?.userId ? [request.userId] : [];
             const match = await this.matchRepository.create({
                 game_type_id: gameType.id,
                 player_ids: playerIds,
             });
 
-            // Create game with match ID
             const game = new PongGame(winnerScore, maxGameTime);
             const gameIdResult = await this.gameRepository.createGame(game, match.id);
 
             if (!gameIdResult.isSuccess || !gameIdResult.value) {
-                // Delete the match if game creation failed
                 try {
                     await this.matchRepository.delete(match.id);
                 } catch (deleteError) {

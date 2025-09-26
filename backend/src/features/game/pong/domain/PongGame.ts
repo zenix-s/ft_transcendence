@@ -86,10 +86,9 @@ export class PongGame {
     public addPlayer(playerId: number): boolean {
         if (!this.player1) {
             this.player1 = new PongPlayer(playerId);
-            // Si es modo singleplayer, agregar automáticamente la IA como player2
             if (this.isPlayer2AI && !this.player2) {
-                this.player2 = new PongPlayer(-1); // ID -1 para IA (usuario especial en BD)
-                this.player2.setReady(true); // IA siempre está lista
+                this.player2 = new PongPlayer(-1);
+                this.player2.setReady(true);
             }
             return true;
         } else if (!this.player2 && !this.isPlayer2AI) {
@@ -117,7 +116,6 @@ export class PongGame {
     }
 
     public arePlayersReady(): boolean {
-        // En modo IA, solo necesitamos que player1 esté listo
         if (this.isPlayer2AI) {
             return this.player1?.isReady() === true;
         }
@@ -145,7 +143,6 @@ export class PongGame {
         const deltaTime = (now - this.lastUpdate) / 1000;
         this.lastUpdate = now;
 
-        // Actualizar IA si está activa
         if (this.isPlayer2AI && this.player2) {
             this.updateAI();
         }
@@ -163,28 +160,20 @@ export class PongGame {
         const ballY = this.ball.position.y;
         const paddleY = player2State.position;
 
-        // Calcular la diferencia entre la posición del paddle y la pelota
         const diff = ballY - paddleY;
-
-        // Aplicar un umbral para evitar movimientos muy pequeños
         const threshold = 2;
 
-        // Mover la IA hacia la pelota con la dificultad configurada
         if (Math.abs(diff) > threshold) {
-            // La velocidad de movimiento depende de la dificultad
             const moveSpeed = this.aiDifficulty;
 
             if (diff > 0) {
-                // Mover hacia abajo
                 const newPosition = Math.min(100, paddleY + moveSpeed);
-                // Actualizar directamente la posición en lugar de usar moveUp/moveDown
                 for (let i = 0; i < Math.ceil(moveSpeed); i++) {
                     if (player2State.position < newPosition) {
                         this.player2.moveDown();
                     }
                 }
             } else {
-                // Mover hacia arriba
                 const newPosition = Math.max(0, paddleY - moveSpeed);
                 for (let i = 0; i < Math.ceil(moveSpeed); i++) {
                     if (player2State.position > newPosition) {

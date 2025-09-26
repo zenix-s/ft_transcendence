@@ -67,9 +67,7 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
 
             const game = gameResult.value;
 
-            // Check if it's a single-player game
             if (game.isSinglePlayerMode()) {
-                // Check if player is already in the game
                 if (game.hasPlayer(userId)) {
                     return Result.success({
                         message: 'Already in the single-player game',
@@ -79,12 +77,10 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
                     });
                 }
 
-                // Check if game already has a human player (not the AI)
                 if (game.getPlayerCount() >= 2) {
                     return Result.error('singlePlayerGameAlreadyHasPlayer');
                 }
 
-                // Allow the first human player to join
                 const added = game.addPlayer(userId);
                 if (!added) {
                     return Result.error('cannotJoinSinglePlayerGame');
@@ -95,11 +91,9 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
                     return Result.error('gameUpdateError');
                 }
 
-                // Add player to match in database
                 try {
                     await this.matchPlayerRepository.add(gameId, userId);
                 } catch (dbError) {
-                    // Log but don't fail - player is already added to game in memory
                     this.fastify.log.error(dbError, 'Failed to add player to match in database');
                 }
 
@@ -129,18 +123,13 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
                 return Result.error('gameUpdateError');
             }
 
-            // Add player to match in database
             try {
-                // gameId is now the matchId
-                console.debug('userId: ' + userId);
                 await this.matchPlayerRepository.add(gameId, userId);
 
-                // Start match if both players joined
                 if (game.getPlayerCount() === 2) {
                     await this.matchRepository.start(gameId);
                 }
             } catch (dbError) {
-                // Log but don't fail - player is already added to game in memory
                 this.fastify.log.error(dbError, 'Failed to add player to match in database');
             }
 

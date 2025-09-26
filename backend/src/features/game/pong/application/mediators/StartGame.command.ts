@@ -48,7 +48,6 @@ export default class StartGameCommand implements ICommand<IStartGameRequest, ISt
         try {
             const { gameId } = request;
 
-            // Get the game from repository
             const gameResult = await this.gameRepository.getGame(gameId);
             if (!gameResult.isSuccess || !gameResult.value) {
                 return Result.error(gameNotFoundError);
@@ -56,18 +55,15 @@ export default class StartGameCommand implements ICommand<IStartGameRequest, ISt
 
             const game = gameResult.value;
 
-            // Check if game can start
             if (!game.canStart()) {
                 return Result.error(cannotStartGameError);
             }
 
-            // Try to start the game
             const started = game.start();
             if (!started) {
                 return Result.error(gameAlreadyRunningError);
             }
 
-            // Update the game in the repository
             const updateResult = await this.gameRepository.updateGame(gameId, game);
             if (!updateResult.isSuccess) {
                 return Result.error('gameUpdateError');

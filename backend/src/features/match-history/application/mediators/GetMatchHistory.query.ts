@@ -51,15 +51,11 @@ export default class GetMatchHistoryQuery
             let total: number;
 
             if (request?.userId) {
-                // Get matches for specific user
                 matches = await this.matchRepository.findUserMatches(request.userId);
                 total = matches.length;
-                // Apply pagination to results
                 matches = matches.slice(offset, offset + limit);
             } else {
-                // Get all matches
                 const allMatches = await this.matchRepository.findAll(limit, offset);
-                // Get detailed info for each match
                 matches = await Promise.all(
                     allMatches.map(async (match) => {
                         const detailed = await this.matchRepository.findWithDetails(match.id);

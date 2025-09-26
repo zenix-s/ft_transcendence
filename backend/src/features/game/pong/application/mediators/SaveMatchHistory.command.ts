@@ -42,7 +42,6 @@ export default class SaveMatchHistoryCommand
         try {
             const { gameId } = request;
 
-            // Get the game
             const gameResult = await this.gameRepository.getGame(gameId);
             if (!gameResult.isSuccess || !gameResult.value) {
                 return Result.error('gameNotFoundError');
@@ -51,19 +50,15 @@ export default class SaveMatchHistoryCommand
             const game = gameResult.value;
             const gameState = game.getGameState();
 
-            // Check if game is over
             if (!gameState.isGameOver) {
                 return Result.error('gameNotFinished');
             }
 
-            // gameId is now the matchId
             const matchId = gameId;
 
-            // Prepare final scores and winners
             const finalScores: Record<number, number> = {};
             const winnerIds: number[] = [];
 
-            // Collect scores and winner IDs (player IDs are already strings in gameState)
             if (gameState.player1) {
                 const player1Id = parseInt(gameState.player1.id);
                 if (!isNaN(player1Id)) {
@@ -84,7 +79,6 @@ export default class SaveMatchHistoryCommand
                 }
             }
 
-            // Update match in database
             await this.matchRepository.end({
                 match_id: matchId,
                 winner_ids: winnerIds,

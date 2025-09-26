@@ -1,5 +1,5 @@
 import { SQLiteConnection } from '@shared/infrastructure/db/SQLiteConnection';
-import { MatchPlayer, MatchPlayerWithUser } from '@shared/domain/types/game.types';
+import { MatchPlayer } from '@shared/domain/types/game.types';
 
 export class MatchPlayerRepository {
     constructor(private connection: SQLiteConnection) {}

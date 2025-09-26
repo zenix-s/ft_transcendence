@@ -7,7 +7,6 @@ export default fp(async (fastify: FastifyInstance) => {
     const connection = new SQLiteConnection(process.env.DB_PATH || 'bbdd/dev.db');
     await connection.connect();
 
-    // USERS TABLE
     await connection.execute(`
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -18,7 +17,6 @@ export default fp(async (fastify: FastifyInstance) => {
         )
     `);
 
-    // GAME TYPES TABLE - Define los diferentes tipos de juegos disponibles
     await connection.execute(`
         CREATE TABLE IF NOT EXISTS game_types (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -29,7 +27,6 @@ export default fp(async (fastify: FastifyInstance) => {
         )
     `);
 
-    // MATCHES TABLE - Historial de partidas
     await connection.execute(`
         CREATE TABLE IF NOT EXISTS matches (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -43,7 +40,6 @@ export default fp(async (fastify: FastifyInstance) => {
         )
     `);
 
-    // MATCH PLAYERS TABLE - Jugadores en cada partida
     await connection.execute(`
         CREATE TABLE IF NOT EXISTS match_players (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -58,26 +54,20 @@ export default fp(async (fastify: FastifyInstance) => {
         )
     `);
 
-    // ÍNDICES para mejorar el rendimiento
     await connection.execute(`CREATE INDEX IF NOT EXISTS idx_matches_game_type ON matches(game_type_id)`);
     await connection.execute(`CREATE INDEX IF NOT EXISTS idx_matches_status ON matches(status)`);
     await connection.execute(`CREATE INDEX IF NOT EXISTS idx_match_players_match ON match_players(match_id)`);
     await connection.execute(`CREATE INDEX IF NOT EXISTS idx_match_players_user ON match_players(user_id)`);
 
-    // DATOS DE PRUEBA {DEBUG ONLY}
-
-    // Insertar usuarios de prueba
     const hashedPassword1 = await hashPassword('1234');
     const hashedPassword2 = await hashPassword('1234');
     const hashedPasswordAI = await hashPassword('AI_SYSTEM_USER_NO_LOGIN');
 
-    // Primero insertar el usuario IA con ID -1
     await connection.execute(
         `INSERT OR IGNORE INTO users (id, username, email, password) VALUES (-1, 'AI_Player', 'ai@system.local', ?)`,
         [hashedPasswordAI]
     );
 
-    // Luego insertar usuarios de prueba normales
     await connection.execute(
         `
         INSERT OR IGNORE INTO users (username, email, password)
@@ -88,7 +78,6 @@ export default fp(async (fastify: FastifyInstance) => {
         [hashedPassword1, hashedPassword2]
     );
 
-    // Insertar tipos de juegos
     await connection.execute(`
         INSERT OR IGNORE INTO game_types (name, min_players, max_players)
         VALUES

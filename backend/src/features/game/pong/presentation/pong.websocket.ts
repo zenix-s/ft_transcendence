@@ -52,7 +52,6 @@ function startGameLoop(gameId: number, fastify: FastifyInstance) {
             clearInterval(loop);
             gameLoops.delete(gameId);
 
-            // Save match history when game ends
             if (game.isGameOver()) {
                 try {
                     const saveCommand = new SaveMatchHistoryCommand(fastify);
@@ -64,7 +63,6 @@ function startGameLoop(gameId: number, fastify: FastifyInstance) {
             return;
         }
 
-        // Update the game (this will also update AI if it's a single-player game)
         game.update();
         await repository.updateGame(gameId, game);
 
@@ -72,7 +70,6 @@ function startGameLoop(gameId: number, fastify: FastifyInstance) {
             clearInterval(loop);
             gameLoops.delete(gameId);
 
-            // Save match history when game ends
             try {
                 const saveCommand = new SaveMatchHistoryCommand(fastify);
                 await saveCommand.execute({ gameId });
@@ -103,10 +100,8 @@ export default async function pongWebSocketRoutes(fastify: FastifyInstance) {
 
             socket.on('message', async (message) => {
                 try {
-                    console.debug('Parse');
                     const data = JSON.parse(message.toString());
 
-                    console.debug('Parse fin');
                     if (!validateWebSocketMessage(data)) {
                         socket.send(JSON.stringify({ error: WS_ERRORS.INVALID_FORMAT }));
                         return;
@@ -114,7 +109,6 @@ export default async function pongWebSocketRoutes(fastify: FastifyInstance) {
 
                     const { action, gameId, token } = data;
 
-                    // Handle AUTH action first
                     if (action === Actions.AUTH) {
                         if (!token) {
                             socket.send(JSON.stringify({ error: WS_ERRORS.MISSING_TOKEN }));
@@ -122,7 +116,6 @@ export default async function pongWebSocketRoutes(fastify: FastifyInstance) {
                         }
 
                         try {
-                            // Verify JWT token
                             const decoded = (await fastify.jwt.verify(token)) as { id?: number };
                             isAuthenticated = true;
                             currentUserId = decoded.id || null;
@@ -139,7 +132,6 @@ export default async function pongWebSocketRoutes(fastify: FastifyInstance) {
                         return;
                     }
 
-                    // Check if authenticated for other actions
                     if (!isAuthenticated) {
                         socket.send(JSON.stringify({ error: WS_ERRORS.NOT_AUTHENTICATED }));
                         return;
@@ -152,7 +144,6 @@ export default async function pongWebSocketRoutes(fastify: FastifyInstance) {
 
                             if (gameId && !response.includes('error')) {
                                 currentGameId = gameId;
-                                // currentUserId is already set from JWT token
                             }
                             break;
                         }
@@ -174,7 +165,6 @@ export default async function pongWebSocketRoutes(fastify: FastifyInstance) {
                             socket.send(response);
 
                             if (gameStarted && currentGameId) {
-                                // Start the game loop for both multiplayer and singleplayer games
                                 startGameLoop(currentGameId, fastify);
                             }
                             break;
@@ -189,7 +179,6 @@ export default async function pongWebSocketRoutes(fastify: FastifyInstance) {
             });
 
             socket.on('close', () => {
-                // Clean up if necessary
                 currentGameId = null;
                 currentUserId = null;
                 isAuthenticated = false;

@@ -76,15 +76,12 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
 
             // Save match to database
             try {
-                // Get or create pong game type
-                let gameType = await this.gameTypeRepository.findByName('pong');
+                // Get pong game type (must exist from database initialization)
+                const gameType = await this.gameTypeRepository.findByName('pong');
                 if (!gameType) {
-                    gameType = await this.gameTypeRepository.create({
-                        name: 'pong',
-                        display_name: 'Pong Classic',
-                        min_players: 2,
-                        max_players: 2,
-                    });
+                    throw new Error(
+                        'Pong game type not found in database. Database may not be properly initialized.'
+                    );
                 }
 
                 // Create match record with creator as first player if provided

@@ -104,8 +104,10 @@ export default async function pongWebSocketRoutes(fastify: FastifyInstance) {
 
             socket.on('message', async (message) => {
                 try {
+                    console.debug('Parse');
                     const data = JSON.parse(message.toString());
 
+                    console.debug('Parse fin');
                     if (!validateWebSocketMessage(data)) {
                         socket.send(JSON.stringify({ error: WS_ERRORS.INVALID_FORMAT }));
                         return;

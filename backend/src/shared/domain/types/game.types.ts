@@ -2,7 +2,6 @@
 export interface GameType {
     id: number;
     name: string;
-    display_name: string;
     min_players: number;
     max_players: number;
     created_at: Date;

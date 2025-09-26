@@ -23,7 +23,6 @@ export default fp(async (fastify: FastifyInstance) => {
         CREATE TABLE IF NOT EXISTS game_types (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT UNIQUE NOT NULL,
-            display_name TEXT NOT NULL,
             min_players INTEGER NOT NULL DEFAULT 2,
             max_players INTEGER NOT NULL DEFAULT 2,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -83,10 +82,10 @@ export default fp(async (fastify: FastifyInstance) => {
 
     // Insertar tipos de juegos
     await connection.execute(`
-        INSERT OR IGNORE INTO game_types (name, display_name, min_players, max_players)
+        INSERT OR IGNORE INTO game_types (name, min_players, max_players)
         VALUES
-            ('pong', 'Pong Classic', 2, 2),
-            ('pong_4p', 'Pong 4 Players', 4, 4)
+            ('pong', 2, 2),
+            ('single_player_pong', 1, 1)
     `);
 
     fastify.decorate('dbConnection', connection);

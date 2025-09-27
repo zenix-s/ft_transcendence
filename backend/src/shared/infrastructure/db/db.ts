@@ -22,8 +22,7 @@ export default fp(async (fastify: FastifyInstance) => {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT UNIQUE NOT NULL,
             min_players INTEGER NOT NULL DEFAULT 2,
-            max_players INTEGER NOT NULL DEFAULT 2,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            max_players INTEGER NOT NULL DEFAULT 2
         )
     `);
 
@@ -47,7 +46,6 @@ export default fp(async (fastify: FastifyInstance) => {
             user_id INTEGER NOT NULL,
             score INTEGER DEFAULT 0,
             is_winner BOOLEAN DEFAULT 0,
-            joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (match_id) REFERENCES matches(id) ON DELETE CASCADE,
             FOREIGN KEY (user_id) REFERENCES users(id),
             UNIQUE(match_id, user_id)

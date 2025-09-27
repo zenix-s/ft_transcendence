@@ -3,7 +3,6 @@ export interface GameType {
     name: string;
     min_players: number;
     max_players: number;
-    created_at: Date;
 }
 
 export enum MatchStatus {
@@ -28,7 +27,6 @@ export interface MatchPlayer {
     user_id: number;
     score: number;
     is_winner: boolean;
-    joined_at: Date;
 }
 
 export interface CreateMatchDto {

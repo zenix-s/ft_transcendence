@@ -76,13 +76,13 @@ async function App(fastify: FastifyInstance) {
     fastify.register(authRoutes, { prefix: '/auth' });
 
     // Register WebSocket routes (no standard auth - will handle auth internally)
-    fastify.register(pongWebSocketRoutes, { prefix: '/game' });
+    fastify.register(pongWebSocketRoutes, { prefix: '/game/pong' });
 
     // Register routes that require authentication
     fastify.register(async function authenticatedContext(fastify) {
         fastify.addHook('preHandler', fastify.auth([fastify.authenticate]));
 
-        fastify.register(pongHttpRoutes, { prefix: '/game' });
+        fastify.register(pongHttpRoutes, { prefix: '/game/pong' });
         fastify.register(matchHistoryPresentation, { prefix: '/match-history' });
     });
 }

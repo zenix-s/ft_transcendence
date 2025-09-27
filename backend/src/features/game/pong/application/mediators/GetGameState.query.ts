@@ -42,6 +42,7 @@ export interface IGetGameStateResponse {
         };
         isGameOver: boolean;
         winner: string | null;
+        isSinglePlayer?: boolean;
     };
 }
 

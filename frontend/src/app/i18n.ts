@@ -238,9 +238,30 @@ export function updateTexts() {
   console.log("🌐 Updating texts for language:", currentLang);
   document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((el) => {
     const key = el.dataset.i18n!;
+    const translated = t(key); // Traducción obtenida
+
+    if (el.hasAttribute("data-label")) {
+      // 🔹 Si el elemento tiene data-label, SOLO se traduce ese atributo
+      el.setAttribute("data-label", translated);
+    } else {
+      // 🔹 Si NO tiene data-label, se traduce el contenido visible
+      el.textContent = translated;
+    }
+
+    // Caso adicional: placeholder (inputs, textareas, etc.)
+    if (el.hasAttribute("placeholder")) {
+      (el as HTMLInputElement).placeholder = translated;
+    }
+  });
+}
+
+/* export function updateTexts() {
+  console.log("🌐 Updating texts for language:", currentLang);
+  document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((el) => {
+    const key = el.dataset.i18n!;
     el.textContent = t(key);
     if (el.hasAttribute("placeholder")) {
       (el as HTMLInputElement).placeholder = t(key);
     }
   });
-}
+} */

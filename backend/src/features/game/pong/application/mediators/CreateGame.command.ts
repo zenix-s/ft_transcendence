@@ -7,6 +7,7 @@ import { handleError } from '@shared/utils/error.utils';
 import { MatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
 import { GameTypeRepository } from '@shared/infrastructure/repositories/GameTypeRepository';
 import { GameRepository } from '../../infrastructure/Game.repository';
+import { Match } from '@shared/domain/entity/Match.entity';
 
 export const gameCreationError: ErrorResult = 'gameCreationError';
 
@@ -64,23 +65,27 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
             const winnerScore = request?.winnerScore || 5;
             const maxGameTime = request?.maxGameTime || 120;
 
+            // Get game type
             const gameType = await this.gameTypeRepository.findByName('pong');
             if (!gameType) {
                 return Result.error('Pong game type not found in database');
             }
 
+            // Create match domain entity
             const playerIds = request?.userId ? [request.userId] : [];
-            const match = await this.matchRepository.create({
-                game_type_id: gameType.id,
-                player_ids: playerIds,
-            });
+            const match = new Match(gameType.id, playerIds);
 
+            // Save match to database
+            const createdMatch = await this.matchRepository.create(match);
+
+            // Create game in memory
             const game = new PongGame(winnerScore, maxGameTime);
-            const gameIdResult = await this.gameRepository.createGame(game, match.id);
+            const gameIdResult = await this.gameRepository.createGame(game, createdMatch.id as number);
 
             if (!gameIdResult.isSuccess || !gameIdResult.value) {
+                // Cleanup: delete the created match
                 try {
-                    await this.matchRepository.delete(match.id);
+                    await this.matchRepository.delete(createdMatch.id as number);
                 } catch (deleteError) {
                     this.fastify.log.error(deleteError, 'Failed to delete match after game creation failure');
                 }

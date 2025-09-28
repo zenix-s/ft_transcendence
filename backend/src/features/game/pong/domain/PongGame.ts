@@ -87,7 +87,7 @@ export class PongGame {
         if (!this.player1) {
             this.player1 = new PongPlayer(playerId);
             if (this.isPlayer2AI && !this.player2) {
-                this.player2 = new PongPlayer(-1);
+                this.player2 = new PongPlayer(1);
                 this.player2.setReady(true);
             }
             return true;

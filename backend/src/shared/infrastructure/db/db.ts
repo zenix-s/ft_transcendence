@@ -57,23 +57,16 @@ export default fp(async (fastify: FastifyInstance) => {
     await connection.execute(`CREATE INDEX IF NOT EXISTS idx_match_players_match ON match_players(match_id)`);
     await connection.execute(`CREATE INDEX IF NOT EXISTS idx_match_players_user ON match_players(user_id)`);
 
-    const hashedPassword1 = await hashPassword('1234');
-    const hashedPassword2 = await hashPassword('1234');
     const hashedPasswordAI = await hashPassword('AI_SYSTEM_USER_NO_LOGIN');
 
-    await connection.execute(
-        `INSERT OR IGNORE INTO users (id, username, email, password) VALUES (-1, 'AI_Player', 'ai@system.local', ?)`,
-        [hashedPasswordAI]
-    );
-
+    // Ensure AI user exists - delete and recreate if needed
     await connection.execute(
         `
         INSERT OR IGNORE INTO users (username, email, password)
         VALUES
-            ('player1', 'player1@example.com', ?),
-            ('player2', 'player2@example.com', ?)
+            ('AI_Player', 'ai@system.local', ?)
         `,
-        [hashedPassword1, hashedPassword2]
+        [hashedPasswordAI]
     );
 
     await connection.execute(`

@@ -29,17 +29,6 @@ export interface MatchPlayer {
     is_winner: boolean;
 }
 
-export interface CreateMatchDto {
-    game_type_id: number;
-    player_ids: number[];
-}
-
-export interface EndMatchDto {
-    match_id: number;
-    winner_ids: number[];
-    final_scores: Record<number, number>; // user_id -> score
-}
-
 export interface MatchPlayerWithUser extends MatchPlayer {
     username: string;
 }

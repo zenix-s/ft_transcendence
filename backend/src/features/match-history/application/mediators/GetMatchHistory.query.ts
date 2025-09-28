@@ -3,7 +3,8 @@ import { Result } from '@shared/abstractions/Result';
 import { IQuery } from '@shared/application/abstractions/IQuery.interface';
 import { handleError } from '@shared/utils/error.utils';
 import { MatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
-import { MatchWithDetails } from '@shared/domain/types/game.types';
+
+import { Match } from '@shared/domain/entity/Match.entity';
 
 export interface IGetMatchHistoryRequest {
     userId?: number;
@@ -12,7 +13,7 @@ export interface IGetMatchHistoryRequest {
 }
 
 export interface IGetMatchHistoryResponse {
-    matches: MatchWithDetails[];
+    matches: Match[];
     total: number;
 }
 
@@ -47,22 +48,21 @@ export default class GetMatchHistoryQuery
             const limit = request?.limit || 20;
             const offset = request?.offset || 0;
 
-            let matches: MatchWithDetails[];
+            let matches: Match[];
             let total: number;
 
             if (request?.userId) {
                 matches = await this.matchRepository.findUserMatches(request.userId);
                 total = matches.length;
+
+                console.log(`All matches: ${JSON.stringify(matches)}`);
+
                 matches = matches.slice(offset, offset + limit);
             } else {
-                const allMatches = await this.matchRepository.findAll(limit, offset);
-                matches = await Promise.all(
-                    allMatches.map(async (match) => {
-                        const detailed = await this.matchRepository.findWithDetails(match.id);
-                        return detailed || (match as MatchWithDetails);
-                    })
-                );
+                matches = await this.matchRepository.findAll(limit, offset);
                 total = await this.matchRepository.getMatchCount();
+
+                console.log(`All matches: ${JSON.stringify(matches)}`);
             }
 
             return Result.success({

@@ -42,6 +42,7 @@ export default class SaveMatchHistoryCommand
         try {
             const { gameId } = request;
 
+            // Get the game instance
             const gameResult = await this.gameRepository.getGame(gameId);
             if (!gameResult.isSuccess || !gameResult.value) {
                 return Result.error('gameNotFoundError');
@@ -54,8 +55,13 @@ export default class SaveMatchHistoryCommand
                 return Result.error('gameNotFinished');
             }
 
-            const matchId = gameId;
+            // Get the match entity from repository
+            const match = await this.matchRepository.findById(gameId);
+            if (!match) {
+                return Result.error('matchNotFound');
+            }
 
+            // Prepare final scores and winners
             const finalScores: Record<number, number> = {};
             const winnerIds: number[] = [];
 
@@ -79,15 +85,18 @@ export default class SaveMatchHistoryCommand
                 }
             }
 
-            await this.matchRepository.end({
-                match_id: matchId,
-                winner_ids: winnerIds,
-                final_scores: finalScores,
-            });
+            // Use domain method to end the match
+            const endResult = match.end(winnerIds, finalScores);
+            if (!endResult) {
+                return Result.error('cannotEndMatch');
+            }
+
+            // Save the updated match using single update method
+            await this.matchRepository.update(match);
 
             return Result.success({
                 message: 'Match history saved successfully',
-                matchId: matchId,
+                matchId: match.id,
             });
         } catch (error) {
             return handleError<ISaveMatchHistoryResponse>(

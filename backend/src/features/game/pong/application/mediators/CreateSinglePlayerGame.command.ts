@@ -7,6 +7,7 @@ import { handleError } from '@shared/utils/error.utils';
 import { MatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
 import { GameTypeRepository } from '@shared/infrastructure/repositories/GameTypeRepository';
 import { GameRepository } from '../../infrastructure/Game.repository';
+import { Match } from '@shared/domain/entity/Match.entity';
 
 export const gameCreationError: ErrorResult = 'gameCreationError';
 
@@ -81,30 +82,53 @@ export default class CreateSinglePlayerGameCommand
             const maxGameTime = request?.maxGameTime || 120;
             const aiDifficulty = request?.aiDifficulty || 0.95;
 
+            this.fastify.log.info('Creating single player game');
+
+            // Get game type
             const gameType = await this.gameTypeRepository.findByName('single_player_pong');
             if (!gameType) {
+                this.fastify.log.error('Single player game type not found');
                 return Result.error('Single player game type not found in database');
             }
 
-            const playerIds = request?.userId ? [request.userId, -1] : [-1];
-            const match = await this.matchRepository.create({
-                game_type_id: gameType.id,
-                player_ids: playerIds,
-            });
+            this.fastify.log.info('Found game type');
 
+            // Create match domain entity with player and AI
+            const playerIds = request?.userId ? [request.userId, 1] : [1];
+            this.fastify.log.info('Creating match with players');
+
+            const match = new Match(gameType.id, playerIds);
+
+            // Save match to database
+            this.fastify.log.info('Saving match to database');
+            const createdMatch = await this.matchRepository.create(match);
+
+            this.fastify.log.info('Match created successfully');
+
+            // Create game in memory
+            this.fastify.log.info('Creating PongGame instance');
             const game = new PongGame(winnerScore, maxGameTime, true, aiDifficulty);
 
             if (request?.userId) {
+                this.fastify.log.info('Adding player to game');
                 game.addPlayer(request.userId);
             }
 
-            await this.matchRepository.start(match.id);
+            // Start match automatically for single player
+            this.fastify.log.info('Starting match');
+            const started = createdMatch.start();
+            if (started) {
+                this.fastify.log.info('Match started, updating in database');
+                await this.matchRepository.update(createdMatch);
+            }
 
-            const gameIdResult = await this.gameRepository.createGame(game, match.id);
+            this.fastify.log.info('Creating game in repository');
+            const gameIdResult = await this.gameRepository.createGame(game, createdMatch.id as number);
 
             if (!gameIdResult.isSuccess || !gameIdResult.value) {
+                // Cleanup: delete the created match
                 try {
-                    await this.matchRepository.delete(match.id);
+                    await this.matchRepository.delete(createdMatch.id as number);
                 } catch (deleteError) {
                     this.fastify.log.error(deleteError, 'Failed to delete match after game creation failure');
                 }
@@ -119,6 +143,7 @@ export default class CreateSinglePlayerGameCommand
                 mode: 'singleplayer',
             });
         } catch (error) {
+            this.fastify.log.error('Single player game creation failed with error');
             return handleError<ICreateSinglePlayerGameResponse>(
                 error,
                 'Single player game creation failed',

@@ -5,7 +5,6 @@ import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { handleError } from '@shared/utils/error.utils';
 import { badRequestError } from '@shared/Errors';
 import { MatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
-import { MatchPlayerRepository } from '@shared/infrastructure/repositories/MatchPlayerRepository';
 import { GameRepository } from '../../infrastructure/Game.repository';
 
 export const gameNotFoundError: ErrorResult = 'gameNotFoundError';
@@ -29,13 +28,11 @@ export interface IJoinGameResponse {
 export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoinGameResponse> {
     private readonly gameRepository: IGameRepository;
     private readonly matchRepository: MatchRepository;
-    private readonly matchPlayerRepository: MatchPlayerRepository;
 
     constructor(private readonly fastify: FastifyInstance) {
         this.gameRepository = GameRepository.getInstance();
         const dbConnection = this.fastify.dbConnection;
         this.matchRepository = new MatchRepository(dbConnection);
-        this.matchPlayerRepository = new MatchPlayerRepository(dbConnection);
     }
 
     validate(request?: IJoinGameRequest): Result<void> {
@@ -67,6 +64,12 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
 
             const game = gameResult.value;
 
+            // Get match entity
+            const match = await this.matchRepository.findById(gameId);
+            if (!match) {
+                return Result.error('matchNotFound');
+            }
+
             if (game.isSinglePlayerMode()) {
                 if (game.hasPlayer(userId)) {
                     return Result.success({
@@ -86,15 +89,15 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
                     return Result.error('cannotJoinSinglePlayerGame');
                 }
 
+                // Add player to match entity
+                const playerAdded = match.addPlayer(userId);
+                if (playerAdded) {
+                    await this.matchRepository.update(match);
+                }
+
                 const updateResult = await this.gameRepository.updateGame(gameId, game);
                 if (!updateResult.isSuccess) {
                     return Result.error('gameUpdateError');
-                }
-
-                try {
-                    await this.matchPlayerRepository.add(gameId, userId);
-                } catch (dbError) {
-                    this.fastify.log.error(dbError, 'Failed to add player to match in database');
                 }
 
                 return Result.success({
@@ -118,19 +121,23 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
                 return Result.error(gameFullError);
             }
 
+            // Add player to match entity
+            const playerAdded = match.addPlayer(userId);
+            if (playerAdded) {
+                await this.matchRepository.update(match);
+
+                // Start match if we have enough players
+                if (game.getPlayerCount() === 2 && match.canStart()) {
+                    const started = match.start();
+                    if (started) {
+                        await this.matchRepository.update(match);
+                    }
+                }
+            }
+
             const updateResult = await this.gameRepository.updateGame(gameId, game);
             if (!updateResult.isSuccess) {
                 return Result.error('gameUpdateError');
-            }
-
-            try {
-                await this.matchPlayerRepository.add(gameId, userId);
-
-                if (game.getPlayerCount() === 2) {
-                    await this.matchRepository.start(gameId);
-                }
-            } catch (dbError) {
-                this.fastify.log.error(dbError, 'Failed to add player to match in database');
             }
 
             return Result.success({

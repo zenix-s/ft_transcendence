@@ -1,137 +1,126 @@
 import { SQLiteConnection } from '@shared/infrastructure/db/SQLiteConnection';
-import {
-    Match,
-    MatchStatus,
-    MatchWithDetails,
-    CreateMatchDto,
-    EndMatchDto,
-} from '@shared/domain/types/game.types';
+import { Match } from '@shared/domain/entity/Match.entity';
 
 export class MatchRepository {
     constructor(private connection: SQLiteConnection) {}
 
     async findAll(limit = 100, offset = 0): Promise<Match[]> {
-        const result = await this.connection.selectMany<Match>(
+        const result = await this.connection.selectMany(
             'SELECT * FROM matches ORDER BY created_at DESC LIMIT ? OFFSET ?',
             [limit, offset]
         );
-        return result;
+
+        const matches: Match[] = [];
+        for (const row of result) {
+            const players = await this.connection.selectMany(
+                'SELECT user_id, score, is_winner FROM match_players WHERE match_id = ?',
+                [row.id]
+            );
+            matches.push(Match.fromDatabase({ ...row, players }));
+        }
+
+        return matches;
     }
 
     async findById(id: number): Promise<Match | null> {
-        const result = await this.connection.selectOne<Match>('SELECT * FROM matches WHERE id = ?', [id]);
-        return result;
-    }
-
-    async findWithDetails(matchId: number): Promise<MatchWithDetails | null> {
-        const match = await this.findById(matchId);
-        if (!match) return null;
-
-        const gameType = await this.connection.selectOne('SELECT * FROM game_types WHERE id = ?', [
-            match.game_type_id,
-        ]);
+        const result = await this.connection.selectOne('SELECT * FROM matches WHERE id = ?', [id]);
+        if (!result) return null;
 
         const players = await this.connection.selectMany(
-            `SELECT mp.*, u.username
-             FROM match_players mp
-             JOIN users u ON mp.user_id = u.id
-             WHERE mp.match_id = ?`,
-            [matchId]
+            'SELECT user_id, score, is_winner FROM match_players WHERE match_id = ?',
+            [id]
         );
 
-        return {
-            ...match,
-            game_type: gameType,
-            players,
-        };
+        return Match.fromDatabase({ ...result, players });
     }
 
-    async findUserMatches(userId: number): Promise<MatchWithDetails[]> {
-        const matches = await this.connection.selectMany<Match>(
-            `SELECT m.* FROM matches m
-             JOIN match_players mp ON m.id = mp.match_id
-             WHERE mp.user_id = ?
-             ORDER BY m.created_at DESC`,
+    async findUserMatches(userId: number): Promise<Match[]> {
+        const result = await this.connection.selectMany(
+            'SELECT m.* FROM matches m JOIN match_players mp ON m.id = mp.match_id WHERE mp.user_id = ? ORDER BY m.created_at DESC',
             [userId]
         );
 
-        const results: MatchWithDetails[] = [];
-        for (const match of matches) {
-            const details = await this.findWithDetails(match.id);
-            if (details) results.push(details);
+        const matches: Match[] = [];
+        for (const row of result) {
+            const players = await this.connection.selectMany(
+                'SELECT user_id, score, is_winner FROM match_players WHERE match_id = ?',
+                [row.id]
+            );
+
+            const match = Match.fromDatabase({ ...row, players });
+            matches.push(match);
         }
-        return results;
+
+        return matches;
     }
 
-    async create(dto: CreateMatchDto): Promise<Match> {
+    async create(match: Match): Promise<Match> {
         await this.connection.execute('BEGIN TRANSACTION');
 
         try {
+            const matchData = match.toDatabase();
+            const params = [
+                matchData.game_type_id,
+                matchData.status,
+                matchData.started_at ? matchData.started_at.toISOString() : null,
+                matchData.ended_at ? matchData.ended_at.toISOString() : null,
+                matchData.created_at.toISOString(),
+            ];
+
             const matchResult = await this.connection.execute(
-                `INSERT INTO matches (game_type_id, status)
-                 VALUES (?, ?)`,
-                [dto.game_type_id, MatchStatus.PENDING]
+                'INSERT INTO matches (game_type_id, status, started_at, ended_at, created_at) VALUES (?, ?, ?, ?, ?)',
+                params
             );
 
             const matchId = matchResult.insertId;
-            if (!matchId) {
-                throw new Error('Failed to get inserted match ID');
-            }
+            if (!matchId) throw new Error('Failed to get inserted match ID');
 
-            for (const playerId of dto.player_ids) {
+            match.setId(matchId);
+
+            for (const player of match.players) {
                 await this.connection.execute(
-                    `INSERT INTO match_players (match_id, user_id)
-                     VALUES (?, ?)`,
-                    [matchId, playerId]
+                    'INSERT INTO match_players (match_id, user_id, score, is_winner) VALUES (?, ?, ?, ?)',
+                    [matchId, player.userId, player.score, player.isWinner ? 1 : 0]
                 );
             }
 
             await this.connection.execute('COMMIT');
-
-            const created = await this.findById(matchId);
-            if (!created) {
-                throw new Error('Failed to create match');
-            }
-            return created;
+            return match;
         } catch (error) {
             await this.connection.execute('ROLLBACK');
             throw error;
         }
     }
 
-    async start(matchId: number): Promise<Match | null> {
-        await this.connection.execute(
-            `UPDATE matches
-             SET status = ?, started_at = CURRENT_TIMESTAMP
-             WHERE id = ? AND status = ?`,
-            [MatchStatus.IN_PROGRESS, matchId, MatchStatus.PENDING]
-        );
-        return await this.findById(matchId);
-    }
+    async update(match: Match): Promise<Match | null> {
+        if (!match.id) throw new Error('Cannot update match without ID');
 
-    async end(dto: EndMatchDto): Promise<Match | null> {
         await this.connection.execute('BEGIN TRANSACTION');
-
         try {
+            const matchData = match.toDatabase();
+
             await this.connection.execute(
-                `UPDATE matches
-                 SET status = ?, ended_at = CURRENT_TIMESTAMP
-                 WHERE id = ?`,
-                [MatchStatus.COMPLETED, dto.match_id]
+                'UPDATE matches SET game_type_id = ?, status = ?, started_at = ?, ended_at = ? WHERE id = ?',
+                [
+                    matchData.game_type_id,
+                    matchData.status,
+                    matchData.started_at ? matchData.started_at.toISOString() : null,
+                    matchData.ended_at ? matchData.ended_at.toISOString() : null,
+                    match.id,
+                ]
             );
 
-            for (const [userId, score] of Object.entries(dto.final_scores)) {
-                const isWinner = dto.winner_ids.includes(Number(userId));
+            await this.connection.execute('DELETE FROM match_players WHERE match_id = ?', [match.id]);
+
+            for (const player of match.players) {
                 await this.connection.execute(
-                    `UPDATE match_players
-                     SET score = ?, is_winner = ?
-                     WHERE match_id = ? AND user_id = ?`,
-                    [score, isWinner ? 1 : 0, dto.match_id, userId]
+                    'INSERT INTO match_players (match_id, user_id, score, is_winner) VALUES (?, ?, ?, ?)',
+                    [match.id, player.userId, player.score, player.isWinner ? 1 : 0]
                 );
             }
 
             await this.connection.execute('COMMIT');
-            return await this.findById(dto.match_id);
+            return match;
         } catch (error) {
             await this.connection.execute('ROLLBACK');
             throw error;
@@ -144,15 +133,12 @@ export class MatchRepository {
     }
 
     async getMatchCount(gameTypeId?: number): Promise<number> {
-        let query = 'SELECT COUNT(*) as count FROM matches';
-        const params: unknown[] = [];
+        const query = gameTypeId
+            ? 'SELECT COUNT(*) as count FROM matches WHERE game_type_id = ?'
+            : 'SELECT COUNT(*) as count FROM matches';
+        const params = gameTypeId ? [gameTypeId] : [];
 
-        if (gameTypeId) {
-            query += ' WHERE game_type_id = ?';
-            params.push(gameTypeId);
-        }
-
-        const result = await this.connection.selectOne<{ count: number }>(query, params);
+        const result = await this.connection.selectOne(query, params);
         return result?.count || 0;
     }
 }

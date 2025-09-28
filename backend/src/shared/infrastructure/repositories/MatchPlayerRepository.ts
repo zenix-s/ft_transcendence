@@ -1,30 +1,7 @@
 import { SQLiteConnection } from '@shared/infrastructure/db/SQLiteConnection';
-import { MatchPlayer } from '@shared/domain/types/game.types';
 
 export class MatchPlayerRepository {
     constructor(private connection: SQLiteConnection) {}
-
-    async findByMatchAndUser(matchId: number, userId: number): Promise<MatchPlayer | null> {
-        const result = await this.connection.selectOne<MatchPlayer>(
-            'SELECT * FROM match_players WHERE match_id = ? AND user_id = ?',
-            [matchId, userId]
-        );
-        return result;
-    }
-
-    async add(matchId: number, userId: number): Promise<MatchPlayer> {
-        await this.connection.execute(
-            `INSERT INTO match_players (match_id, user_id, score, is_winner)
-             VALUES (?, ?, 0, 0)`,
-            [matchId, userId]
-        );
-
-        const inserted = await this.findByMatchAndUser(matchId, userId);
-        if (!inserted) {
-            throw new Error('Failed to add player to match');
-        }
-        return inserted;
-    }
 
     async getUserStats(userId: number): Promise<{
         totalMatches: number;

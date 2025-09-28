@@ -13,7 +13,7 @@ import SaveMatchHistoryCommand from '../application/mediators/SaveMatchHistory.c
 interface WebSocketMessage {
     action: Actions;
     gameId?: number;
-    token?: string; // JWT token for authentication
+    token?: string;
 }
 
 function validateWebSocketMessage(data: unknown): data is WebSocketMessage {

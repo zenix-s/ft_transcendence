@@ -5,11 +5,7 @@ import { loadEnvFile } from 'node:process';
 import fs from 'fs';
 
 const port = 3000;
-const host = '0.0.0.0'; // Cambiar de '127.0.0.1' a '0.0.0.0'
-
-/* const server = fastify({
-    logger: true,
-}); */
+const host = '0.0.0.0';
 
 const server = fastify({
     logger: true,

@@ -64,7 +64,6 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
 
             const game = gameResult.value;
 
-            // Get match entity
             const match = await this.matchRepository.findById(gameId);
             if (!match) {
                 return Result.error('matchNotFound');
@@ -89,7 +88,6 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
                     return Result.error('cannotJoinSinglePlayerGame');
                 }
 
-                // Add player to match entity
                 const playerAdded = match.addPlayer(userId);
                 if (playerAdded) {
                     await this.matchRepository.update(match);
@@ -121,12 +119,10 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
                 return Result.error(gameFullError);
             }
 
-            // Add player to match entity
             const playerAdded = match.addPlayer(userId);
             if (playerAdded) {
                 await this.matchRepository.update(match);
 
-                // Start match if we have enough players
                 if (game.getPlayerCount() === 2 && match.canStart()) {
                     const started = match.start();
                     if (started) {

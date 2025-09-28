@@ -32,7 +32,6 @@ export class Match {
         this._createdAt = createdAt || new Date();
         this._players = new Map();
 
-        // Initialize players
         playerIds.forEach((playerId) => {
             this._players.set(playerId, {
                 userId: playerId,
@@ -42,7 +41,6 @@ export class Match {
         });
     }
 
-    // Getters
     public get id(): number | undefined {
         return this._id;
     }
@@ -75,7 +73,6 @@ export class Match {
         return Array.from(this._players.keys());
     }
 
-    // Domain methods that change state
     public start(): boolean {
         if (this._status !== MatchStatus.PENDING) {
             return false;
@@ -98,7 +95,6 @@ export class Match {
         this._status = MatchStatus.COMPLETED;
         this._endedAt = new Date();
 
-        // Update player scores and winners
         Object.entries(finalScores).forEach(([userId, score]) => {
             const playerId = Number(userId);
             const player = this._players.get(playerId);
@@ -127,7 +123,7 @@ export class Match {
         }
 
         if (this._players.has(playerId)) {
-            return false; // Player already in match
+            return false;
         }
 
         this._players.set(playerId, {
@@ -173,7 +169,6 @@ export class Match {
         return this._status === MatchStatus.CANCELLED;
     }
 
-    // Factory method to create from database data
     public static fromDatabase(data: {
         id: number;
         game_type_id: number;
@@ -197,7 +192,6 @@ export class Match {
             new Date(data.created_at)
         );
 
-        // Add players if provided
         if (data.players) {
             data.players.forEach((player) => {
                 match._players.set(player.user_id, {
@@ -211,7 +205,6 @@ export class Match {
         return match;
     }
 
-    // Convert to database format
     public toDatabase(): {
         id?: number;
         game_type_id: number;
@@ -230,14 +223,12 @@ export class Match {
         };
     }
 
-    // Set ID after database creation
     public setId(id: number): void {
         if (this._id === undefined) {
             this._id = id;
         }
     }
 
-    // Custom JSON serialization to include all properties
     public toJSON(): object {
         return {
             id: this._id,
@@ -246,7 +237,7 @@ export class Match {
             startedAt: this._startedAt,
             endedAt: this._endedAt,
             createdAt: this._createdAt,
-            players: this.players, // This calls the getter to convert Map to Array
+            players: this.players,
         };
     }
 }

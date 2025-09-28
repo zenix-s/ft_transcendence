@@ -19,7 +19,7 @@ export interface ICreateGameResponse {
 export interface ICreateGameRequest {
     winnerScore?: number;
     maxGameTime?: number;
-    userId?: number; // From authenticated user
+    userId?: number;
 }
 
 export default class CreateGameCommand implements ICommand<ICreateGameRequest, ICreateGameResponse> {
@@ -65,25 +65,20 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
             const winnerScore = request?.winnerScore || 5;
             const maxGameTime = request?.maxGameTime || 120;
 
-            // Get game type
             const gameType = await this.gameTypeRepository.findByName('pong');
             if (!gameType) {
                 return Result.error('Pong game type not found in database');
             }
 
-            // Create match domain entity
             const playerIds = request?.userId ? [request.userId] : [];
             const match = new Match(gameType.id, playerIds);
 
-            // Save match to database
             const createdMatch = await this.matchRepository.create(match);
 
-            // Create game in memory
             const game = new PongGame(winnerScore, maxGameTime);
             const gameIdResult = await this.gameRepository.createGame(game, createdMatch.id as number);
 
             if (!gameIdResult.isSuccess || !gameIdResult.value) {
-                // Cleanup: delete the created match
                 try {
                     await this.matchRepository.delete(createdMatch.id as number);
                 } catch (deleteError) {

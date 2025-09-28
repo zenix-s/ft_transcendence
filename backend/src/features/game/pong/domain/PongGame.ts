@@ -65,7 +65,7 @@ export class PongGame {
     private winnerScore: number;
     private maxGameTime?: number;
     private isPlayer2AI: boolean;
-    private aiDifficulty: number; // 0-1, where 1 is perfect tracking
+    private aiDifficulty: number;
 
     constructor(winnerScore = 5, maxGameTime = 120, isPlayer2AI = false, aiDifficulty = 0.95) {
         this.isRunning = false;

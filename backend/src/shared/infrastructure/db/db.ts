@@ -59,7 +59,6 @@ export default fp(async (fastify: FastifyInstance) => {
 
     const hashedPasswordAI = await hashPassword('AI_SYSTEM_USER_NO_LOGIN');
 
-    // Ensure AI user exists - delete and recreate if needed
     await connection.execute(
         `
         INSERT OR IGNORE INTO users (username, email, password)

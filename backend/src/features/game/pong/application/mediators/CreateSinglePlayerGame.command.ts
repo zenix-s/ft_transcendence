@@ -20,8 +20,8 @@ export interface ICreateSinglePlayerGameResponse {
 export interface ICreateSinglePlayerGameRequest {
     winnerScore?: number;
     maxGameTime?: number;
-    aiDifficulty?: number; // 0-1, where 1 is perfect tracking
-    userId?: number; // From authenticated user
+    aiDifficulty?: number;
+    userId?: number;
 }
 
 export default class CreateSinglePlayerGameCommand
@@ -84,7 +84,6 @@ export default class CreateSinglePlayerGameCommand
 
             this.fastify.log.info('Creating single player game');
 
-            // Get game type
             const gameType = await this.gameTypeRepository.findByName('single_player_pong');
             if (!gameType) {
                 this.fastify.log.error('Single player game type not found');
@@ -93,19 +92,16 @@ export default class CreateSinglePlayerGameCommand
 
             this.fastify.log.info('Found game type');
 
-            // Create match domain entity with player and AI
             const playerIds = request?.userId ? [request.userId, 1] : [1];
             this.fastify.log.info('Creating match with players');
 
             const match = new Match(gameType.id, playerIds);
 
-            // Save match to database
             this.fastify.log.info('Saving match to database');
             const createdMatch = await this.matchRepository.create(match);
 
             this.fastify.log.info('Match created successfully');
 
-            // Create game in memory
             this.fastify.log.info('Creating PongGame instance');
             const game = new PongGame(winnerScore, maxGameTime, true, aiDifficulty);
 
@@ -114,7 +110,6 @@ export default class CreateSinglePlayerGameCommand
                 game.addPlayer(request.userId);
             }
 
-            // Start match automatically for single player
             this.fastify.log.info('Starting match');
             const started = createdMatch.start();
             if (started) {
@@ -126,7 +121,6 @@ export default class CreateSinglePlayerGameCommand
             const gameIdResult = await this.gameRepository.createGame(game, createdMatch.id as number);
 
             if (!gameIdResult.isSuccess || !gameIdResult.value) {
-                // Cleanup: delete the created match
                 try {
                     await this.matchRepository.delete(createdMatch.id as number);
                 } catch (deleteError) {

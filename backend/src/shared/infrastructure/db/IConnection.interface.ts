@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface IQueryResult<T = any> {
     rows: T[];
     rowCount: number;

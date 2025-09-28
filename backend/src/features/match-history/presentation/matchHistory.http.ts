@@ -49,7 +49,6 @@ async function handleCommand<TRequest, TResponse>(
 }
 
 export default async function matchHistoryRoutes(fastify: FastifyInstance) {
-    // Get all matches
     fastify.get(
         '/',
         {
@@ -76,7 +75,6 @@ export default async function matchHistoryRoutes(fastify: FastifyInstance) {
         }
     );
 
-    // Get matches for a specific user
     fastify.get(
         '/user/:userId',
         {
@@ -105,7 +103,6 @@ export default async function matchHistoryRoutes(fastify: FastifyInstance) {
         }
     );
 
-    // Get user statistics
     fastify.get(
         '/stats/:userId',
         {

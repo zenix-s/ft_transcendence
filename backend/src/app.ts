@@ -13,7 +13,6 @@ import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
 
 async function App(fastify: FastifyInstance) {
-    // Register JWT plugin
     fastify.register(fastifyJWT, {
         secret: process.env.JWT_SECRET || 'your-secret-key-change-this-in-production',
         sign: {
@@ -21,7 +20,6 @@ async function App(fastify: FastifyInstance) {
         },
     });
 
-    // Decorate request with authenticate method
     fastify.decorate('authenticate', async function (request: FastifyRequest, reply: FastifyReply) {
         try {
             await request.jwtVerify();
@@ -72,13 +70,10 @@ async function App(fastify: FastifyInstance) {
 
     fastify.register(dbPlugin);
 
-    // Register public routes first (no auth required)
     fastify.register(authRoutes, { prefix: '/auth' });
 
-    // Register WebSocket routes (no standard auth - will handle auth internally)
     fastify.register(pongWebSocketRoutes, { prefix: '/game/pong' });
 
-    // Register routes that require authentication
     fastify.register(async function authenticatedContext(fastify) {
         fastify.addHook('preHandler', fastify.auth([fastify.authenticate]));
 

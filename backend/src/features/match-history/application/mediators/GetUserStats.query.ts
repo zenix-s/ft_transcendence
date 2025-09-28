@@ -2,7 +2,7 @@ import { FastifyInstance } from 'fastify';
 import { Result } from '@shared/abstractions/Result';
 import { IQuery } from '@shared/application/abstractions/IQuery.interface';
 import { handleError } from '@shared/utils/error.utils';
-import { MatchPlayerRepository } from '@shared/infrastructure/repositories/MatchPlayerRepository';
+import { MatchPlayerRepository } from '@shared/infrastructure/repositories';
 
 export interface IGetUserStatsRequest {
     userId: number;

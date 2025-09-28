@@ -1,8 +1,7 @@
-import { SQLiteConnection } from '@shared/infrastructure/db/SQLiteConnection';
+import { UserStatsRow } from '@shared/infrastructure/db/types';
+import { AbstractRepository } from '@shared/infrastructure/db/AbstractRepository';
 
-export class MatchPlayerRepository {
-    constructor(private connection: SQLiteConnection) {}
-
+export class MatchPlayerRepository extends AbstractRepository {
     async getUserStats(userId: number): Promise<{
         totalMatches: number;
         wins: number;
@@ -10,11 +9,7 @@ export class MatchPlayerRepository {
         winRate: number;
         totalScore: number;
     }> {
-        const stats = await this.connection.selectOne<{
-            totalMatches: number;
-            wins: number;
-            totalScore: number;
-        }>(
+        const stats = await this.findOne<UserStatsRow>(
             `SELECT
                 COUNT(*) as totalMatches,
                 SUM(CASE WHEN is_winner = 1 THEN 1 ELSE 0 END) as wins,

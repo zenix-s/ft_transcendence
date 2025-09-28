@@ -2,7 +2,7 @@ import { FastifyInstance } from 'fastify';
 import { Result } from '@shared/abstractions/Result';
 import { IQuery } from '@shared/application/abstractions/IQuery.interface';
 import { handleError } from '@shared/utils/error.utils';
-import { MatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
+import { MatchRepository } from '@shared/infrastructure/repositories';
 
 import { Match } from '@shared/domain/entity/Match.entity';
 

@@ -1,4 +1,5 @@
-import { IConnection, IQueryResult } from './IConnection.interface';
+import { IConnection, DBParam, DBRecord } from './IConnection.interface';
+import { QueryResult } from './types';
 import Sqlite, { Database } from 'better-sqlite3';
 
 export class SQLiteConnection implements IConnection {
@@ -30,7 +31,7 @@ export class SQLiteConnection implements IConnection {
         return this.connected;
     }
 
-    async query<T = any>(sql: string, params: any[] = []): Promise<IQueryResult<T>> {
+    async query<T = DBRecord>(sql: string, params: DBParam[] = []): Promise<QueryResult<T>> {
         this.ensureConnected();
         if (!this.db) throw new Error('Database not initialized');
         const stmt = this.db.prepare(sql);
@@ -40,7 +41,7 @@ export class SQLiteConnection implements IConnection {
 
     async execute(
         sql: string,
-        params: any[] = []
+        params: DBParam[] = []
     ): Promise<{ affectedRows: number | bigint; insertId?: number }> {
         this.ensureConnected();
         if (!this.db) throw new Error('Database not initialized');
@@ -48,16 +49,19 @@ export class SQLiteConnection implements IConnection {
         const result = stmt.run(...params);
         return {
             affectedRows: result.changes,
-            insertId: result.lastInsertRowid as number,
+            insertId:
+                typeof result.lastInsertRowid === 'number'
+                    ? result.lastInsertRowid
+                    : Number(result.lastInsertRowid),
         };
     }
 
-    async selectOne<T = any>(sql: string, params: any[] = []): Promise<T | null> {
+    async selectOne<T = DBRecord>(sql: string, params: DBParam[] = []): Promise<T | null> {
         const res = await this.query<T>(sql, params);
         return res.rows[0] ?? null;
     }
 
-    async selectMany<T = any>(sql: string, params: any[] = []): Promise<T[]> {
+    async selectMany<T = DBRecord>(sql: string, params: DBParam[] = []): Promise<T[]> {
         const res = await this.query<T>(sql, params);
         return res.rows;
     }

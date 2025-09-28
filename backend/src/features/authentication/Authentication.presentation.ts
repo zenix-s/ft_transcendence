@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { UserRepository } from './infrastructure/User.repository';
+import { UserRepository } from '@shared/infrastructure/repositories';
 import CreateUserCommand from './application/mediators/CreateUser.command';
 import LoginCommand from './application/mediators/Login.command';
 import GetCurrentUserQuery from './application/mediators/GetCurrentUser.query';

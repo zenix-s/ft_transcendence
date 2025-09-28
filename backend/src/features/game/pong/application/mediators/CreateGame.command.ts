@@ -4,8 +4,7 @@ import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { PongGame } from '../../domain/PongGame';
 import { handleError } from '@shared/utils/error.utils';
-import { MatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
-import { GameTypeRepository } from '@shared/infrastructure/repositories/GameTypeRepository';
+import { MatchRepository, GameTypeRepository } from '@shared/infrastructure/repositories';
 import { GameRepository } from '../../infrastructure/Game.repository';
 import { Match } from '@shared/domain/entity/Match.entity';
 

@@ -2,7 +2,7 @@ import { FastifyInstance } from 'fastify';
 import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { handleError } from '@shared/utils/error.utils';
-import { MatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
+import { MatchRepository } from '@shared/infrastructure/repositories';
 import { GameRepository } from '../../infrastructure/Game.repository';
 import { IGameRepository } from '../repositories/Game.IRepository';
 

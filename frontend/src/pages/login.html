@@ -1,6 +1,6 @@
 <div class="scanlines"></div>
 <div class="center-screen">
-  <div class="min-h-screen flex items-center justify-cente">
+  <div class="min-h-screen flex items-center justify-cente w-full max-w-4xl">
     <div
       class="flex flex-col md:flex-row gap-8 md:gap-12 w-full max-w-4xl justify-center items-stretch"
     >
@@ -45,7 +45,7 @@
 
       <!-- Register Form -->
       <div
-        class="flex flex-col items-center rounded-xl p-8 relative w-full md:w-1/2 justify-center"
+        class="flex flex-col items-center rounded-xl p-8 relative w-full md:w-1/2 justify-center0"
       >
         <h1
           title="Register"
@@ -57,7 +57,7 @@
         <form class="flex flex-col gap-4 w-full max-w-xs">
 
           <!-- username -->
-          <div class="relative overflow-visible w-full">
+          <div class="relative overflow-visible">
             <input
               class="w-full border border-secondary dark:border-primary rounded px-4 py-2 text-secondary bg-transparent dark:bg-primary font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
               name="username"
@@ -70,11 +70,11 @@
             <div
               data-tooltip="tooltip-name"
               role="tooltip"
-              class="z-50 absolute left-ful top-1/2 translate-y-7 px-3 py-2 text-sm text-primary dark:text-secondary bg-secondary dark:bg-primary rounded-lg shadow-lg opacity-0 scale-95 transition-all duration-200 pointer-events-none w-full whitespace-pre-line"
+              class="z-50 absolute left-0 bottom-1/2 -translate-y-7 px-3 py-2 text-sm text-primary dark:text-secondary bg-secondary dark:bg-primary border border-primary dark:border-secondary rounded-lg shadow-lg opacity-0 scale-95 transition-all duration-200 pointer-events-none w-full whitespace-pre-line"
               data-i18n="toolTipUsername"
             >
               Tu nombre debe tener al menos 3 caracteres.
-              <div class="absolute left-1/2 -top-1 w-2 h-2 bg-gray-900 dark:bg-white rotate-45 -translate-x-1/2"></div>
+              <div class="absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2"></div>
             </div>
           </div>
 
@@ -92,11 +92,11 @@
             <div
               data-tooltip="tooltip-email"
               role="tooltip"
-              class="z-50 absolute left-ful top-1/2 translate-y-7 px-3 py-2 text-sm text-primary dark:text-secondary bg-secondary dark:bg-primary rounded-lg shadow-lg opacity-0 scale-95 transition-all duration-200 pointer-events-none w-full whitespace-pre-line"
+              class="z-50 absolute left-0 bottom-1/2 -translate-y-7 px-3 py-2 text-sm text-primary dark:text-secondary bg-secondary dark:bg-primary border border-primary dark:border-secondary rounded-lg shadow-lg opacity-0 scale-95 transition-all duration-200 pointer-events-none w-full whitespace-pre-line"
               data-i18n="toolTipEmail"
             >
               Usa un email válido, por ejemplo: nombre@dominio.com
-              <div class="absolute left-1/2 -top-1 w-2 h-2 bg-gray-900 dark:bg-white rotate-45 -translate-x-1/2"></div>
+              <div class="absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2"></div>
             </div>
           </div>
 
@@ -114,11 +114,11 @@
             <div
               data-tooltip="tooltip-password"
               role="tooltip"
-              class="z-50 absolute left-ful top-1/2 translate-y-7 px-3 py-2 text-sm text-primary dark:text-secondary bg-secondary dark:bg-primary rounded-lg shadow-lg opacity-0 scale-95 transition-all duration-200 pointer-events-none w-full whitespace-pre-line"
+              class="z-50 absolute left-0 bottom-1/2 -translate-y-7 px-3 py-2 text-sm text-primary dark:text-secondary bg-secondary dark:bg-primary border border-primary dark:border-secondary rounded-lg shadow-lg opacity-0 scale-95 transition-all duration-200 pointer-events-none w-full whitespace-pre-line"
               data-i18n="toolTipPassword"
             >
               La contraseña debe tener mínimo 8 caracteres, incluyendo un número.
-              <div class="absolute left-1/2 -top-1 w-2 h-2 bg-gray-900 dark:bg-white rotate-45 -translate-x-1/2"></div>
+              <div class="absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2"></div>
             </div>
           </div>
 
@@ -132,6 +132,7 @@
               placeholder="Repeat_Password"
               autocomplete="new-password"
             />
+          </div>
 
           <!-- register button -->
           <button

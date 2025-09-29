@@ -44,9 +44,9 @@ export const translations: Record<Language, Record<string, string>> = {
     invalidUsername: "Invalid username:\n  - It must be between 3 and 20 characters long.\n  - It can only contain letters, numbers, hyphens, and underscores.",
     invalidEmail: "Invalid email:\n  - Correct format: user@domain.TLD",
     invalidPassword: "Incorrect password:\n  - Minimum 8 characters.\n  - At least one uppercase letter.\n  - At least one lowercase letter.\n  - At least one digit.",
-    toolTipUsername: "- It must be between 3 and 20 characters long.\n  - It can only contain letters, numbers, hyphens, and underscores.",
-    toolTipEmail: "- Correct format: user@domain.TLD",
-    toolTipPassword: "- Minimum 8 characters.\n  - At least one uppercase letter.\n  - At least one lowercase letter.\n  - At least one digit.",
+    toolTipUsername: "- It must be between 3 and 20 characters long.\n  - It can only contain letters, numbers, hyphens, and underscores.<div class='absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2'></div>",
+    toolTipEmail: "- Correct format: user@domain.TLD<div class='absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2'></div>",
+    toolTipPassword: "- Minimum 8 characters.\n  - At least one uppercase letter.\n  - At least one lowercase letter.\n  - At least one digit.<div class='absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2'></div>",
     win: "Win",
     lose: "Lose",
     gameHistory: "Game history",
@@ -104,9 +104,9 @@ export const translations: Record<Language, Record<string, string>> = {
     invalidUsername: "Nombre de usuario inválido:\n  - Debe tener entre 3 y 20 caracteres.\n  - Solo puede contener letras, números, guiones y guiones bajos.",
     invalidEmail: "Correo electrónico inválido:\n  - Formato correcto: usuario@dominio.TLD",
     invalidPassword: "Contraseña incorrecta:\n  - Mínimo 8 caracteres.\n  - Al menos una letra mayúscula.\n  - Al menos una letra minúscula.\n  - Al menos un dígito.",
-    toolTipUsername: "- Debe tener entre 3 y 20 caracteres.\n  - Solo puede contener letras, números, guiones y guiones bajos.",
-    toolTipEmail: "- Formato correcto: usuario@dominio.TLD",
-    toolTipPassword: "- Mínimo 8 caracteres.\n  - Al menos una letra mayúscula.\n  - Al menos una letra minúscula.\n  - Al menos un dígito.",
+    toolTipUsername: "- Debe tener entre 3 y 20 caracteres.\n  - Solo puede contener letras, números, guiones y guiones bajos.<div class='absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2'></div>",
+    toolTipEmail: "- Formato correcto: usuario@dominio.TLD<div class='absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2'></div>",
+    toolTipPassword: "- Mínimo 8 caracteres.\n  - Al menos una letra mayúscula.\n  - Al menos una letra minúscula.\n  - Al menos un dígito.<div class='absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2'></div>",
     win: "Victórias",
     lose: "Derrotas",
     gameHistory: "Historial de partidas",
@@ -164,9 +164,9 @@ export const translations: Record<Language, Record<string, string>> = {
     invalidUsername: "Nom d'utilisateur invalide:\n  - Il doit contenir entre 3 et 20 caractères.\n  - Il peut uniquement contenir des lettres, des chiffres, des tirets et des tirets bas.",
     invalidEmail: "Email invalide:\n  - Format correct : utilisateur@domaine.TLD",
     invalidPassword: "Mot de passe incorrect:\n  - Minimum 8 caractères.\n  - Au moins une lettre majuscule.\n  - Au moins une lettre minuscule.\n  - Au moins un chiffre.",
-    toolTipUsername: "- Il doit contenir entre 3 et 20 caractères.\n  - Il peut uniquement contenir des lettres, des chiffres, des tirets et des tirets bas.",
-    toolTipEmail: "- Format correct : utilisateur@domaine.TLD",
-    toolTipPassword: "- Minimum 8 caractères.\n  - Au moins une lettre majuscule.\n  - Au moins une lettre minuscule.\n  - Au moins un chiffre.",
+    toolTipUsername: "- Il doit contenir entre 3 et 20 caractères.\n  - Il peut uniquement contenir des lettres, des chiffres, des tirets et des tirets bas.<div class='absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2'></div>",
+    toolTipEmail: "- Format correct : utilisateur@domaine.TLD<div class='absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2'></div>",
+    toolTipPassword: "- Minimum 8 caractères.\n  - Au moins une lettre majuscule.\n  - Au moins une lettre minuscule.\n  - Au moins un chiffre.<div class='absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2'></div>",
     win: "Victoires",
     lose: "Défaites",
     gameHistory: "Historique des parties",
@@ -243,6 +243,8 @@ export function updateTexts() {
     if (el.hasAttribute("data-label")) {
       // 🔹 Si el elemento tiene data-label, SOLO se traduce ese atributo
       el.setAttribute("data-label", translated);
+    } else if (el.getAttribute("role") === "tooltip") {
+      el.innerHTML = translated; // Permite HTML en tooltips
     } else {
       // 🔹 Si NO tiene data-label, se traduce el contenido visible
       el.textContent = translated;

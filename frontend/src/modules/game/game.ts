@@ -7,7 +7,7 @@ Hola12345
 
 import { conectWebSocket } from "./conectWebSocket.js";
 import type { Player, Score, Ball } from "./gameData.js";
-import { fetchGameId, toJoinGame, fetchGameState } from "./getData.js";
+import { fetchGameId, fetchSinglePlayerGameId, toJoinGame, fetchGameState } from "./getData.js";
 
 document.addEventListener("keydown", (event) => {
 	const key = event.key;
@@ -31,6 +31,14 @@ async function look()
 		return ;
 	}
 	console.log("si gameId=", gameId);
+
+	const gameSiglePlayerId = await fetchSinglePlayerGameId();
+	if (!gameSiglePlayerId)
+	{
+		console.log("No game ID");
+		return ;
+	}
+	console.log("si gameSinglePlayerId=", gameSiglePlayerId);
 
 	const gameJoin = await toJoinGame(gameId);
 	if (!gameJoin)

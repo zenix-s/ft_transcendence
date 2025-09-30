@@ -12,7 +12,18 @@ export class MatchRepository extends AbstractRepository {
         const matches: Match[] = [];
         for (const row of result) {
             const players = await this.findMany<MatchPlayerRow>(
-                'SELECT user_id, score, is_winner FROM match_players WHERE match_id = ?',
+                `
+                    SELECT
+                        mp.user_id,
+                        u.username,
+                        mp.score,
+                        mp.is_winner
+                    FROM
+                        match_players mp
+                        INNER JOIN users u ON mp.user_id = u.id
+                    WHERE
+                        match_id = ?
+                `,
                 [row.id]
             );
             matches.push(
@@ -54,7 +65,18 @@ export class MatchRepository extends AbstractRepository {
         const matches: Match[] = [];
         for (const row of result) {
             const players = await this.findMany<MatchPlayerRow>(
-                'SELECT user_id, score, is_winner FROM match_players WHERE match_id = ?',
+                `
+                    SELECT
+                        mp.user_id,
+                        u.username,
+                        mp.score,
+                        mp.is_winner
+                    FROM
+                        match_players mp
+                        INNER JOIN users u ON mp.user_id = u.id
+                    WHERE
+                        match_id = ?
+                `,
                 [row.id]
             );
 

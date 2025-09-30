@@ -8,6 +8,7 @@ export interface MatchPlayerRow {
     user_id: number;
     score: number;
     is_winner: boolean;
+    username: string | null;
 }
 
 export interface MatchRow {

@@ -2,6 +2,7 @@ import { MatchStatus } from '../types/game.types';
 
 export interface MatchPlayer {
     userId: number;
+    username: string | null;
     score: number;
     isWinner: boolean;
 }
@@ -35,6 +36,7 @@ export class Match {
         playerIds.forEach((playerId) => {
             this._players.set(playerId, {
                 userId: playerId,
+                username: null,
                 score: 0,
                 isWinner: false,
             });
@@ -128,6 +130,7 @@ export class Match {
 
         this._players.set(playerId, {
             userId: playerId,
+            username: null,
             score: 0,
             isWinner: false,
         });
@@ -178,6 +181,7 @@ export class Match {
         created_at: string | Date;
         players?: {
             user_id: number;
+            username: string | null;
             score: number;
             is_winner: boolean;
         }[];
@@ -196,6 +200,7 @@ export class Match {
             data.players.forEach((player) => {
                 match._players.set(player.user_id, {
                     userId: player.user_id,
+                    username: player.username,
                     score: player.score,
                     isWinner: Boolean(player.is_winner),
                 });

@@ -55,14 +55,10 @@ export default class GetMatchHistoryQuery
                 matches = await this.matchRepository.findUserMatches(request.userId);
                 total = matches.length;
 
-                console.log(`All matches: ${JSON.stringify(matches)}`);
-
                 matches = matches.slice(offset, offset + limit);
             } else {
                 matches = await this.matchRepository.findAll(limit, offset);
                 total = await this.matchRepository.getMatchCount();
-
-                console.log(`All matches: ${JSON.stringify(matches)}`);
             }
 
             return Result.success({

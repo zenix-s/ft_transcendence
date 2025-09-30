@@ -10,21 +10,32 @@
 // 	});
 // }
 
+// import { WebSocket } from "ws";
 
+interface message {
+	action: number,
+	gameId: number,
+	token: string | null
+}
 
-import { WebSocket } from "ws";
-
-export function conectWebSocket()
+export function conectWebSocket(gameId: number)
 {
 	const token = localStorage.getItem("access_token");
-	const socket = new WebSocket("wss://localhost:3000/game", {
-		headers: {
-			Authorization: `Bearer ${token}`,
-		},
-	});
+	const socket = new WebSocket("wss://localhost:3000/game/pong");
 
 	socket.addEventListener("open", () => {
 		console.log("conectado websockket");
+		let obj : message = {
+			action: 0,
+			gameId:gameId,
+			token: token
+		};
+		socket.send(JSON.stringify(obj));
+		obj.action = 1;
+		// let pingInterval = setInterval(() => {
+    	// 	// log(`SENT: ping: ${counter}`);
+		 	socket.send(JSON.stringify(obj));
+  		// }, 10);
 	})
 
 	socket.addEventListener("message", (msg) => {

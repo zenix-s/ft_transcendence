@@ -35,7 +35,7 @@ async function look()
 	const gameSiglePlayerId = await fetchSinglePlayerGameId();
 	if (!gameSiglePlayerId)
 	{
-		console.log("No game ID");
+		console.log("No single-player game ID");
 		return ;
 	}
 	console.log("si gameSinglePlayerId=", gameSiglePlayerId);
@@ -55,7 +55,6 @@ async function look()
 		return ;
 	}
 	console.log("si gameState");
-
 
 	conectWebSocket();
 }

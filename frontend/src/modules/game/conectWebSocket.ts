@@ -8,8 +8,9 @@
 // 		Authorization: `Bearer ${token}`
 // 	  }
 // 	});
-	
 // }
+
+
 
 import { WebSocket } from "ws";
 
@@ -18,7 +19,7 @@ export function conectWebSocket()
 	const token = localStorage.getItem("access_token");
 	const socket = new WebSocket("wss://localhost:3000/game", {
 		headers: {
-			Authorization: "Bearer ${token}",
+			Authorization: `Bearer ${token}`,
 		},
 	});
 
@@ -47,3 +48,29 @@ export function conectWebSocket()
 		console.log("hay un error en el websocket=", error);
 	};
 }
+
+
+
+// export function conectWebSocket()
+// {
+// 	const token = localStorage.getItem("access_token");
+// 	const socket = new WebSocket(`wss://localhost:3000/game?token=${token}`);
+
+// 	socket.onopen = () => {
+// 		console.log("Web SOCKET conectado");
+// 		socket.send("Hola! soy el websocket del servidor");
+// 	};
+
+// 	socket.onmessage = (event) => {
+// 		console.log("Mensaje=", event.data);
+// 	};
+
+// 	socket.onclose = () => {
+// 		console.log("Cerrar conexion con websocket");
+// 	};
+
+// 	socket.onerror = (error) => {
+// 		console.log("hay un error en el websocket=", error);
+// 	};
+// }
+

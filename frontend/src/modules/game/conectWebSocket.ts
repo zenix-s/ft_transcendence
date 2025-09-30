@@ -1,17 +1,3 @@
-
-// export function conectWebSocket()
-// {
-// 	import WebSocket from "ws";
-// 	const token = "tu_token_aqui";
-// 	const socket = new WebSocket("wss://ejemplo.com/socket", {
-// 	  headers: {
-// 		Authorization: `Bearer ${token}`
-// 	  }
-// 	});
-// }
-
-// import { WebSocket } from "ws";
-
 interface message {
 	action: number,
 	gameId: number,
@@ -59,29 +45,3 @@ export function conectWebSocket(gameId: number)
 		console.log("hay un error en el websocket=", error);
 	};
 }
-
-
-
-// export function conectWebSocket()
-// {
-// 	const token = localStorage.getItem("access_token");
-// 	const socket = new WebSocket(`wss://localhost:3000/game?token=${token}`);
-
-// 	socket.onopen = () => {
-// 		console.log("Web SOCKET conectado");
-// 		socket.send("Hola! soy el websocket del servidor");
-// 	};
-
-// 	socket.onmessage = (event) => {
-// 		console.log("Mensaje=", event.data);
-// 	};
-
-// 	socket.onclose = () => {
-// 		console.log("Cerrar conexion con websocket");
-// 	};
-
-// 	socket.onerror = (error) => {
-// 		console.log("hay un error en el websocket=", error);
-// 	};
-// }
-

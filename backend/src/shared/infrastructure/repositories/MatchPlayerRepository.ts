@@ -12,8 +12,8 @@ export class MatchPlayerRepository extends AbstractRepository {
         const stats = await this.findOne<UserStatsRow>(
             `SELECT
                 COUNT(*) as totalMatches,
-                SUM(CASE WHEN is_winner = 1 THEN 1 ELSE 0 END) as wins,
-                SUM(score) as totalScore
+                IFNULL(SUM(CASE WHEN is_winner = 1 THEN 1 ELSE 0 END), 0) as wins,
+                IFNULL(SUM(score), 0) as totalScore
              FROM match_players
              WHERE user_id = ?`,
             [userId]

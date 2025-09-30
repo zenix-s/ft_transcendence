@@ -56,7 +56,7 @@ async function look()
 	}
 	console.log("si gameState");
 
-	conectWebSocket(gameSiglePlayerId+);
+	conectWebSocket(gameSiglePlayerId);
 }
 
 function actualizeValues(posPlayerL:number, playerL:Player, posPlayerR:number, playerR:Player,

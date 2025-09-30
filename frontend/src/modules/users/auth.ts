@@ -183,3 +183,36 @@ export async function getCurrentUser() {
     return null;
   }
 }
+
+/* MATCH HISTORY USER (Doughnut Graph) */
+export async function getStats() {
+  const token = localStorage.getItem("access_token");
+
+  // Getting ID
+  const userResponse = await getCurrentUser();
+  if (!userResponse) {
+    console.warn(t("UserNotFound"));
+    return;
+  }
+
+  const userId = userResponse.user.id;
+
+  try {
+    const response = await fetch("/api/match-history/stats/" + userId, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+
+  } catch (err) {
+    console.error("Error fetching stats:", err);
+    return null;
+  }  
+}

@@ -231,21 +231,11 @@ export async function getHistory() {
   const userId = userResponse.user.id;
 
   try {
-    const response = await fetch("/api/match-history/user/" + userId, {
+    return await fetch("/api/match-history/user/" + userId, {
       headers: {
         "Authorization": `Bearer ${token}`,
       },
     });
-
-    if (!response.ok) {
-      throw new Error(`Error HTTP: ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log("Respuesta de historial:"); // DB
-    console.log(data); // DB
-    return data;
-
   } catch (err) {
     console.error("Error fetching stats:", err);
     return null;

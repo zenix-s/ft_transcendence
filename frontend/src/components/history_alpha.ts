@@ -2,27 +2,13 @@ import { DataTable } from "simple-datatables";
 // import { getCurrentUser } from "@/modules/users";
 import { t, updateTexts } from "@/app/i18n";
 
-// Jugador dentro de un Match
-interface Player {
-  userId: number;
-  score: number;
-  isWinner: boolean;
-}
-
-// Cada Match
 interface Match {
   id: number;
-  gameTypeId: number;
-  status: string;
-  startedAt: string; // o Date si luego lo parseas
-  createdAt: string;
-  players: Player[];
-}
-
-// Respuesta completa del backend
-interface MatchesResponse {
-  matches: Match[];
-  total: number;
+  // player1: string;
+  opponent: string;
+  score: string;
+  winner: string;
+  date: string;
 }
 
 export let matchTable: DataTable; // Variable global o de módulo

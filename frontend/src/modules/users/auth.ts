@@ -184,7 +184,7 @@ export async function getCurrentUser() {
   }
 }
 
-/* MATCH HISTORY USER (Doughnut Graph) */
+/* MATCH-HISTORY/STATS (Doughnut Graph) */
 export async function getStats() {
   const token = localStorage.getItem("access_token");
 
@@ -214,5 +214,40 @@ export async function getStats() {
   } catch (err) {
     console.error("Error fetching stats:", err);
     return null;
-  }  
+  }
+}
+
+/* MATCH-HISTORY/USER (History) */
+export async function getHistory() {
+  const token = localStorage.getItem("access_token");
+
+  // Getting ID
+  const userResponse = await getCurrentUser();
+  if (!userResponse) {
+    console.warn(t("UserNotFound"));
+    return;
+  }
+
+  const userId = userResponse.user.id;
+
+  try {
+    const response = await fetch("/api/match-history/user/" + userId, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("Respuesta de historial:"); // DB
+    console.log(data); // DB
+    return data;
+
+  } catch (err) {
+    console.error("Error fetching stats:", err);
+    return null;
+  }
 }

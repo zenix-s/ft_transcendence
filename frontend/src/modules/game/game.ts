@@ -12,14 +12,28 @@ import { fetchGameId, fetchSinglePlayerGameId, toJoinGame, fetchGameState } from
 document.addEventListener("keydown", (event) => {
 	const key = event.key;
 	console.log(key);
+	let action = 0;
 	if (key === "ArrowUp")
+	{
+		action = 2;
 		console.log("up");
+	}
 	if (key === "ArrowDown")
+	{
+		action = 3;
 		console.log("down");
+	}
 	if (key === "w")
+	{
+		action = 2;
 		console.log("w");
+	}
 	if (key === "s")
+	{
+		action = 3
 		console.log("s");
+	}
+	sendAction(action);
 });
 
 async function look()

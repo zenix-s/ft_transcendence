@@ -24,7 +24,7 @@ async function App(fastify: FastifyInstance) {
         try {
             await request.jwtVerify();
         } catch (err) {
-            const result = handleError(err, 'Unauthorized', fastify.log, '401');
+            const result = handleError(err, fastify.log, '401');
             reply.status(401).send({ error: result.error });
         }
     });

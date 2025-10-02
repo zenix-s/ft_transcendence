@@ -74,7 +74,7 @@ export default class StartGameCommand implements ICommand<IStartGameRequest, ISt
                 gameId: gameId,
             });
         } catch (error) {
-            return handleError<IStartGameResponse>(error, 'Failed to start game', this.fastify.log, '500');
+            return handleError<IStartGameResponse>(error, this.fastify.log, '500');
         }
     }
 }

@@ -49,7 +49,7 @@ export default class GetCurrentUserQuery implements IQuery<IGetCurrentUserReques
                 },
             });
         } catch (error) {
-            return handleError<IGetCurrentUserResponse>(error, 'Failed to get user', this.fastify.log, '500');
+            return handleError<IGetCurrentUserResponse>(error, this.fastify.log, '500');
         }
     }
 }

@@ -142,7 +142,7 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
                 gameId: gameId,
             });
         } catch (error) {
-            return handleError<IJoinGameResponse>(error, 'Failed to join game', this.fastify.log, '500');
+            return handleError<IJoinGameResponse>(error, this.fastify.log, '500');
         }
     }
 }

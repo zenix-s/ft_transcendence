@@ -93,12 +93,7 @@ export default class SetPlayerReadyCommand
                 gameStarted: gameStarted,
             });
         } catch (error) {
-            return handleError<ISetPlayerReadyResponse>(
-                error,
-                'Failed to set player ready status',
-                this.fastify.log,
-                '500'
-            );
+            return handleError<ISetPlayerReadyResponse>(error, this.fastify.log, '500');
         }
     }
 }

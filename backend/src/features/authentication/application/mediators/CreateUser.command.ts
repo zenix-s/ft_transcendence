@@ -96,7 +96,7 @@ export default class CreateUserCommand implements ICommand<IRegisterRequest, IAu
                 },
             });
         } catch (error) {
-            return handleError<IAuthResponse>(error, 'Registration failed', this.fastify.log, '500');
+            return handleError<IAuthResponse>(error, this.fastify.log, '500');
         }
     }
 }

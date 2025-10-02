@@ -77,7 +77,7 @@ export default class LoginCommand implements ICommand<ILoginRequest, IAuthRespon
                 },
             });
         } catch (error) {
-            return handleError<IAuthResponse>(error, 'Login failed', this.fastify.log, '500');
+            return handleError<IAuthResponse>(error, this.fastify.log, '500');
         }
     }
 }

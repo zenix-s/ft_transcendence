@@ -66,12 +66,7 @@ export default class GetMatchHistoryQuery
                 total,
             });
         } catch (error) {
-            return handleError<IGetMatchHistoryResponse>(
-                error,
-                'Failed to get match history',
-                this.fastify.log,
-                '500'
-            );
+            return handleError<IGetMatchHistoryResponse>(error, this.fastify.log, '500');
         }
     }
 }

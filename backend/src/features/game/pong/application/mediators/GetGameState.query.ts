@@ -83,12 +83,7 @@ export default class GetGameStateQuery implements IQuery<IGetGameStateRequest, I
                 state: game.getGameState(),
             });
         } catch (error) {
-            return handleError<IGetGameStateResponse>(
-                error,
-                'Failed to get game state',
-                this.fastify.log,
-                '500'
-            );
+            return handleError<IGetGameStateResponse>(error, this.fastify.log, '500');
         }
     }
 }

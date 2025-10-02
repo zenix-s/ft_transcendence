@@ -137,12 +137,7 @@ export default class CreateSinglePlayerGameCommand
             });
         } catch (error) {
             this.fastify.log.error('Single player game creation failed with error');
-            return handleError<ICreateSinglePlayerGameResponse>(
-                error,
-                'Single player game creation failed',
-                this.fastify.log,
-                '500'
-            );
+            return handleError<ICreateSinglePlayerGameResponse>(error, this.fastify.log, '500');
         }
     }
 }

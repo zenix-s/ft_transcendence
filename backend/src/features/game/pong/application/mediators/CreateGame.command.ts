@@ -93,7 +93,7 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
                 gameId: gameId,
             });
         } catch (error) {
-            return handleError<ICreateGameResponse>(error, 'Game creation failed', this.fastify.log, '500');
+            return handleError<ICreateGameResponse>(error, this.fastify.log, '500');
         }
     }
 }

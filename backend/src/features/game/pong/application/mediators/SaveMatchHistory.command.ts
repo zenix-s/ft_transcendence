@@ -94,12 +94,7 @@ export default class SaveMatchHistoryCommand
                 matchId: match.id,
             });
         } catch (error) {
-            return handleError<ISaveMatchHistoryResponse>(
-                error,
-                'Failed to save match history',
-                this.fastify.log,
-                '500'
-            );
+            return handleError<ISaveMatchHistoryResponse>(error, this.fastify.log, '500');
         }
     }
 }

@@ -49,12 +49,7 @@ export default class GetUserStatsQuery implements IQuery<IGetUserStatsRequest, I
                 ...stats,
             });
         } catch (error) {
-            return handleError<IGetUserStatsResponse>(
-                error,
-                'Failed to get user statistics',
-                this.fastify.log,
-                '500'
-            );
+            return handleError<IGetUserStatsResponse>(error, this.fastify.log, '500');
         }
     }
 }

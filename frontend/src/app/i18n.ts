@@ -66,6 +66,7 @@ export const translations: Record<Language, Record<string, string>> = {
     userSettings: "User Settings",
     gameSettings: "Game Settings",
     update: "Update",
+    player1: "PLAYER 1",
   },
   es: {
     start: "Comenzar",
@@ -131,6 +132,7 @@ export const translations: Record<Language, Record<string, string>> = {
     userSettings: "Configuración de usuario",
     gameSettings: "Configuración del juego",
     update: "Actualizar",
+    player1: "JUGADOR 1",
   },
   fr: {
     start: "Démarrer",
@@ -196,6 +198,7 @@ export const translations: Record<Language, Record<string, string>> = {
     userSettings: "Paramètres utilisateur",
     gameSettings: "Paramètres du jeu",
     update: "Actualiser",
+    player1: "JOUEUR 1",
   },
 };
 

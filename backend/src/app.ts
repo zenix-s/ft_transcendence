@@ -1,6 +1,8 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
 import dbPlugin from '@shared/infrastructure/db/db';
+import MediatorHandlerPlugin from '@shared/utils/MediatorHandlerPlugin';
+import ErrorhandlerPlugin from '@shared/utils/error.utils';
 import { fastifyWebsocket } from '@fastify/websocket';
 import pongHttpRoutes from '@features/game/pong/presentation/pong.http';
 import pongWebSocketRoutes from '@features/game/pong/presentation/pong.websocket';
@@ -18,6 +20,10 @@ async function App(fastify: FastifyInstance) {
             expiresIn: '24h',
         },
     });
+
+    fastify.register(dbPlugin);
+    fastify.register(MediatorHandlerPlugin);
+    fastify.register(ErrorhandlerPlugin);
 
     fastify.decorate('authenticate', async function (request: FastifyRequest, reply: FastifyReply) {
         try {
@@ -66,8 +72,6 @@ async function App(fastify: FastifyInstance) {
 
     fastify.register(fastifyWebsocket);
     fastify.register(fastifyAuth);
-
-    fastify.register(dbPlugin);
 
     fastify.register(authRoutes, { prefix: '/auth' });
 

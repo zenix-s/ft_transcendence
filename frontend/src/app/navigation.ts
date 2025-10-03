@@ -93,6 +93,9 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
     case "404":
       renderButtons();
       break;
+    case "setReady1":
+      renderButtons();
+      break;
   }
 
   // Actualizar los textos al cambiar de página

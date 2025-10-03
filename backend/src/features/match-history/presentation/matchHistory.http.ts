@@ -1,7 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import GetMatchHistoryQuery from '../application/mediators/GetMatchHistory.query';
 import GetUserStatsQuery from '../application/mediators/GetUserStats.query';
-import { Result } from '@shared/abstractions/Result';
 
 interface MatchHistoryRequest {
     Querystring?: {
@@ -24,28 +23,6 @@ interface UserStatsRequest {
     Params: {
         userId: string;
     };
-}
-
-async function handleCommand<TRequest, TResponse>(
-    commandOrQuery: {
-        validate(request?: TRequest): Result<void>;
-        execute(request?: TRequest): Promise<Result<TResponse>>;
-    },
-    request: TRequest | undefined,
-    reply: FastifyReply,
-    successStatus = 200
-): Promise<FastifyReply> {
-    const validationResult = commandOrQuery.validate(request);
-    if (!validationResult.isSuccess) {
-        return reply.status(400).send({ error: validationResult.error });
-    }
-
-    const result = await commandOrQuery.execute(request);
-    if (!result.isSuccess) {
-        return reply.status(409).send({ error: result.error });
-    }
-
-    return reply.status(successStatus).send(result.value);
 }
 
 export default async function matchHistoryRoutes(fastify: FastifyInstance) {
@@ -71,7 +48,12 @@ export default async function matchHistoryRoutes(fastify: FastifyInstance) {
                 limit: req.query?.limit,
                 offset: req.query?.offset,
             };
-            return handleCommand(getMatchHistoryQuery, request, reply);
+
+            return fastify.handleQuery({
+                query: getMatchHistoryQuery,
+                request: request,
+                reply: reply,
+            });
         }
     );
 
@@ -99,7 +81,12 @@ export default async function matchHistoryRoutes(fastify: FastifyInstance) {
                 limit: req.query?.limit,
                 offset: req.query?.offset,
             };
-            return handleCommand(getMatchHistoryQuery, request, reply);
+
+            return fastify.handleQuery({
+                query: getMatchHistoryQuery,
+                request: request,
+                reply: reply,
+            });
         }
     );
 
@@ -125,7 +112,12 @@ export default async function matchHistoryRoutes(fastify: FastifyInstance) {
             const request = {
                 userId: isNaN(userId) ? 0 : userId,
             };
-            return handleCommand(getUserStatsQuery, request, reply);
+
+            return fastify.handleCommand({
+                command: getUserStatsQuery,
+                request: request,
+                reply: reply,
+            });
         }
     );
 }

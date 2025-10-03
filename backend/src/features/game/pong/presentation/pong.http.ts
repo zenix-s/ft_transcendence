@@ -3,7 +3,6 @@ import CreateGameCommand from '../application/mediators/CreateGame.command';
 import CreateSinglePlayerGameCommand from '../application/mediators/CreateSinglePlayerGame.command';
 import JoinGameCommand from '../application/mediators/JoinGame.command';
 import GetGameStateQuery from '../application/mediators/GetGameState.query';
-import { handleCommand } from '@shared/utils/http.utils';
 
 interface JoinGameRequest {
     Params: {
@@ -87,7 +86,12 @@ export default async function pongHttpRoutes(fastify: FastifyInstance) {
                 userId: userId,
             };
 
-            return handleCommand(createGameCommand, request, reply, 201);
+            return fastify.handleCommand({
+                command: createGameCommand,
+                request: request,
+                reply: reply,
+                successStatus: 201,
+            });
         }
     );
 
@@ -154,7 +158,12 @@ export default async function pongHttpRoutes(fastify: FastifyInstance) {
                 userId: userId,
             };
 
-            return handleCommand(createSinglePlayerGameCommand, request, reply, 201);
+            return fastify.handleCommand({
+                command: createSinglePlayerGameCommand,
+                request: request,
+                reply: reply,
+                successStatus: 201,
+            });
         }
     );
 
@@ -193,23 +202,18 @@ export default async function pongHttpRoutes(fastify: FastifyInstance) {
             },
         },
         async (req: FastifyRequest<JoinGameRequest>, reply: FastifyReply) => {
-            const gameIdStr = req.params.gameId;
-            const gameId = parseInt(gameIdStr);
-
-            if (isNaN(gameId)) {
-                return reply.status(400).send({ error: 'Invalid game ID' });
-            }
-
-            const userId = req.user?.id;
+            const request = {
+                gameId: parseInt(req.params.gameId),
+                userId: req.user?.id,
+            };
             const joinGameCommand = new JoinGameCommand(fastify);
-            return handleCommand(
-                joinGameCommand,
-                {
-                    gameId,
-                    userId: userId,
-                },
-                reply
-            );
+
+            return fastify.handleCommand({
+                command: joinGameCommand,
+                request: request,
+                reply: reply,
+                successStatus: 200,
+            });
         }
     );
 
@@ -246,15 +250,17 @@ export default async function pongHttpRoutes(fastify: FastifyInstance) {
             },
         },
         async (req: FastifyRequest<GameActionRequest>, reply: FastifyReply) => {
-            const gameIdStr = req.params.gameId;
-            const gameId = parseInt(gameIdStr);
-
-            if (isNaN(gameId)) {
-                return reply.status(400).send({ error: 'Invalid game ID' });
-            }
-
+            const request = {
+                gameId: parseInt(req.params.gameId),
+            };
             const getGameStateQuery = new GetGameStateQuery(fastify);
-            return handleCommand(getGameStateQuery, { gameId }, reply);
+
+            return fastify.handleCommand({
+                command: getGameStateQuery,
+                request: request,
+                reply: reply,
+                successStatus: 200,
+            });
         }
     );
 }

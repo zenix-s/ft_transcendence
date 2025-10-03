@@ -3,7 +3,6 @@ import { IGameRepository } from '../repositories/Game.IRepository';
 import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { PongGame } from '../../domain/PongGame';
-import { handleError } from '@shared/utils/error.utils';
 import { MatchRepository, GameTypeRepository } from '@shared/infrastructure/repositories';
 import { GameRepository } from '../../infrastructure/Game.repository';
 import { Match } from '@shared/domain/entity/Match.entity';
@@ -136,8 +135,10 @@ export default class CreateSinglePlayerGameCommand
                 mode: 'singleplayer',
             });
         } catch (error) {
-            this.fastify.log.error('Single player game creation failed with error');
-            return handleError<ICreateSinglePlayerGameResponse>(error, this.fastify.log, '500');
+            return this.fastify.handleError<ICreateSinglePlayerGameResponse>({
+                code: '500',
+                error,
+            });
         }
     }
 }

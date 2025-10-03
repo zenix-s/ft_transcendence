@@ -3,7 +3,6 @@ import { IUserRepository } from '@features/authentication/application/repositori
 import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { hashPassword } from '@shared/utils/password.utils';
-import { handleError } from '@shared/utils/error.utils';
 import { badRequestError } from '@shared/Errors';
 
 export const userNotFoundError: ErrorResult = 'userNotFoundError';
@@ -96,7 +95,10 @@ export default class CreateUserCommand implements ICommand<IRegisterRequest, IAu
                 },
             });
         } catch (error) {
-            return handleError<IAuthResponse>(error, this.fastify.log, '500');
+            return this.fastify.handleError<IAuthResponse>({
+                code: '500',
+                error,
+            });
         }
     }
 }

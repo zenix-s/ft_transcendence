@@ -37,6 +37,9 @@ declare module 'fastify' {
             reply: FastifyReply;
             successStatus?: number;
         }): Promise<FastifyReply>;
+
+        // Handle error
+        handleError<T>({ code, error }: { code: string; error: unknown }): Result<T>;
     }
 
     interface FastifyRequest {

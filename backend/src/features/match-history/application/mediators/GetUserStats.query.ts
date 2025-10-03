@@ -1,7 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { Result } from '@shared/abstractions/Result';
 import { IQuery } from '@shared/application/abstractions/IQuery.interface';
-import { handleError } from '@shared/utils/error.utils';
 import { MatchPlayerRepository } from '@shared/infrastructure/repositories';
 
 export interface IGetUserStatsRequest {
@@ -49,7 +48,10 @@ export default class GetUserStatsQuery implements IQuery<IGetUserStatsRequest, I
                 ...stats,
             });
         } catch (error) {
-            return handleError<IGetUserStatsResponse>(error, this.fastify.log, '500');
+            return this.fastify.handleError({
+                code: '500',
+                error,
+            });
         }
     }
 }

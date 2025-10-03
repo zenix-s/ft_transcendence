@@ -2,7 +2,6 @@ import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { IQuery } from '@shared/application/abstractions/IQuery.interface';
 import { IUserRepository } from '../repositories/User.IRepository';
 import { FastifyInstance } from 'fastify';
-import { handleError } from '@shared/utils/error.utils';
 import { User } from '@shared/domain/entity/User.entity';
 import { badRequestError } from '@shared/Errors';
 
@@ -49,7 +48,10 @@ export default class GetCurrentUserQuery implements IQuery<IGetCurrentUserReques
                 },
             });
         } catch (error) {
-            return handleError<IGetCurrentUserResponse>(error, this.fastify.log, '500');
+            return this.fastify.handleError({
+                code: '500',
+                error,
+            });
         }
     }
 }

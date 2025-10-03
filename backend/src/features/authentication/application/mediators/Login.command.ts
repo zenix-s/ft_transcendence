@@ -3,7 +3,6 @@ import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { IUserRepository } from '../repositories/User.IRepository';
 import { verifyPassword } from '@shared/utils/password.utils';
 import { FastifyInstance } from 'fastify';
-import { handleError } from '@shared/utils/error.utils';
 import { badRequestError } from '@shared/Errors';
 
 const invalidCredentialsError: ErrorResult = 'invalidCredentialsError';
@@ -77,7 +76,10 @@ export default class LoginCommand implements ICommand<ILoginRequest, IAuthRespon
                 },
             });
         } catch (error) {
-            return handleError<IAuthResponse>(error, this.fastify.log, '500');
+            return this.fastify.handleError<IAuthResponse>({
+                code: '500',
+                error,
+            });
         }
     }
 }

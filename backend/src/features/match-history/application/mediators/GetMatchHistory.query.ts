@@ -1,7 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { Result } from '@shared/abstractions/Result';
 import { IQuery } from '@shared/application/abstractions/IQuery.interface';
-import { handleError } from '@shared/utils/error.utils';
 import { MatchRepository } from '@shared/infrastructure/repositories';
 
 import { Match } from '@shared/domain/entity/Match.entity';
@@ -66,7 +65,10 @@ export default class GetMatchHistoryQuery
                 total,
             });
         } catch (error) {
-            return handleError<IGetMatchHistoryResponse>(error, this.fastify.log, '500');
+            return this.fastify.handleError<IGetMatchHistoryResponse>({
+                code: '500',
+                error,
+            });
         }
     }
 }

@@ -3,7 +3,6 @@ import { IGameRepository } from '../repositories/Game.IRepository';
 import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { PongGame } from '../../domain/PongGame';
-import { handleError } from '@shared/utils/error.utils';
 import { MatchRepository, GameTypeRepository } from '@shared/infrastructure/repositories';
 import { GameRepository } from '../../infrastructure/Game.repository';
 import { Match } from '@shared/domain/entity/Match.entity';
@@ -93,7 +92,10 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
                 gameId: gameId,
             });
         } catch (error) {
-            return handleError<ICreateGameResponse>(error, this.fastify.log, '500');
+            return this.fastify.handleError<ICreateGameResponse>({
+                code: '500',
+                error,
+            });
         }
     }
 }

@@ -8,7 +8,6 @@ import matchHistoryPresentation from '@features/match-history/MatchHistory.prese
 import fastifyAuth from '@fastify/auth';
 import fastifyJWT from '@fastify/jwt';
 import authRoutes from '@features/authentication/Authentication.presentation';
-import { handleError } from '@shared/utils/error.utils';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
 
@@ -24,7 +23,7 @@ async function App(fastify: FastifyInstance) {
         try {
             await request.jwtVerify();
         } catch (err) {
-            const result = handleError(err, fastify.log, '401');
+            const result = fastify.handleError({ code: '401', error: err });
             reply.status(401).send({ error: result.error });
         }
     });

@@ -3,11 +3,12 @@ import { FastifyInstance } from 'fastify';
 import { SQLiteConnection } from '@shared/infrastructure/db/SQLiteConnection';
 import { hashPassword } from '@shared/utils/password.utils';
 
-export default fp(async (fastify: FastifyInstance) => {
-    const connection = new SQLiteConnection(process.env.DB_PATH || 'bbdd/dev.db');
-    await connection.connect();
+export default fp(
+    async (fastify: FastifyInstance) => {
+        const connection = new SQLiteConnection(process.env.DB_PATH || 'bbdd/dev.db');
+        await connection.connect();
 
-    await connection.execute(`
+        await connection.execute(`
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
@@ -17,7 +18,7 @@ export default fp(async (fastify: FastifyInstance) => {
         )
     `);
 
-    await connection.execute(`
+        await connection.execute(`
         CREATE TABLE IF NOT EXISTS game_types (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT UNIQUE NOT NULL,
@@ -26,7 +27,7 @@ export default fp(async (fastify: FastifyInstance) => {
         )
     `);
 
-    await connection.execute(`
+        await connection.execute(`
         CREATE TABLE IF NOT EXISTS matches (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             game_type_id INTEGER NOT NULL,
@@ -39,7 +40,7 @@ export default fp(async (fastify: FastifyInstance) => {
         )
     `);
 
-    await connection.execute(`
+        await connection.execute(`
         CREATE TABLE IF NOT EXISTS match_players (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             match_id INTEGER NOT NULL,
@@ -52,33 +53,41 @@ export default fp(async (fastify: FastifyInstance) => {
         )
     `);
 
-    await connection.execute(`CREATE INDEX IF NOT EXISTS idx_matches_game_type ON matches(game_type_id)`);
-    await connection.execute(`CREATE INDEX IF NOT EXISTS idx_matches_status ON matches(status)`);
-    await connection.execute(`CREATE INDEX IF NOT EXISTS idx_match_players_match ON match_players(match_id)`);
-    await connection.execute(`CREATE INDEX IF NOT EXISTS idx_match_players_user ON match_players(user_id)`);
+        await connection.execute(`CREATE INDEX IF NOT EXISTS idx_matches_game_type ON matches(game_type_id)`);
+        await connection.execute(`CREATE INDEX IF NOT EXISTS idx_matches_status ON matches(status)`);
+        await connection.execute(
+            `CREATE INDEX IF NOT EXISTS idx_match_players_match ON match_players(match_id)`
+        );
+        await connection.execute(
+            `CREATE INDEX IF NOT EXISTS idx_match_players_user ON match_players(user_id)`
+        );
 
-    const hashedPasswordAI = await hashPassword('AI_SYSTEM_USER_NO_LOGIN');
+        const hashedPasswordAI = await hashPassword('AI_SYSTEM_USER_NO_LOGIN');
 
-    await connection.execute(
-        `
+        await connection.execute(
+            `
         INSERT OR IGNORE INTO users (username, email, password)
         VALUES
             ('AI_Player', 'ai@system.local', ?)
         `,
-        [hashedPasswordAI]
-    );
+            [hashedPasswordAI]
+        );
 
-    await connection.execute(`
+        await connection.execute(`
         INSERT OR IGNORE INTO game_types (name, min_players, max_players)
         VALUES
             ('pong', 2, 2),
             ('single_player_pong', 1, 1)
     `);
 
-    fastify.decorate('dbConnection', connection);
+        fastify.decorate('DbConnection', connection);
 
-    fastify.addHook('onClose', async () => {
-        fastify.log.debug('Closing database connection');
-        await connection.disconnect();
-    });
-});
+        fastify.addHook('onClose', async () => {
+            fastify.log.debug('Closing database connection');
+            await connection.disconnect();
+        });
+    },
+    {
+        name: 'DbConnection',
+    }
+);

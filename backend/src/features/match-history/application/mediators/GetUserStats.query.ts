@@ -1,8 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { Result } from '@shared/abstractions/Result';
 import { IQuery } from '@shared/application/abstractions/IQuery.interface';
-import { handleError } from '@shared/utils/error.utils';
-import { MatchPlayerRepository } from '@shared/infrastructure/repositories';
+import { IMatchPlayerRepository } from '@shared/infrastructure/repositories/MatchPlayerRepository';
 
 export interface IGetUserStatsRequest {
     userId: number;
@@ -18,11 +17,10 @@ export interface IGetUserStatsResponse {
 }
 
 export default class GetUserStatsQuery implements IQuery<IGetUserStatsRequest, IGetUserStatsResponse> {
-    private readonly matchPlayerRepository: MatchPlayerRepository;
+    private readonly matchPlayerRepository: IMatchPlayerRepository;
 
     constructor(private readonly fastify: FastifyInstance) {
-        const dbConnection = this.fastify.dbConnection;
-        this.matchPlayerRepository = new MatchPlayerRepository(dbConnection);
+        this.matchPlayerRepository = this.fastify.MatchPlayerRepository;
     }
 
     validate(request?: IGetUserStatsRequest): Result<void> {
@@ -49,12 +47,10 @@ export default class GetUserStatsQuery implements IQuery<IGetUserStatsRequest, I
                 ...stats,
             });
         } catch (error) {
-            return handleError<IGetUserStatsResponse>(
+            return this.fastify.handleError({
+                code: '500',
                 error,
-                'Failed to get user statistics',
-                this.fastify.log,
-                '500'
-            );
+            });
         }
     }
 }

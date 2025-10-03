@@ -1,8 +1,19 @@
 import { Match } from '@shared/domain/entity/Match.entity';
-import { MatchRow, MatchPlayerRow } from '@shared/infrastructure/db/types';
+import { MatchRow, MatchPlayerRow } from '@shared/infrastructure/types/types';
 import { AbstractRepository } from '@shared/infrastructure/db/AbstractRepository';
+import fp from 'fastify-plugin';
 
-export class MatchRepository extends AbstractRepository {
+export interface IMatchRepository {
+    findAll(limit?: number, offset?: number): Promise<Match[]>;
+    findById(id: number): Promise<Match | null>;
+    findUserMatches(userId: number): Promise<Match[]>;
+    create(match: Match): Promise<Match>;
+    update(match: Match): Promise<Match | null>;
+    delete(id: number): Promise<boolean>;
+    getMatchCount(gameTypeId?: number): Promise<number>;
+}
+
+class MatchRepository extends AbstractRepository implements IMatchRepository {
     async findAll(limit = 100, offset = 0): Promise<Match[]> {
         const result = await this.findMany<MatchRow>(
             'SELECT * FROM matches ORDER BY created_at DESC LIMIT ? OFFSET ?',
@@ -180,3 +191,14 @@ export class MatchRepository extends AbstractRepository {
         return Number(result?.count) || 0;
     }
 }
+
+export default fp(
+    (fastify) => {
+        const repo = new MatchRepository(fastify.DbConnection);
+        fastify.decorate('MatchRepository', repo);
+    },
+    {
+        name: 'MatchRepository',
+        dependencies: ['DbConnection'],
+    }
+);

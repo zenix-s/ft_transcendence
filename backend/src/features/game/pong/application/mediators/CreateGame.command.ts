@@ -3,10 +3,10 @@ import { IGameRepository } from '../repositories/Game.IRepository';
 import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { PongGame } from '../../domain/PongGame';
-import { handleError } from '@shared/utils/error.utils';
-import { MatchRepository, GameTypeRepository } from '@shared/infrastructure/repositories';
 import { GameRepository } from '../../infrastructure/Game.repository';
 import { Match } from '@shared/domain/entity/Match.entity';
+import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
+import { IGameTypeRepository } from '@shared/infrastructure/repositories/GameTypeRepository';
 
 export const gameCreationError: ErrorResult = 'gameCreationError';
 
@@ -23,14 +23,13 @@ export interface ICreateGameRequest {
 
 export default class CreateGameCommand implements ICommand<ICreateGameRequest, ICreateGameResponse> {
     private readonly gameRepository: IGameRepository;
-    private readonly matchRepository: MatchRepository;
-    private readonly gameTypeRepository: GameTypeRepository;
+    private readonly matchRepository: IMatchRepository;
+    private readonly gameTypeRepository: IGameTypeRepository;
 
     constructor(private readonly fastify: FastifyInstance) {
         this.gameRepository = GameRepository.getInstance();
-        const dbConnection = this.fastify.dbConnection;
-        this.matchRepository = new MatchRepository(dbConnection);
-        this.gameTypeRepository = new GameTypeRepository(dbConnection);
+        this.matchRepository = this.fastify.MatchRepository;
+        this.gameTypeRepository = this.fastify.GameTypeRepository;
     }
 
     validate(request?: ICreateGameRequest | undefined): Result<void> {
@@ -93,7 +92,10 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
                 gameId: gameId,
             });
         } catch (error) {
-            return handleError<ICreateGameResponse>(error, 'Game creation failed', this.fastify.log, '500');
+            return this.fastify.handleError<ICreateGameResponse>({
+                code: '500',
+                error,
+            });
         }
     }
 }

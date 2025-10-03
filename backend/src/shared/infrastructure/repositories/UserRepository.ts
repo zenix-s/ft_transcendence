@@ -1,15 +1,24 @@
 import { Result, ErrorResult } from '@shared/abstractions/Result';
-import {
-    AuthenticationUserDto,
-    CreateUserDto,
-    IUserRepository,
-} from '@features/authentication/application/repositories/User.IRepository';
 import { AbstractRepository } from '@shared/infrastructure/db/AbstractRepository';
-import { AuthenticationUserRow } from '@shared/infrastructure/db/types';
+import { User } from '@shared/domain/entity/User.entity';
+import fp from 'fastify-plugin';
+import { AuthenticationUserRow } from '../types/types';
 
 const userNotFoundError: ErrorResult = 'UserNotFound';
 
-export class UserRepository extends AbstractRepository implements IUserRepository {
+export interface AuthenticationUserDto extends User {
+    password: string;
+}
+
+export type CreateUserDto = Omit<AuthenticationUserDto, 'id'>;
+
+export interface IUserRepository {
+    createUser(user: CreateUserDto): Promise<Result<User>>;
+    getUserByEmail(email: string): Promise<Result<AuthenticationUserDto>>;
+    getUserById(id: number): Promise<Result<AuthenticationUserDto>>;
+}
+
+class UserRepository extends AbstractRepository implements IUserRepository {
     async createUser(user: CreateUserDto): Promise<Result<AuthenticationUserDto>> {
         await this.run('INSERT INTO users (username, email, password) VALUES (?, ?, ?)', [
             user.username,
@@ -48,3 +57,14 @@ export class UserRepository extends AbstractRepository implements IUserRepositor
         return Result.success(row);
     }
 }
+
+export default fp(
+    (fastify) => {
+        const repo = new UserRepository(fastify.DbConnection);
+        fastify.decorate('UserRepository', repo);
+    },
+    {
+        name: 'UserRepository',
+        dependencies: ['DbConnection'],
+    }
+);

@@ -2,7 +2,6 @@ import { FastifyInstance } from 'fastify';
 import { IGameRepository } from '../repositories/Game.IRepository';
 import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
-import { handleError } from '@shared/utils/error.utils';
 import { badRequestError } from '@shared/Errors';
 import { GameRepository } from '../../infrastructure/Game.repository';
 
@@ -93,12 +92,11 @@ export default class SetPlayerReadyCommand
                 gameStarted: gameStarted,
             });
         } catch (error) {
-            return handleError<ISetPlayerReadyResponse>(
+            // return handleError<ISetPlayerReadyResponse>(error, this.fastify.log, '500');
+            return this.fastify.handleError<ISetPlayerReadyResponse>({
+                code: '500',
                 error,
-                'Failed to set player ready status',
-                this.fastify.log,
-                '500'
-            );
+            });
         }
     }
 }

@@ -1,10 +1,9 @@
 import { FastifyInstance } from 'fastify';
 import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
-import { handleError } from '@shared/utils/error.utils';
-import { MatchRepository } from '@shared/infrastructure/repositories';
 import { GameRepository } from '../../infrastructure/Game.repository';
 import { IGameRepository } from '../repositories/Game.IRepository';
+import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
 
 export const saveMatchError: ErrorResult = 'saveMatchError';
 
@@ -20,12 +19,11 @@ export interface ISaveMatchHistoryResponse {
 export default class SaveMatchHistoryCommand
     implements ICommand<ISaveMatchHistoryRequest, ISaveMatchHistoryResponse>
 {
-    private readonly matchRepository: MatchRepository;
+    private readonly matchRepository: IMatchRepository;
     private readonly gameRepository: IGameRepository;
 
     constructor(private readonly fastify: FastifyInstance) {
-        const dbConnection = this.fastify.dbConnection;
-        this.matchRepository = new MatchRepository(dbConnection);
+        this.matchRepository = this.fastify.MatchRepository;
         this.gameRepository = GameRepository.getInstance();
     }
 
@@ -94,12 +92,10 @@ export default class SaveMatchHistoryCommand
                 matchId: match.id,
             });
         } catch (error) {
-            return handleError<ISaveMatchHistoryResponse>(
+            return this.fastify.handleError<ISaveMatchHistoryResponse>({
+                code: '500',
                 error,
-                'Failed to save match history',
-                this.fastify.log,
-                '500'
-            );
+            });
         }
     }
 }

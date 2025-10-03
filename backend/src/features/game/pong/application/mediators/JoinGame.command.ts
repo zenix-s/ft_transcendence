@@ -2,10 +2,10 @@ import { FastifyInstance } from 'fastify';
 import { IGameRepository } from '../repositories/Game.IRepository';
 import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
-import { handleError } from '@shared/utils/error.utils';
 import { badRequestError } from '@shared/Errors';
-import { MatchRepository } from '@shared/infrastructure/repositories';
+// import { MatchRepository } from '@shared/infrastructure/repositories';
 import { GameRepository } from '../../infrastructure/Game.repository';
+import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
 
 export const gameNotFoundError: ErrorResult = 'gameNotFoundError';
 
@@ -27,12 +27,11 @@ export interface IJoinGameResponse {
 
 export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoinGameResponse> {
     private readonly gameRepository: IGameRepository;
-    private readonly matchRepository: MatchRepository;
+    private readonly matchRepository: IMatchRepository;
 
     constructor(private readonly fastify: FastifyInstance) {
         this.gameRepository = GameRepository.getInstance();
-        const dbConnection = this.fastify.dbConnection;
-        this.matchRepository = new MatchRepository(dbConnection);
+        this.matchRepository = this.fastify.MatchRepository;
     }
 
     validate(request?: IJoinGameRequest): Result<void> {
@@ -142,7 +141,10 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
                 gameId: gameId,
             });
         } catch (error) {
-            return handleError<IJoinGameResponse>(error, 'Failed to join game', this.fastify.log, '500');
+            return this.fastify.handleError<IJoinGameResponse>({
+                code: '500',
+                error,
+            });
         }
     }
 }

@@ -1,9 +1,5 @@
 import { MatchStatus } from '@shared/domain/types/game.types';
 
-export type DBParam = string | number | boolean | null | undefined;
-
-export type DBRecord = Record<string, DBParam>;
-
 export interface MatchPlayerRow {
     user_id: number;
     score: number;
@@ -46,14 +42,4 @@ export interface AuthenticationUserRow {
     username: string;
     email: string;
     password: string;
-}
-
-export interface QueryResult<T = DBRecord> {
-    rows: T[];
-    rowCount: number;
-}
-
-export interface ExecuteResult {
-    affectedRows: number | bigint;
-    insertId?: number;
 }

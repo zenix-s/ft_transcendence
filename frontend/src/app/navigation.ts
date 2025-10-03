@@ -1,4 +1,4 @@
-import { setupRegisterForm, validateLogin, loadDashboard } from "@/modules/users";
+import { setupRegisterForm, validateLogin, loadDashboard, loadSettings } from "@/modules/users";
 import { renderButtons } from "@/app/main";
 import { updateTexts } from "@/app/i18n";
 import { loadChart } from "@/components/graph"
@@ -81,6 +81,9 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
         renderButtons();
       });
       break;
+    case "settings":
+      loadSettings();
+      break;
     case "history":
       loadMatchHistory();
       break;
@@ -88,6 +91,9 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
       startGame();
       break;
     case "404":
+      renderButtons();
+      break;
+    case "setReady1":
       renderButtons();
       break;
   }

@@ -2,8 +2,8 @@
 <div class="flex flex-col items-center min-w-screen">
 
    <!-- Barra superior -->
-    <header class="w-full max-w-5xl border border-cyan-400 p-4 flex justify-between items-center mb-16 sm:mt-24">
-      <h1 data-i18n="dashboard" class="text-3xl hidden sm:block font-bold glitch tracking-wider uppercase"><!--DASHBOARD--></h1>
+    <header class="w-full max-w-5xl border-2 dark:border border-cyan-400 p-4 flex justify-between items-center mb-16 sm:mt-24">
+      <h1 data-i18n="settings" class="text-3xl hidden sm:block font-bold glitch tracking-wider uppercase"><!--DASHBOARD--></h1>
       <div class="flex flex-col justify-center items-center gap-4">
         <div id="user-data" class="flex flex-row w-full justify-start sm:justify-end items-center gap-4">
           <img id="user-avatar" src="https://via.placeholder.com/40" alt="Avatar" class="w-10 h-10 rounded-full border border-cyan-400" />
@@ -12,8 +12,8 @@
         <nav class="flex text-lg w-full">
           <!-- LANDSCAPE -->
           <div id="lanscape" class="relative w-full hidden sm:flex flex-row gap-4 justify-start sm:justify-end items-center">
-            <!-- Settings -->
-            <a href="#" data-page="settings" data-i18n="settings" class="text-secondary dark:text-primary hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] transition-all duration-300 capitalize"></a>
+            <!-- Dashboard -->
+            <a href="#" data-page="dashboard" data-i18n="dashboard" class="text-secondary dark:text-primary hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] transition-all duration-300 capitalize"></a>
             <span>|</span>
             <!-- Logout -->
             <a href="#" data-page="logout" data-i18n="logout" class="text-secondary dark:text-primary hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] transition-all duration-300 capitalize"></a>
@@ -21,8 +21,8 @@
 
           <!-- MOVILE -->
           <div id="movile" class="sm:hidden w-full flex flex-row gap-4 justify-start sm:justify-end items-center">
-            <!-- Settings -->
-            <a href="#" data-page="settings" class="text-xl text-secondary hover:text-cyan dark:text-primary transition fa-solid fa-gear"></a>
+            <!-- Dashboard -->
+            <a href="#" data-page="dashboard" class="text-xl text-secondary hover:text-cyan dark:text-primary transition fa-solid fa-house-user"></a>
             <span>|</span>
             <!-- Logout -->
             <a href="#" data-page="logout" class="text-xl text-secondary hover:text-cyan dark:text-primary transition fa-solid fa-right-from-bracket"></a>
@@ -31,70 +31,75 @@
       </div>
     </header>
 
-    <!-- Texto central -->
-    <div data-i18n="welcome" class="w-full max-w-5xl text-4xl md:text-7xl font-bold glitch mb-12 tracking-widest text-center uppercase text-shadow-[-2px_-1px_0_cyan,2px_1px_0_magenta]">
-      WELCOME
-    </div>
-
-    <!-- Botones principales -->
-    <div class="grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(0,1fr))] gap-8 max-w-5xl w-full px-4">
-      <!-- Botón 1 jugador -->
-      <div id="setReady1" data-page="setReady1" class="border border-cyan-400 p-8 text-center cursor-pointer hover:skew-x-[5deg] active:skew-x-[5deg] transition-all duration-300 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] active:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] hover:animate-[glitch_1s_linear_infinite] active:animate-[glitch_1s_linear_infinite]">
-        <h2 id="setReady1" data-page="setReady1" data-i18n="onePlayerGame" class="text-3xl font-bold glitch mb-2 uppercase">1 PLAYER GAME</h2>
-        <p id="setReady1" data-page="setReady1" data-i18n="playBot" class="text-sm tracking-widest uppercase">PLAY AGAINST A BOT</p>
+    <!-- Settings -->
+    <div class="flex flex-col justify-center items-center gap-8 max-w-5xl w-full">
+      <!-- User Settings -->
+      <div class="border-2 dark:border border-cyan-400 p-8 text-center relative w-full">
+        <h2 data-i18n="userSettings" class="text-md sm:text-2xl font-bold mb-2 uppercase absolute -top-3 sm:-top-5 text-shadow-[-3px_-3px_0_var(--color-primary),3px_3px_0_var(--color-primary)] dark:text-shadow-[-3px_-3px_0_var(--color-secondary),3px_3px_0_var(--color-secondary)]"></h2>
+        <form class="flex flex-col justify-center items-start gap-2">
+          <label data-i18n="Password" for="password"></label>
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-5 w-full text-sm">
+            <!-- Current Password -->
+            <div class="relative overflow-visible">
+              <input
+                type="password"
+                name="currentPassword"
+                autocomplete="current-password"
+                data-i18n="currentPassword"
+                placeholder="Current password"
+                class="w-full border-2 dark:border border-cyan-400 placeholder-secondary dark:placeholder-gray-400 px-2 sm:py-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <!-- New Password -->
+            <div class="relative overflow-visible">
+              <input
+                type="password"
+                name="newPassword"
+                autocomplete="new-password"
+                data-i18n="newPassword"
+                placeholder="newPassword"
+                class="w-full border-2 dark:border border-cyan-400 placeholder-secondary dark:placeholder-gray-400 px-2 sm:py-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                data-tooltip-target="tooltip-password"
+              />
+              <div
+                data-tooltip="tooltip-password"
+                role="tooltip"
+                class="z-50 absolute left-0 bottom-1/2 -translate-y-9 px-3 py-2 text-sm text-primary dark:text-secondary bg-secondary dark:bg-primary border border-primary dark:border-secondary rounded-lg shadow-lg opacity-0 scale-95 transition-all duration-200 pointer-events-none w-full whitespace-pre-line"
+                data-i18n="toolTipPassword"
+              >
+                La contraseña debe tener mínimo 8 caracteres, incluyendo un número.
+                <div class="absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2"></div>
+              </div>
+            </div>
+            <!-- Repeat Password -->
+            <div class="relative overflow-visible">
+              <input
+                type="password"
+                name="repeat_password"
+                autocomplete="new-password"
+                data-i18n="Repeat_Password"
+                placeholder="Repeat_Password"
+                class="w-full border-2 dark:border border-cyan-400 placeholder-secondary dark:placeholder-gray-400 px-2 sm:py-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <!-- Update button -->
+            <button
+              title="Actualizar"
+              class="w-full relative bg-transparent text-secondary dark:text-primary border border-secondary dark:border-primary px-6 py-2 font-mono text-xl cursor-pointer transition-all duration-700 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[0px_0_0_red,-0px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] overflow-hidden"
+              data-i18n="update"
+            >
+                Actualizar
+            </button>
+          </div>
+        </form>
       </div>
 
       <!-- Botón multijugador -->
-      <div class="border border-cyan-400 p-8 text-center cursor-pointer hover:skew-x-[5deg] active:skew-x-[5deg] transition-all duration-300 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] active:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] hover:animate-[glitch_1s_linear_infinite] active:animate-[glitch_1s_linear_infinite]">
-        <h2 data-i18n="multiplayer" class="text-3xl font-bold glitch mb-2 uppercase">MULTIPLAYER</h2>
+      <div class="border border-cyan-400 p-8 text-center relative w-full">
+        <h2 data-i18n="gameSettings" class="text-md sm:text-2xl font-bold mb-2 uppercase absolute -top-3 sm:-top-5 text-shadow-[-3px_-3px_0_var(--color-primary),3px_3px_0_var(--color-primary)] dark:text-shadow-[-3px_-3px_0_var(--color-secondary),3px_3px_0_var(--color-secondary)]"></h2>
         <p data-i18n="playOthers" class="text-sm tracking-widest uppercase">PLAY WITH OTHERS</p>
       </div>
     </div>
-
-    <!-- Graph -->
-      <div class="relative -z-1 flex justify-center items-center min-h-[350px] text-secondary dark:text-primary">
-      <div class="absolute -translate-y-6">
-        <p id="user-total-games" class="text-8xl font-bold text-center"><!--31--></p>
-        <p class="text-2xl text-center" data-i18n="played_games">partidas</p>
-      </div>
-      <canvas id="donutChart" class="max-w-sm"></canvas>
-      </div>
-
-    <!-- History -->
-    
-      <div class="w-full max-w-5xl mx-auto p-6">
-        <h2 data-i18n="gameHistory" class="text-2xl font-bold mb-4 text-gray-800 dark:text-cyan">
-          Historial de Partidas
-        </h2>
-        <div class="rounded-lg shadow">
-          <table
-            id="matchTable"
-            class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm"
-          >
-            <thead class="bg-gray-100 dark:bg-gray-800">
-              <tr>
-                <!-- <th class="px-4 py-2 text-left font-semibold text-gray-700 dark:text-gray-300">
-                  Jugador 1
-                </th> -->
-                <th data-i18n="opponent" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                  Opponent
-                </th>
-                <th data-i18n="result" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                  Resultado
-                </th>
-                <th data-i18n="winner" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                  Ganador
-                </th>
-                <th data-i18n="date" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                  Fecha
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-            </tbody>
-          </table>
-        </div>
-      </div>
 
   </div>
 </div>

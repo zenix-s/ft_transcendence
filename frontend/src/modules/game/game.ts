@@ -5,77 +5,32 @@ Hola12345
 */
 
 
-import { conectWebSocket } from "./conectWebSocket.js";
 import type { Player, Score, Ball } from "./gameData.js";
-import { fetchGameId, fetchSinglePlayerGameId, toJoinGame, fetchGameState } from "./getData.js";
+import { socketAndRender } from "./conectWebSocket.js";
 
-document.addEventListener("keydown", (event) => {
-	const key = event.key;
-	console.log(key);
-	if (key === "ArrowUp")
-		console.log("up");
-	if (key === "ArrowDown")
-		console.log("down");
-	if (key === "w")
-		console.log("w");
-	if (key === "s")
-		console.log("s");
-});
-
-async function look()
-{
-	const gameId = await fetchGameId();
-	if (!gameId)
-	{
-		console.log("No game ID");
-		return ;
-	}
-	console.log("si gameId=", gameId);
-
-	const gameSiglePlayerId = await fetchSinglePlayerGameId();
-	if (!gameSiglePlayerId)
-	{
-		console.log("No single-player game ID");
-		return ;
-	}
-	console.log("si gameSinglePlayerId=", gameSiglePlayerId);
-
-	const gameJoin = await toJoinGame(gameId);
-	if (!gameJoin)
-	{
-		console.log("No join game");
-		return ;
-	}
-	console.log("si gameJoin=", gameJoin);
-
-	const gameState = await fetchGameState(gameId);
-	if (!gameState)
-	{
-		console.log("no gameState");
-		return ;
-	}
-	console.log("si gameState");
-
-	conectWebSocket(gameSiglePlayerId);
-}
-
-function actualizeValues(posPlayerL:number, playerL:Player, posPlayerR:number, playerR:Player,
+export function actualizeValues(posPlayerL:number, playerL:Player, posPlayerR:number, playerR:Player,
 	pointsL:number, pointsR:number, scores:Score, ballX:number, ballY:number, ball:Ball)
 {
-	look();
-	playerL.posX = posPlayerL;
-	playerR.posX = posPlayerR;
+	playerL.posY = posPlayerL;
+	playerR.posY = posPlayerR;
 
 	scores.pointsLeft = pointsL;
 	scores.pointsRight = pointsR;
 
 	ball.posX = ballX;
 	ball.posY = ballY;
+	actualizeGame(playerL, playerR, scores, ball);
 }
 
-function actualizeGame(canvas:HTMLCanvasElement, playerLeft: Player, playerRight: Player,
+function actualizeGame(playerLeft: Player, playerRight: Player,
 	scores: Score , ball: Ball)
 {
+	const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
+	if (!canvas)
+	{
+		console.log("Error: no canvas");
+		return ;
+	}
 	console.log("hight=", canvas.height);
 	if (canvas.height < 500)
 	{
@@ -84,18 +39,26 @@ function actualizeGame(canvas:HTMLCanvasElement, playerLeft: Player, playerRight
 	}
 
 	/* CAMBIAR JUGADORES DE SITIO */
+	if (playerLeft.posY < playerLeft.topPercentage)
+		playerLeft.posY = playerLeft.topPercentage;
+	if (playerLeft.posY > playerLeft.bottomPercentage)
+		playerLeft.posY = playerLeft.bottomPercentage;
+	if (playerRight.posY < playerRight.topPercentage)
+		playerRight.posY = playerRight.topPercentage;
+	if (playerRight.posY > playerRight.bottomPercentage)
+		playerRight.posY = playerRight.bottomPercentage;
 	playerLeft.paddle.style.top = playerLeft.posY.toString() + "%";
 	playerRight.paddle.style.top = playerRight.posY.toString() + "%";
 
 	/* CAMBIAR LA PELOTA DE SITIO */
-	const prevPosX = ball.prevPosX * 1250 / 100;
+	const prevPosX = ball.prevPosX * 2000 / 100;
 	const prevPosY = ball.prevPosY * 1250 / 100;
 	const ctx = canvas.getContext("2d")!;
 	ctx.fillStyle = "black";
 	ctx.beginPath();
-	ctx.arc(prevPosX, prevPosY, 15, 0, Math.PI * 2);
+	ctx.arc(prevPosX, prevPosY, 20, 0, Math.PI * 2);
 	ctx.fill();
-	const posX = ball.posX * 1250 / 100;
+	const posX = ball.posX * 2000 / 100;
 	const posY = ball.posY * 1250 / 100;
 	ctx.fillStyle = "white";
 	ctx.beginPath();
@@ -171,7 +134,7 @@ export function startGame()
 	}
 	console.log("Scores=", scores);
 
-	/* PELOTA*/
+	/* PELOTA */
 	const ball : Ball = {
 		prevPosX : 50,
 		posX : 50,
@@ -184,12 +147,7 @@ export function startGame()
 	// Draw a white dot in the center
 	ctx.fillStyle = "white";
 	ctx.beginPath();
-	ctx.arc(ball.posX * 1250 / 100, ball.posY * 1250 / 100, 15, 0, Math.PI * 2);
+	ctx.arc(ball.posX * 2000 / 100, ball.posY * 1250 / 100, 15, 0, Math.PI * 2);
 	ctx.fill();
-	actualizeValues(30, playerLeft, 1000, playerRight, 5, 100, scores, 10, 10, ball);
-	actualizeGame(canvas, playerLeft, playerRight, scores, ball);
+	socketAndRender(playerLeft, playerRight, scores, ball);
 }
-
-
-
-//fetch

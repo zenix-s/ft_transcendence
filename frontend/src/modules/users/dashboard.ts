@@ -47,7 +47,7 @@ export async function loadDashboard() {
     avatarElement.src = user.avatarUrl && user.avatarUrl.trim() !== "" 
       ? user.avatarUrl 
       // 👆 Aquí `user.avatarUrl` debe ser la URL que te devuelve tu backend.
-      : "/images/avatar.jpg"; // Imagen por defecto
+      : "/images/avatar1.jpg"; // Imagen por defecto
   }
 
   if (totalGamesElement) {

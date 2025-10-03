@@ -1,6 +1,4 @@
-import { DBParam, DBRecord, QueryResult, ExecuteResult } from './types';
-
-export type { DBParam, DBRecord } from './types';
+import { DBParam, DBRecord, ExecuteResult, QueryResult } from './db.types';
 
 export interface IConnection {
     connect(): Promise<void>;

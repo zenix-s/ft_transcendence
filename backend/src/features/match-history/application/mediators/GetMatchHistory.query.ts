@@ -1,9 +1,9 @@
 import { FastifyInstance } from 'fastify';
 import { Result } from '@shared/abstractions/Result';
 import { IQuery } from '@shared/application/abstractions/IQuery.interface';
-import { MatchRepository } from '@shared/infrastructure/repositories';
 
 import { Match } from '@shared/domain/entity/Match.entity';
+import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
 
 export interface IGetMatchHistoryRequest {
     userId?: number;
@@ -19,11 +19,10 @@ export interface IGetMatchHistoryResponse {
 export default class GetMatchHistoryQuery
     implements IQuery<IGetMatchHistoryRequest, IGetMatchHistoryResponse>
 {
-    private readonly matchRepository: MatchRepository;
+    private readonly matchRepository: IMatchRepository;
 
     constructor(private readonly fastify: FastifyInstance) {
-        const dbConnection = this.fastify.dbConnection;
-        this.matchRepository = new MatchRepository(dbConnection);
+        this.matchRepository = this.fastify.MatchRepository;
     }
 
     validate(request?: IGetMatchHistoryRequest): Result<void> {

@@ -4,6 +4,10 @@ import { IAuthenticatedUser, IJWTPayload } from '@shared/types';
 import { SQLiteConnection } from '@shared/infrastructure/db/SQLiteConnection';
 import ICommand from '@shared/application/abstractions/ICommand.interface';
 import IQuery from '@shared/application/abstractions/IQuery.interface';
+import { IGameTypeRepository } from '@shared/infrastructure/repositories/GameTypeRepository';
+import { IMatchPlayerRepository } from '@shared/infrastructure/repositories/MatchPlayerRepository';
+import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
+import { IUserRepository } from '@shared/infrastructure/repositories/UserRepository';
 
 declare module 'fastify' {
     interface FastifyInstance {
@@ -11,7 +15,7 @@ declare module 'fastify' {
         jwt: JWT;
 
         // BBDD connection
-        dbConnection: SQLiteConnection;
+        DbConnection: SQLiteConnection;
 
         // handle medaitors
         handleQuery<TRequest, TResponse>({
@@ -40,6 +44,12 @@ declare module 'fastify' {
 
         // Handle error
         handleError<T>({ code, error }: { code: string; error: unknown }): Result<T>;
+
+        // Repositories
+        GameTypeRepository: IGameTypeRepository;
+        MatchPlayerRepository: IMatchPlayerRepository;
+        MatchRepository: IMatchRepository;
+        UserRepository: IUserRepository;
     }
 
     interface FastifyRequest {

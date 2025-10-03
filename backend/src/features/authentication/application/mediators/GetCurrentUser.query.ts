@@ -1,6 +1,5 @@
 import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { IQuery } from '@shared/application/abstractions/IQuery.interface';
-import { IUserRepository } from '../repositories/User.IRepository';
 import { FastifyInstance } from 'fastify';
 import { User } from '@shared/domain/entity/User.entity';
 import { badRequestError } from '@shared/Errors';
@@ -18,10 +17,7 @@ export interface IGetCurrentUserResponse {
 }
 
 export default class GetCurrentUserQuery implements IQuery<IGetCurrentUserRequest, IGetCurrentUserResponse> {
-    constructor(
-        private readonly userRepository: IUserRepository,
-        private readonly fastify: FastifyInstance
-    ) {}
+    constructor(private readonly fastify: FastifyInstance) {}
 
     validate(request?: IGetCurrentUserRequest): Result<void> {
         if (!request) return Result.error(badRequestError);
@@ -35,7 +31,7 @@ export default class GetCurrentUserQuery implements IQuery<IGetCurrentUserReques
         if (!request) return Result.error(badRequestError);
 
         try {
-            const userResult = await this.userRepository.getUserById(request.userId);
+            const userResult = await this.fastify.UserRepository.getUserById(request.userId);
             if (!userResult.isSuccess || !userResult.value) return Result.error(userNotFoundError);
 
             const user = userResult.value;

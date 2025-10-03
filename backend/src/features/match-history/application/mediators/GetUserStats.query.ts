@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { Result } from '@shared/abstractions/Result';
 import { IQuery } from '@shared/application/abstractions/IQuery.interface';
-import { MatchPlayerRepository } from '@shared/infrastructure/repositories';
+import { IMatchPlayerRepository } from '@shared/infrastructure/repositories/MatchPlayerRepository';
 
 export interface IGetUserStatsRequest {
     userId: number;
@@ -17,11 +17,10 @@ export interface IGetUserStatsResponse {
 }
 
 export default class GetUserStatsQuery implements IQuery<IGetUserStatsRequest, IGetUserStatsResponse> {
-    private readonly matchPlayerRepository: MatchPlayerRepository;
+    private readonly matchPlayerRepository: IMatchPlayerRepository;
 
     constructor(private readonly fastify: FastifyInstance) {
-        const dbConnection = this.fastify.dbConnection;
-        this.matchPlayerRepository = new MatchPlayerRepository(dbConnection);
+        this.matchPlayerRepository = this.fastify.MatchPlayerRepository;
     }
 
     validate(request?: IGetUserStatsRequest): Result<void> {

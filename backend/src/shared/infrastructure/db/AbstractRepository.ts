@@ -1,5 +1,5 @@
 import { IConnection } from '../db/IConnection.interface';
-import { DBParam } from './types';
+import { DBParam } from './db.types';
 
 export abstract class AbstractRepository {
     constructor(protected readonly connection: IConnection) {}

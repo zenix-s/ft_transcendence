@@ -1,6 +1,5 @@
 import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
-import { IUserRepository } from '../repositories/User.IRepository';
 import { verifyPassword } from '@shared/utils/password.utils';
 import { FastifyInstance } from 'fastify';
 import { badRequestError } from '@shared/Errors';
@@ -25,10 +24,7 @@ export interface ILoginRequest {
 }
 
 export default class LoginCommand implements ICommand<ILoginRequest, IAuthResponse> {
-    constructor(
-        private readonly userRepository: IUserRepository,
-        private readonly fastify: FastifyInstance
-    ) {}
+    constructor(private readonly fastify: FastifyInstance) {}
 
     validate(request?: ILoginRequest): Result<void> {
         if (!request) {
@@ -48,17 +44,25 @@ export default class LoginCommand implements ICommand<ILoginRequest, IAuthRespon
         if (!request) return Result.error(badRequestError);
         const { email, password } = request;
 
+        console.debug('step: 02');
         try {
-            const userResult = await this.userRepository.getUserByEmail(email);
+            
+            
+            
+            const userResult = await this.fastify.UserRepository.getUserByEmail(email);
             if (!userResult.isSuccess || !userResult.value) {
                 return Result.error(invalidCredentialsError);
             }
+
+            console.debug('step: 03');
 
             const user = userResult.value;
             const isPasswordValid = await verifyPassword(password, user.password);
             if (!isPasswordValid) {
                 return Result.error(invalidCredentialsError);
             }
+
+            console.debug('step: 04');
 
             const token = this.fastify.jwt.sign({
                 id: user.id,

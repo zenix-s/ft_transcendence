@@ -1,5 +1,4 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { UserRepository } from '@shared/infrastructure/repositories';
 import CreateUserCommand from './application/mediators/CreateUser.command';
 import LoginCommand from './application/mediators/Login.command';
 import GetCurrentUserQuery from './application/mediators/GetCurrentUser.query';
@@ -7,8 +6,6 @@ import { ILoginRequest } from './application/mediators/Login.command';
 import { IRegisterRequest } from './application/mediators/CreateUser.command';
 
 export default async function authRoutes(fastify: FastifyInstance) {
-    const userRepository = new UserRepository(fastify.dbConnection);
-
     fastify.post(
         '/register',
         {
@@ -83,7 +80,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
             },
         },
         async (req: FastifyRequest<{ Body: IRegisterRequest }>, reply: FastifyReply) => {
-            const createUserCommand = new CreateUserCommand(userRepository, fastify);
+            const createUserCommand = new CreateUserCommand(fastify);
 
             return fastify.handleCommand({
                 command: createUserCommand,
@@ -165,8 +162,10 @@ export default async function authRoutes(fastify: FastifyInstance) {
             },
         },
         async (req: FastifyRequest<{ Body: ILoginRequest }>, reply: FastifyReply) => {
-            const loginCommand = new LoginCommand(userRepository, fastify);
+            const loginCommand = new LoginCommand(fastify);
 
+            console.debug("step: 01");
+            
             return fastify.handleCommand({
                 command: loginCommand,
                 request: req.body,
@@ -236,7 +235,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
             },
         },
         async (req: FastifyRequest, reply: FastifyReply) => {
-            const getCurrentUserQuery = new GetCurrentUserQuery(userRepository, fastify);
+            const getCurrentUserQuery = new GetCurrentUserQuery(fastify);
 
             return fastify.handleCommand({
                 command: getCurrentUserQuery,

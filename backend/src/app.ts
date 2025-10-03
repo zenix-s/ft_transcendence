@@ -2,7 +2,7 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
 import dbPlugin from '@shared/infrastructure/db/db';
 import MediatorHandlerPlugin from '@shared/utils/MediatorHandlerPlugin';
-import ErrorhandlerPlugin from '@shared/utils/error.utils';
+import ErrorhandlerPlugin from '@shared/utils/ErrorHandlerPlugin';
 import { fastifyWebsocket } from '@fastify/websocket';
 import pongHttpRoutes from '@features/game/pong/presentation/pong.http';
 import pongWebSocketRoutes from '@features/game/pong/presentation/pong.websocket';
@@ -12,6 +12,7 @@ import fastifyJWT from '@fastify/jwt';
 import authRoutes from '@features/authentication/Authentication.presentation';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
+import Repositories from '@shared/infrastructure/repositories';
 
 async function App(fastify: FastifyInstance) {
     fastify.register(fastifyJWT, {
@@ -24,6 +25,7 @@ async function App(fastify: FastifyInstance) {
     fastify.register(dbPlugin);
     fastify.register(MediatorHandlerPlugin);
     fastify.register(ErrorhandlerPlugin);
+    fastify.register(Repositories);
 
     fastify.decorate('authenticate', async function (request: FastifyRequest, reply: FastifyReply) {
         try {
@@ -39,17 +41,13 @@ async function App(fastify: FastifyInstance) {
 
         if (error.message.includes('Database')) {
             res.status(503).send({
-                statusCode: 503,
-                error: 'Service Unavailable',
-                message: 'Database connection error',
+                error: 'DatabaseServiceUnavailable',
             });
             return;
         }
 
         res.status(500).send({
-            statusCode: 500,
-            error: 'Internal Server Error',
-            message: 'An unexpected error occurred.',
+            error: 'InternalServerError',
         });
     });
 
@@ -66,9 +64,7 @@ async function App(fastify: FastifyInstance) {
             },
         },
     });
-    fastify.register(fastifySwaggerUi, {
-        routePrefix: '/documentation',
-    });
+    fastify.register(fastifySwaggerUi, { routePrefix: '/documentation' });
 
     fastify.register(fastifyWebsocket);
     fastify.register(fastifyAuth);

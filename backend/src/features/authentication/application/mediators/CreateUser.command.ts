@@ -1,5 +1,4 @@
 import { FastifyInstance } from 'fastify';
-import { IUserRepository } from '@features/authentication/application/repositories/User.IRepository';
 import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { hashPassword } from '@shared/utils/password.utils';
@@ -32,10 +31,7 @@ export default class CreateUserCommand implements ICommand<IRegisterRequest, IAu
         return '400';
     };
 
-    constructor(
-        private readonly userRepository: IUserRepository,
-        private readonly fastify: FastifyInstance
-    ) {}
+    constructor(private readonly fastify: FastifyInstance) {}
 
     validate(request?: IRegisterRequest): Result<void> {
         if (!request) {
@@ -62,14 +58,14 @@ export default class CreateUserCommand implements ICommand<IRegisterRequest, IAu
         const { username, email, password } = request;
 
         try {
-            const existingUser = await this.userRepository.getUserByEmail(email);
+            const existingUser = await this.fastify.UserRepository.getUserByEmail(email);
             if (existingUser.isSuccess) {
                 return Result.error(userAlredyExistsError);
             }
 
             const hashedPassword = await hashPassword(password);
 
-            const user = await this.userRepository.createUser({
+            const user = await this.fastify.UserRepository.createUser({
                 username,
                 email,
                 password: hashedPassword,

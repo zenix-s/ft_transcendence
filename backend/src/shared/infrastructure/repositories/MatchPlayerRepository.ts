@@ -1,7 +1,18 @@
-import { UserStatsRow } from '@shared/infrastructure/db/types';
+import { UserStatsRow } from '@shared/infrastructure/types/types';
 import { AbstractRepository } from '@shared/infrastructure/db/AbstractRepository';
+import fp from 'fastify-plugin';
 
-export class MatchPlayerRepository extends AbstractRepository {
+export interface IMatchPlayerRepository {
+    getUserStats(userId: number): Promise<{
+        totalMatches: number;
+        wins: number;
+        losses: number;
+        winRate: number;
+        totalScore: number;
+    }>;
+}
+
+class MatchPlayerRepository extends AbstractRepository implements IMatchPlayerRepository {
     async getUserStats(userId: number): Promise<{
         totalMatches: number;
         wins: number;
@@ -32,3 +43,14 @@ export class MatchPlayerRepository extends AbstractRepository {
         };
     }
 }
+
+export default fp(
+    (fastify) => {
+        const repo = new MatchPlayerRepository(fastify.DbConnection);
+        fastify.decorate('MatchPlayerRepository', repo);
+    },
+    {
+        name: 'MatchPlayerRepository',
+        dependencies: ['DbConnection'],
+    }
+);

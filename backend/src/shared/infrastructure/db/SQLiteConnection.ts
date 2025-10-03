@@ -1,5 +1,5 @@
-import { IConnection, DBParam, DBRecord } from './IConnection.interface';
-import { QueryResult } from './types';
+import { DBParam, DBRecord, QueryResult } from './db.types';
+import { IConnection } from './IConnection.interface';
 import Sqlite, { Database } from 'better-sqlite3';
 
 export class SQLiteConnection implements IConnection {

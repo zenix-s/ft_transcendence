@@ -73,7 +73,7 @@ export class PongGame {
         this.player2 = undefined;
         this.ball = {
             position: { x: 50, y: 50 },
-            velocity: { x: 1, y: 1 },
+            velocity: { x: 0.7, y: 0.7 },
         };
         this.lastUpdate = Date.now();
         this.gameTimer = 0;

@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { IGameRepository } from '../../application/repositories/Game.IRepository';
+import { IPongGameRepository } from '../../application/repositories/Game.IRepository';
 import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { IQuery } from '@shared/application/abstractions/IQuery.interface';
 import { badRequestError } from '@shared/Errors';
@@ -46,7 +46,7 @@ export interface IGetGameStateResponse {
 }
 
 export default class GetGameStateQuery implements IQuery<IGetGameStateRequest, IGetGameStateResponse> {
-    private readonly gameRepository: IGameRepository;
+    private readonly gameRepository: IPongGameRepository;
 
     constructor(private readonly fastify: FastifyInstance) {
         this.gameRepository = GameRepository.getInstance();

@@ -4,6 +4,7 @@ import GameTypeRepository from './GameTypeRepository';
 import MatchPlayerRepository from './MatchPlayerRepository';
 import MatchRepository from './MatchRepository';
 import UserRepository from './UserRepository';
+import PongGameRepository from './PongGame.repository';
 
 export default fp(
     (fastify: FastifyInstance) => {
@@ -11,6 +12,7 @@ export default fp(
         fastify.register(MatchPlayerRepository);
         fastify.register(MatchRepository);
         fastify.register(UserRepository);
+        fastify.register(PongGameRepository);
     },
     {
         name: 'Repositories',

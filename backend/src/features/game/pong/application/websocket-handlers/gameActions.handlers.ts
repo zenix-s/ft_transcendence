@@ -1,7 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import SetPlayerReadyCommand from '../mediators/SetPlayerReady.command';
 import { ErrorResult } from '@shared/abstractions/Result';
-import { GameRepository } from '../../infrastructure/Game.repository';
 
 export const WS_ERRORS = {
     INVALID_FORMAT: 'InvalidFormat' as ErrorResult,

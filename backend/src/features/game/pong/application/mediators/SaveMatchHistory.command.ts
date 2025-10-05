@@ -1,9 +1,8 @@
 import { FastifyInstance } from 'fastify';
 import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
-import { GameRepository } from '../../infrastructure/Game.repository';
-import { IGameRepository } from '../repositories/Game.IRepository';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
+import { IPongGameRepository } from '@shared/infrastructure/repositories/PongGame.repository';
 
 export const saveMatchError: ErrorResult = 'saveMatchError';
 
@@ -20,11 +19,11 @@ export default class SaveMatchHistoryCommand
     implements ICommand<ISaveMatchHistoryRequest, ISaveMatchHistoryResponse>
 {
     private readonly matchRepository: IMatchRepository;
-    private readonly gameRepository: IGameRepository;
+    private readonly gameRepository: IPongGameRepository;
 
     constructor(private readonly fastify: FastifyInstance) {
         this.matchRepository = this.fastify.MatchRepository;
-        this.gameRepository = GameRepository.getInstance();
+        this.gameRepository = this.fastify.PongGameRepository;
     }
 
     validate(request?: ISaveMatchHistoryRequest): Result<void> {

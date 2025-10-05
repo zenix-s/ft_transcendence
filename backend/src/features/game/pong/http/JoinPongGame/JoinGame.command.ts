@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { IGameRepository } from '../../application/repositories/Game.IRepository';
+import { IPongGameRepository } from '../../application/repositories/Game.IRepository';
 import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { badRequestError } from '@shared/Errors';
@@ -25,7 +25,7 @@ export interface IJoinGameResponse {
 }
 
 export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoinGameResponse> {
-    private readonly gameRepository: IGameRepository;
+    private readonly gameRepository: IPongGameRepository;
     private readonly matchRepository: IMatchRepository;
 
     constructor(private readonly fastify: FastifyInstance) {

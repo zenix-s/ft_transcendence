@@ -1,9 +1,8 @@
 import { FastifyInstance } from 'fastify';
-import { IGameRepository } from '../repositories/Game.IRepository';
 import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { badRequestError } from '@shared/Errors';
-import { GameRepository } from '../../infrastructure/Game.repository';
+import { IPongGameRepository } from '@shared/infrastructure/repositories/PongGame.repository';
 
 export const gameNotFoundError: ErrorResult = 'gameNotFoundError';
 
@@ -28,10 +27,10 @@ export interface ISetPlayerReadyResponse {
 export default class SetPlayerReadyCommand
     implements ICommand<ISetPlayerReadyRequest, ISetPlayerReadyResponse>
 {
-    private readonly gameRepository: IGameRepository;
+    private readonly gameRepository: IPongGameRepository;
 
     constructor(private readonly fastify: FastifyInstance) {
-        this.gameRepository = GameRepository.getInstance();
+        this.gameRepository = fastify.PongGameRepository;
     }
 
     validate(request?: ISetPlayerReadyRequest): Result<void> {

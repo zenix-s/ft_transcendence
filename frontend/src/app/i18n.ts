@@ -67,6 +67,8 @@ export const translations: Record<Language, Record<string, string>> = {
     gameSettings: "Game Settings",
     update: "Update",
     player1: "PLAYER 1",
+    avatarSelection: "Avatar selection",
+    updateAvatar: "Update Avatar",
   },
   es: {
     start: "Comenzar",
@@ -133,6 +135,8 @@ export const translations: Record<Language, Record<string, string>> = {
     gameSettings: "Configuración del juego",
     update: "Actualizar",
     player1: "JUGADOR 1",
+    avatarSelection: "Selección de avatar",
+    updateAvatar: "Actualizar Avatar",
   },
   fr: {
     start: "Démarrer",
@@ -199,6 +203,8 @@ export const translations: Record<Language, Record<string, string>> = {
     gameSettings: "Paramètres du jeu",
     update: "Actualiser",
     player1: "JOUEUR 1",
+    avatarSelection: "Sélection d'avatar",
+    updateAvatar: "Mettre à jour l'avatar",
   },
 };
 

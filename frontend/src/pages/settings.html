@@ -34,10 +34,50 @@
     <!-- Settings -->
     <div class="flex flex-col justify-center items-center gap-8 max-w-5xl w-full">
       <!-- User Settings -->
-      <div class="border-2 dark:border border-cyan-400 p-8 text-center relative w-full">
+      <div class="border-2 dark:border border-cyan-400 p-8 text-center relative w-full flex flex-col gap-8">
+        <!-- Section Title -->
         <h2 data-i18n="userSettings" class="text-md sm:text-2xl font-bold mb-2 uppercase absolute -top-3 sm:-top-5 text-shadow-[-3px_-3px_0_var(--color-primary),3px_3px_0_var(--color-primary)] dark:text-shadow-[-3px_-3px_0_var(--color-secondary),3px_3px_0_var(--color-secondary)]"></h2>
-        <form class="flex flex-col justify-center items-start gap-2">
-          <label data-i18n="Password" for="password"></label>
+
+        <!-- Avatar -->
+        <div class="flex flex-col justify-center items-start">
+          <p data-i18n="avatarSelection"></p>
+          <div class="flex flex-col sm:flex-row justify-center items-center gap-3 w-full">
+            <div class="flex flex-row justify-center items-center gap-4 w-full">
+              <!-- Left Arrow -->
+              <svg
+                id="leftArrow"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="text-secondary dark:text-primary flex-shrink-0 w-[24px] sm:w-[48px] icon icon-tabler icons-tabler-filled icon-tabler-triangle rotate-270 select-none cursor-pointer"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M12 1.67a2.914 2.914 0 0 0 -2.492 1.403l-8.11 13.537a2.914 2.914 0 0 0 2.484 4.385h16.225a2.914 2.914 0 0 0 2.503 -4.371l-8.116 -13.546a2.917 2.917 0 0 0 -2.494 -1.408z" />
+              </svg>
+
+              <!-- Avatar Selector -->
+              <img id="avatarSelector" src="/images/avatar1.jpg" alt="Avatar image" class="max-w-[150px] sm:max-w-[250px] rounded-full botder border-4 border-cyan-400 select-none pointer-events-auto">
+
+              <!-- Right Arrow -->
+              <svg
+                id="rightArrow"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor" 
+                class="text-secondary dark:text-primary flex-shrink-0 w-[24px] sm:w-[48px] icon icon-tabler icons-tabler-filled icon-tabler-triangle rotate-90 select-none cursor-pointer"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M12 1.67a2.914 2.914 0 0 0 -2.492 1.403l-8.11 13.537a2.914 2.914 0 0 0 2.484 4.385h16.225a2.914 2.914 0 0 0 2.503 -4.371l-8.116 -13.546a2.917 2.917 0 0 0 -2.494 -1.408z" />
+              </svg>
+            </div>
+            <button id="updateAvatar" data-i18n="updateAvatar" class="w-full relative bg-transparent text-secondary dark:text-primary border border-secondary dark:border-primary px-6 py-2 font-mono text-xl cursor-pointer transition-all duration-700 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[0px_0_0_red,-0px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] overflow-hidden">Update Avatar</button>
+          </div>
+        </div>
+
+        <!-- Password Form -->
+        <form class="flex flex-col justify-center items-start gap-2 
+        w-full">
+          <p data-i18n="Password"></p>
           <div class="grid grid-cols-1 sm:grid-cols-4 gap-5 w-full text-sm">
             <!-- Current Password -->
             <div class="relative overflow-visible">

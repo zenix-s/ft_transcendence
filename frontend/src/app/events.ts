@@ -5,6 +5,9 @@ import { t } from "@/app/i18n";
  * The `setupEventListeners` function adds event listeners for click and popstate events to handle
  * navigation and user login functionality.
  */
+
+let avatarNumber = 1;
+
 export function setupEventListeners() {
   // Listeners de navegación
   document.addEventListener("click", (event) => {
@@ -44,6 +47,31 @@ export function setupEventListeners() {
     if (target.dataset.page) {
       event.preventDefault();
       navigateTo(target.dataset.page!);
+      return;
+    }
+
+    // Avatar selection
+    const avatarSelector = document.getElementById("avatarSelector") as HTMLImageElement;
+    //const leftArrow = document.getElementById("leftArrow");
+    //const rightArrow = document.getElementById("rightArrow");
+    //const updateAvatar = document.getElementById("updateAvatar");
+
+    if (target.closest("#leftArrow"))
+    {
+      if (avatarNumber === 1)
+        avatarNumber = 10;
+      else
+        avatarNumber--;
+      avatarSelector.src = "/images/avatar" + avatarNumber + ".jpg";
+      return;
+    }
+    if (target.closest("#rightArrow"))
+    {
+      if (avatarNumber === 10)
+        avatarNumber = 1;
+      else
+        avatarNumber++;
+      avatarSelector.src = "/images/avatar" + avatarNumber + ".jpg";
       return;
     }
 

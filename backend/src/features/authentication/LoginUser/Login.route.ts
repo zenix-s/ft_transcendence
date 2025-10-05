@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify/types/instance';
 import { FastifyRequest } from 'fastify/types/request';
-import LoginCommand, { ILoginRequest } from './Login.command';
+import LoginCommand, { ILoginRequest } from './Login.application';
 import { FastifyReply } from 'fastify/types/reply';
 
 export default async function LoginRoute(fastify: FastifyInstance) {

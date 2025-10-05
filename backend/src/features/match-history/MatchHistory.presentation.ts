@@ -1,6 +1,8 @@
 import { FastifyInstance } from 'fastify';
-import matchHistoryRoutes from './presentation/matchHistory.http';
+import GetMatchHistoryRoute from './GetMatchHistory/GetMatchHistory.route';
+import GetUserStatsRoute from './GetUserStats/GetUserStats.route';
 
-export default async function matchHistoryPresentation(fastify: FastifyInstance) {
-    await fastify.register(matchHistoryRoutes);
+export default function matchHistoryPresentation(fastify: FastifyInstance) {
+    fastify.register(GetMatchHistoryRoute);
+    fastify.register(GetUserStatsRoute);
 }

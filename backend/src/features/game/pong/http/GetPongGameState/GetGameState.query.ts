@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { IGameRepository } from '../repositories/Game.IRepository';
+import { IGameRepository } from '../../application/repositories/Game.IRepository';
 import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { IQuery } from '@shared/application/abstractions/IQuery.interface';
 import { badRequestError } from '@shared/Errors';

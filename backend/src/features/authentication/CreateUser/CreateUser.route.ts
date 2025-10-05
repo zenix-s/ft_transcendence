@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify/types/instance';
 import { FastifyRequest } from 'fastify/types/request';
-import CreateUserCommand, { IRegisterRequest } from './CreateUser.command';
+import CreateUserCommand, { IRegisterRequest } from './CreateUser.application';
 import { FastifyReply } from 'fastify/types/reply';
 
 export default async function CreateUserRoute(fastify: FastifyInstance) {

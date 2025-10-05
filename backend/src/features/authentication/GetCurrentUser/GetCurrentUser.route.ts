@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify/types/instance';
 import { FastifyReply } from 'fastify/types/reply';
 import { FastifyRequest } from 'fastify/types/request';
-import GetCurrentUserQuery from './GetCurrentUser.query';
+import GetCurrentUserQuery from './GetCurrentUser.application';
 
 export default async function GetCurrentUserRoute(fastify: FastifyInstance) {
     fastify.get(

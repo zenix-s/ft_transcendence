@@ -4,8 +4,8 @@ import dbPlugin from '@shared/infrastructure/db/db';
 import MediatorHandlerPlugin from '@shared/utils/MediatorHandlerPlugin';
 import ErrorhandlerPlugin from '@shared/utils/ErrorHandlerPlugin';
 import { fastifyWebsocket } from '@fastify/websocket';
-import pongHttpRoutes from '@features/game/pong/presentation/pong.http';
-import pongWebSocketRoutes from '@features/game/pong/presentation/pong.websocket';
+import PongGameHttpRoutes from '@features/game/pong/http/pong.http';
+import pongWebSocketRoutes from '@features/game/pong/websocket/pong.websocket';
 import matchHistoryPresentation from '@features/match-history/MatchHistory.presentation';
 import fastifyAuth from '@fastify/auth';
 import fastifyJWT from '@fastify/jwt';
@@ -76,7 +76,7 @@ async function App(fastify: FastifyInstance) {
     fastify.register(async function authenticatedContext(fastify) {
         fastify.addHook('preHandler', fastify.auth([fastify.authenticate]));
 
-        fastify.register(pongHttpRoutes, { prefix: '/game/pong' });
+        fastify.register(PongGameHttpRoutes, { prefix: '/game/pong' });
         fastify.register(matchHistoryPresentation, { prefix: '/match-history' });
     });
 }

@@ -77,6 +77,13 @@
         <!-- Password Form -->
         <form class="flex flex-col justify-center items-start gap-2 
         w-full">
+          <!-- Campo oculto para accesibilidad -->
+          <input
+            type="text"
+            name="username"
+            autocomplete="username"
+            style="display:none"
+          />
           <p data-i18n="Password"></p>
           <div class="grid grid-cols-1 sm:grid-cols-4 gap-5 w-full text-sm">
             <!-- Current Password -->

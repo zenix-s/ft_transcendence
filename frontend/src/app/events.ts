@@ -74,6 +74,12 @@ export function setupEventListeners() {
       avatarSelector.src = "/images/avatar" + avatarNumber + ".jpg";
       return;
     }
+    if (target.closest("#updateAvatar"))
+    {
+      event.preventDefault();
+      console.log("Avatar SRC to send: ");
+      console.log("/images/avatar" + avatarNumber + ".jpg");
+    }
 
   });
 

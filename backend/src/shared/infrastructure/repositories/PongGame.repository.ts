@@ -1,24 +1,25 @@
 import { Result, ErrorResult } from '@shared/abstractions/Result';
-import { IGameRepository } from '../application/repositories/Game.IRepository';
-import { PongGame } from '../domain/PongGame';
+import { PongGame } from '../../../features/game/pong/domain/PongGame';
+import fp from 'fastify-plugin';
 
 const gameNotFoundError: ErrorResult = 'GameNotFound';
 
 const gameCreationError: ErrorResult = 'GameCreationError';
 
-export class GameRepository implements IGameRepository {
-    private static instance: GameRepository;
+export interface IPongGameRepository {
+    createGame(game: PongGame, matchId: number): Promise<Result<number>>;
+    getGame(gameId: number): Promise<Result<PongGame>>;
+    updateGame(gameId: number, game: PongGame): Promise<Result<void>>;
+    deleteGame(gameId: number): Promise<Result<void>>;
+    getAllGames(): Promise<Result<Map<number, PongGame>>>;
+    exists(gameId: number): Promise<Result<boolean>>;
+}
+
+class PongGameRepository implements IPongGameRepository {
     private games: Map<number, PongGame>;
 
-    private constructor() {
+    public constructor() {
         this.games = new Map<number, PongGame>();
-    }
-
-    public static getInstance(): GameRepository {
-        if (!GameRepository.instance) {
-            GameRepository.instance = new GameRepository();
-        }
-        return GameRepository.instance;
     }
 
     async createGame(game: PongGame, matchId: number): Promise<Result<number>> {
@@ -62,3 +63,11 @@ export class GameRepository implements IGameRepository {
         return Result.success(this.games.has(gameId));
     }
 }
+
+export default fp(
+    async (fastify) => {
+        const repository = new PongGameRepository();
+        fastify.decorate('PongGameRepository', repository);
+    },
+    { name: 'PongGameRepository' }
+);

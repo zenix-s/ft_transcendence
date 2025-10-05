@@ -1,6 +1,6 @@
 import { WebSocket } from '@fastify/websocket';
 import { FastifyInstance } from 'fastify';
-import { GameRepository } from '../infrastructure/Game.repository';
+import { GameRepository } from '../../../../shared/infrastructure/repositories/PongGame.repository';
 import { PossibleActions, Actions } from '../Pong.types';
 import {
     WS_ERRORS,

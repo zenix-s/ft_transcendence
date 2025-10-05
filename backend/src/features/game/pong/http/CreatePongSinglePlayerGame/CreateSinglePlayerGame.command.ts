@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { IGameRepository } from '../../application/repositories/Game.IRepository';
+import { IPongGameRepository } from '../../application/repositories/Game.IRepository';
 import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { PongGame } from '../../domain/PongGame';
@@ -26,7 +26,7 @@ export interface ICreateSinglePlayerGameRequest {
 export default class CreateSinglePlayerGameCommand
     implements ICommand<ICreateSinglePlayerGameRequest, ICreateSinglePlayerGameResponse>
 {
-    private readonly gameRepository: IGameRepository;
+    private readonly gameRepository: IPongGameRepository;
     private readonly matchRepository: IMatchRepository;
     private readonly gameTypeRepository: IGameTypeRepository;
 

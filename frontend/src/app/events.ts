@@ -77,8 +77,10 @@ export function setupEventListeners() {
     if (target.closest("#updateAvatar"))
     {
       event.preventDefault();
-      console.log("Avatar SRC to send: ");
-      console.log("/images/avatar" + avatarNumber + ".jpg");
+      // console.log("Avatar SRC to send: ");
+      // console.log("/images/avatar" + avatarNumber + ".jpg");
+      alert("Avatar SRC to send: /images/avatar" + avatarNumber + ".jpg"); // DB
+      //alert("Avatar correctly updated"); // FINAL (needed translation)
     }
 
   });

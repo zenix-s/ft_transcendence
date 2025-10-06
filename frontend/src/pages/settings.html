@@ -39,7 +39,7 @@
         <h2 data-i18n="userSettings" class="text-md sm:text-2xl font-bold mb-2 uppercase absolute -top-3 sm:-top-5 text-shadow-[-3px_-3px_0_var(--color-primary),3px_3px_0_var(--color-primary)] dark:text-shadow-[-3px_-3px_0_var(--color-secondary),3px_3px_0_var(--color-secondary)]"></h2>
 
         <!-- Avatar -->
-        <div class="flex flex-col justify-center items-start">
+        <div class="flex flex-col justify-center items-start gap-5">
           <p data-i18n="avatarSelection"></p>
           <div class="flex flex-col sm:flex-row justify-center items-center gap-3 w-full">
             <div class="flex flex-row justify-center items-center gap-4 w-full">
@@ -47,8 +47,8 @@
                  class="w-full h-32 flex flex-col justify-center items-center p-4 
                         border-2 border-dashed border-gray-400 dark:border-gray-600 
                         text-gray-500 dark:text-gray-400 cursor-pointer transition-colors duration-200">
-                <p>Arrastra y suelta tu avatar aquí</p>
-                <p class="text-sm">(O haz click para seleccionar)</p>
+                <p data-i18n="dragAndDrop">Arrastra y suelta tu avatar aquí</p>
+                <p data-i18n="clickToSelect" class="text-sm">(O haz click para seleccionar)</p>
                 
                 <input type="file" 
                        id="avatarFileInput" 

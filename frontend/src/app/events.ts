@@ -50,8 +50,8 @@ export function setupEventListeners() {
       return;
     }
 
-    // Avatar selection
-    const avatarSelector = document.getElementById("avatarSelector") as HTMLImageElement;
+    // Default Avatar Selection
+    /* const avatarSelector = document.getElementById("avatarSelector") as HTMLImageElement;
     //const leftArrow = document.getElementById("leftArrow");
     //const rightArrow = document.getElementById("rightArrow");
     //const updateAvatar = document.getElementById("updateAvatar");
@@ -81,7 +81,7 @@ export function setupEventListeners() {
       // console.log("/images/avatar" + avatarNumber + ".jpg");
       alert("Avatar SRC to send: /images/avatar" + avatarNumber + ".jpg"); // DB
       //alert("Avatar correctly updated"); // FINAL (needed translation)
-    }
+    } */
 
   });
 

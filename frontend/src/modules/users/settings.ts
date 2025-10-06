@@ -1,5 +1,6 @@
 import { getCurrentUser } from "@/modules/users";
 import { t } from "@/app/i18n";
+import { setupAvatarUpload } from "@/components/avatarUpload";
 
 export async function loadSettings() {
   // console.log("Cargando dashboard..."); // DB
@@ -9,6 +10,9 @@ export async function loadSettings() {
 	console.warn(t("UserNotFound"));
 	return;
   }
+
+  // ✅ activa el drag & drop
+  setupAvatarUpload();
 
   const user = response.user; 
 

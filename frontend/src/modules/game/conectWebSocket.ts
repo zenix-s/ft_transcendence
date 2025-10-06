@@ -8,22 +8,25 @@ interface message {
 	token: string | null
 }
 
-export function setAsReady(gameId: number)
-{
-	const token = localStorage.getItem("access_token");
-	let obj: message = {
-		action: 4,
-		gameId: gameId,
-		token: token
-	};
-	socket.send(JSON.stringify(obj));
-}
+// export function setAsReady(gameId: number)
+// {
+// 	const token = localStorage.getItem("access_token");
+// 	let obj: message = {
+// 		action: 4,
+// 		gameId: gameId,
+// 		token: token
+// 	};
+// 	socket.send(JSON.stringify(obj));
+// }
+
 
 export function conectWebSocket(gameId: number, player1: Player, player2: Player, scores: Score, ball: Ball)
 {
 	const token = localStorage.getItem("access_token");
 	const socket = new WebSocket("wss://localhost:3000/game/pong");
 	let pingInterval: NodeJS.Timeout | undefined;
+	let up = 0;
+	let down = 0;
 	
 	socket.addEventListener("open", () => {
 		console.log("conectado websockket");
@@ -39,10 +42,19 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 		socket.send(JSON.stringify(obj));
 		obj.action = 1;
 		pingInterval = setInterval(() => {
+			obj.action = 1;
 		 	socket.send(JSON.stringify(obj));
 
-
-			
+			if (up == 1 && down == 0)
+			{
+				obj.action = 2;
+				socket.send(JSON.stringify(obj));
+			}
+			if (down == 1 && up == 0)
+			{
+				obj.action = 3;
+				socket.send(JSON.stringify(obj));
+			}
   		}, 10);
 	})
 
@@ -75,39 +87,81 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 	document.addEventListener("keydown", (event) => {
 		const key = event.key;
 		console.log(key);
-		let action = 0;
+		//let action = 0;
 		if (key === "ArrowUp")
 		{
-			action = 2;
+			up = 1;
+			//action = 2;
 			console.log("up");
 		}
-		else if (key === "ArrowDown")
+		if (key === "ArrowDown")
 		{
-			action = 3;
+			down = 1;
+			//action = 3;
 			console.log("down");
 		}
 		if (key === "w")
 		{
-			action = 2;
+			up = 1;
+			//action = 2;
 			console.log("w");
 		}
-		else if (key === "s")
+		if (key === "s")
 		{
-			action = 3
+			down = 1;
+			//action = 3
 			console.log("s");
 		}
 
-		let obj : message = {
-			action: action,
-			gameId:gameId,
-			token: token
-		};
-		if (action != 0)
-			socket.send(JSON.stringify(obj));
+		// let obj : message = {
+		// 	action: action,
+		// 	gameId:gameId,
+		// 	token: token
+		// };
+		// if (action != 0)
+		// 	socket.send(JSON.stringify(obj));
 
 		//sendAction(action);
 	});
+	document.addEventListener("keyup", (event) => {
+		const key = event.key;
+		console.log(key);
+		//let action = 0;
+		if (key === "ArrowUp")
+		{
+			up = 0;
+			//action = 2;
+			console.log("up");
+		}
+		if (key === "ArrowDown")
+		{
+			down = 0;
+			//action = 3;
+			console.log("down");
+		}
+		if (key === "w")
+		{
+			up = 0;
+			//action = 2;
+			console.log("w");
+		}
+		if (key === "s")
+		{
+			down = 0;
+			//action = 3
+			console.log("s");
+		}
+
+		// let obj : message = {
+		// 	action: action,
+		// 	gameId:gameId,
+		// 	token: token
+		// };
+		// if (action != 0)
+		// 	socket.send(JSON.stringify(obj));
+	})
 }
+
 
 export async function socketAndRender(player1: Player, player2: Player, scores: Score, ball: Ball)
 {

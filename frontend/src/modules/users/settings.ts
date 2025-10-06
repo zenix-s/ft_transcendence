@@ -13,6 +13,9 @@ export async function loadSettings() {
 
   // ✅ activa el drag & drop
   setupAvatarUpload();
+  // ⭐ Activar uso de formularios
+  updateUserName();
+  updatePassword();
 
   const user = response.user; 
 
@@ -46,4 +49,125 @@ export async function loadSettings() {
 	  // 👆 Aquí `user.avatarUrl` debe ser la URL que te devuelve tu backend.
 	  : "/images/avatar1.jpg"; // Imagen por defecto
   }
+}
+
+// Update User Name Form
+function updateUserName() {
+  setTimeout(() => {
+    const forms = document.querySelectorAll("form");
+    const userNamerForm = forms[0];
+    if (!userNamerForm) return;
+
+    userNamerForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(userNamerForm);
+      const username = formData.get("username") as string;
+
+      /* Validate all fields are filled */
+      if (!username) {
+        alert(t("fillAllFields"));
+        return;
+      }
+
+      // Validate UserName (Regular expresion)
+      // 3-20 characters
+      // Only letters, numbers, hyphens, and underscores
+      const usernameRegex = /^[a-zA-Z0-9_-]{3,20}$/;
+      if (!usernameRegex.test(username)) {
+        alert(t("invalidUsername"));
+        return;
+      }
+
+      /* This block of code is handling the registration process for a new user. Here's a breakdown of
+      what it does: */
+      try {
+        const response = await fetch("/api/auth/updateUserName", { // NEEDED UPDATE API ENDPOINT
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          const errorcode = data.error?.code || data.code || "ErrorUpdatingUserName";
+          alert(t(errorcode));
+          return;
+        }
+
+        // ✅ Guardar el token recibido
+        localStorage.setItem("access_token", data.token);
+
+        alert(t("UserNameUpdatedSuccessfully"));
+        userNamerForm.reset();
+
+      } catch (err) {
+        alert(t("NetworkOrServerError"));
+      }
+    });
+  }, 100);
+}
+
+// Update Password Form
+function updatePassword() {
+  setTimeout(() => {
+    const forms = document.querySelectorAll("form");
+    const passwordForm = forms[1];
+    if (!passwordForm) return;
+
+    passwordForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(passwordForm);
+      const newPassword = formData.get("newPassword") as string;
+      const repeatPassword = formData.get("repeat_password") as string;
+
+      /* Validate all fields are filled */
+      if (!newPassword || !repeatPassword) {
+        alert(t("fillAllFields"));
+        return;
+      }
+
+      // Validate Password (Regular expresion)
+      // Minimum 8 characters.
+      // At least one capital letter.
+      // At least one lowercase letter.
+      // At least one number.
+      // Optional: At least one special character.
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+      if (!passwordRegex.test(newPassword)) {
+        alert(t("invalidPassword"));
+        return;
+      }
+
+      /* Validate if both passwords are the same */
+      if (newPassword !== repeatPassword) {
+        alert(t("passwordDoNotMatch"));
+        return;
+      }
+
+      /* This block of code is handling the registration process for a new user. Here's a breakdown of
+      what it does: */
+      try {
+        const response = await fetch("/api/auth/updatePassword", { // NEEDED UPDATE API ENDPOINT
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ newPassword }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          const errorcode = data.error?.code || data.code || "ErrorUpdatingPassword";
+          alert(t(errorcode));
+          return;
+        }
+
+        alert(t("passwordUpdatedSuccessfully"));
+        passwordForm.reset();
+
+      } catch (err) {
+        alert(t("NetworkOrServerError"));
+      }
+    });
+  }, 100);
 }

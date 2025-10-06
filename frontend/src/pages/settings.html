@@ -39,16 +39,16 @@
         <h2 data-i18n="userSettings" class="text-md sm:text-2xl font-bold mb-2 uppercase absolute -top-3 sm:-top-5 text-shadow-[-3px_-3px_0_var(--color-primary),3px_3px_0_var(--color-primary)] dark:text-shadow-[-3px_-3px_0_var(--color-secondary),3px_3px_0_var(--color-secondary)]"></h2>
 
         <!-- Avatar -->
-        <div class="flex flex-col justify-center items-start gap-5">
+        <div class="flex flex-col justify-center items-start gap-3">
           <p data-i18n="avatarSelection"></p>
-          <div class="flex flex-col sm:flex-row justify-center items-center gap-3 w-full">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full">
             <div class="flex flex-row justify-center items-center gap-4 w-full">
               <div id="avatarDropZone" 
                  class="w-full h-32 flex flex-col justify-center items-center p-4 
-                        border-2 border-dashed border-gray-400 dark:border-gray-600 
+                        border-2 border-dashed border-cyan-400 dark:border-cyan-600 
                         text-gray-500 dark:text-gray-400 cursor-pointer transition-colors duration-200">
-                <p data-i18n="dragAndDrop">Arrastra y suelta tu avatar aquí</p>
-                <p data-i18n="clickToSelect" class="text-sm">(O haz click para seleccionar)</p>
+                <p data-i18n="dragAndDrop" class="text-balance">Arrastra y suelta tu avatar aquí</p>
+                <p data-i18n="clickToSelect" class="text-sm text-balance">(O haz click para seleccionar)</p>
                 
                 <input type="file" 
                        id="avatarFileInput" 
@@ -67,6 +67,67 @@
           </div>
         </div>
 
+        <!-- <hr class="w-full text-cyan-400"> -->
+
+        <!-- User Name Form -->
+        <form class="flex flex-col justify-center items-start gap-3 w-full">
+          <!-- Campo oculto para accesibilidad -->
+          <!-- <input
+            type="text"
+            name="username"
+            autocomplete="username"
+            style="display:none"
+          /> -->
+          <p data-i18n="userName"></p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full text-sm">
+            <!-- Current Password -->
+            <!-- <div class="relative overflow-visible">
+              <input
+                type="password"
+                name="currentPassword"
+                autocomplete="current-password"
+                data-i18n="currentPassword"
+                placeholder="Current password"
+                class="w-full border-2 dark:border border-cyan-400 placeholder-secondary dark:placeholder-gray-400 px-2 sm:py-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div> -->
+            <!-- New User Name -->
+            <div class="relative overflow-visible">
+              <input
+                type="text"
+                name="username"
+                autocomplete="username"
+                data-i18n="newUserName"
+                placeholder="newUserName"
+                class="w-full border-2 dark:border border-cyan-400 placeholder-secondary dark:placeholder-gray-400 px-2 sm:py-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                id="userNameInput"
+                data-tooltip-target="tooltip-name"
+              />
+              <div
+                data-tooltip="tooltip-name"
+                role="tooltip"
+                class="z-50 absolute left-0 bottom-1/2 -translate-y-7 px-3 py-2 text-sm text-primary dark:text-secondary bg-secondary dark:bg-primary border border-primary dark:border-secondary rounded-lg shadow-lg opacity-0 scale-95 transition-all duration-200 pointer-events-none w-full whitespace-pre-line"
+                data-i18n="toolTipUsername"
+              >
+                Tu nombre debe tener al menos 3 caracteres.
+                <div class="absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2"></div>
+              </div>
+            </div>
+            <!-- Update button -->
+            <button
+              title="Update"
+              id="updateUserName"
+              class="w-full relative bg-transparent text-secondary dark:text-primary border border-secondary dark:border-primary px-6 py-2 font-mono text-xl cursor-pointer transition-all duration-700 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[0px_0_0_red,-0px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] overflow-hidden text-balance"
+              data-i18n="updateUserName"
+              type="submit"
+            >
+                Update User Name
+            </button>
+          </div>
+        </form>
+
+        <!-- <hr class="w-full text-cyan-400"> -->
+
         <!-- Password Form -->
         <form class="flex flex-col justify-center items-start gap-2 
         w-full">
@@ -78,9 +139,9 @@
             style="display:none"
           />
           <p data-i18n="Password"></p>
-          <div class="grid grid-cols-1 sm:grid-cols-4 gap-5 w-full text-sm">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 w-full text-sm">
             <!-- Current Password -->
-            <div class="relative overflow-visible">
+            <!-- <div class="relative overflow-visible">
               <input
                 type="password"
                 name="currentPassword"
@@ -89,9 +150,9 @@
                 placeholder="Current password"
                 class="w-full border-2 dark:border border-cyan-400 placeholder-secondary dark:placeholder-gray-400 px-2 sm:py-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-            </div>
+            </div> -->
             <!-- New Password -->
-            <div class="relative overflow-visible">
+            <div class="relative">
               <input
                 type="password"
                 name="newPassword"
@@ -112,7 +173,7 @@
               </div>
             </div>
             <!-- Repeat Password -->
-            <div class="relative overflow-visible">
+            <div class="relative">
               <input
                 type="password"
                 name="repeat_password"
@@ -124,11 +185,11 @@
             </div>
             <!-- Update button -->
             <button
-              title="Actualizar"
-              class="w-full relative bg-transparent text-secondary dark:text-primary border border-secondary dark:border-primary px-6 py-2 font-mono text-xl cursor-pointer transition-all duration-700 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[0px_0_0_red,-0px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] overflow-hidden"
-              data-i18n="update"
+              title="Update"
+              class="w-full relative bg-transparent text-secondary dark:text-primary border border-secondary dark:border-primary px-6 py-2 font-mono text-xl cursor-pointer transition-all duration-700 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[0px_0_0_red,-0px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] overflow-hidden text-balance"
+              data-i18n="updatePassword"
             >
-                Actualizar
+                Update Password
             </button>
           </div>
         </form>

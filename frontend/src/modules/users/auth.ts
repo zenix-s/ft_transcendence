@@ -66,6 +66,8 @@ export function setupRegisterForm() {
         return;
       }
 
+      /* This block of code is handling the registration process for a new user. Here's a breakdown of
+      what it does: */
       try {
         const response = await fetch("/api/auth/register", {
           method: "POST",

@@ -25,11 +25,13 @@ class PongGameRepository implements IPongGameRepository {
 
     async createGame(game: PongGame, matchId: number): Promise<Result<number>> {
         try {
-            const createResult = await this.gameManager.createGame(matchId, matchId, game);
+            // Use matchId as gameId for consistency - they should be the same in this system
+            const gameId = matchId;
+            const createResult = await this.gameManager.createGame(gameId, matchId, game);
             if (!createResult.isSuccess) {
                 return Result.error(gameCreationError);
             }
-            return Result.success(matchId);
+            return Result.success(gameId);
         } catch {
             return Result.error(gameCreationError);
         }

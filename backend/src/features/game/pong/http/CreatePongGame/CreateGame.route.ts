@@ -1,7 +1,7 @@
-import { FastifyInstance } from "fastify/types/instance";
-import { FastifyReply } from "fastify/types/reply";
-import CreateGameCommand from "./CreateGame.command";
-import { FastifyRequest } from "fastify/types/request";
+import { FastifyInstance } from 'fastify/types/instance';
+import { FastifyReply } from 'fastify/types/reply';
+import CreateGameCommand from './CreateGame.command';
+import { FastifyRequest } from 'fastify/types/request';
 
 interface CreateGameRequest {
     Body: {

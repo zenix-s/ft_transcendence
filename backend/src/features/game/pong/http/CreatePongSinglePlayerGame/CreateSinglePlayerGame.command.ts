@@ -106,6 +106,10 @@ export default class CreateSinglePlayerGameCommand
             if (request?.userId) {
                 this.fastify.log.info('Adding player to game');
                 game.addPlayer(request.userId);
+
+                // In single player, mark the player as ready and start the game
+                this.fastify.log.info('Setting player as ready for single player game');
+                game.setPlayerReady(request.userId, true);
             }
 
             this.fastify.log.info('Starting match');

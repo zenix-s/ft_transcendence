@@ -160,23 +160,6 @@ export class PongWebSocketService {
             return false;
         }
 
-        const obj = data as Record<string, unknown>;
-
-        if (!obj.action || typeof obj.action !== 'string') {
-            this.fastify.log.warn('WebSocket message missing or invalid action');
-            return false;
-        }
-
-        if (obj.gameId !== undefined && typeof obj.gameId !== 'number') {
-            this.fastify.log.warn('WebSocket message has invalid gameId');
-            return false;
-        }
-
-        if (obj.token !== undefined && typeof obj.token !== 'string') {
-            this.fastify.log.warn('WebSocket message has invalid token');
-            return false;
-        }
-
         return true;
     }
 }

@@ -2,13 +2,14 @@ import { FastifyReply } from 'fastify';
 import { JWT } from '@fastify/jwt';
 import { IAuthenticatedUser, IJWTPayload } from '@shared/types';
 import { SQLiteConnection } from '@shared/infrastructure/db/SQLiteConnection';
+import { Result } from '@shared/abstractions/Result';
 import ICommand from '@shared/application/abstractions/ICommand.interface';
 import IQuery from '@shared/application/abstractions/IQuery.interface';
 import { IGameTypeRepository } from '@shared/infrastructure/repositories/GameTypeRepository';
 import { IMatchPlayerRepository } from '@shared/infrastructure/repositories/MatchPlayerRepository';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
 import { IUserRepository } from '@shared/infrastructure/repositories/UserRepository';
-import { IPongGameRepository } from '@features/game/pong/application/repositories/Game.IRepository';
+import { IPongGameRepository } from '@features/game/pong/infrastructure/PongGame.repository';
 
 declare module 'fastify' {
     interface FastifyInstance {

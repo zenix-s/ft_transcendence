@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { Result } from '@shared/abstractions/Result';
 import { PongGame } from '../domain/PongGame';
-import { PongGameManager } from './PongGameManager';
+import { IPongGameRepository } from '../infrastructure/PongGame.repository';
 
 interface GameState {
     isRunning: boolean;
@@ -33,30 +33,27 @@ interface GameState {
 }
 
 export class PongGameService {
-    private gameManager: PongGameManager;
+    private readonly gameRepository: IPongGameRepository;
 
     constructor(private readonly fastify: FastifyInstance) {
-        this.gameManager = new PongGameManager(fastify);
+        this.gameRepository = this.fastify.PongGameRepository;
     }
 
-    getGame(gameId: number): PongGame | null {
-        return this.gameManager.getGame(gameId);
+    async getGame(gameId: number): Promise<PongGame | null> {
+        const gameResult = await this.gameRepository.getGame(gameId);
+        return gameResult.isSuccess && gameResult.value ? gameResult.value : null;
     }
 
-    updateGame(gameId: number, game: PongGame): void {
-        this.gameManager.updateGame(gameId, game);
+    async updateGame(gameId: number, game: PongGame): Promise<Result<void>> {
+        return await this.gameRepository.updateGame(gameId, game);
     }
 
     async createGame(game: PongGame, matchId: number): Promise<Result<number>> {
-        const createResult = await this.gameManager.createGame(matchId, matchId, game);
-        if (!createResult.isSuccess) {
-            return Result.error('gameCreationError');
-        }
-        return Result.success(matchId);
+        return await this.gameRepository.createGame(game, matchId);
     }
 
-    getGameState(gameId: number): Result<{ gameId: number; state: GameState }> {
-        const game = this.getGame(gameId);
+    async getGameState(gameId: number): Promise<Result<{ gameId: number; state: GameState }>> {
+        const game = await this.getGame(gameId);
         if (!game) {
             return Result.error('gameNotFound');
         }
@@ -68,11 +65,12 @@ export class PongGameService {
         });
     }
 
-    deleteGame(gameId: number): void {
-        this.gameManager.deleteGame(gameId);
+    async deleteGame(gameId: number): Promise<Result<void>> {
+        return await this.gameRepository.deleteGame(gameId);
     }
 
-    gameExists(gameId: number): boolean {
-        return this.gameManager.gameExists(gameId);
+    async gameExists(gameId: number): Promise<boolean> {
+        const existsResult = await this.gameRepository.exists(gameId);
+        return existsResult.isSuccess && existsResult.value !== undefined ? existsResult.value : false;
     }
 }

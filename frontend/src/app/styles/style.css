@@ -64,8 +64,6 @@
 }
 
 /* Red core + Blue aura */
-/*2px 2px 4px #FF5A5A,         bright red core glow */
-/*0 0 8px #5BC7FF,             soft blue glow */
 .text-shadow-redblue {
   text-shadow:
     -2px -2px 2px #B1001F,      /* deep red inner */

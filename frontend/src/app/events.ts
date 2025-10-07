@@ -5,6 +5,9 @@ import { t } from "@/app/i18n";
  * The `setupEventListeners` function adds event listeners for click and popstate events to handle
  * navigation and user login functionality.
  */
+
+//let avatarNumber = 1;
+
 export function setupEventListeners() {
   // Listeners de navegación
   document.addEventListener("click", (event) => {
@@ -46,6 +49,43 @@ export function setupEventListeners() {
       navigateTo(target.dataset.page!);
       return;
     }
+
+    // 🔹 4. User Settings: Avatar Selection
+    // Default Avatar Selection
+    /* {
+      const avatarSelector = document.getElementById("avatarSelector") as HTMLImageElement;
+      //const leftArrow = document.getElementById("leftArrow");
+      //const rightArrow = document.getElementById("rightArrow");
+      //const updateAvatar = document.getElementById("updateAvatar");
+
+      if (target.closest("#leftArrow"))
+      {
+        if (avatarNumber === 1)
+          avatarNumber = 10;
+        else
+          avatarNumber--;
+        avatarSelector.src = "/images/avatar" + avatarNumber + ".jpg";
+        return;
+      }
+      if (target.closest("#rightArrow"))
+      {
+        if (avatarNumber === 10)
+          avatarNumber = 1;
+        else
+          avatarNumber++;
+        avatarSelector.src = "/images/avatar" + avatarNumber + ".jpg";
+        return;
+      }
+      if (target.closest("#updateAvatar"))
+      {
+        event.preventDefault();
+        // console.log("Avatar SRC to send: ");
+        // console.log("/images/avatar" + avatarNumber + ".jpg");
+        alert("Avatar SRC to send: /images/avatar" + avatarNumber + ".jpg"); // DB
+        //alert("Avatar correctly updated"); // FINAL (needed translation)
+      }
+    } */
+
 
   });
 

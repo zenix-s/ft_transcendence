@@ -1,9 +1,8 @@
 import { FastifyInstance } from 'fastify';
-import { IPongGameRepository } from '../../application/repositories/Game.IRepository';
+import { IPongGameRepository } from '@shared/infrastructure/repositories/PongGame.repository';
 import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { IQuery } from '@shared/application/abstractions/IQuery.interface';
 import { badRequestError } from '@shared/Errors';
-import { GameRepository } from '../../infrastructure/Game.repository';
 
 export const gameNotFoundError: ErrorResult = 'gameNotFoundError';
 
@@ -49,7 +48,7 @@ export default class GetGameStateQuery implements IQuery<IGetGameStateRequest, I
     private readonly gameRepository: IPongGameRepository;
 
     constructor(private readonly fastify: FastifyInstance) {
-        this.gameRepository = GameRepository.getInstance();
+        this.gameRepository = this.fastify.PongGameRepository;
     }
 
     validate(request?: IGetGameStateRequest): Result<void> {

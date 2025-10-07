@@ -1,9 +1,10 @@
 import { Result, ErrorResult } from '@shared/abstractions/Result';
-import { PongGame } from '../../../features/game/pong/domain/PongGame';
+import { PongGame } from '../domain/PongGame';
+import { PongGameManager } from '../services/PongGameManager';
+import { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
 
 const gameNotFoundError: ErrorResult = 'GameNotFound';
-
 const gameCreationError: ErrorResult = 'GameCreationError';
 
 export interface IPongGameRepository {
@@ -16,15 +17,18 @@ export interface IPongGameRepository {
 }
 
 class PongGameRepository implements IPongGameRepository {
-    private games: Map<number, PongGame>;
+    private gameManager: PongGameManager;
 
-    public constructor() {
-        this.games = new Map<number, PongGame>();
+    public constructor(fastify: FastifyInstance) {
+        this.gameManager = new PongGameManager(fastify);
     }
 
     async createGame(game: PongGame, matchId: number): Promise<Result<number>> {
         try {
-            this.games.set(matchId, game);
+            const createResult = await this.gameManager.createGame(matchId, matchId, game);
+            if (!createResult.isSuccess) {
+                return Result.error(gameCreationError);
+            }
             return Result.success(matchId);
         } catch {
             return Result.error(gameCreationError);
@@ -32,7 +36,7 @@ class PongGameRepository implements IPongGameRepository {
     }
 
     async getGame(gameId: number): Promise<Result<PongGame>> {
-        const game = this.games.get(gameId);
+        const game = this.gameManager.getGame(gameId);
         if (!game) {
             return Result.error(gameNotFoundError);
         }
@@ -40,33 +44,33 @@ class PongGameRepository implements IPongGameRepository {
     }
 
     async updateGame(gameId: number, game: PongGame): Promise<Result<void>> {
-        if (!this.games.has(gameId)) {
+        if (!this.gameManager.gameExists(gameId)) {
             return Result.error(gameNotFoundError);
         }
-        this.games.set(gameId, game);
+        this.gameManager.updateGame(gameId, game);
         return Result.success(undefined);
     }
 
     async deleteGame(gameId: number): Promise<Result<void>> {
-        if (!this.games.has(gameId)) {
+        if (!this.gameManager.gameExists(gameId)) {
             return Result.error(gameNotFoundError);
         }
-        this.games.delete(gameId);
+        this.gameManager.deleteGame(gameId);
         return Result.success(undefined);
     }
 
     async getAllGames(): Promise<Result<Map<number, PongGame>>> {
-        return Result.success(new Map(this.games));
+        return Result.success(this.gameManager.getAllGames());
     }
 
     async exists(gameId: number): Promise<Result<boolean>> {
-        return Result.success(this.games.has(gameId));
+        return Result.success(this.gameManager.gameExists(gameId));
     }
 }
 
 export default fp(
     async (fastify) => {
-        const repository = new PongGameRepository();
+        const repository = new PongGameRepository(fastify);
         fastify.decorate('PongGameRepository', repository);
     },
     { name: 'PongGameRepository' }

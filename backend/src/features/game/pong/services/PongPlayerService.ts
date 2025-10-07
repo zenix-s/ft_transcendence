@@ -15,7 +15,7 @@ export class PongPlayerService {
         direction: 'up' | 'down'
     ): Promise<Result<{ moved: boolean }>> {
         try {
-            const game = this.gameService.getGame(gameId);
+            const game = await this.gameService.getGame(gameId);
             if (!game) {
                 return Result.error('gameNotFound');
             }
@@ -25,7 +25,10 @@ export class PongPlayerService {
                 return Result.error('playerNotInGame');
             }
 
-            this.gameService.updateGame(gameId, game);
+            const updateResult = await this.gameService.updateGame(gameId, game);
+            if (!updateResult.isSuccess) {
+                return Result.error('gameUpdateError');
+            }
 
             return Result.success({ moved: true });
         } catch (error) {
@@ -42,7 +45,7 @@ export class PongPlayerService {
         isReady: boolean
     ): Promise<Result<{ isReady: boolean; gameStarted: boolean }>> {
         try {
-            const game = this.gameService.getGame(gameId);
+            const game = await this.gameService.getGame(gameId);
             if (!game) {
                 return Result.error('gameNotFound');
             }
@@ -52,7 +55,10 @@ export class PongPlayerService {
                 return Result.error('playerNotInGame');
             }
 
-            this.gameService.updateGame(gameId, game);
+            const updateResult = await this.gameService.updateGame(gameId, game);
+            if (!updateResult.isSuccess) {
+                return Result.error('gameUpdateError');
+            }
 
             const gameStarted = game.isGameRunning();
 

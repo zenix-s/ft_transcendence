@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { IPongGameRepository } from '@shared/infrastructure/repositories/PongGame.repository';
+import { IPongGameRepository } from '../../infrastructure/PongGame.repository';
 import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { PongGame } from '../../domain/PongGame';

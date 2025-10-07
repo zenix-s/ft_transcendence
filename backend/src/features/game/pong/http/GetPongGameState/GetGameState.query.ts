@@ -1,8 +1,8 @@
 import { FastifyInstance } from 'fastify';
-import { IPongGameRepository } from '@shared/infrastructure/repositories/PongGame.repository';
 import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { IQuery } from '@shared/application/abstractions/IQuery.interface';
 import { badRequestError } from '@shared/Errors';
+import { IPongGameRepository } from '../../infrastructure/PongGame.repository';
 
 export const gameNotFoundError: ErrorResult = 'gameNotFoundError';
 

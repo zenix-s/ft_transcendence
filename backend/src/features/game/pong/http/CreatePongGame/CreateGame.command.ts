@@ -1,9 +1,9 @@
 import { FastifyInstance } from 'fastify';
-import { IPongGameRepository } from '../../application/repositories/Game.IRepository';
+import { IPongGameRepository } from '@shared/infrastructure/repositories/PongGame.repository';
 import { ErrorResult, Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { PongGame } from '../../domain/PongGame';
-import { GameRepository } from '../../infrastructure/Game.repository';
+
 import { Match } from '@shared/domain/entity/Match.entity';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
 import { IGameTypeRepository } from '@shared/infrastructure/repositories/GameTypeRepository';
@@ -27,7 +27,7 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
     private readonly gameTypeRepository: IGameTypeRepository;
 
     constructor(private readonly fastify: FastifyInstance) {
-        this.gameRepository = GameRepository.getInstance();
+        this.gameRepository = this.fastify.PongGameRepository;
         this.matchRepository = this.fastify.MatchRepository;
         this.gameTypeRepository = this.fastify.GameTypeRepository;
     }

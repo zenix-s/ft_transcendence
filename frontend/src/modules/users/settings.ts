@@ -91,7 +91,7 @@ function updateUserName() {
           return;
         }
 
-        const response = await fetch("/api/auth/updateusername", { // NEEDED UPDATE API ENDPOINT
+        const response = await fetch("/api/user-manager/updateusername", { // NEEDED UPDATE API ENDPOINT
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",

@@ -150,13 +150,13 @@ export function validateLogin() {
 }
 
 /* GET USER */
+let sessionHandled = false;
+
 export async function getCurrentUser() {
   const token = localStorage.getItem("access_token");
 
   if (!token) {
-    console.warn(t("NoTokenFound"));
-    alert(t("NoTokenFound"));
-    navigateTo("login");
+    handleInvalidSession("NoTokenFound");
     return null;
   }
 
@@ -168,21 +168,42 @@ export async function getCurrentUser() {
       },
     });
 
-    //console.log("Respuesta cruda:", response); // DB
+    const result = await response.json();
+
     if (response.status === 401) {
       // Token expirado o inválido
-      alert(t("SessionExpiredOrInvalid"));
-      localStorage.removeItem("access_token");
-      navigateTo("login");
+      handleInvalidSession("SessionExpiredOrInvalid");
       return null;
     }
 
-    const result = await response.json();
+    // Usuario no encontrado según tu backend
+    if (result?.error === "userNotFoundError") {
+      handleInvalidSession("UserNotFound");
+      return null;
+    }
+
+    // Otro error inesperado
+    if (!response.ok) {
+      console.error("Error inesperado al obtener usuario:", result);
+      if (!sessionHandled) alert(t("ErrorRetrievingProfile"));
+      return null;
+    }
+
     // console.log("Contenido devuelto:", result); // DB
     return result;
   } catch (err) {
     console.error(t("ErrorRetrievingProfile"), err);
+    if (!sessionHandled) alert(t("ErrorRetrievingProfile"));
     return null;
+  }
+}
+
+function handleInvalidSession(messageKey: string) {
+  if (!sessionHandled) {
+    sessionHandled = true;
+    alert(t(messageKey));
+    localStorage.removeItem("access_token");
+    navigateTo("login");
   }
 }
 
@@ -192,10 +213,10 @@ export async function getStats() {
 
   // Getting ID
   const userResponse = await getCurrentUser();
-  if (!userResponse) {
+  /* if (!userResponse) {
     console.warn(t("UserNotFound"));
     return;
-  }
+  } */
 
   const userId = userResponse.user.id;
 

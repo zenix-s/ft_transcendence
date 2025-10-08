@@ -54,6 +54,15 @@
     @apply text-xs sm:text-base;
   }
 
+  /* TOAST */
+  .toast-success .toastify-close {
+    color: var(--color-secondary); /* dark-grey */
+  }
+
+  .toast-error .toastify-close {
+    color: var(--color-primary); /* white */
+  }
+
   /* === TABLE -> CARDS EN MOBILE === */
   @media (max-width: 640px) {
     /* Convertimos tabla en bloques */

@@ -10,9 +10,13 @@ import matchHistoryPresentation from '@features/match-history/MatchHistory.prese
 import fastifyAuth from '@fastify/auth';
 import fastifyJWT from '@fastify/jwt';
 import authRoutes from '@features/authentication/Authentication.presentation';
+import userManagerRoutes from '@features/user-manager/UserManager.presentation';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
+import fastifyStatic from '@fastify/static';
+import fastifyMultipart from '@fastify/multipart';
 import Repositories from '@shared/infrastructure/repositories';
+import path from 'path';
 
 async function App(fastify: FastifyInstance) {
     fastify.register(fastifyJWT, {
@@ -26,6 +30,17 @@ async function App(fastify: FastifyInstance) {
     fastify.register(MediatorHandlerPlugin);
     fastify.register(ErrorhandlerPlugin);
     fastify.register(Repositories);
+
+    fastify.register(fastifyMultipart, {
+        limits: {
+            fileSize: 5 * 1024 * 1024,
+        },
+    });
+
+    fastify.register(fastifyStatic, {
+        root: path.join(process.cwd(), 'uploads'),
+        prefix: '/uploads/',
+    });
 
     fastify.decorate('authenticate', async function (request: FastifyRequest, reply: FastifyReply) {
         try {
@@ -78,6 +93,7 @@ async function App(fastify: FastifyInstance) {
 
         fastify.register(PongGameHttpRoutes, { prefix: '/game/pong' });
         fastify.register(matchHistoryPresentation, { prefix: '/match-history' });
+        fastify.register(userManagerRoutes, { prefix: '/user-manager' });
     });
 }
 

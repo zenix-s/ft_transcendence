@@ -14,6 +14,7 @@ export default fp(
             username TEXT UNIQUE NOT NULL,
             email TEXT UNIQUE NOT NULL,
             password TEXT NOT NULL,
+            avatar TEXT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     `);
@@ -81,9 +82,7 @@ export default fp(
     `);
 
         fastify.decorate('DbConnection', connection);
-
         fastify.addHook('onClose', async () => {
-            fastify.log.debug('Closing database connection');
             await connection.disconnect();
         });
     },

@@ -1,4 +1,5 @@
 import { t } from "@/app/i18n";
+import { showToast } from "./toast";
 
 /**
  * Módulo para manejar drag & drop y vista previa de un avatar.
@@ -55,7 +56,7 @@ export function setupAvatarUpload() {
   // 👉 Previsualización
   function handleFile(file: File) {
     if (!file.type.startsWith("image/")) {
-      alert(t("selectValidImage"));
+      showToast(t("selectValidImage"));
       return;
     }
 
@@ -77,7 +78,7 @@ export function setupAvatarUpload() {
     const file = (window as any).selectedAvatarFile as File | undefined;
 
     if (!file) {
-      alert(t("selectImageFile"));
+      showToast(t("selectImageFile"), "error");
       return;
     }
 
@@ -94,15 +95,15 @@ export function setupAvatarUpload() {
       });
 
       if (res.ok) {
-        alert(t("avatarUpdatedSuccessfully"));
+        showToast(t("avatarUpdatedSuccessfully"));
       } else {
         const errorText = await res.text();
         console.error("Error:", errorText);
-        alert(t("errorUploadingAvatar"));
+        showToast(t("errorUploadingAvatar"), "error");
       }
     } catch (err) {
       console.error(err);
-      alert(t("couldNotConnectToTheServer"));
+      showToast(t("couldNotConnectToTheServer"), "error");
     }
   });
 }

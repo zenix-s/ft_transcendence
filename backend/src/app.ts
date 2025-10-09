@@ -10,6 +10,7 @@ import matchHistoryPresentation from '@features/match-history/MatchHistory.prese
 import fastifyAuth from '@fastify/auth';
 import fastifyJWT from '@fastify/jwt';
 import authRoutes from '@features/authentication/Authentication.presentation';
+import userManagerRoutes from '@features/user-manager/UserManager.presentation';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
 import Repositories from '@shared/infrastructure/repositories';
@@ -78,6 +79,8 @@ async function App(fastify: FastifyInstance) {
 
         fastify.register(PongGameHttpRoutes, { prefix: '/game/pong' });
         fastify.register(matchHistoryPresentation, { prefix: '/match-history' });
+
+        fastify.register(userManagerRoutes, { prefix: '/user-manager' });
     });
 }
 

@@ -140,7 +140,7 @@ function updatePassword() {
 
       /* Validate all fields are filled */
       if (!newPassword || !repeatPassword) {
-        alert(t("fillAllFields"));
+        showToast(t("fillAllFields"), "error");
         return;
       }
 
@@ -152,13 +152,13 @@ function updatePassword() {
       // Optional: At least one special character.
       const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
       if (!passwordRegex.test(newPassword)) {
-        alert(t("invalidPassword"));
+        showToast(t("invalidPassword"), "error");
         return;
       }
 
       /* Validate if both passwords are the same */
       if (newPassword !== repeatPassword) {
-        alert(t("passwordDoNotMatch"));
+        showToast(t("passwordDoNotMatch"), "error");
         return;
       }
 
@@ -175,15 +175,15 @@ function updatePassword() {
 
         if (!response.ok) {
           const errorcode = data.error?.code || data.code || "ErrorUpdatingPassword";
-          alert(t(errorcode));
+          showToast(t(errorcode), "error");
           return;
         }
 
-        alert(t("passwordUpdatedSuccessfully"));
+        showToast(t("passwordUpdatedSuccessfully"));
         passwordForm.reset();
 
       } catch (err) {
-        alert(t("NetworkOrServerError"));
+        showToast(t("NetworkOrServerError"), "error");
       }
     });
   }, 100);

@@ -5,6 +5,7 @@
 // import { fetchUserByUsername, fetchUserByEmail } from "@/modules/users";
 import { navigateTo } from "@/app/navigation";
 import { t } from "@/app/i18n";
+import { showToast } from "@/components/toast";
 
 /* REGISTER NEW USER */
 export function setupRegisterForm() {
@@ -24,7 +25,7 @@ export function setupRegisterForm() {
 
       /* Validate all fields are filled */
       if (!username || !email || !password || !repeatPassword) {
-        alert(t("fillAllFields"));
+        showToast(t("fillAllFields"), "error");
         return;
       }
 
@@ -34,7 +35,7 @@ export function setupRegisterForm() {
       */
       const usernameRegex = /^[a-zA-Z0-9_-]{3,20}$/;
       if (!usernameRegex.test(username)) {
-        alert(t("invalidUsername"));
+        showToast(t("invalidUsername"), "error");
         return;
       }
 
@@ -43,7 +44,7 @@ export function setupRegisterForm() {
       */
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        alert(t("invalidEmail"));
+        showToast(t("invalidEmail"), "error");
         return;
       }
 
@@ -56,13 +57,13 @@ export function setupRegisterForm() {
       */
       const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
       if (!passwordRegex.test(password)) {
-        alert(t("invalidPassword"));
+        showToast(t("invalidPassword"), "error");
         return;
       }
 
       /* Validate if both passwords are the same */
       if (password !== repeatPassword) {
-        alert(t("passwordDoNotMatch"));
+        showToast(t("passwordDoNotMatch"), "error");
         return;
       }
 
@@ -79,21 +80,21 @@ export function setupRegisterForm() {
 
         if (!response.ok) {
           const errorcode = data.error?.code || data.code || "ErrorCreatingUser";
-          alert(t(errorcode));
+          showToast(t(errorcode), "error");
           return;
         }
 
         // ✅ Guardar el token recibido
         localStorage.setItem("access_token", data.token);
 
-        alert(t("UserCreatedSuccessfully"));
+        showToast(t("UserCreatedSuccessfully"));
         registerForm.reset();
 
         // Redirigir al dashboard
         navigateTo("dashboard");
 
       } catch (err) {
-        alert(t("NetworkOrServerError"));
+        showToast(t("NetworkOrServerError"), "error");
       }
     });
   }, 100); // Espera breve para asegurar que el HTML está en el DOM
@@ -113,7 +114,7 @@ export function validateLogin() {
       const password = formData.get("password") as string;
 
       if (!email || !password) {
-      alert(t("fillAllFields"));
+      showToast(t("fillAllFields"), "error");
       return;
       }
 
@@ -130,7 +131,7 @@ export function validateLogin() {
           const errorcode = data.error?.code || data.code || "invalidCredentialsError";
           //const errorMsg = data.error?.message || data.message || "Credenciales incorrectas";
           //alert(errorMsg);
-          alert(t(errorcode));
+          showToast(t(errorcode), "error");
           return;
         }
 
@@ -138,12 +139,12 @@ export function validateLogin() {
         //console.log("Respuesta completa del login:", data); // DB
         localStorage.setItem("access_token", data.token);
 
-        alert(t("welcome"));
+        showToast(t("welcome"));
         navigateTo("dashboard");
 
       } catch (err) {
         console.error("Login error:", err);
-        alert(t("ErrorTryingToLogIn"));
+        showToast(t("ErrorTryingToLogIn"), "error");
       }
     });
   }, 100);
@@ -185,7 +186,7 @@ export async function getCurrentUser() {
     // Otro error inesperado
     if (!response.ok) {
       console.error("Error inesperado al obtener usuario:", result);
-      if (!sessionHandled) alert(t("ErrorRetrievingProfile"));
+      if (!sessionHandled) showToast(t("ErrorRetrievingProfile"), "error");
       return null;
     }
 
@@ -193,7 +194,7 @@ export async function getCurrentUser() {
     return result;
   } catch (err) {
     console.error(t("ErrorRetrievingProfile"), err);
-    if (!sessionHandled) alert(t("ErrorRetrievingProfile"));
+    if (!sessionHandled) showToast(t("ErrorRetrievingProfile"), "error");
     return null;
   }
 }
@@ -201,7 +202,7 @@ export async function getCurrentUser() {
 function handleInvalidSession(messageKey: string) {
   if (!sessionHandled) {
     sessionHandled = true;
-    alert(t(messageKey));
+    showToast(t(messageKey), "error");
     localStorage.removeItem("access_token");
     navigateTo("login");
   }

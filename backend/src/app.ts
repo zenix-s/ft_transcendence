@@ -14,7 +14,6 @@ import userManagerRoutes from '@features/user-manager/UserManager.presentation';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
 import Repositories from '@shared/infrastructure/repositories';
-// import UpdateUsernameRoute from '@features/authentication/updateUsername/updateUsername.route';
 
 async function App(fastify: FastifyInstance) {
     fastify.register(fastifyJWT, {

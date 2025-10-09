@@ -57,7 +57,7 @@ export default async function UpdateUsernameRoute(fastify: FastifyInstance) {
 			const updateUsernameCommand = new UsernameUpdateCommand(fastify);
 
 			// Extraemos el userId del token JWT (Fastify suele añadirlo como req.user)
-			const userId = (req as any).user?.id;
+			const userId = req.user.id;
 			if (!userId) {
 				return reply.status(401).send({ error: 'Unauthorized' });
 			}

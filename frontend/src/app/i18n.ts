@@ -89,6 +89,7 @@ export const translations: Record<Language, Record<string, string>> = {
     ErrorUpdatingUserName: "Error updating user name",
     ErrorUpdatingPassword: "Error updating password",
     passwordUpdatedSuccessfully: "Password updated successfully",
+    redirectingToHome: "Redirecting to home",
   },
   es: {
     start: "Comenzar",
@@ -177,6 +178,7 @@ export const translations: Record<Language, Record<string, string>> = {
     ErrorUpdatingUserName: "Error al actualizar el nombre de usuario",
     ErrorUpdatingPassword: "Error al actualizar la contraseña",
     passwordUpdatedSuccessfully: "Contraseña actualizada correctamente",
+    redirectingToHome: "Redirigiendo al inicio",
   },
   fr: {
     start: "Démarrer",
@@ -265,6 +267,7 @@ export const translations: Record<Language, Record<string, string>> = {
     ErrorUpdatingUserName: "Erreur lors de la mise à jour du nom d'utilisateur",
     ErrorUpdatingPassword: "Erreur lors de la mise à jour du mot de passe",
     passwordUpdatedSuccessfully: "Mot de passe mis à jour avec succès",
+    redirectingToHome: "Redirection vers l’accueil",
   },
 };
 

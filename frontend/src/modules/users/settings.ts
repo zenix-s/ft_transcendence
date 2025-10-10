@@ -1,6 +1,8 @@
 import { getCurrentUser } from "@/modules/users";
 import { t } from "@/app/i18n";
 import { setupAvatarUpload } from "@/components/avatarUpload";
+import { showToast } from "@/components/toast";
+import { navigateTo } from "@/app/navigation";
 
 export async function loadSettings() {
   // console.log("Cargando dashboard..."); // DB
@@ -65,7 +67,7 @@ function updateUserName() {
 
       /* Validate all fields are filled */
       if (!username) {
-        alert(t("fillAllFields"));
+        showToast(t("fillAllFields"), "error");
         return;
       }
 
@@ -74,16 +76,27 @@ function updateUserName() {
       // Only letters, numbers, hyphens, and underscores
       const usernameRegex = /^[a-zA-Z0-9_-]{3,20}$/;
       if (!usernameRegex.test(username)) {
-        alert(t("invalidUsername"));
+        showToast(t("invalidUsername"), "error");
         return;
       }
 
       /* This block of code is handling the registration process for a new user. Here's a breakdown of
       what it does: */
       try {
-        const response = await fetch("/api/auth/updateUserName", { // NEEDED UPDATE API ENDPOINT
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+          console.warn(t("NoTokenFound"));
+          showToast(t("NoTokenFound"), "error");
+          navigateTo("login");
+          return;
+        }
+
+        const response = await fetch("/api/user-manager/updateusername", { // NEEDED UPDATE API ENDPOINT
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
           body: JSON.stringify({ username }),
         });
 
@@ -91,18 +104,22 @@ function updateUserName() {
 
         if (!response.ok) {
           const errorcode = data.error?.code || data.code || "ErrorUpdatingUserName";
-          alert(t(errorcode));
+          showToast(t(errorcode), "error");
           return;
         }
 
-        // ✅ Guardar el token recibido
-        localStorage.setItem("access_token", data.token);
+        // ✅ Actualizar nombre en la web
+        const usernameElement = document.getElementById("user-name");
+        if (usernameElement) {
+          usernameElement.textContent = username;
+        }
 
-        alert(t("UserNameUpdatedSuccessfully"));
+        //alert(t("UserNameUpdatedSuccessfully"));
+        showToast(t("UserNameUpdatedSuccessfully"));
         userNamerForm.reset();
 
       } catch (err) {
-        alert(t("NetworkOrServerError"));
+        showToast(t("NetworkOrServerError"), "error");
       }
     });
   }, 100);

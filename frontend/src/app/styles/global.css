@@ -54,6 +54,63 @@
     @apply text-xs sm:text-base;
   }
 
+  /* TOAST */
+  .toast-success {
+    background: #4ade80 !important;
+    color: var(--color-secondary) !important; /* dark-grey */
+    opacity: 1 !important;
+    font-size: 12px !important;
+    text-wrap: balance;
+    transition: 0.3s ease all;
+  }
+
+  .toast-success:hover {
+    background: #39be6a !important;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+  }
+
+  .toast-error {
+    min-width: fit-content;
+    background: #f87171 !important;
+    color: var(--color-secondary) !important;
+    opacity: 1 !important;
+    font-size: 0.8rem !important;
+    text-wrap: balance;
+    transition: 0.3s ease all;
+  }
+
+  .toast-error:hover {
+    background: #d15656 !important;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+  }
+
+  @media screen and (width >= 640px) {
+    .toast-success, .toast-error {
+      font-size: 1rem !important;
+    }
+  }
+
+  /* Para darle un color, un tamaño diferente, o usar un ícono personalizado */
+  .toastify .toast-close {
+    /* Estilos de ejemplo: */
+    background: var(--color-primary) !important;
+    color: var(--color-secondary) !important;
+    border: 0px solid var(--color-secondary) !important;
+    border-radius: 100% !important;
+    width: 30px !important;
+    height: 30px !important;
+    font-size: 15px !important;
+    margin-left: 1rem;
+    opacity: 1 !important; /* Para asegurarte de que sea visible */
+    transition: 0.3s ease all;
+  }
+
+  .toastify .toast-close:hover {
+    background: #ddd !important;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+    transform: rotateZ(90deg);
+  }
+
   /* === TABLE -> CARDS EN MOBILE === */
   @media (max-width: 640px) {
     /* Convertimos tabla en bloques */

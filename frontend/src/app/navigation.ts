@@ -5,7 +5,13 @@ import { loadChart } from "@/components/graph"
 import { startGame } from "@/modules/game/game.ts";
 import { Tooltip } from "@/components/tooltip";
 import { loadMatchHistory } from "@/components/history";
+import { redirect } from "@/components/redirect";
 
+// Llamada                            Efecto
+// navigateTo("home")                 Carga "home" y añade al historial
+// navigateTo("home", false, true)    Carga "home" y reemplaza la página actual
+// navigateTo("home", true)           Carga "home" sin tocar la URL
+// navigateTo("home", true, true)     Rara vez útil — no cambia URL ni historial
 export async function navigateTo(page: string, skipPushState = false, replace = false) {
   console.log("navigation");
   console.log(page);
@@ -92,6 +98,7 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
       break;
     case "404":
       renderButtons();
+      redirect("home");
       break;
     case "setReady1":
       renderButtons();

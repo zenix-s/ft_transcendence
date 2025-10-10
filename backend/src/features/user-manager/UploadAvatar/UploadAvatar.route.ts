@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import UploadAvatarCommand from './UploadAvatar.application';
 
-export default async function uploadAvatarRoute(fastify: FastifyInstance) {
+export default async function UploadAvatarRoute(fastify: FastifyInstance) {
     fastify.post(
         '/upload-avatar',
         {

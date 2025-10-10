@@ -15,8 +15,10 @@ export type CreateUserDto = Omit<AuthenticationUserDto, 'id'>;
 export interface IUserRepository {
     createUser(user: CreateUserDto): Promise<Result<User>>;
     getUserByEmail(email: string): Promise<Result<AuthenticationUserDto>>;
+    getUserByUsername(username: string): Promise<Result<AuthenticationUserDto>>;
     getUserById(id: number): Promise<Result<AuthenticationUserDto>>;
     updateUserAvatar(userId: number, avatarUrl: string): Promise<Result<void>>;
+    updateUsername(id: number, newUsername: string): Promise<Result<User>>;
 }
 
 class UserRepository extends AbstractRepository implements IUserRepository {
@@ -52,6 +54,18 @@ class UserRepository extends AbstractRepository implements IUserRepository {
         return Result.success(row);
     }
 
+    async getUserByUsername(username: string): Promise<Result<AuthenticationUserDto>> {
+        const row = await this.findOne<AuthenticationUserRow>('SELECT * FROM users WHERE username = ?', [
+            username,
+        ]);
+
+        if (!row) {
+            return Result.error(userNotFoundError);
+        }
+
+        return Result.success(row);
+    }
+
     async getUserById(id: number): Promise<Result<AuthenticationUserDto>> {
         const row = await this.findOne<AuthenticationUserRow>(
             'SELECT id, username, email, password, avatar FROM users WHERE id = ?',
@@ -72,6 +86,17 @@ class UserRepository extends AbstractRepository implements IUserRepository {
         } catch {
             return Result.error('UpdateFailed');
         }
+    }
+
+    async updateUsername(id: number, newUsername: string): Promise<Result<User>> {
+        await this.run('UPDATE users SET username = ? WHERE id = ?', [newUsername, id]);
+
+        const row = await this.findOne<AuthenticationUserRow>('SELECT * FROM users WHERE id = ?', [id]);
+        if (!row) {
+            return Result.error(userNotFoundError);
+        }
+
+        return Result.success(row);
     }
 }
 

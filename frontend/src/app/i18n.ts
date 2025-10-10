@@ -283,7 +283,7 @@ export let currentLang: Language = "en";
 export function setLanguage(lang: Language) {
   currentLang = lang;
   localStorage.setItem("lang", lang);
-  updateTexts();
+  //updateTexts();
   document.dispatchEvent(new Event("i18n-updated"));
 }
 

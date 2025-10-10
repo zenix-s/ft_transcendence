@@ -3,12 +3,6 @@ import { FastifyReply } from 'fastify/types/reply';
 import UsernameUpdateCommand, { IUsernameUpdateRequest } from './updateUsername.command';
 import { FastifyRequest } from 'fastify/types/request';
 
-interface UpdateUsernameRequest {
-	Body: {
-		username?: string;
-	};
-}
-
 export default async function UpdateUsernameRoute(fastify: FastifyInstance) {
 	fastify.patch(
 		'/updateusername',

@@ -3,12 +3,6 @@ import { FastifyReply } from 'fastify/types/reply';
 import PasswordUpdateCommand, { IPasswordUpdateRequest } from './updatePassword.command';
 import { FastifyRequest } from 'fastify/types/request';
 
-interface UpdatePasswordRequest {
-	Body: {
-		password?: string;
-	};
-}
-
 export default async function UpdatePasswordRoute(fastify: FastifyInstance) {
 	fastify.patch(
 		'/updatepassword',

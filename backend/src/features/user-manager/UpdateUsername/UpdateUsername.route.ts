@@ -15,7 +15,7 @@ export default async function UpdateUsernameRoute(fastify: FastifyInstance) {
         {
             schema: {
                 description: 'Update a user name',
-                tags: ['Authentication'],
+                tags: ['UserManager'],
                 security: [{ bearerAuth: [] }],
                 body: {
                     type: 'object',

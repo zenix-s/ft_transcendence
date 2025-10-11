@@ -21,6 +21,7 @@ export interface UserRow {
     username: string;
     email: string;
     password: string;
+    avatar?: string;
     created_at: string;
 }
 
@@ -42,4 +43,5 @@ export interface AuthenticationUserRow {
     username: string;
     email: string;
     password: string;
+    avatar?: string;
 }

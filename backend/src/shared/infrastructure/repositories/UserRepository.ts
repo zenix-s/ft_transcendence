@@ -17,6 +17,7 @@ export interface IUserRepository {
     getUserByEmail(email: string): Promise<Result<AuthenticationUserDto>>;
     getUserByUsername(username: string): Promise<Result<AuthenticationUserDto>>;
     getUserById(id: number): Promise<Result<AuthenticationUserDto>>;
+    updateUserAvatar(userId: number, avatarUrl: string): Promise<Result<void>>;
     updateUsername(id: number, newUsername: string): Promise<Result<User>>;
 }
 
@@ -28,9 +29,10 @@ class UserRepository extends AbstractRepository implements IUserRepository {
             user.password,
         ]);
 
-        const row = await this.findOne<AuthenticationUserRow>('SELECT * FROM users WHERE email = ?', [
-            user.email,
-        ]);
+        const row = await this.findOne<AuthenticationUserRow>(
+            'SELECT id, username, email, password, avatar FROM users WHERE email = ?',
+            [user.email]
+        );
 
         if (!row) {
             return Result.error(userNotFoundError);
@@ -40,7 +42,10 @@ class UserRepository extends AbstractRepository implements IUserRepository {
     }
 
     async getUserByEmail(email: string): Promise<Result<AuthenticationUserDto>> {
-        const row = await this.findOne<AuthenticationUserRow>('SELECT * FROM users WHERE email = ?', [email]);
+        const row = await this.findOne<AuthenticationUserRow>(
+            'SELECT id, username, email, password, avatar FROM users WHERE email = ?',
+            [email]
+        );
 
         if (!row) {
             return Result.error(userNotFoundError);
@@ -50,7 +55,9 @@ class UserRepository extends AbstractRepository implements IUserRepository {
     }
 
     async getUserByUsername(username: string): Promise<Result<AuthenticationUserDto>> {
-        const row = await this.findOne<AuthenticationUserRow>('SELECT * FROM users WHERE username = ?', [username]);
+        const row = await this.findOne<AuthenticationUserRow>('SELECT * FROM users WHERE username = ?', [
+            username,
+        ]);
 
         if (!row) {
             return Result.error(userNotFoundError);
@@ -60,13 +67,25 @@ class UserRepository extends AbstractRepository implements IUserRepository {
     }
 
     async getUserById(id: number): Promise<Result<AuthenticationUserDto>> {
-        const row = await this.findOne<AuthenticationUserRow>('SELECT * FROM users WHERE id = ?', [id]);
+        const row = await this.findOne<AuthenticationUserRow>(
+            'SELECT id, username, email, password, avatar FROM users WHERE id = ?',
+            [id]
+        );
 
         if (!row) {
             return Result.error(userNotFoundError);
         }
 
         return Result.success(row);
+    }
+
+    async updateUserAvatar(userId: number, avatarUrl: string): Promise<Result<void>> {
+        try {
+            await this.run('UPDATE users SET avatar = ? WHERE id = ?', [avatarUrl, userId]);
+            return Result.success(undefined);
+        } catch {
+            return Result.error('UpdateFailed');
+        }
     }
 
     async updateUsername(id: number, newUsername: string): Promise<Result<User>> {

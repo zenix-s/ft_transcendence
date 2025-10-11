@@ -41,6 +41,7 @@ export default class GetCurrentUserQuery implements IQuery<IGetCurrentUserReques
                     id: user.id,
                     username: user.username,
                     email: user.email,
+                    avatar: user.avatar,
                 },
             });
         } catch (error) {

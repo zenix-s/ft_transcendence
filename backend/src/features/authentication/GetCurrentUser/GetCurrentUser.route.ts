@@ -29,6 +29,11 @@ export default async function GetCurrentUserRoute(fastify: FastifyInstance) {
                                     email: {
                                         type: 'string',
                                     },
+                                    avatar: {
+                                        type: 'string',
+                                        nullable: true,
+                                        description: 'URL of the user avatar',
+                                    },
                                 },
                             },
                         },

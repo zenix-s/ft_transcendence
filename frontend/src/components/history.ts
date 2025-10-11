@@ -90,6 +90,7 @@ export async function loadMatchHistory(perPage: number = 5) {
     });
 
     // 5. Traducir las celdas recién insertadas
+    console.log("Updating history language");
     updateTexts();
 
   } catch (error) {

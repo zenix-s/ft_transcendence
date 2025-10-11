@@ -19,6 +19,7 @@ export interface IUserRepository {
     getUserById(id: number): Promise<Result<AuthenticationUserDto>>;
     updateUserAvatar(userId: number, avatarUrl: string): Promise<Result<void>>;
     updateUsername(id: number, newUsername: string): Promise<Result<User>>;
+    updatePassword(id: number, newPassword: string): Promise<Result<User>>
 }
 
 class UserRepository extends AbstractRepository implements IUserRepository {
@@ -90,6 +91,17 @@ class UserRepository extends AbstractRepository implements IUserRepository {
 
     async updateUsername(id: number, newUsername: string): Promise<Result<User>> {
         await this.run('UPDATE users SET username = ? WHERE id = ?', [newUsername, id]);
+
+        const row = await this.findOne<AuthenticationUserRow>('SELECT * FROM users WHERE id = ?', [id]);
+        if (!row) {
+            return Result.error(userNotFoundError);
+        }
+
+        return Result.success(row);
+    }
+
+    async updatePassword(id: number, password: string): Promise<Result<User>> {
+        await this.run('UPDATE users SET password = ? WHERE id = ?', [password, id]);
 
         const row = await this.findOne<AuthenticationUserRow>('SELECT * FROM users WHERE id = ?', [id]);
         if (!row) {

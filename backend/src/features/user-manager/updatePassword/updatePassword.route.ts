@@ -1,22 +1,25 @@
 import { FastifyInstance } from 'fastify/types/instance';
 import { FastifyReply } from 'fastify/types/reply';
-import PasswordUpdateCommand, { IPasswordUpdateRequest } from './updatePassword.command';
 import { FastifyRequest } from 'fastify/types/request';
+import PasswordUpdateCommand from './updatePassword.command';
+
+interface UpdatePasswordRequestBody {
+	password: string;
+}
 
 export default async function UpdatePasswordRoute(fastify: FastifyInstance) {
 	fastify.patch(
-		'/updatepassword',
+		'/update-password',
 		{
-			preHandler: [fastify.authenticate], // protege la ruta
 			schema: {
 				description: 'Update a user password hashing it',
 				tags: ['Authentication'],
 				security: [{ bearerAuth: [] }],
 				body: {
 					type: 'object',
-					required: ['newPassword'],
+					required: ['password'],
 					properties: {
-						newPassword: {
+						password: {
 							type: 'string',
 							description: 'New password to update a user',
 						},
@@ -47,7 +50,7 @@ export default async function UpdatePasswordRoute(fastify: FastifyInstance) {
 				},
 			},
 		},
-		async (req: FastifyRequest<{ Body: IPasswordUpdateRequest }>, reply: FastifyReply) => {
+		async (req: FastifyRequest<{ Body: UpdatePasswordRequestBody }>, reply: FastifyReply) => {
 			const updatePasswordCommand = new PasswordUpdateCommand(fastify);
 
 			// Extraemos el userId del token JWT (Fastify suele añadirlo como req.user)
@@ -58,7 +61,7 @@ export default async function UpdatePasswordRoute(fastify: FastifyInstance) {
 
 			const request = {
 				userId,
-				password: req.body.newPassword,
+				password: req.body.password,
 			};
 
 			return fastify.handleCommand({

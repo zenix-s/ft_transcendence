@@ -91,7 +91,7 @@ function updateUserName() {
           return;
         }
 
-        const response = await fetch("/api/user-manager/updateusername", {
+        const response = await fetch("/api/user-manager/update-username", {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
@@ -173,7 +173,7 @@ function updatePassword() {
           return;
         }
         
-        const response = await fetch("/api/user-manager/updatepassword", { // NEEDED UPDATE API ENDPOINT
+        const response = await fetch("/api/user-manager/update-password", { // NEEDED UPDATE API ENDPOINT
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",

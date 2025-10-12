@@ -17,60 +17,49 @@ export interface IPasswordUpadteResponse {
 	message: string;
 	user: {
 		id: number;
-		password: string;
 	};
 }
 
 export default class PasswordUpdateCommand implements ICommand<IPasswordUpdateRequest, IPasswordUpadteResponse> {
-	private invalidRequestError = (): ErrorResult => {
-		return '400';
-	};
-
 	constructor(private readonly fastify: FastifyInstance) {}
 
 	validate(request?: IPasswordUpdateRequest): Result<void> {
 		if (!request || !request.password) {
-			console.log("[validate] Invalid request:", request);
 			return Result.error(badRequestError);
 		}
-		console.log("[validate] Request valid");
 		return Result.success(undefined);
 	}
 
 	async execute(request?: IPasswordUpdateRequest): Promise<Result<IPasswordUpadteResponse>> {
-		console.log("[execute] Starting password update...");
 		if (!request) {
-			console.log("[execute] Missing request");
 			return Result.error(badRequestError);
 		}
 
 		const { userId, password } = request;
-		console.log("[execute] Request data:", { userId, passwordLength: password ? password.length : "none" });
 
 		try {
-			console.log("[execute] Hashing password...");
+			// Verify if user exists
+			const userExists = await this.fastify.UserRepository.getUserById(userId);
+			if (!userExists) {
+				return Result.error(userNotFoundError);
+			}
+
+			// Hash password
 			const hashedPassword = await hashPassword(password);
-			console.log("[execute] Hashed password generated (length):", hashedPassword?.length);
 
-			console.log("[execute] Updating password in database...");
+			// Update password in bbdd
 			const updatedPassword = await this.fastify.UserRepository.updatePassword(userId, hashedPassword);
-			console.log("[execute] Repository response:", updatedPassword);
-
 			if (!updatedPassword.isSuccess || !updatedPassword.value) {
-				console.log("[execute] Password update failed:", updatedPassword);
 				return Result.error(passwordUpdateError);
 			}
 
-			console.log("[execute] Password updated successfully for user:", updatedPassword.value.id);
 			return Result.success({
 				message: 'Password updated successfully',
 				user: {
 					id: updatedPassword.value.id,
-					password: updatedPassword.value.password,
 				},
 			});
 		} catch (error) {
-			console.log("[execute] Unexpected error:", error);
 			return this.fastify.handleError<IPasswordUpadteResponse>({
 				code: '500',
 				error,

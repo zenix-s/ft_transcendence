@@ -42,6 +42,12 @@ export default class UsernameUpdateCommand implements ICommand<IUsernameUpdateRe
 		const { userId, username } = request;
 
 		try {
+			// Verify if user exists
+			const userExists = await this.fastify.UserRepository.getUserById(userId);
+			if (!userExists) {
+				return Result.error(userNotFoundError);
+			}
+
 			// Verificar si el username ya está en uso
 			const existingUser = await this.fastify.UserRepository.getUserByUsername(username);
 			

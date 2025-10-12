@@ -1,13 +1,16 @@
 import { FastifyInstance } from 'fastify/types/instance';
 import { FastifyReply } from 'fastify/types/reply';
-import UsernameUpdateCommand, { IUsernameUpdateRequest } from './updateUsername.command';
 import { FastifyRequest } from 'fastify/types/request';
+import UsernameUpdateCommand from './updateUsername.command';
+
+interface UpdateUserNameRequestBody {
+	username: string;
+}
 
 export default async function UpdateUsernameRoute(fastify: FastifyInstance) {
 	fastify.patch(
-		'/updateusername',
+		'/update-username',
 		{
-			preHandler: [fastify.authenticate], // protege la ruta
 			schema: {
 				description: 'Update a user name',
 				tags: ['Authentication'],
@@ -47,7 +50,7 @@ export default async function UpdateUsernameRoute(fastify: FastifyInstance) {
 				},
 			},
 		},
-		async (req: FastifyRequest<{ Body: IUsernameUpdateRequest }>, reply: FastifyReply) => {
+		async (req: FastifyRequest<{ Body: UpdateUserNameRequestBody }>, reply: FastifyReply) => {
 			const updateUsernameCommand = new UsernameUpdateCommand(fastify);
 
 			// Extraemos el userId del token JWT (Fastify suele añadirlo como req.user)

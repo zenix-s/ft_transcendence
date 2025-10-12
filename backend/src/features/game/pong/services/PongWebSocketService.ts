@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { WebSocket } from '@fastify/websocket';
 import { Result } from '@shared/abstractions/Result';
+import { ApplicationError } from '@shared/Errors';
 import { Actions } from '../Pong.types';
 import { PongGameService } from './PongGameService';
 import { PongPlayerService } from './PongPlayerService';
@@ -31,11 +32,11 @@ export class PongWebSocketService {
         try {
             const decoded = (await this.fastify.jwt.verify(token)) as { id?: number };
             if (!decoded.id || typeof decoded.id !== 'number') {
-                return Result.error('invalidToken');
+                return Result.error(ApplicationError.InvalidToken);
             }
             return Result.success(decoded.id);
         } catch {
-            return Result.error('invalidToken');
+            return Result.error(ApplicationError.InvalidToken);
         }
     }
 

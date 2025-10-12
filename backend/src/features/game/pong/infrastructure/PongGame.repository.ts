@@ -1,11 +1,9 @@
-import { Result, ErrorResult } from '@shared/abstractions/Result';
+import { Result } from '@shared/abstractions/Result';
 import { PongGame } from '../domain/PongGame';
 import { PongGameManager } from '../services/PongGameManager';
 import { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
-
-const gameNotFoundError: ErrorResult = 'GameNotFound';
-const gameCreationError: ErrorResult = 'GameCreationError';
+import { ApplicationError } from '@shared/Errors';
 
 export interface IPongGameRepository {
     createGame(game: PongGame, matchId: number): Promise<Result<number>>;
@@ -29,25 +27,25 @@ class PongGameRepository implements IPongGameRepository {
             const gameId = matchId;
             const createResult = await this.gameManager.createGame(gameId, matchId, game);
             if (!createResult.isSuccess) {
-                return Result.error(gameCreationError);
+                return Result.error(ApplicationError.GameCreationError);
             }
             return Result.success(gameId);
         } catch {
-            return Result.error(gameCreationError);
+            return Result.error(ApplicationError.GameCreationError);
         }
     }
 
     async getGame(gameId: number): Promise<Result<PongGame>> {
         const game = this.gameManager.getGame(gameId);
         if (!game) {
-            return Result.error(gameNotFoundError);
+            return Result.error(ApplicationError.GameNotFound);
         }
         return Result.success(game);
     }
 
     async updateGame(gameId: number, game: PongGame): Promise<Result<void>> {
         if (!this.gameManager.gameExists(gameId)) {
-            return Result.error(gameNotFoundError);
+            return Result.error(ApplicationError.GameNotFound);
         }
         this.gameManager.updateGame(gameId, game);
         return Result.success(undefined);
@@ -55,7 +53,7 @@ class PongGameRepository implements IPongGameRepository {
 
     async deleteGame(gameId: number): Promise<Result<void>> {
         if (!this.gameManager.gameExists(gameId)) {
-            return Result.error(gameNotFoundError);
+            return Result.error(ApplicationError.GameNotFound);
         }
         this.gameManager.deleteGame(gameId);
         return Result.success(undefined);

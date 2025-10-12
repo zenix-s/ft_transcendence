@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify';
 import { Result } from '@shared/abstractions/Result';
 import { PongGame } from '../domain/PongGame';
 import { ActivePongGame } from './ActivePongGame';
+import { ApplicationError } from '@shared/Errors';
 
 export class PongGameManager {
     private activeGames = new Map<number, ActivePongGame>();
@@ -24,7 +25,7 @@ export class PongGameManager {
             return Result.success(undefined);
         } catch (error) {
             return this.fastify.handleError({
-                code: '500',
+                code: ApplicationError.InternalServerError,
                 error,
             });
         }

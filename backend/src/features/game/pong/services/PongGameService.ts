@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify';
 import { Result } from '@shared/abstractions/Result';
 import { PongGame } from '../domain/PongGame';
 import { IPongGameRepository } from '../infrastructure/PongGame.repository';
+import { ApplicationError } from '@shared/Errors';
 
 interface GameState {
     isRunning: boolean;
@@ -55,7 +56,7 @@ export class PongGameService {
     async getGameState(gameId: number): Promise<Result<{ gameId: number; state: GameState }>> {
         const game = await this.getGame(gameId);
         if (!game) {
-            return Result.error('gameNotFound');
+            return Result.error(ApplicationError.GameNotFound);
         }
 
         const gameState = game.getGameState();

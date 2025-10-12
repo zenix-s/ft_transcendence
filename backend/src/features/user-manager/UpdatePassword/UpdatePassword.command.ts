@@ -1,12 +1,8 @@
 import { FastifyInstance } from 'fastify';
-import { ErrorResult, Result } from '@shared/abstractions/Result';
+import { Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
-import { badRequestError } from '@shared/Errors';
+import { ApplicationError } from '@shared/Errors';
 import { hashPassword } from '@shared/utils/password.utils';
-
-export const userNotFoundError: ErrorResult = 'userNotFoundError';
-
-export const passwordUpdateError: ErrorResult = 'passwordUpdateError';
 
 export interface IPasswordUpdateRequest {
     userId: number;
@@ -27,14 +23,14 @@ export default class PasswordUpdateCommand
 
     validate(request?: IPasswordUpdateRequest): Result<void> {
         if (!request || !request.password) {
-            return Result.error(badRequestError);
+            return Result.error(ApplicationError.BadRequest);
         }
         return Result.success(undefined);
     }
 
     async execute(request?: IPasswordUpdateRequest): Promise<Result<IPasswordUpadteResponse>> {
         if (!request) {
-            return Result.error(badRequestError);
+            return Result.error(ApplicationError.BadRequest);
         }
 
         const { userId, password } = request;
@@ -43,7 +39,7 @@ export default class PasswordUpdateCommand
             // Verify if user exists
             const userExists = await this.fastify.UserRepository.getUserById(userId);
             if (!userExists) {
-                return Result.error(userNotFoundError);
+                return Result.error(ApplicationError.UserNotFound);
             }
 
             // Hash password
@@ -52,7 +48,7 @@ export default class PasswordUpdateCommand
             // Update password in bbdd
             const updatedPassword = await this.fastify.UserRepository.updatePassword(userId, hashedPassword);
             if (!updatedPassword.isSuccess || !updatedPassword.value) {
-                return Result.error(passwordUpdateError);
+                return Result.error(ApplicationError.PasswordUpdateError);
             }
 
             return Result.success({
@@ -63,7 +59,7 @@ export default class PasswordUpdateCommand
             });
         } catch (error) {
             return this.fastify.handleError<IPasswordUpadteResponse>({
-                code: '500',
+                code: ApplicationError.InternalServerError,
                 error,
             });
         }

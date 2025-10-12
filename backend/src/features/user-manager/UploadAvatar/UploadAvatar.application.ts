@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { Result } from '@shared/abstractions/Result';
+import { ApplicationError } from '@shared/Errors';
 import { IUserRepository } from '@shared/infrastructure/repositories/UserRepository';
 
 const pump = promisify(pipeline);
@@ -40,19 +41,19 @@ export default class UploadAvatarCommand implements ICommand<IUploadAvatarReques
 
     validate(request?: IUploadAvatarRequest): Result<void> {
         if (!request) {
-            return Result.error('400');
+            return Result.error(ApplicationError.BadRequest);
         }
 
         if (!request.userId || typeof request.userId !== 'number') {
-            return Result.error('400');
+            return Result.error(ApplicationError.InvalidRequest);
         }
 
         if (!request.file) {
-            return Result.error('NoFileProvided');
+            return Result.error(ApplicationError.InvalidRequest);
         }
 
         if (!this.allowedMimeTypes.includes(request.file.mimetype)) {
-            return Result.error('InvalidFileType');
+            return Result.error(ApplicationError.InvalidRequest);
         }
 
         return Result.success(undefined);
@@ -63,12 +64,12 @@ export default class UploadAvatarCommand implements ICommand<IUploadAvatarReques
             // 1. Validamos la existencia del usuario
             const userResult = await this.UserRepository.getUserById(request.userId);
             if (!userResult.isSuccess) {
-                return Result.error('UserNotFound');
+                return Result.error(ApplicationError.UserNotFound);
             }
 
             const user = userResult.value;
             if (!user) {
-                return Result.error('UserNotFound');
+                return Result.error(ApplicationError.UserNotFound);
             }
 
             // 2. Si el usuario ya tiene un avatar, eliminamos el archivo antiguo
@@ -107,7 +108,7 @@ export default class UploadAvatarCommand implements ICommand<IUploadAvatarReques
             const updateResult = await this.UserRepository.updateUserAvatar(request.userId, avatarUrl);
 
             if (!updateResult.isSuccess) {
-                return Result.error('UploadFailed');
+                return Result.error(ApplicationError.UserCreationError);
             }
 
             return Result.success({
@@ -117,11 +118,11 @@ export default class UploadAvatarCommand implements ICommand<IUploadAvatarReques
         } catch (error) {
             if (error instanceof Error) {
                 if (error.message === 'FileTooLarge') {
-                    return Result.error('FileTooLarge');
+                    return Result.error(ApplicationError.InvalidRequest);
                 }
             }
 
-            return Result.error('UploadFailed');
+            return Result.error(ApplicationError.UserCreationError);
         }
     }
 

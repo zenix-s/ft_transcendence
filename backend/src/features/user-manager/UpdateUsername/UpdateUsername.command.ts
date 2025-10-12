@@ -1,13 +1,7 @@
 import { FastifyInstance } from 'fastify';
-import { ErrorResult, Result } from '@shared/abstractions/Result';
+import { Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
-import { badRequestError } from '@shared/Errors';
-
-export const userNotFoundError: ErrorResult = 'userNotFoundError';
-
-export const userAlredyExistsError: ErrorResult = 'userAlredyExistsError';
-
-export const usernameUpdateError: ErrorResult = 'usernameUpdateError';
+import { ApplicationError } from '@shared/Errors';
 
 export interface IUsernameUpdateRequest {
     userId: number;
@@ -29,13 +23,13 @@ export default class UsernameUpdateCommand
 
     validate(request?: IUsernameUpdateRequest): Result<void> {
         if (!request || !request.username) {
-            return Result.error(badRequestError);
+            return Result.error(ApplicationError.BadRequest);
         }
         return Result.success(undefined);
     }
 
     async execute(request?: IUsernameUpdateRequest): Promise<Result<IUsernameUpadteResponse>> {
-        if (!request) return Result.error(badRequestError);
+        if (!request) return Result.error(ApplicationError.BadRequest);
 
         const { userId, username } = request;
 
@@ -43,20 +37,20 @@ export default class UsernameUpdateCommand
             // Verify if user exists
             const userExists = await this.fastify.UserRepository.getUserById(userId);
             if (!userExists) {
-                return Result.error(userNotFoundError);
+                return Result.error(ApplicationError.UserNotFound);
             }
 
             // Verificar si el username ya está en uso
             const existingUser = await this.fastify.UserRepository.getUserByUsername(username);
 
             if (existingUser.isSuccess) {
-                return Result.error(userAlredyExistsError);
+                return Result.error(ApplicationError.UserAlreadyExists);
             }
 
             // Actualizar username
             const updatedUser = await this.fastify.UserRepository.updateUsername(userId, username);
             if (!updatedUser.isSuccess || !updatedUser.value) {
-                return Result.error(usernameUpdateError);
+                return Result.error(ApplicationError.UsernameUpdateError);
             }
 
             return Result.success({
@@ -68,7 +62,7 @@ export default class UsernameUpdateCommand
             });
         } catch (error) {
             return this.fastify.handleError<IUsernameUpadteResponse>({
-                code: '500',
+                code: ApplicationError.InternalServerError,
                 error,
             });
         }

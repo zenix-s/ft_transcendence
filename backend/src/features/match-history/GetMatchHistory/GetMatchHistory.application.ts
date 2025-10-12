@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { Result } from '@shared/abstractions/Result';
 import { IQuery } from '@shared/application/abstractions/IQuery.interface';
+import { ApplicationError } from '@shared/Errors';
 
 import { Match } from '@shared/domain/entity/Match.entity';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
@@ -31,11 +32,11 @@ export default class GetMatchHistoryQuery
         }
 
         if (request.limit && (request.limit < 1 || request.limit > 100)) {
-            return Result.error('invalidLimit');
+            return Result.error(ApplicationError.InvalidRequest);
         }
 
         if (request.offset && request.offset < 0) {
-            return Result.error('invalidOffset');
+            return Result.error(ApplicationError.InvalidRequest);
         }
 
         return Result.success(undefined);
@@ -65,7 +66,7 @@ export default class GetMatchHistoryQuery
             });
         } catch (error) {
             return this.fastify.handleError<IGetMatchHistoryResponse>({
-                code: '500',
+                code: ApplicationError.InternalServerError,
                 error,
             });
         }

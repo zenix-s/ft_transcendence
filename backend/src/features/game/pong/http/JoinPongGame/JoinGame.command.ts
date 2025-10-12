@@ -1,15 +1,9 @@
 import { FastifyInstance } from 'fastify';
 import { IPongGameRepository } from '../../infrastructure/PongGame.repository';
-import { ErrorResult, Result } from '@shared/abstractions/Result';
+import { Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
-import { badRequestError } from '@shared/Errors';
+import { ApplicationError } from '@shared/Errors';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
-
-export const gameNotFoundError: ErrorResult = 'gameNotFoundError';
-
-export const gameFullError: ErrorResult = 'gameFullError';
-
-export const invalidRequestError: ErrorResult = 'invalidRequestError';
 
 export interface IJoinGameRequest {
     gameId: number;
@@ -34,36 +28,36 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
 
     validate(request?: IJoinGameRequest): Result<void> {
         if (!request) {
-            return Result.error(badRequestError);
+            return Result.error(ApplicationError.BadRequest);
         }
 
         if (!request.gameId || typeof request.gameId !== 'number') {
-            return Result.error(invalidRequestError);
+            return Result.error(ApplicationError.InvalidRequest);
         }
 
         if (!request.userId || typeof request.userId !== 'number') {
-            return Result.error(invalidRequestError);
+            return Result.error(ApplicationError.InvalidRequest);
         }
 
         return Result.success(undefined);
     }
 
     async execute(request?: IJoinGameRequest): Promise<Result<IJoinGameResponse>> {
-        if (!request) return Result.error(badRequestError);
+        if (!request) return Result.error(ApplicationError.BadRequest);
 
         try {
             const { gameId, userId } = request;
 
             const gameResult = await this.gameRepository.getGame(gameId);
             if (!gameResult.isSuccess || !gameResult.value) {
-                return Result.error(gameNotFoundError);
+                return Result.error(ApplicationError.GameNotFound);
             }
 
             const game = gameResult.value;
 
             const match = await this.matchRepository.findById(gameId);
             if (!match) {
-                return Result.error('matchNotFound');
+                return Result.error(ApplicationError.MatchNotFound);
             }
 
             if (game.isSinglePlayerMode()) {
@@ -77,12 +71,12 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
                 }
 
                 if (game.getPlayerCount() >= 2) {
-                    return Result.error('singlePlayerGameAlreadyHasPlayer');
+                    return Result.error(ApplicationError.SinglePlayerGameAlreadyHasPlayer);
                 }
 
                 const added = game.addPlayer(userId);
                 if (!added) {
-                    return Result.error('cannotJoinSinglePlayerGame');
+                    return Result.error(ApplicationError.CannotJoinSinglePlayerGame);
                 }
 
                 const playerAdded = match.addPlayer(userId);
@@ -92,7 +86,7 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
 
                 const updateResult = await this.gameRepository.updateGame(gameId, game);
                 if (!updateResult.isSuccess) {
-                    return Result.error('gameUpdateError');
+                    return Result.error(ApplicationError.GameUpdateError);
                 }
 
                 return Result.success({
@@ -113,7 +107,7 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
 
             const added = game.addPlayer(userId);
             if (!added) {
-                return Result.error(gameFullError);
+                return Result.error(ApplicationError.GameFull);
             }
 
             const playerAdded = match.addPlayer(userId);
@@ -130,7 +124,7 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
 
             const updateResult = await this.gameRepository.updateGame(gameId, game);
             if (!updateResult.isSuccess) {
-                return Result.error('gameUpdateError');
+                return Result.error(ApplicationError.GameUpdateError);
             }
 
             return Result.success({
@@ -140,7 +134,7 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
             });
         } catch (error) {
             return this.fastify.handleError<IJoinGameResponse>({
-                code: '500',
+                code: ApplicationError.InternalServerError,
                 error,
             });
         }

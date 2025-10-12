@@ -1,11 +1,132 @@
-import { ErrorResult } from './abstractions/Result';
+export enum ApplicationError {
+    // Errores Generales
+    /**
+     * Solicitud Incorrecta - La solicitud carece de parámetros requeridos o está mal formada
+     */
+    BadRequest = 'BadRequest',
 
-export const notFoundError: ErrorResult = '401';
+    /**
+     * Solicitud Inválida - Los parámetros de la solicitud no cumplen con los requisitos de validación
+     */
+    InvalidRequest = 'InvalidRequest',
 
-export const badRequestError: ErrorResult = '400';
+    /**
+     * Error Interno del Servidor - Ocurrió un error inesperado en el servidor
+     */
+    InternalServerError = 'InternalServerError',
 
-export const unauthorizedError: ErrorResult = '403';
+    /**
+     * Servicio de Base de Datos No Disponible - El servicio de base de datos no está disponible actualmente
+     */
+    DatabaseServiceUnavailable = 'DatabaseServiceUnavailable',
 
-export const conflictError: ErrorResult = '409';
+    // Errores de Gestión de Usuario
+    /**
+     * Usuario No Encontrado - El usuario solicitado no existe en el sistema
+     */
+    UserNotFound = 'UserNotFound',
 
-export const internalServerError: ErrorResult = '500';
+    /**
+     * Usuario Ya Existe - Ya existe un usuario con este email o nombre de usuario
+     */
+    UserAlreadyExists = 'UserAlreadyExists',
+
+    /**
+     * Error de Creación de Usuario - Error al crear una nueva cuenta de usuario
+     */
+    UserCreationError = 'UserCreationError',
+
+    /**
+     * Error de Actualización de Nombre de Usuario - Error al actualizar el nombre de usuario
+     */
+    UsernameUpdateError = 'UsernameUpdateError',
+
+    /**
+     * Error de Actualización de Contraseña - Error al actualizar la contraseña del usuario
+     */
+    PasswordUpdateError = 'PasswordUpdateError',
+
+    /**
+     * Error de Actualización de Avatar - Error al actualizar el avatar del usuario
+     */
+    AvatarUpdateError = 'AvatarUpdateError',
+
+    // Errores de Autenticación
+    /**
+     * Credenciales Inválidas - La combinación de email/contraseña proporcionada es incorrecta
+     */
+    InvalidCredentials = 'InvalidCredentials',
+
+    /**
+     * Token Inválido - El token de autenticación es inválido o está mal formado
+     */
+    InvalidToken = 'InvalidToken',
+
+    // Errores de Juego
+    /**
+     * Juego No Encontrado - El juego especificado no existe
+     */
+    GameNotFound = 'GameNotFound',
+
+    /**
+     * Tipo de Juego No Encontrado - El tipo de juego especificado no existe
+     */
+    GameTypeNotFound = 'GameTypeNotFound',
+
+    /**
+     * Tipo de Juego Individual No Encontrado - El tipo de juego individual no está configurado
+     */
+    SinglePlayerGameTypeNotFound = 'SinglePlayerGameTypeNotFound',
+
+    /**
+     * Error de Creación de Juego - Error al crear una nueva instancia de juego
+     */
+    GameCreationError = 'GameCreationError',
+
+    /**
+     * Error de Actualización de Juego - Error al actualizar el estado del juego
+     */
+    GameUpdateError = 'GameUpdateError',
+
+    /**
+     * Juego Lleno - El juego ha alcanzado su capacidad máxima de jugadores
+     */
+    GameFull = 'GameFull',
+
+    /**
+     * Jugador No En Juego - El jugador no es participante de este juego
+     */
+    PlayerNotInGame = 'PlayerNotInGame',
+
+    /**
+     * Juego Individual Ya Tiene Jugador - El juego individual ya tiene un jugador asignado
+     */
+    SinglePlayerGameAlreadyHasPlayer = 'SinglePlayerGameAlreadyHasPlayer',
+
+    /**
+     * No Se Puede Unir al Juego Individual - No es posible unirse al juego individual
+     */
+    CannotJoinSinglePlayerGame = 'CannotJoinSinglePlayerGame',
+
+    // Errores de Validación de Juego
+    /**
+     * Puntuación de Ganador Inválida - La puntuación ganadora debe estar entre 1 y 100
+     */
+    InvalidWinnerScore = 'InvalidWinnerScore',
+
+    /**
+     * Tiempo Máximo de Juego Inválido - El tiempo máximo de juego debe estar entre 60 y 3600 segundos
+     */
+    InvalidMaxGameTime = 'InvalidMaxGameTime',
+
+    /**
+     * Dificultad de IA Inválida - La dificultad de la IA debe estar entre 0 y 10
+     */
+    InvalidAiDifficulty = 'InvalidAiDifficulty',
+
+    // Errores de Partida
+    /**
+     * Partida No Encontrada - La partida especificada no existe
+     */
+    MatchNotFound = 'MatchNotFound',
+}

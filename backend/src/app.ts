@@ -16,6 +16,7 @@ import fastifySwaggerUi from '@fastify/swagger-ui';
 import fastifyStatic from '@fastify/static';
 import fastifyMultipart from '@fastify/multipart';
 import Repositories from '@shared/infrastructure/repositories';
+import { ApplicationError } from '@shared/Errors';
 import path from 'path';
 
 async function App(fastify: FastifyInstance) {
@@ -46,7 +47,7 @@ async function App(fastify: FastifyInstance) {
         try {
             await request.jwtVerify();
         } catch (err) {
-            const result = fastify.handleError({ code: '401', error: err });
+            const result = fastify.handleError({ code: ApplicationError.InvalidToken, error: err });
             reply.status(401).send({ error: result.error });
         }
     });
@@ -56,13 +57,13 @@ async function App(fastify: FastifyInstance) {
 
         if (error.message.includes('Database')) {
             res.status(503).send({
-                error: 'DatabaseServiceUnavailable',
+                error: ApplicationError.DatabaseServiceUnavailable,
             });
             return;
         }
 
         res.status(500).send({
-            error: 'InternalServerError',
+            error: ApplicationError.InternalServerError,
         });
     });
 

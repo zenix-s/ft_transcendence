@@ -1,12 +1,8 @@
 import { FastifyInstance } from 'fastify';
-import { ErrorResult, Result } from '@shared/abstractions/Result';
+import { Result } from '@shared/abstractions/Result';
 import { IQuery } from '@shared/application/abstractions/IQuery.interface';
-import { badRequestError } from '@shared/Errors';
+import { ApplicationError } from '@shared/Errors';
 import { IPongGameRepository } from '../../infrastructure/PongGame.repository';
-
-export const gameNotFoundError: ErrorResult = 'gameNotFoundError';
-
-export const invalidRequestError: ErrorResult = 'invalidRequestError';
 
 export interface IGetGameStateRequest {
     gameId: number;
@@ -53,25 +49,25 @@ export default class GetGameStateQuery implements IQuery<IGetGameStateRequest, I
 
     validate(request?: IGetGameStateRequest): Result<void> {
         if (!request) {
-            return Result.error(badRequestError);
+            return Result.error(ApplicationError.BadRequest);
         }
 
         if (!request.gameId || typeof request.gameId !== 'number') {
-            return Result.error(invalidRequestError);
+            return Result.error(ApplicationError.InvalidRequest);
         }
 
         return Result.success(undefined);
     }
 
     async execute(request?: IGetGameStateRequest): Promise<Result<IGetGameStateResponse>> {
-        if (!request) return Result.error(badRequestError);
+        if (!request) return Result.error(ApplicationError.BadRequest);
 
         try {
             const { gameId } = request;
 
             const gameResult = await this.gameRepository.getGame(gameId);
             if (!gameResult.isSuccess || !gameResult.value) {
-                return Result.error(gameNotFoundError);
+                return Result.error(ApplicationError.GameNotFound);
             }
 
             const game = gameResult.value;
@@ -82,7 +78,7 @@ export default class GetGameStateQuery implements IQuery<IGetGameStateRequest, I
             });
         } catch (error) {
             return this.fastify.handleError<IGetGameStateResponse>({
-                code: '500',
+                code: ApplicationError.InternalServerError,
                 error,
             });
         }

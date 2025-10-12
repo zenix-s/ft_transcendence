@@ -1,14 +1,8 @@
 import { FastifyInstance } from 'fastify';
-import { ErrorResult, Result } from '@shared/abstractions/Result';
+import { Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { hashPassword } from '@shared/utils/password.utils';
-import { badRequestError } from '@shared/Errors';
-
-export const userNotFoundError: ErrorResult = 'userNotFoundError';
-
-export const userAlredyExistsError: ErrorResult = 'userAlredyExistsError';
-
-export const userCreationError: ErrorResult = 'userCreationError';
+import { ApplicationError } from '@shared/Errors';
 
 export interface IRegisterRequest {
     username: string;
@@ -27,15 +21,11 @@ export interface IAuthResponse {
 }
 
 export default class CreateUserCommand implements ICommand<IRegisterRequest, IAuthResponse> {
-    private invalidRequestError = (): ErrorResult => {
-        return '400';
-    };
-
     constructor(private readonly fastify: FastifyInstance) {}
 
     validate(request?: IRegisterRequest): Result<void> {
         if (!request) {
-            return Result.error(badRequestError);
+            return Result.error(ApplicationError.BadRequest);
         }
 
         const { username, email, password } = request;
@@ -47,20 +37,20 @@ export default class CreateUserCommand implements ICommand<IRegisterRequest, IAu
         if (!password) error += 'Password is required. ';
 
         if (error) {
-            return Result.error(this.invalidRequestError());
+            return Result.error(ApplicationError.InvalidRequest);
         }
 
         return Result.success(undefined);
     }
 
     async execute(request?: IRegisterRequest): Promise<Result<IAuthResponse>> {
-        if (!request) return Result.error(badRequestError);
+        if (!request) return Result.error(ApplicationError.BadRequest);
         const { username, email, password } = request;
 
         try {
             const existingUser = await this.fastify.UserRepository.getUserByEmail(email);
             if (existingUser.isSuccess) {
-                return Result.error(userAlredyExistsError);
+                return Result.error(ApplicationError.UserAlreadyExists);
             }
 
             const hashedPassword = await hashPassword(password);
@@ -72,7 +62,7 @@ export default class CreateUserCommand implements ICommand<IRegisterRequest, IAu
             });
 
             if (!user.isSuccess || !user.value) {
-                return Result.error(userCreationError);
+                return Result.error(ApplicationError.UserCreationError);
             }
 
             const token = this.fastify.jwt.sign({
@@ -92,7 +82,7 @@ export default class CreateUserCommand implements ICommand<IRegisterRequest, IAu
             });
         } catch (error) {
             return this.fastify.handleError<IAuthResponse>({
-                code: '500',
+                code: ApplicationError.InternalServerError,
                 error,
             });
         }

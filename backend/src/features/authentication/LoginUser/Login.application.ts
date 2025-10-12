@@ -1,12 +1,8 @@
-import { ErrorResult, Result } from '@shared/abstractions/Result';
+import { Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { verifyPassword } from '@shared/utils/password.utils';
 import { FastifyInstance } from 'fastify';
-import { badRequestError } from '@shared/Errors';
-
-const invalidCredentialsError: ErrorResult = 'invalidCredentialsError';
-
-const invalidRequestError: ErrorResult = 'invalidRequestError';
+import { ApplicationError } from '@shared/Errors';
 
 interface IAuthResponse {
     message: string;
@@ -28,41 +24,33 @@ export default class LoginCommand implements ICommand<ILoginRequest, IAuthRespon
 
     validate(request?: ILoginRequest): Result<void> {
         if (!request) {
-            return Result.error(badRequestError);
+            return Result.error(ApplicationError.BadRequest);
         }
 
         const { email, password } = request;
 
         if (!email || !password) {
-            return Result.error(invalidRequestError);
+            return Result.error(ApplicationError.InvalidRequest);
         }
 
         return Result.success(undefined);
     }
 
     async execute(request?: ILoginRequest): Promise<Result<IAuthResponse>> {
-        if (!request) return Result.error(badRequestError);
+        if (!request) return Result.error(ApplicationError.BadRequest);
         const { email, password } = request;
 
-        console.debug('step: 02');
         try {
-            
-            
-            
             const userResult = await this.fastify.UserRepository.getUserByEmail(email);
             if (!userResult.isSuccess || !userResult.value) {
-                return Result.error(invalidCredentialsError);
+                return Result.error(ApplicationError.InvalidCredentials);
             }
-
-            console.debug('step: 03');
 
             const user = userResult.value;
             const isPasswordValid = await verifyPassword(password, user.password);
             if (!isPasswordValid) {
-                return Result.error(invalidCredentialsError);
+                return Result.error(ApplicationError.InvalidCredentials);
             }
-
-            console.debug('step: 04');
 
             const token = this.fastify.jwt.sign({
                 id: user.id,
@@ -81,7 +69,7 @@ export default class LoginCommand implements ICommand<ILoginRequest, IAuthRespon
             });
         } catch (error) {
             return this.fastify.handleError<IAuthResponse>({
-                code: '500',
+                code: ApplicationError.InternalServerError,
                 error,
             });
         }

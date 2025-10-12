@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { Result } from '@shared/abstractions/Result';
 import { PongGameService } from './PongGameService';
+import { ApplicationError } from '@shared/Errors';
 
 export class PongPlayerService {
     private readonly gameService: PongGameService;
@@ -17,23 +18,23 @@ export class PongPlayerService {
         try {
             const game = await this.gameService.getGame(gameId);
             if (!game) {
-                return Result.error('gameNotFound');
+                return Result.error(ApplicationError.GameNotFound);
             }
             const moved = game.movePlayer(playerId, direction);
 
             if (!moved) {
-                return Result.error('playerNotInGame');
+                return Result.error(ApplicationError.PlayerNotInGame);
             }
 
             const updateResult = await this.gameService.updateGame(gameId, game);
             if (!updateResult.isSuccess) {
-                return Result.error('gameUpdateError');
+                return Result.error(ApplicationError.GameUpdateError);
             }
 
             return Result.success({ moved: true });
         } catch (error) {
             return this.fastify.handleError({
-                code: '500',
+                code: ApplicationError.InternalServerError,
                 error,
             });
         }
@@ -47,17 +48,17 @@ export class PongPlayerService {
         try {
             const game = await this.gameService.getGame(gameId);
             if (!game) {
-                return Result.error('gameNotFound');
+                return Result.error(ApplicationError.GameNotFound);
             }
             const success = game.setPlayerReady(playerId, isReady);
 
             if (!success) {
-                return Result.error('playerNotInGame');
+                return Result.error(ApplicationError.PlayerNotInGame);
             }
 
             const updateResult = await this.gameService.updateGame(gameId, game);
             if (!updateResult.isSuccess) {
-                return Result.error('gameUpdateError');
+                return Result.error(ApplicationError.GameUpdateError);
             }
 
             const gameStarted = game.isGameRunning();
@@ -68,7 +69,7 @@ export class PongPlayerService {
             });
         } catch (error) {
             return this.fastify.handleError({
-                code: '500',
+                code: ApplicationError.InternalServerError,
                 error,
             });
         }

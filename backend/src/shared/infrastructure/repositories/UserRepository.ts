@@ -1,10 +1,9 @@
-import { Result, ErrorResult } from '@shared/abstractions/Result';
+import { Result } from '@shared/abstractions/Result';
 import { AbstractRepository } from '@shared/infrastructure/db/AbstractRepository';
 import { User } from '@shared/domain/entity/User.entity';
 import fp from 'fastify-plugin';
 import { AuthenticationUserRow } from '../types/types';
-
-const userNotFoundError: ErrorResult = 'UserNotFound';
+import { ApplicationError } from '@shared/Errors';
 
 export interface AuthenticationUserDto extends User {
     password: string;
@@ -19,7 +18,7 @@ export interface IUserRepository {
     getUserById(id: number): Promise<Result<AuthenticationUserDto>>;
     updateUserAvatar(userId: number, avatarUrl: string): Promise<Result<void>>;
     updateUsername(id: number, newUsername: string): Promise<Result<User>>;
-    updatePassword(id: number, newPassword: string): Promise<Result<User>>
+    updatePassword(id: number, newPassword: string): Promise<Result<User>>;
 }
 
 class UserRepository extends AbstractRepository implements IUserRepository {
@@ -36,7 +35,7 @@ class UserRepository extends AbstractRepository implements IUserRepository {
         );
 
         if (!row) {
-            return Result.error(userNotFoundError);
+            return Result.error(ApplicationError.UserNotFound);
         }
 
         return Result.success(row);
@@ -49,7 +48,7 @@ class UserRepository extends AbstractRepository implements IUserRepository {
         );
 
         if (!row) {
-            return Result.error(userNotFoundError);
+            return Result.error(ApplicationError.UserNotFound);
         }
 
         return Result.success(row);
@@ -61,7 +60,7 @@ class UserRepository extends AbstractRepository implements IUserRepository {
         ]);
 
         if (!row) {
-            return Result.error(userNotFoundError);
+            return Result.error(ApplicationError.UserNotFound);
         }
 
         return Result.success(row);
@@ -74,7 +73,7 @@ class UserRepository extends AbstractRepository implements IUserRepository {
         );
 
         if (!row) {
-            return Result.error(userNotFoundError);
+            return Result.error(ApplicationError.UserNotFound);
         }
 
         return Result.success(row);
@@ -85,7 +84,7 @@ class UserRepository extends AbstractRepository implements IUserRepository {
             await this.run('UPDATE users SET avatar = ? WHERE id = ?', [avatarUrl, userId]);
             return Result.success(undefined);
         } catch {
-            return Result.error('UpdateFailed');
+            return Result.error(ApplicationError.AvatarUpdateError);
         }
     }
 
@@ -94,7 +93,7 @@ class UserRepository extends AbstractRepository implements IUserRepository {
 
         const row = await this.findOne<AuthenticationUserRow>('SELECT * FROM users WHERE id = ?', [id]);
         if (!row) {
-            return Result.error(userNotFoundError);
+            return Result.error(ApplicationError.UserNotFound);
         }
 
         return Result.success(row);
@@ -105,7 +104,7 @@ class UserRepository extends AbstractRepository implements IUserRepository {
 
         const row = await this.findOne<AuthenticationUserRow>('SELECT * FROM users WHERE id = ?', [id]);
         if (!row) {
-            return Result.error(userNotFoundError);
+            return Result.error(ApplicationError.UserNotFound);
         }
 
         return Result.success(row);

@@ -1,14 +1,13 @@
 import { FastifyInstance } from 'fastify';
 import { IPongGameRepository } from '../../infrastructure/PongGame.repository';
-import { ErrorResult, Result } from '@shared/abstractions/Result';
+import { Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { PongGame } from '../../domain/PongGame';
 
 import { Match } from '@shared/domain/entity/Match.entity';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
 import { IGameTypeRepository } from '@shared/infrastructure/repositories/GameTypeRepository';
-
-export const gameCreationError: ErrorResult = 'gameCreationError';
+import { ApplicationError } from '@shared/Errors';
 
 export interface ICreateGameResponse {
     message: string;
@@ -41,7 +40,7 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
                 request.winnerScore < 1 ||
                 request.winnerScore > 100
             ) {
-                return Result.error('invalidWinnerScore');
+                return Result.error(ApplicationError.InvalidWinnerScore);
             }
         }
 
@@ -51,7 +50,7 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
                 request.maxGameTime < 30 ||
                 request.maxGameTime > 3600
             ) {
-                return Result.error('invalidMaxGameTime');
+                return Result.error(ApplicationError.InvalidMaxGameTime);
             }
         }
 
@@ -65,7 +64,7 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
 
             const gameType = await this.gameTypeRepository.findByName('pong');
             if (!gameType) {
-                return Result.error('Pong game type not found in database');
+                return Result.error(ApplicationError.GameTypeNotFound);
             }
 
             const playerIds = request?.userId ? [request.userId] : [];
@@ -82,7 +81,7 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
                 } catch (deleteError) {
                     this.fastify.log.error(deleteError, 'Failed to delete match after game creation failure');
                 }
-                return Result.error(gameCreationError);
+                return Result.error(ApplicationError.GameCreationError);
             }
 
             const gameId = gameIdResult.value;
@@ -93,7 +92,7 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
             });
         } catch (error) {
             return this.fastify.handleError<ICreateGameResponse>({
-                code: '500',
+                code: ApplicationError.InternalServerError,
                 error,
             });
         }

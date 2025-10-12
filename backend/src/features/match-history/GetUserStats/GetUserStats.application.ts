@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { Result } from '@shared/abstractions/Result';
 import { IQuery } from '@shared/application/abstractions/IQuery.interface';
+import { ApplicationError } from '@shared/Errors';
 import { IMatchPlayerRepository } from '@shared/infrastructure/repositories/MatchPlayerRepository';
 
 export interface IGetUserStatsRequest {
@@ -25,18 +26,18 @@ export default class GetUserStatsQuery implements IQuery<IGetUserStatsRequest, I
 
     validate(request?: IGetUserStatsRequest): Result<void> {
         if (!request) {
-            return Result.error('invalidRequest');
+            return Result.error(ApplicationError.BadRequest);
         }
 
         if (!request.userId || request.userId <= 0) {
-            return Result.error('invalidUserId');
+            return Result.error(ApplicationError.InvalidRequest);
         }
 
         return Result.success(undefined);
     }
 
     async execute(request?: IGetUserStatsRequest): Promise<Result<IGetUserStatsResponse>> {
-        if (!request) return Result.error('invalidRequest');
+        if (!request) return Result.error(ApplicationError.BadRequest);
 
         try {
             const { userId } = request;
@@ -48,7 +49,7 @@ export default class GetUserStatsQuery implements IQuery<IGetUserStatsRequest, I
             });
         } catch (error) {
             return this.fastify.handleError({
-                code: '500',
+                code: ApplicationError.InternalServerError,
                 error,
             });
         }

@@ -91,7 +91,7 @@ function updateUserName() {
           return;
         }
 
-        const response = await fetch("/api/user-manager/updateusername", { // NEEDED UPDATE API ENDPOINT
+        const response = await fetch("/api/user-manager/update-username", {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
@@ -165,9 +165,20 @@ function updatePassword() {
       /* This block of code is handling the registration process for a new user. Here's a breakdown of
       what it does: */
       try {
-        const response = await fetch("/api/auth/updatePassword", { // NEEDED UPDATE API ENDPOINT
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+          console.warn(t("NoTokenFound"));
+          showToast(t("NoTokenFound"), "error");
+          navigateTo("login");
+          return;
+        }
+        
+        const response = await fetch("/api/user-manager/update-password", { // NEEDED UPDATE API ENDPOINT
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
           body: JSON.stringify({ newPassword }),
         });
 

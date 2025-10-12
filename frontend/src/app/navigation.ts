@@ -13,8 +13,8 @@ import { redirect } from "@/components/redirect";
 // navigateTo("home", true)           Carga "home" sin tocar la URL
 // navigateTo("home", true, true)     Rara vez útil — no cambia URL ni historial
 export async function navigateTo(page: string, skipPushState = false, replace = false) {
-  console.log("navigation");
-  console.log(page);
+  // console.log("navigation"); // DB
+  // console.log(page); // DB
 
   // 🚨 Bloquear números SOLO cuando vienen de la SPA (clicks internos)
   if (!skipPushState && !isNaN(Number(page))) {

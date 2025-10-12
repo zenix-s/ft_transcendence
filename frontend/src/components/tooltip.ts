@@ -8,7 +8,6 @@ export class Tooltip {
 
   public init(): void {
     this.inputs.forEach((input) => {
-      console.log("Tooltip detectado");
       const tooltipId = input.getAttribute("data-tooltip-target");
       if (!tooltipId) return;
 

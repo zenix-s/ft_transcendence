@@ -1,33 +1,33 @@
 import { FastifyInstance } from 'fastify/types/instance';
 import { FastifyReply } from 'fastify/types/reply';
 import { FastifyRequest } from 'fastify/types/request';
-import UsernameUpdateCommand from './updateUsername.command';
+import PasswordUpdateCommand from './UpdatePassword.command';
 
-interface UpdateUserNameRequestBody {
-	username: string;
+interface UpdatePasswordRequestBody {
+	password: string;
 }
 
-export default async function UpdateUsernameRoute(fastify: FastifyInstance) {
+export default async function UpdatePasswordRoute(fastify: FastifyInstance) {
 	fastify.patch(
-		'/update-username',
+		'/update-password',
 		{
 			schema: {
-				description: 'Update a user name',
+				description: 'Update a user password hashing it',
 				tags: ['Authentication'],
 				security: [{ bearerAuth: [] }],
 				body: {
 					type: 'object',
-					required: ['username'],
+					required: ['password'],
 					properties: {
-						username: {
+						password: {
 							type: 'string',
-							description: 'New user name to update a user',
+							description: 'New password to update a user',
 						},
 					},
 				},
 				response: {
 					200: {
-						description: 'username updated successfully',
+						description: 'password updated successfully',
 						type: 'object',
 						properties: {
 							message: { type: 'string' },
@@ -35,7 +35,7 @@ export default async function UpdateUsernameRoute(fastify: FastifyInstance) {
 								type: 'object',
 								properties: {
 									id: { type: 'number' },
-									username: { type: 'string' },
+									password: { type: 'string' },
 								},
 							},
 						},
@@ -50,8 +50,8 @@ export default async function UpdateUsernameRoute(fastify: FastifyInstance) {
 				},
 			},
 		},
-		async (req: FastifyRequest<{ Body: UpdateUserNameRequestBody }>, reply: FastifyReply) => {
-			const updateUsernameCommand = new UsernameUpdateCommand(fastify);
+		async (req: FastifyRequest<{ Body: UpdatePasswordRequestBody }>, reply: FastifyReply) => {
+			const updatePasswordCommand = new PasswordUpdateCommand(fastify);
 
 			// Extraemos el userId del token JWT (Fastify suele añadirlo como req.user)
 			const userId = req.user.id;
@@ -61,11 +61,11 @@ export default async function UpdateUsernameRoute(fastify: FastifyInstance) {
 
 			const request = {
 				userId,
-				username: req.body.username,
+				password: req.body.password,
 			};
 
 			return fastify.handleCommand({
-				command: updateUsernameCommand,
+				command: updatePasswordCommand,
 				request,
 				reply,
 				successStatus: 200,

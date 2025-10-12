@@ -1,8 +1,10 @@
 import { FastifyInstance } from 'fastify';
-import UpdateUsernameRoute from './updateUsername/updateUsername.route';
-import UpdatePasswordRoute from './updatePassword/updatePassword.route';
+import UpdatePasswordRoute from './UpdatePassword/UpdatePassword.route';
+import UploadAvatarRoute from './UploadAvatar/UploadAvatar.route';
+import UpdateUsernameRoute from './UpdateUsername/UpdateUsername.route';
 
 export default function userManagerRoutes(fastify: FastifyInstance) {
-	fastify.register(UpdateUsernameRoute);
-	fastify.register(UpdatePasswordRoute);
+    fastify.register(UploadAvatarRoute);
+    fastify.register(UpdateUsernameRoute);
+    fastify.register(UpdatePasswordRoute);
 }

@@ -6,6 +6,7 @@ import { startGame } from "@/modules/game/game.ts";
 import { Tooltip } from "@/components/tooltip";
 import { loadMatchHistory } from "@/components/history";
 import { redirect } from "@/components/redirect";
+import { initFriendsSidebar } from "@/components/friendsSidebar/friendsSidebar"
 
 // Llamada                            Efecto
 // navigateTo("home")                 Carga "home" y añade al historial
@@ -85,10 +86,12 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
         loadChart();
         loadMatchHistory();
         renderButtons();
+        initFriendsSidebar();
       });
       break;
     case "settings":
       loadSettings();
+      initFriendsSidebar();
       break;
     case "history":
       loadMatchHistory();

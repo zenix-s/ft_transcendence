@@ -1,5 +1,6 @@
 import { t } from "@/app/i18n";
 import { showToast } from "./toast";
+import { getCurrentUser } from "@/modules/users";
 
 /**
  * Módulo para manejar drag & drop y vista previa de un avatar.
@@ -86,7 +87,7 @@ export function setupAvatarUpload() {
     formData.append("avatar", file);
 
     try {
-      const res = await fetch("/api/upload-avatar", {
+      const res = await fetch("/api/user-manager/upload-avatar", {
         method: "POST",
         body: formData,
         headers: {
@@ -95,6 +96,17 @@ export function setupAvatarUpload() {
       });
 
       if (res.ok) {
+        // Recuperar la url de la bbdd
+        const userResponse = await getCurrentUser();
+        if (!userResponse) return; // ❌ si falla, aborta todo
+        const avatarSrc = "https://localhost:3000" + userResponse.user.avatar;
+
+        // ✅ Actualizar avatar en la web
+        const avatarElement = document.getElementById("user-avatar");
+        if (avatarElement instanceof HTMLImageElement) {
+          avatarElement.src = avatarSrc;
+        }
+
         showToast(t("avatarUpdatedSuccessfully"));
       } else {
         const errorText = await res.text();

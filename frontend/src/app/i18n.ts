@@ -90,6 +90,10 @@ export const translations: Record<Language, Record<string, string>> = {
     ErrorUpdatingPassword: "Error updating password",
     passwordUpdatedSuccessfully: "Password updated successfully",
     redirectingToHome: "Redirecting to home",
+    errorLoadingHistory: "Error loading history",
+    badRequest: "Bad Request",
+    networkError: "Network error",
+    userConflict: "User Conflict",
   },
   es: {
     start: "Comenzar",
@@ -179,6 +183,10 @@ export const translations: Record<Language, Record<string, string>> = {
     ErrorUpdatingPassword: "Error al actualizar la contraseña",
     passwordUpdatedSuccessfully: "Contraseña actualizada correctamente",
     redirectingToHome: "Redirigiendo al inicio",
+    errorLoadingHistory: "Error al cargar el historial",
+    badRequest: "Solicitud incorrecta",
+    networkError: "Error de red",
+    userConflict: "Conflicto de usuario",
   },
   fr: {
     start: "Démarrer",
@@ -268,6 +276,10 @@ export const translations: Record<Language, Record<string, string>> = {
     ErrorUpdatingPassword: "Erreur lors de la mise à jour du mot de passe",
     passwordUpdatedSuccessfully: "Mot de passe mis à jour avec succès",
     redirectingToHome: "Redirection vers l’accueil",
+    errorLoadingHistory: "Erreur lors du chargement de l'historique",
+    badRequest: "Mauvaise demande",
+    networkError: "Erreur réseau",
+    userConflict: "Conflit d'utilisateur",
   },
 };
 
@@ -283,7 +295,7 @@ export let currentLang: Language = "en";
 export function setLanguage(lang: Language) {
   currentLang = lang;
   localStorage.setItem("lang", lang);
-  //updateTexts();
+  updateTexts();
   document.dispatchEvent(new Event("i18n-updated"));
 }
 
@@ -322,7 +334,7 @@ export function t(key: string): string {
 } */
 
 export function updateTexts() {
-  console.log("🌐 Updating texts for language:", currentLang);
+  //console.log("🌐 Updating texts for language:", currentLang);
   document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((el) => {
     const key = el.dataset.i18n!;
     const translated = t(key); // Traducción obtenida

@@ -1,12 +1,22 @@
 import Chart from 'chart.js/auto';
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import { t } from "@/app/i18n";
-import { getStats } from "@/modules/users";
+import { getCurrentUser, getStats } from "@/modules/users";
+import type { User } from "@/types/user";
 
-export async function loadChart() {
+export async function loadChart(user?: User) {
   try {
-    // 1. Cargar JSON dinámicamente
-    const response = await getStats();
+    // 1. Si no recibo un user se lo solicito a getCurrentUser()
+    if (!user) {
+      const userResponse = await getCurrentUser();
+      if (!userResponse) return;
+      user = userResponse.user;
+    }
+
+    const currentUser: User = user;
+  
+    const response = await getStats(currentUser.id);
+    if (!response) { return; }
 
     // 👉 Generar array con wins y losses
     const values = [response.wins, response.losses];

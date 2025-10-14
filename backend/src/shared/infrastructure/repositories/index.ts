@@ -5,6 +5,7 @@ import MatchPlayerRepository from './MatchPlayerRepository';
 import MatchRepository from './MatchRepository';
 import UserRepository from './UserRepository';
 import PongGameRepository from '../../../features/game/pong/infrastructure/PongGame.repository';
+import FriendShipRepository from './FriendShipRepository';
 
 export default fp(
     (fastify: FastifyInstance) => {
@@ -13,6 +14,7 @@ export default fp(
         fastify.register(MatchRepository);
         fastify.register(UserRepository);
         fastify.register(PongGameRepository);
+        fastify.register(FriendShipRepository);
     },
     {
         name: 'Repositories',

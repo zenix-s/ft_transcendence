@@ -1,5 +1,10 @@
 export enum ApplicationError {
     // Errores Generales
+    UpdateError = 'UpdateError',
+    DeletionError = 'DeletionError',
+    InsertionError = 'InsertionError',
+    NotFoundError = 'NotFoundError',
+
     /**
      * Solicitud Incorrecta - La solicitud carece de parámetros requeridos o está mal formada
      */
@@ -129,4 +134,10 @@ export enum ApplicationError {
      * Partida No Encontrada - La partida especificada no existe
      */
     MatchNotFound = 'MatchNotFound',
+
+    // Errores de manejo de amistades
+
+    AlreadyFriendsError = 'AlreadyFriendsError',
+    FriendshipCreationError = 'FriendshipCreationError',
+    NotFriendsError = 'NotFriendsError',
 }

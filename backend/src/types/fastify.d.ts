@@ -10,6 +10,7 @@ import { IMatchPlayerRepository } from '@shared/infrastructure/repositories/Matc
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
 import { IUserRepository } from '@shared/infrastructure/repositories/UserRepository';
 import { IPongGameRepository } from '@features/game/pong/infrastructure/PongGame.repository';
+import { IFriendShipRepository } from '@shared/infrastructure/repositories/FriendShipRepository';
 
 declare module 'fastify' {
     interface FastifyInstance {
@@ -53,6 +54,7 @@ declare module 'fastify' {
         MatchRepository: IMatchRepository;
         UserRepository: IUserRepository;
         PongGameRepository: IPongGameRepository;
+        FriendShipRepository: IFriendShipRepository;
     }
 
     interface FastifyRequest {

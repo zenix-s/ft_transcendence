@@ -18,6 +18,7 @@ import fastifyMultipart from '@fastify/multipart';
 import Repositories from '@shared/infrastructure/repositories';
 import { ApplicationError } from '@shared/Errors';
 import path from 'path';
+import FriendShipController from '@features/friendship/Friendship.presentation';
 
 async function App(fastify: FastifyInstance) {
     fastify.register(fastifyJWT, {
@@ -95,6 +96,7 @@ async function App(fastify: FastifyInstance) {
         fastify.register(PongGameHttpRoutes, { prefix: '/game/pong' });
         fastify.register(matchHistoryPresentation, { prefix: '/match-history' });
         fastify.register(userManagerRoutes, { prefix: '/user-manager' });
+        fastify.register(FriendShipController, { prefix: '/friendship' });
     });
 }
 

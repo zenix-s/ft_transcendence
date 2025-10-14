@@ -52,15 +52,8 @@ if (toggle) {
 
     //Reload doughnut
     // Obtener el canvas
-    const ctx = document.getElementById("donutChart") as HTMLCanvasElement;
-    if (!ctx)
-    {
-      console.log("Canvas 'donutChart' no encontrado.");
-      return ;
-    }
-    else {
-      loadChart();
-    }
+    const ctx = document.getElementById("donutChart") as HTMLCanvasElement | null;
+    if (ctx) { loadChart(); }
   });
 }
 
@@ -112,17 +105,19 @@ document.addEventListener("i18n-updated", async () => {
   renderButtons();
   //Reload doughnut
   // Obtener el canvas
-  const ctx = document.getElementById("donutChart") as HTMLCanvasElement;
-  if (!ctx)
-  {
-    console.log("Canvas 'donutChart' no encontrado.");
-    return ;
-  }
-  else {
-    loadChart();
+  const ctx = document.getElementById("donutChart") as HTMLCanvasElement | null;
+  if (ctx) { loadChart(); }
+
+  // Reload History solo si existe tabla y hay token
+  const token = localStorage.getItem("access_token");
+  const perPageSelect = document.querySelector<HTMLSelectElement>(".datatable-selector");
+  if (perPageSelect && matchTable && token) {
+    const currentPerPage = parseInt(perPageSelect.value, 10);
+    matchTable.destroy();
+    await loadMatchHistory(undefined, currentPerPage);
   }
 
-  // Reload History
+  /* // Reload History
   let currentPerPage = 5; // default
   
   const perPageSelect = document.querySelector<HTMLSelectElement>(".datatable-selector");
@@ -136,5 +131,5 @@ document.addEventListener("i18n-updated", async () => {
   }
 
   // Volver a cargar la tabla (la misma función loadMatchHistory recrea la DataTable)
-  await loadMatchHistory(currentPerPage);
+  await loadMatchHistory(undefined, currentPerPage); */
 });

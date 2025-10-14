@@ -1,7 +1,7 @@
 import { DataTable } from "simple-datatables";
-// import { getCurrentUser } from "@/modules/users";
 import { t, updateTexts } from "@/app/i18n";
 import { getCurrentUser, getHistory } from "@/modules/users";
+import type { User } from "@/types/user";
 
 // Jugador dentro de un Match
 interface Player {
@@ -29,23 +29,32 @@ interface MatchesResponse {
 
 export let matchTable: DataTable; // Variable global o de módulo
 
-export async function loadMatchHistory(perPage: number = 5) {
+export async function loadMatchHistory(user?: User, perPage: number = 5) {
   try {
+    // Si no recibo un user se lo solicito a getCurrentUser()
+    if (!user) {
+      const userResponse = await getCurrentUser();
+      if (!userResponse) return;
+      user = userResponse.user;
+    }
+
+    const currentUser: User = user;
+
     // 1. Fetch al backend
-    const response = await getHistory();
-    if (!response || !response.ok) throw new Error("Error al cargar el historial");
+    const response = await getHistory(user.id);
+    if (!response || !response.ok) throw new Error(t("errorLoadingHistory"));
 
     const data: MatchesResponse = await response.json();
 
     // Obtener el jugador actual
-    const currentUser = await getCurrentUser();
+    //const currentUser = await getCurrentUser();
 
     // 2. Insertar datos en el tbody
     const tbody = document.querySelector<HTMLTableSectionElement>("#matchTable tbody")!;
     tbody.innerHTML = data.matches
       .map((match) => {
         // El oponente es "el otro" jugador
-        const opponent = match.players.find(p => p.userId !== currentUser.user.id)?.username ?? "N/A";
+        const opponent = match.players.find(p => p.userId !== currentUser.id)?.username ?? "N/A";
         const score = match.players.map(p => p.score).join(" - ");
         const winner = match.players.find(p => p.isWinner)?.username ?? "-";
 
@@ -90,7 +99,7 @@ export async function loadMatchHistory(perPage: number = 5) {
     });
 
     // 5. Traducir las celdas recién insertadas
-    console.log("Updating history language");
+    //console.log("Updating history language");
     updateTexts();
 
   } catch (error) {

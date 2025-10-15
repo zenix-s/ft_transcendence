@@ -1,5 +1,6 @@
 import { navigateTo } from "@/app/navigation";
-import { t } from "@/app/i18n";
+//import { t } from "@/app/i18n";
+import { modal } from "@/components/modal";
 
 /**
  * The `setupEventListeners` function adds event listeners for click and popstate events to handle
@@ -10,17 +11,28 @@ import { t } from "@/app/i18n";
 
 export function setupEventListeners() {
   // Listeners de navegación
-  document.addEventListener("click", (event) => {
+  document.addEventListener("click", async (event) => {
     const target = event.target as HTMLElement;
 
     // 🔹 1. Caso especial: LOGOUT
     if (target.dataset.page === "logout") {
       event.preventDefault(); // Frena navegación automática
-      if (confirm(t("logout_confirm"))) {
+      //logoutModal();
+      const confirmed = await modal("logout");
+      if (confirmed)
+      {
+        //console.log("El usuario confirmón el logout");
+        localStorage.removeItem("access_token");
+        //console.log(t("token_removed"));
+        navigateTo("login");
+      }
+      /* else
+        console.log("El usuario canceló"); */
+      /* if (confirm(t("logout_confirm"))) {
         localStorage.removeItem("access_token");
         console.log(t("token_removed"));
         navigateTo("login");
-      }
+      } */
       return;
     }
 

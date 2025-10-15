@@ -19,8 +19,8 @@ export const translations: Record<Language, Record<string, string>> = {
     newPassword: "New Password",
     score: "SCORE",
     played_games: "games",
-    logout: "logout",
-    logout_confirm: "Are you sure you want to logout?",
+    logout: "log out",
+    logout_confirm: "Are you sure you want to log out?",
     token_removed: "Token removed",
     invalidCredentialsError: "Invalid email or password",
     passwordDoNotMatch: "The passwords do not match",
@@ -94,6 +94,15 @@ export const translations: Record<Language, Record<string, string>> = {
     badRequest: "Bad Request",
     networkError: "Network error",
     userConflict: "User Conflict",
+    /* Modal */
+    modalLogoutTitle: "Log out",
+    modalLogoutTitleText: "Are you sure you want to log out?",
+    modalLogoutText: "You will need to log in again to continue.",
+    modalLogoutConfirmButtonText: "Yes, log out",
+    modalLogoutCancelButtonText: "Cancel",
+    modalLogoutIsConfirmedTitle: "Come back soon!",
+    modalLogoutIsConfirmedText: "We are going to miss you 😭",
+    modalLogoutIsConfirmedConfirmButtonText: "Accept",
   },
   es: {
     start: "Comenzar",
@@ -187,6 +196,15 @@ export const translations: Record<Language, Record<string, string>> = {
     badRequest: "Solicitud incorrecta",
     networkError: "Error de red",
     userConflict: "Conflicto de usuario",
+    /* Modal */
+    modalLogoutTitle: "Cerrar sesión",
+    modalLogoutTitleText: "¿Seguro que quieres cerrar sesión?",
+    modalLogoutText: "Tendrás que iniciar sesión de nuevo para continuar.",
+    modalLogoutConfirmButtonText: "Sí, cerrar sesión",
+    modalLogoutCancelButtonText: "Cancelar",
+    modalLogoutIsConfirmedTitle: "¡Vuelve pronto!",
+    modalLogoutIsConfirmedText: "Te vamos a echar de menos 😭",
+    modalLogoutIsConfirmedConfirmButtonText: "Aceptar",
   },
   fr: {
     start: "Démarrer",
@@ -280,6 +298,15 @@ export const translations: Record<Language, Record<string, string>> = {
     badRequest: "Mauvaise demande",
     networkError: "Erreur réseau",
     userConflict: "Conflit d'utilisateur",
+    /* Modal */
+    modalLogoutTitle: "Se déconnecter",
+    modalLogoutTitleText: "Êtes-vous sûr de vouloir vous déconnecter?",
+    modalLogoutText: "Vous devrez vous reconnecter pour continuer.",
+    modalLogoutConfirmButtonText: "Oui, se déconnecter",
+    modalLogoutCancelButtonText: "Annuler",
+    modalLogoutIsConfirmedTitle: "Revenez vite!",
+    modalLogoutIsConfirmedText: "Vous allez nous manquer 😭",
+    modalLogoutIsConfirmedConfirmButtonText: "Accepter",
   },
 };
 

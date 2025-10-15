@@ -215,7 +215,7 @@ function handleInvalidSession(messageKey: string) {
     sessionHandled = true;
     showToast(t(messageKey), "error");
     localStorage.removeItem("access_token");
-    navigateTo("login");
+    navigateTo("login", false, true);
   }
 }
 

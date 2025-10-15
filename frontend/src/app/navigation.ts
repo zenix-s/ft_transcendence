@@ -82,51 +82,44 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
       setupRegisterForm();
       break;
     case "dashboard":
+    case "settings":
+    case "game":
+    case "setReady1": {
       requestAnimationFrame(async () => {
         const userResponse = await getCurrentUser();
-        if (!userResponse || !localStorage.getItem("access_token")) return; // ❌ si falla, aborta todo
-
+        if (!userResponse || !localStorage.getItem("access_token")) return;
         const user = userResponse.user;
 
-        // ✅ solo se ejecuta si el usuario es válido
-        await Promise.all([
-          loadDashboard(user),
-          loadChart(user),
-          loadMatchHistory(user),
-        ]);
+        switch (page) {
+          case "dashboard":
+            await Promise.all([
+              loadDashboard(user),
+              loadChart(user),
+              loadMatchHistory(user),
+            ]);
+            renderButtons();
+            initFriendsSidebar();
+            break;
 
-        renderButtons();
-        initFriendsSidebar();
+          case "settings":
+            await loadSettings();
+            initFriendsSidebar();
+            break;
+
+          case "game":
+            startGame();
+            break;
+
+          case "setReady1":
+            renderButtons();
+            break;
+        }
       });
       break;
-    case "settings":
-      requestAnimationFrame(async () => {
-        const userResponse = await getCurrentUser();
-        if (!userResponse || !localStorage.getItem("access_token")) return; // ❌ si falla, aborta todo
-
-        await loadSettings();
-        initFriendsSidebar();
-      });
-      break;
-    case "game":
-      // requestAnimationFrame(async () => {
-      //   const userResponse = await getCurrentUser();
-      //   if (!userResponse || !localStorage.getItem("access_token")) return; // ❌ si falla, aborta todo
-
-        startGame();
-      // });
-      break;
+    }
     case "404":
       renderButtons();
       redirect("home");
-      break;
-    case "setReady1":
-      // requestAnimationFrame(async () => {
-      //   const userResponse = await getCurrentUser();
-      //   if (!userResponse || !localStorage.getItem("access_token")) return; // ❌ si falla, aborta todo
-
-        renderButtons();
-      // });
       break;
   }
 

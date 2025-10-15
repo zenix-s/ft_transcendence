@@ -45,7 +45,9 @@ export default class CreateUserCommand implements ICommand<IRegisterRequest, IAu
 
     async execute(request?: IRegisterRequest): Promise<Result<IAuthResponse>> {
         if (!request) return Result.error(ApplicationError.BadRequest);
-        const { username, email, password } = request;
+        const { username, password } = request;
+
+        const email = request.email.toLowerCase();
 
         try {
             const existingUser = await this.fastify.UserRepository.getUserByEmail(email);

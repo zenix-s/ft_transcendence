@@ -42,9 +42,12 @@ class UserRepository extends AbstractRepository implements IUserRepository {
     }
 
     async getUserByEmail(email: string): Promise<Result<AuthenticationUserDto>> {
+        // Convertir el email recibido a lowerCase
+        const normalizedEmail = email.toLowerCase();
+
         const row = await this.findOne<AuthenticationUserRow>(
             'SELECT id, username, email, password, avatar FROM users WHERE email = ?',
-            [email]
+            [normalizedEmail]
         );
 
         if (!row) {

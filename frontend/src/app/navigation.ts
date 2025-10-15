@@ -30,6 +30,13 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
     return;
   }
 
+  // Redirección automática si el usuario no tiene token y entra a páginas prohibidas sin token
+  /* if (page === "game" && !localStorage.getItem("access_token")) {
+    console.log("PRUEBAAAAA 222");
+    navigateTo("login");
+    return;
+  } */
+
   // Actualizar la URL sin recargar la página
   if (!skipPushState) {
      if (replace) {

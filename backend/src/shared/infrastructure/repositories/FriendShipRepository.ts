@@ -3,12 +3,13 @@ import { FastifyInstance } from 'fastify/types/instance';
 import fp from 'fastify-plugin';
 import { Result } from '@shared/abstractions/Result';
 import { ApplicationError } from '@shared/Errors';
+import { User } from '@shared/domain/entity/User.entity';
 
 export interface IFriendShipRepository {
     areFriends(userId1: number, userId2: number): Promise<Result<boolean>>;
     addFriend(userId1: number, userId2: number): Promise<Result<void>>;
     removeFriend(userId1: number, userId2: number): Promise<Result<void>>;
-    getFriends(userId: number): Promise<Result<number[]>>;
+    getFriends(userId: number): Promise<Result<User[]>>;
 }
 
 class FriendShipRepository extends AbstractRepository implements IFriendShipRepository {
@@ -16,11 +17,11 @@ class FriendShipRepository extends AbstractRepository implements IFriendShipRepo
         const row = await this.findOne<{ id: number }>(
             `
                 SELECT
-                    id
+                    f.id
                 FROM
-                    friendships
+                    friendships f
                 WHERE
-                    user_id = ? AND friend_id = ?
+                    f.user_id = ? AND f.friend_id = ?
             `,
             [userId1, userId2]
         );
@@ -60,12 +61,19 @@ class FriendShipRepository extends AbstractRepository implements IFriendShipRepo
         return Result.success(undefined);
     }
 
-    async getFriends(userId: number): Promise<Result<number[]>> {
-        const rows = await this.findMany<{ friend_id: number }>(
+    async getFriends(userId: number): Promise<Result<User[]>> {
+        const rows = await this.findMany<{ id: number; username: string; email: string; avatar?: string }>(
             `
-                    SELECT friend_id
-                    FROM friendships
-                    WHERE user_id = ?
+                    SELECT
+                        u.id,
+                        u.username,
+                        u.email,
+                        u.avatar
+                    FROM
+                        friendships f
+                        INNER JOIN users u ON f.friend_id = u.id
+                    WHERE
+                        f.user_id = ?
                 `,
             [userId]
         );
@@ -74,7 +82,7 @@ class FriendShipRepository extends AbstractRepository implements IFriendShipRepo
             return Result.error(ApplicationError.NotFoundError);
         }
 
-        return Result.success(rows.map((row) => row.friend_id));
+        return Result.success(rows);
     }
 }
 

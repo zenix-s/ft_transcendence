@@ -19,6 +19,7 @@ export interface IUserRepository {
     updateUserAvatar(userId: number, avatarUrl: string): Promise<Result<void>>;
     updateUsername(id: number, newUsername: string): Promise<Result<User>>;
     updatePassword(id: number, newPassword: string): Promise<Result<User>>;
+    getUserByUsernameInsensitive(username: string): Promise<Result<AuthenticationUserDto>>;
 }
 
 class UserRepository extends AbstractRepository implements IUserRepository {
@@ -60,6 +61,21 @@ class UserRepository extends AbstractRepository implements IUserRepository {
     async getUserByUsername(username: string): Promise<Result<AuthenticationUserDto>> {
         const row = await this.findOne<AuthenticationUserRow>('SELECT * FROM users WHERE username = ?', [
             username,
+        ]);
+
+        if (!row) {
+            return Result.error(ApplicationError.UserNotFound);
+        }
+
+        return Result.success(row);
+    }
+
+    async getUserByUsernameInsensitive(username: string): Promise<Result<AuthenticationUserDto>> {
+        // Convertir el username recibido a lowerCase
+        const normalizedUsername = username.toLowerCase();
+
+        const row = await this.findOne<AuthenticationUserRow>('SELECT * FROM users WHERE LOWER(username) = ?', [
+            normalizedUsername,
         ]);
 
         if (!row) {

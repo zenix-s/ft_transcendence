@@ -50,8 +50,13 @@ export default class CreateUserCommand implements ICommand<IRegisterRequest, IAu
         const email = request.email.toLowerCase();
 
         try {
-            const existingUser = await this.fastify.UserRepository.getUserByEmail(email);
-            if (existingUser.isSuccess) {
+            const existingUserEmail = await this.fastify.UserRepository.getUserByEmail(email);
+            if (existingUserEmail.isSuccess) {
+                return Result.error(ApplicationError.UserAlreadyExists);
+            }
+
+            const existingUsername = await this.fastify.UserRepository.getUserByUsernameInsensitive(username);
+            if (existingUsername.isSuccess) {
                 return Result.error(ApplicationError.UserAlreadyExists);
             }
 

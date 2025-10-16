@@ -19,6 +19,7 @@ export interface IUserRepository {
     updateUserAvatar(userId: number, avatarUrl: string): Promise<Result<void>>;
     updateUsername(id: number, newUsername: string): Promise<Result<User>>;
     updatePassword(id: number, newPassword: string): Promise<Result<User>>;
+    updateConnectionStatus(userId: number, isConnected: boolean): Promise<Result<void>>;
 }
 
 class UserRepository extends AbstractRepository implements IUserRepository {
@@ -30,7 +31,7 @@ class UserRepository extends AbstractRepository implements IUserRepository {
         ]);
 
         const row = await this.findOne<AuthenticationUserRow>(
-            'SELECT id, username, email, password, avatar FROM users WHERE email = ?',
+            'SELECT id, username, email, password, avatar, is_connected FROM users WHERE email = ?',
             [user.email]
         );
 
@@ -43,7 +44,7 @@ class UserRepository extends AbstractRepository implements IUserRepository {
 
     async getUserByEmail(email: string): Promise<Result<AuthenticationUserDto>> {
         const row = await this.findOne<AuthenticationUserRow>(
-            'SELECT id, username, email, password, avatar FROM users WHERE email = ?',
+            'SELECT id, username, email, password, avatar, is_connected FROM users WHERE email = ?',
             [email]
         );
 
@@ -55,9 +56,10 @@ class UserRepository extends AbstractRepository implements IUserRepository {
     }
 
     async getUserByUsername(username: string): Promise<Result<AuthenticationUserDto>> {
-        const row = await this.findOne<AuthenticationUserRow>('SELECT * FROM users WHERE username = ?', [
-            username,
-        ]);
+        const row = await this.findOne<AuthenticationUserRow>(
+            'SELECT id, username, email, password, avatar, is_connected FROM users WHERE username = ?',
+            [username]
+        );
 
         if (!row) {
             return Result.error(ApplicationError.UserNotFound);
@@ -68,7 +70,7 @@ class UserRepository extends AbstractRepository implements IUserRepository {
 
     async getUserById(id: number): Promise<Result<AuthenticationUserDto>> {
         const row = await this.findOne<AuthenticationUserRow>(
-            'SELECT id, username, email, password, avatar FROM users WHERE id = ?',
+            'SELECT id, username, email, password, avatar, is_connected FROM users WHERE id = ?',
             [id]
         );
 
@@ -91,7 +93,10 @@ class UserRepository extends AbstractRepository implements IUserRepository {
     async updateUsername(id: number, newUsername: string): Promise<Result<User>> {
         await this.run('UPDATE users SET username = ? WHERE id = ?', [newUsername, id]);
 
-        const row = await this.findOne<AuthenticationUserRow>('SELECT * FROM users WHERE id = ?', [id]);
+        const row = await this.findOne<AuthenticationUserRow>(
+            'SELECT id, username, email, password, avatar, is_connected FROM users WHERE id = ?',
+            [id]
+        );
         if (!row) {
             return Result.error(ApplicationError.UserNotFound);
         }
@@ -102,12 +107,24 @@ class UserRepository extends AbstractRepository implements IUserRepository {
     async updatePassword(id: number, password: string): Promise<Result<User>> {
         await this.run('UPDATE users SET password = ? WHERE id = ?', [password, id]);
 
-        const row = await this.findOne<AuthenticationUserRow>('SELECT * FROM users WHERE id = ?', [id]);
+        const row = await this.findOne<AuthenticationUserRow>(
+            'SELECT id, username, email, password, avatar, is_connected FROM users WHERE id = ?',
+            [id]
+        );
         if (!row) {
             return Result.error(ApplicationError.UserNotFound);
         }
 
         return Result.success(row);
+    }
+
+    async updateConnectionStatus(userId: number, isConnected: boolean): Promise<Result<void>> {
+        try {
+            await this.run('UPDATE users SET is_connected = ? WHERE id = ?', [isConnected ? 1 : 0, userId]);
+            return Result.success(undefined);
+        } catch {
+            return Result.error(ApplicationError.InternalServerError);
+        }
     }
 }
 

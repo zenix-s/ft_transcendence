@@ -54,6 +54,21 @@ export default async function socialWebSocketRoutes(fastify: FastifyInstance) {
                         if (typeof userId === 'number') {
                             isAuthenticated = true;
                             currentUserId = userId;
+
+                            webSocketService.addActiveConnection(userId, socket);
+
+                            const connectionResult = await webSocketService.updateUserConnectionStatus(
+                                userId,
+                                true
+                            );
+                            if (!connectionResult.isSuccess) {
+                                fastify.log.error(
+                                    'Failed to update user connection status on authentication'
+                                );
+                            }
+
+                            await webSocketService.notifyFriendsConnectionStatus(userId, true);
+
                             webSocketService.sendAuthSuccess(socket, userId);
                         } else {
                             webSocketService.sendError(socket, 'invalidToken');
@@ -87,7 +102,21 @@ export default async function socialWebSocketRoutes(fastify: FastifyInstance) {
                 }
             });
 
-            socket.on('close', () => {
+            socket.on('close', async () => {
+                if (currentUserId) {
+                    webSocketService.removeActiveConnection(currentUserId);
+
+                    const connectionResult = await webSocketService.updateUserConnectionStatus(
+                        currentUserId,
+                        false
+                    );
+                    if (!connectionResult.isSuccess) {
+                        fastify.log.error('Failed to update user connection status on disconnect');
+                    }
+
+                    await webSocketService.notifyFriendsConnectionStatus(currentUserId, false);
+                }
+
                 currentUserId = null;
                 isAuthenticated = false;
             });

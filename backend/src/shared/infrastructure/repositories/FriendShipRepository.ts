@@ -10,6 +10,7 @@ export interface IFriendShipRepository {
     addFriend(userId1: number, userId2: number): Promise<Result<void>>;
     removeFriend(userId1: number, userId2: number): Promise<Result<void>>;
     getFriends(userId: number): Promise<Result<User[]>>;
+    getFriendsOf(userId: number): Promise<Result<User[]>>;
 }
 
 class FriendShipRepository extends AbstractRepository implements IFriendShipRepository {
@@ -62,18 +63,56 @@ class FriendShipRepository extends AbstractRepository implements IFriendShipRepo
     }
 
     async getFriends(userId: number): Promise<Result<User[]>> {
-        const rows = await this.findMany<{ id: number; username: string; email: string; avatar?: string }>(
+        const rows = await this.findMany<{
+            id: number;
+            username: string;
+            email: string;
+            avatar?: string;
+            is_connected: boolean;
+        }>(
             `
                     SELECT
                         u.id,
                         u.username,
                         u.email,
-                        u.avatar
+                        u.avatar,
+                        u.is_connected
                     FROM
                         friendships f
                         INNER JOIN users u ON f.friend_id = u.id
                     WHERE
                         f.user_id = ?
+                `,
+            [userId]
+        );
+
+        if (!rows) {
+            return Result.error(ApplicationError.NotFoundError);
+        }
+
+        return Result.success(rows);
+    }
+
+    async getFriendsOf(userId: number): Promise<Result<User[]>> {
+        const rows = await this.findMany<{
+            id: number;
+            username: string;
+            email: string;
+            avatar?: string;
+            is_connected: boolean;
+        }>(
+            `
+                    SELECT
+                        u.id,
+                        u.username,
+                        u.email,
+                        u.avatar,
+                        u.is_connected
+                    FROM
+                        friendships f
+                        INNER JOIN users u ON f.user_id = u.id
+                    WHERE
+                        f.friend_id = ?
                 `,
             [userId]
         );

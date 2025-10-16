@@ -23,6 +23,7 @@ export interface UserRow {
     password: string;
     avatar?: string;
     created_at: string;
+    is_connected?: boolean;
 }
 
 export interface GameTypeRow {
@@ -44,4 +45,5 @@ export interface AuthenticationUserRow {
     email: string;
     password: string;
     avatar?: string;
+    is_connected?: boolean;
 }

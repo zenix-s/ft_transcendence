@@ -15,7 +15,8 @@ export default fp(
                 email TEXT UNIQUE NOT NULL,
                 password TEXT NOT NULL,
                 avatar TEXT NULL,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                is_connected BOOLEAN DEFAULT 0
             )
         `);
 

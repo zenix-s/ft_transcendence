@@ -3,15 +3,13 @@ export enum SocialActions {
     LIST_FRIENDS = 1,
 }
 
-export const PossibleSocialActions = [
-    SocialActions.AUTH,
-    SocialActions.LIST_FRIENDS,
-];
+export const PossibleSocialActions = [SocialActions.AUTH, SocialActions.LIST_FRIENDS];
 
 export interface Friend {
     id: number;
     username: string;
     avatar: string | null;
+    is_connected: boolean;
 }
 
 export interface SocialWebSocketMessage {
@@ -38,4 +36,11 @@ export interface FriendsListResponse extends SocialWebSocketResponse {
 export interface ErrorResponse extends SocialWebSocketResponse {
     type: 'error';
     error: string;
+}
+
+export interface FriendConnectionStatusResponse extends SocialWebSocketResponse {
+    type: 'friendConnectionStatus';
+    friendId: number;
+    username: string;
+    isConnected: boolean;
 }

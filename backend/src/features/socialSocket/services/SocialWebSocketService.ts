@@ -2,9 +2,16 @@ import { FastifyInstance } from 'fastify';
 import { WebSocket } from '@fastify/websocket';
 import { Result } from '@shared/abstractions/Result';
 import { ApplicationError } from '@shared/Errors';
-import { SocialWebSocketMessage, SocialWebSocketResponse, Friend } from '../Social.types';
+import {
+    SocialWebSocketMessage,
+    SocialWebSocketResponse,
+    Friend,
+    FriendConnectionStatusResponse,
+} from '../Social.types';
 
 export class SocialWebSocketService {
+    private activeConnections: Map<number, WebSocket> = new Map<number, WebSocket>();
+
     constructor(private readonly fastify: FastifyInstance) {}
 
     async authenticateUser(token: string): Promise<Result<number>> {
@@ -37,12 +44,70 @@ export class SocialWebSocketService {
                 id: user.id,
                 username: user.username,
                 avatar: user.avatar || null,
+                is_connected: user.is_connected || false,
             }));
 
             return Result.success(friends);
         } catch (error) {
             this.fastify.log.error(error, 'Error getting friends list');
             return Result.error(ApplicationError.InternalServerError);
+        }
+    }
+
+    async updateUserConnectionStatus(userId: number, isConnected: boolean): Promise<Result<void>> {
+        try {
+            const updateResult = await this.fastify.UserRepository.updateConnectionStatus(
+                userId,
+                isConnected
+            );
+            if (!updateResult.isSuccess) {
+                return Result.error(ApplicationError.InternalServerError);
+            }
+            return Result.success(undefined);
+        } catch (error) {
+            this.fastify.log.error(error, 'Error updating user connection status');
+            return Result.error(ApplicationError.InternalServerError);
+        }
+    }
+
+    addActiveConnection(userId: number, socket: WebSocket): void {
+        this.activeConnections.set(userId, socket);
+    }
+
+    removeActiveConnection(userId: number): void {
+        this.activeConnections.delete(userId);
+    }
+
+    async notifyFriendsConnectionStatus(userId: number, isConnected: boolean): Promise<void> {
+        try {
+            const userResult = await this.fastify.UserRepository.getUserById(userId);
+            if (!userResult.isSuccess || !userResult.value) {
+                return;
+            }
+
+            const user = userResult.value;
+
+            const friendsOfResult = await this.fastify.FriendShipRepository.getFriendsOf(userId);
+            if (!friendsOfResult.isSuccess || !friendsOfResult.value) {
+                return;
+            }
+
+            const friendsOf = friendsOfResult.value;
+
+            for (const friend of friendsOf) {
+                const friendSocket = this.activeConnections.get(friend.id);
+                if (friendSocket) {
+                    const notification: FriendConnectionStatusResponse = {
+                        type: 'friendConnectionStatus',
+                        friendId: userId,
+                        username: user.username,
+                        isConnected: isConnected,
+                    };
+                    this.sendMessage(friendSocket, notification);
+                }
+            }
+        } catch (error) {
+            this.fastify.log.error(error, 'Error notifying friends about connection status');
         }
     }
 
@@ -72,6 +137,20 @@ export class SocialWebSocketService {
         this.sendMessage(socket, {
             type: 'friendsList',
             friends,
+        });
+    }
+
+    sendFriendConnectionStatus(
+        socket: WebSocket,
+        friendId: number,
+        username: string,
+        isConnected: boolean
+    ): void {
+        this.sendMessage(socket, {
+            type: 'friendConnectionStatus',
+            friendId,
+            username,
+            isConnected,
         });
     }
 

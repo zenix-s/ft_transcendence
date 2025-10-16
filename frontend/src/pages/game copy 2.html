@@ -1,0 +1,22 @@
+<div class="scanlines"></div>
+
+<div class="center-screen justify-center items-center py-10 px-10 gap-20 align-middle flex h-full">
+  <div class="flex items-center justify-center gap-5 md:gap-16 sm:gap-7">
+    <div id="scoreLeft"
+        class="text-center text-7xl md:text-8xl lg:text-9xl font-bold text-secondary dark:text-primary text-shadow-blue">0</div>
+    
+    <div id="score" data-i18n="score" class="text-center text-7xl md:text-8xl lg:text-9xl font-bold text-secondary dark:text-primary text-shadow-redblue"></div>
+
+    <div id="scoreRight"
+      class="text-center text-7xl md:text-8xl lg:text-9xl font-bold text-secondary dark:text-primary text-shadow-red">0</div>
+  </div>
+
+  <div class="flex justify-center items-center">
+    <canvas id="gameCanvas" width="2000" height="1250"
+        class="border-4 border-secondary dark:border-primary bg-black h-full w-full flex"></canvas>
+
+    <div id="playerLeft" class="absolute bg-white w-4 h-32 left-10 top-1/2 -translate-y-1/2"></div>
+    <div id="playerRight" class="absolute bg-white w-4 h-32 right-10 top-1/2 -translate-y-1/2"></div>
+
+  </div>
+</div>

@@ -80,7 +80,7 @@ export function setupRegisterForm() {
         const data = await response.json();
 
         if (!response.ok) {
-          const errorcode = data.error?.code || data.code || "ErrorCreatingUser";
+          const errorcode = data.error || "ErrorCreatingUser";
           showToast(t(errorcode), "error");
           return;
         }
@@ -129,7 +129,7 @@ export function validateLogin() {
         const data = await response.json();
 
         if (!response.ok) {
-          const errorcode = data.error?.code || data.code || "invalidCredentialsError";
+          const errorcode = data.error || "invalidCredentialsError";
           //const errorMsg = data.error?.message || data.message || "Credenciales incorrectas";
           //alert(errorMsg);
           showToast(t(errorcode), "error");

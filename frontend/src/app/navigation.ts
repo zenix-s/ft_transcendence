@@ -8,6 +8,7 @@ import { loadMatchHistory } from "@/components/history";
 import { redirect } from "@/components/redirect";
 import { initFriendsSidebar } from "@/components/friendsSidebar/friendsSidebar"
 import { getCurrentUser } from "@/modules/users";
+import { ready1 } from "@/modules/game/setReady1";
 
 // Llamada                            Efecto
 // navigateTo("home")                 Carga "home" y añade al historial
@@ -17,6 +18,10 @@ import { getCurrentUser } from "@/modules/users";
 export async function navigateTo(page: string, skipPushState = false, replace = false) {
   // console.log("navigation"); // DB
   // console.log(page); // DB
+
+  // Para que cuando le paso parámetros a la url las cosas funcionen
+  const pageBase: string = (page.split("?"))[0];
+  console.log("pageBase=", pageBase); // DB
 
   // 🚨 Bloquear números SOLO cuando vienen de la SPA (clicks internos)
   if (!skipPushState && !isNaN(Number(page))) {
@@ -47,7 +52,7 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
   }
 
   // Cargar el contenido de la página
-  const response = await fetch(`/src/pages/${page}.html`);
+  const response = await fetch(`/src/pages/${pageBase}.html`);
   const html = await response.text();
 
     // ⚠️ Detectar si el servidor devolvió el index.html en lugar de la página real
@@ -80,7 +85,7 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
   });
 
   // Inicialización por página
-  switch (page) {
+  switch (pageBase) {
     case "home":
       renderButtons();
       break;
@@ -97,7 +102,7 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
         if (!userResponse || !localStorage.getItem("access_token")) return;
         const user = userResponse.user;
 
-        switch (page) {
+        switch (pageBase) {
           case "dashboard":
             await Promise.all([
               loadDashboard(user),
@@ -119,6 +124,7 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
 
           case "setReady1":
             renderButtons();
+            ready1();
             break;
         }
       });

@@ -1,6 +1,6 @@
 import { actualizeValues } from "./game"
 import type { Ball, Player, Score } from "./gameData";
-import { fetchGameId, fetchSinglePlayerGameId, toJoinGame, fetchGameState } from "./getData.js";
+//import { fetchGameId, fetchSinglePlayerGameId, toJoinGame, fetchGameState } from "./getData.js";
 
 interface message {
 	action: number,
@@ -74,6 +74,11 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 				console.log("⏹ Ping detenido porque isRunning=false");
 			}
 		}
+		else if (data.type == "error") {
+			clearInterval(pingInterval);
+			pingInterval = undefined;
+			console.log("ping detenido por un error");
+		}
 	});
 
 	socket.addEventListener("close", () => {
@@ -86,79 +91,49 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 
 	document.addEventListener("keydown", (event) => {
 		const key = event.key;
-		console.log(key);
-		//let action = 0;
 		if (key === "ArrowUp")
 		{
 			up = 1;
-			//action = 2;
 			console.log("up");
 		}
 		if (key === "ArrowDown")
 		{
 			down = 1;
-			//action = 3;
 			console.log("down");
 		}
 		if (key === "w")
 		{
 			up = 1;
-			//action = 2;
 			console.log("w");
 		}
 		if (key === "s")
 		{
 			down = 1;
-			//action = 3
 			console.log("s");
 		}
-
-		// let obj : message = {
-		// 	action: action,
-		// 	gameId:gameId,
-		// 	token: token
-		// };
-		// if (action != 0)
-		// 	socket.send(JSON.stringify(obj));
-
-		//sendAction(action);
 	});
 	document.addEventListener("keyup", (event) => {
 		const key = event.key;
-		console.log(key);
-		//let action = 0;
 		if (key === "ArrowUp")
 		{
 			up = 0;
-			//action = 2;
 			console.log("up");
 		}
 		if (key === "ArrowDown")
 		{
 			down = 0;
-			//action = 3;
 			console.log("down");
 		}
 		if (key === "w")
 		{
 			up = 0;
-			//action = 2;
 			console.log("w");
 		}
 		if (key === "s")
 		{
 			down = 0;
-			//action = 3
 			console.log("s");
 		}
-
-		// let obj : message = {
-		// 	action: action,
-		// 	gameId:gameId,
-		// 	token: token
-		// };
-		// if (action != 0)
-		// 	socket.send(JSON.stringify(obj));
 	})
 }
 
@@ -173,14 +148,6 @@ export async function socketAndRender(player1: Player, player2: Player, scores: 
 	// }
 	// console.log("si gameId=", gameId);
 
-	const gameSiglePlayerId = await fetchSinglePlayerGameId();
-	if (!gameSiglePlayerId)
-	{
-		console.log("No single-player game ID");
-		return ;
-	}
-	console.log("si gameSinglePlayerId=", gameSiglePlayerId);
-
 	// const gameJoin = await toJoinGame(gameSiglePlayerId);
 	// if (!gameJoin)
 	// {
@@ -189,13 +156,20 @@ export async function socketAndRender(player1: Player, player2: Player, scores: 
 	// }
 	// console.log("si gameJoin=", gameJoin);
 
-	const gameState = await fetchGameState(gameSiglePlayerId);
-	if (!gameState)
+	// const gameState = await fetchGameState(gameSiglePlayerId);
+	// if (!gameState)
+	// {
+	// 	console.log("no gameState");
+	// 	return ;
+	// }
+	// console.log("si gameState");
+
+	const params = new URLSearchParams(window.location.search);
+	const id = params.get("id");
+	if (!id)
 	{
-		console.log("no gameState");
+		console.log("no iddd");
 		return ;
 	}
-	console.log("si gameState");
-
-	conectWebSocket(gameSiglePlayerId, player1, player2, scores, ball);
+	conectWebSocket(Number(id), player1, player2, scores, ball);
 }

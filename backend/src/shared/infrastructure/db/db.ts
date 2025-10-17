@@ -15,7 +15,8 @@ export default fp(
                 email TEXT UNIQUE NOT NULL,
                 password TEXT NOT NULL,
                 avatar TEXT NULL,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                is_connected BOOLEAN DEFAULT 0
             )
         `);
 
@@ -89,12 +90,22 @@ export default fp(
         const hashedPasswordTest = await hashPassword('Testpassword1234');
         await connection.execute(
             `
-                INSERT OR IGNORE INTO users (username, email, password)
+                INSERT OR IGNORE INTO users (id, username, email, password)
                 VALUES
-                    ('TestUser1', 'TestUser1@gmail.com', ?),
-                    ('TestUser2', 'TestUser2@gmail.com', ?)
+                    (2, 'TestUser1', 'TestUser1@gmail.com', ?),
+                    (3, 'TestUser2', 'TestUser2@gmail.com', ?)
             `,
             [hashedPasswordTest, hashedPasswordTest]
+        );
+
+        // Friendship between TestUser1 and TestUser2
+        await connection.execute(
+            `
+                INSERT OR IGNORE INTO friendships (user_id, friend_id)
+                VALUES
+                    (2, 3),
+                    (3, 2)
+            `
         );
 
         await connection.execute(`

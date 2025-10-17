@@ -6,6 +6,7 @@ import ErrorhandlerPlugin from '@shared/utils/ErrorHandlerPlugin';
 import { fastifyWebsocket } from '@fastify/websocket';
 import PongGameHttpRoutes from '@features/game/pong/http/pong.http';
 import pongWebSocketRoutes from '@features/game/pong/websocket/pong.websocket';
+import socialWebSocketRoutes from '@features/socialSocket/websocket/social.websocket';
 import matchHistoryPresentation from '@features/match-history/MatchHistory.presentation';
 import fastifyAuth from '@fastify/auth';
 import fastifyJWT from '@fastify/jwt';
@@ -89,6 +90,7 @@ async function App(fastify: FastifyInstance) {
     fastify.register(authRoutes, { prefix: '/auth' });
 
     fastify.register(pongWebSocketRoutes, { prefix: '/game/pong' });
+    fastify.register(socialWebSocketRoutes, { prefix: '/social' });
 
     fastify.register(async function authenticatedContext(fastify) {
         fastify.addHook('preHandler', fastify.auth([fastify.authenticate]));

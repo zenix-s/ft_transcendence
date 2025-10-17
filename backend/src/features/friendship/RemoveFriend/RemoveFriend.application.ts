@@ -55,7 +55,10 @@ export class RemoveFriendCommand implements ICommand<RemoveFriendRequest, null> 
                 return Result.error(ApplicationError.NotFriendsError);
             }
 
-            const removeFriendResult = await this._fastify.FriendShipRepository.removeFriend(userId, friendId);
+            const removeFriendResult = await this._fastify.FriendShipRepository.removeFriend(
+                userId,
+                friendId
+            );
             if (!removeFriendResult.isSuccess) {
                 return Result.error(ApplicationError.DeletionError);
             }

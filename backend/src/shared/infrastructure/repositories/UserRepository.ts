@@ -20,6 +20,7 @@ export interface IUserRepository {
     updateUsername(id: number, newUsername: string): Promise<Result<User>>;
     updatePassword(id: number, newPassword: string): Promise<Result<User>>;
     updateConnectionStatus(userId: number, isConnected: boolean): Promise<Result<void>>;
+    getUserByUsernameInsensitive(username: string): Promise<Result<AuthenticationUserDto>>;
 }
 
 class UserRepository extends AbstractRepository implements IUserRepository {
@@ -43,9 +44,12 @@ class UserRepository extends AbstractRepository implements IUserRepository {
     }
 
     async getUserByEmail(email: string): Promise<Result<AuthenticationUserDto>> {
+        // Convertir el email recibido a lowerCase
+        const normalizedEmail = email.toLowerCase();
+
         const row = await this.findOne<AuthenticationUserRow>(
             'SELECT id, username, email, password, avatar, is_connected FROM users WHERE email = ?',
-            [email]
+            [normalizedEmail]
         );
 
         if (!row) {
@@ -59,6 +63,22 @@ class UserRepository extends AbstractRepository implements IUserRepository {
         const row = await this.findOne<AuthenticationUserRow>(
             'SELECT id, username, email, password, avatar, is_connected FROM users WHERE username = ?',
             [username]
+        );
+
+        if (!row) {
+            return Result.error(ApplicationError.UserNotFound);
+        }
+
+        return Result.success(row);
+    }
+
+    async getUserByUsernameInsensitive(username: string): Promise<Result<AuthenticationUserDto>> {
+        // Convertir el username recibido a lowerCase
+        const normalizedUsername = username.toLowerCase();
+
+        const row = await this.findOne<AuthenticationUserRow>(
+            'SELECT * FROM users WHERE LOWER(username) = ?',
+            [normalizedUsername]
         );
 
         if (!row) {

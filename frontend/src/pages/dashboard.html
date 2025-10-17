@@ -52,52 +52,54 @@
     </div>
 
     <!-- Graph -->
-      <div class="relative -z-1 flex justify-center items-center min-h-[350px] text-secondary dark:text-primary">
+    <div class="relative -z-1 flex justify-center items-center min-h-[350px] text-secondary dark:text-primary">
       <div class="absolute -translate-y-6">
         <p id="user-total-games" class="text-8xl font-bold text-center"><!--31--></p>
         <p class="text-2xl text-center" data-i18n="played_games">partidas</p>
       </div>
       <canvas id="donutChart" class="max-w-sm"></canvas>
-      </div>
+    </div>
 
     <!-- History -->
     
-      <div class="w-full max-w-5xl mx-auto p-6">
-        <h2 data-i18n="gameHistory" class="text-2xl font-bold mb-4 text-gray-800 dark:text-cyan">
-          Historial de Partidas
-        </h2>
-        <div class="rounded-lg shadow">
-          <table
-            id="matchTable"
-            class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm"
-          >
-            <thead class="bg-gray-100 dark:bg-gray-800">
-              <tr>
-                <!-- <th class="px-4 py-2 text-left font-semibold text-gray-700 dark:text-gray-300">
-                  Jugador 1
-                </th> -->
-                <th data-i18n="opponent" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                  Opponent
-                </th>
-                <th data-i18n="result" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                  Resultado
-                </th>
-                <th data-i18n="winner" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                  Ganador
-                </th>
-                <th data-i18n="date" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                  Fecha
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-            </tbody>
-          </table>
-        </div>
+    <div class="w-full max-w-5xl mx-auto p-6">
+      <h2 data-i18n="gameHistory" class="text-2xl font-bold mb-4 text-gray-800 dark:text-cyan">
+        Historial de Partidas
+      </h2>
+      <div class="rounded-lg shadow">
+        <table
+          id="matchTable"
+          class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm"
+        >
+          <thead class="bg-gray-100 dark:bg-gray-800">
+            <tr>
+              <!-- <th class="px-4 py-2 text-left font-semibold text-gray-700 dark:text-gray-300">
+                Jugador 1
+              </th> -->
+              <th data-i18n="opponent" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                Opponent
+              </th>
+              <th data-i18n="result" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                Resultado
+              </th>
+              <th data-i18n="winner" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                Ganador
+              </th>
+              <th data-i18n="date" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                Fecha
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
       </div>
-
+    </div>
   </div>
 </div>
+
+<!-- Friends Sidebar -->
+<div id="friends-sidebar-container"></div>
 
 <!----------->
 <!-- MODAL -->

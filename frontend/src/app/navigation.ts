@@ -6,6 +6,9 @@ import { startGame } from "@/modules/game/game.ts";
 import { Tooltip } from "@/components/tooltip";
 import { loadMatchHistory } from "@/components/history";
 import { redirect } from "@/components/redirect";
+import { initFriendsSidebar } from "@/components/friendsSidebar/friendsSidebar"
+import { getCurrentUser } from "@/modules/users";
+import { ready1 } from "@/modules/game/setReady1";
 
 // Llamada                            Efecto
 // navigateTo("home")                 Carga "home" y añade al historial
@@ -15,6 +18,10 @@ import { redirect } from "@/components/redirect";
 export async function navigateTo(page: string, skipPushState = false, replace = false) {
   // console.log("navigation"); // DB
   // console.log(page); // DB
+
+  // Para que cuando le paso parámetros a la url las cosas funcionen
+  const pageBase: string = (page.split("?"))[0];
+  console.log("pageBase=", pageBase); // DB
 
   // 🚨 Bloquear números SOLO cuando vienen de la SPA (clicks internos)
   if (!skipPushState && !isNaN(Number(page))) {
@@ -28,6 +35,13 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
     return;
   }
 
+  // Redirección automática si el usuario no tiene token y entra a páginas prohibidas sin token
+  /* if (page === "game" && !localStorage.getItem("access_token")) {
+    console.log("PRUEBAAAAA 222");
+    navigateTo("login");
+    return;
+  } */
+
   // Actualizar la URL sin recargar la página
   if (!skipPushState) {
      if (replace) {
@@ -38,7 +52,7 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
   }
 
   // Cargar el contenido de la página
-  const response = await fetch(`/src/pages/${page}.html`);
+  const response = await fetch(`/src/pages/${pageBase}.html`);
   const html = await response.text();
 
     // ⚠️ Detectar si el servidor devolvió el index.html en lugar de la página real
@@ -71,7 +85,7 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
   });
 
   // Inicialización por página
-  switch (page) {
+  switch (pageBase) {
     case "home":
       renderButtons();
       break;
@@ -80,28 +94,45 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
       setupRegisterForm();
       break;
     case "dashboard":
-      requestAnimationFrame(() => {
-        loadDashboard();
-        loadChart();
-        loadMatchHistory();
-        renderButtons();
+    case "settings":
+    case "game":
+    case "setReady1": {
+      requestAnimationFrame(async () => {
+        const userResponse = await getCurrentUser();
+        if (!userResponse || !localStorage.getItem("access_token")) return;
+        const user = userResponse.user;
+
+        switch (pageBase) {
+          case "dashboard":
+            await Promise.all([
+              loadDashboard(user),
+              loadChart(user),
+              loadMatchHistory(user),
+            ]);
+            renderButtons();
+            initFriendsSidebar();
+            break;
+
+          case "settings":
+            await loadSettings();
+            initFriendsSidebar();
+            break;
+
+          case "game":
+            startGame();
+            break;
+
+          case "setReady1":
+            renderButtons();
+            ready1();
+            break;
+        }
       });
       break;
-    case "settings":
-      loadSettings();
-      break;
-    case "history":
-      loadMatchHistory();
-      break;
-    case "game":
-      startGame();
-      break;
+    }
     case "404":
       renderButtons();
       redirect("home");
-      break;
-    case "setReady1":
-      renderButtons();
       break;
   }
 

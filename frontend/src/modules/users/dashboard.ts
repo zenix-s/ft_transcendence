@@ -1,22 +1,23 @@
-import { getCurrentUser, getStats } from "@/modules/users";
+import { getStats } from "@/modules/users";
 import { t } from "@/app/i18n";
+import type { User } from "@/types/user";
 
-export async function loadDashboard() {
+export async function loadDashboard(user: User) {
   // console.log("Cargando dashboard..."); // DB
-  const response = await getCurrentUser();
-  const userStats = await getStats();
+  //const response = await getCurrentUser();
+  const userStats = await getStats(user.id);
 
-  if (!response) {
+  /* if (!response) {
     console.warn(t("UserNotFound"));
     return;
-  }
+  } */
 
   if (!userStats) {
     console.warn(t("UserNotFound"));
     return;
   }
 
-  const user = response.user; 
+  // const user = response.user; 
 
   //console.log("Usuario obtenido:", user); // DB
 
@@ -30,27 +31,19 @@ export async function loadDashboard() {
   // console.log("Elementos encontrados:", { usernameElement, emailElement, useridElement }); // DB
 
   // Actualizar texto
-  if (usernameElement) {
-    usernameElement.textContent = user.username;
-  }
+  if (usernameElement) { usernameElement.textContent = user.username; }
 
-  if (emailElement) {
-    emailElement.textContent = user.email;
-  }
+  if (emailElement) { emailElement.textContent = user.email; }
 
-  if (useridElement) {
-    useridElement.textContent = user.id; // Ejemplo: reemplazar "dashboard" por su id
-  }
+  if (useridElement) { useridElement.textContent = user.id.toString(); } // Ejemplo: reemplazar "dashboard" por su id
 
   // **Actualizar imagen**
   if (avatarElement instanceof HTMLImageElement) {
-    avatarElement.src = user.avatarUrl && user.avatarUrl.trim() !== "" 
-      ? user.avatarUrl 
+    avatarElement.src = user.avatar && user.avatar.trim() !== "" 
+      ? "https://localhost:3000" + user.avatar 
       // 👆 Aquí `user.avatarUrl` debe ser la URL que te devuelve tu backend.
       : "/images/avatar1.jpg"; // Imagen por defecto
   }
 
-  if (totalGamesElement) {
-    totalGamesElement.textContent = userStats.totalMatches;
-  }
+  if (totalGamesElement) { totalGamesElement.textContent = userStats.totalMatches; }
 }

@@ -6,6 +6,7 @@
 import { navigateTo } from "@/app/navigation";
 import { t } from "@/app/i18n";
 import { showToast } from "@/components/toast";
+import type { GetCurrentUserResponse } from "@/types/user";
 
 /* REGISTER NEW USER */
 export function setupRegisterForm() {
@@ -79,7 +80,7 @@ export function setupRegisterForm() {
         const data = await response.json();
 
         if (!response.ok) {
-          const errorcode = data.error?.code || data.code || "ErrorCreatingUser";
+          const errorcode = data.error || "ErrorCreatingUser";
           showToast(t(errorcode), "error");
           return;
         }
@@ -128,7 +129,7 @@ export function validateLogin() {
         const data = await response.json();
 
         if (!response.ok) {
-          const errorcode = data.error?.code || data.code || "invalidCredentialsError";
+          const errorcode = data.error || "invalidCredentialsError";
           //const errorMsg = data.error?.message || data.message || "Credenciales incorrectas";
           //alert(errorMsg);
           showToast(t(errorcode), "error");
@@ -153,7 +154,7 @@ export function validateLogin() {
 /* GET USER */
 let sessionHandled = false;
 
-export async function getCurrentUser() {
+export async function getCurrentUser(): Promise<GetCurrentUserResponse  | null> {
   const token = localStorage.getItem("access_token");
 
   if (!token) {
@@ -161,7 +162,6 @@ export async function getCurrentUser() {
     return null;
   }
 
-  //console.log("Token actual:", token); // DB
   try {
     const response = await fetch("/api/auth/me", {
       headers: {
@@ -171,30 +171,41 @@ export async function getCurrentUser() {
 
     const result = await response.json();
 
-    if (response.status === 401) {
-      // Token expirado o inválido
-      handleInvalidSession("SessionExpiredOrInvalid");
-      return null;
-    }
+    switch (response.status) {
+      case 200:
+        // ✅ Usuario válido
+        return result as GetCurrentUserResponse;
 
-    // Usuario no encontrado según tu backend
-    if (result?.error === "userNotFoundError") {
-      handleInvalidSession("UserNotFound");
-      return null;
-    }
+      case 401:
+        // Token inválido o caducado
+        handleInvalidSession("SessionExpiredOrInvalid");
+        return null;
 
-    // Otro error inesperado
-    if (!response.ok) {
-      console.error("Error inesperado al obtener usuario:", result);
-      if (!sessionHandled) showToast(t("ErrorRetrievingProfile"), "error");
-      return null;
-    }
+      case 404:
+        // Usuario eliminado del sistema
+        handleInvalidSession("UserNotFound");
+        return null;
 
-    // console.log("Contenido devuelto:", result); // DB
-    return result;
+      case 400:
+        // Petición inválida (error del cliente)
+        console.warn(t("badRequest"), result?.error);
+        showToast(t("badRequest"), "error");
+        return null;
+
+      case 409:
+        handleInvalidSession("userConflict");
+        return null;
+
+      default:
+        // Error inesperado del servidor
+        console.error(t("ErrorRetrievingProfile"), result);
+        showToast(t("ErrorRetrievingProfile"), "error");
+        return null;
+    }
   } catch (err) {
-    console.error(t("ErrorRetrievingProfile"), err);
-    if (!sessionHandled) showToast(t("ErrorRetrievingProfile"), "error");
+    // Error de red o fetch fallido
+    console.error(t("networkError"), err);
+    if (!sessionHandled) showToast(t("networkError"), "error");
     return null;
   }
 }
@@ -204,25 +215,26 @@ function handleInvalidSession(messageKey: string) {
     sessionHandled = true;
     showToast(t(messageKey), "error");
     localStorage.removeItem("access_token");
-    navigateTo("login");
+    navigateTo("login", false, true);
   }
 }
 
 /* MATCH-HISTORY/STATS (Doughnut Graph) */
-export async function getStats() {
+export async function getStats(userId: number) {
   const token = localStorage.getItem("access_token");
+  if (!token) { return null; }
 
   // Getting ID
-  const userResponse = await getCurrentUser();
+  // const userResponse = await getCurrentUser();
   /* if (!userResponse) {
     console.warn(t("UserNotFound"));
     return;
   } */
 
-  const userId = userResponse.user.id;
+  // const userId = userResponse.user.id;
 
   try {
-    const response = await fetch("/api/match-history/stats/" + userId, {
+    const response = await fetch(`/api/match-history/stats/${userId}`, {
       headers: {
         "Authorization": `Bearer ${token}`,
       },
@@ -242,20 +254,21 @@ export async function getStats() {
 }
 
 /* MATCH-HISTORY/USER (History) */
-export async function getHistory() {
+export async function getHistory(userId: number) {
   const token = localStorage.getItem("access_token");
+  if (!token) return null;
 
   // Getting ID
-  const userResponse = await getCurrentUser();
-  if (!userResponse) {
-    console.warn(t("UserNotFound"));
-    return;
-  }
+  // const userResponse = await getCurrentUser();
+  // if (!userResponse) {
+  //   console.warn(t("UserNotFound"));
+  //   return;
+  // }
 
-  const userId = userResponse.user.id;
+  // const userId = userResponse.user.id;
 
   try {
-    return await fetch("/api/match-history/user/" + userId, {
+    return await fetch(`/api/match-history/user/${userId}`, {
       headers: {
         "Authorization": `Bearer ${token}`,
       },

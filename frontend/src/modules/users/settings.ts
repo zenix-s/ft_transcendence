@@ -41,13 +41,13 @@ export async function loadSettings() {
   }
 
   if (useridElement) {
-	useridElement.textContent = user.id; // Ejemplo: reemplazar "dashboard" por su id
+	useridElement.textContent = user.id.toString(); // Ejemplo: reemplazar "dashboard" por su id
   }
 
   // **Actualizar imagen**
   if (avatarElement instanceof HTMLImageElement) {
-	avatarElement.src = user.avatarUrl && user.avatarUrl.trim() !== "" 
-	  ? user.avatarUrl 
+	avatarElement.src = user.avatar && user.avatar.trim() !== "" 
+	  ? "https://localhost:3000" + user.avatar 
 	  // 👆 Aquí `user.avatarUrl` debe ser la URL que te devuelve tu backend.
 	  : "/images/avatar1.jpg"; // Imagen por defecto
   }

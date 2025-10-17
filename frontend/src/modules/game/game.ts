@@ -74,6 +74,20 @@ function actualizeGame(playerLeft: Player, playerRight: Player,
 
 export function startGame()
 {
+	console.log("entrando en game");
+	const params = new URLSearchParams(window.location.search);
+	const id = params.get("id");
+	const singlePlayer = params.has("singlePlayer");
+	if (!id || !singlePlayer)
+	{
+		console.log("no gameid o singleplayer");
+		return ;
+	}
+
+
+
+
+
 	const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
 	const ctx = canvas.getContext("2d")!; // as CanvasRenderingContext2D
 	console.log(canvas);

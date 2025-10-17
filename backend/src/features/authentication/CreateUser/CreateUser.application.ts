@@ -45,11 +45,18 @@ export default class CreateUserCommand implements ICommand<IRegisterRequest, IAu
 
     async execute(request?: IRegisterRequest): Promise<Result<IAuthResponse>> {
         if (!request) return Result.error(ApplicationError.BadRequest);
-        const { username, email, password } = request;
+        const { username, password } = request;
+
+        const email = request.email.toLowerCase();
 
         try {
-            const existingUser = await this.fastify.UserRepository.getUserByEmail(email);
-            if (existingUser.isSuccess) {
+            const existingUserEmail = await this.fastify.UserRepository.getUserByEmail(email);
+            if (existingUserEmail.isSuccess) {
+                return Result.error(ApplicationError.UserAlreadyExists);
+            }
+
+            const existingUsername = await this.fastify.UserRepository.getUserByUsernameInsensitive(username);
+            if (existingUsername.isSuccess) {
                 return Result.error(ApplicationError.UserAlreadyExists);
             }
 

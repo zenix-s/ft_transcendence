@@ -19,8 +19,8 @@ export const translations: Record<Language, Record<string, string>> = {
     newPassword: "New Password",
     score: "SCORE",
     played_games: "games",
-    logout: "logout",
-    logout_confirm: "Are you sure you want to logout?",
+    logout: "log out",
+    logout_confirm: "Are you sure you want to log out?",
     token_removed: "Token removed",
     invalidCredentialsError: "Invalid email or password",
     passwordDoNotMatch: "The passwords do not match",
@@ -90,6 +90,24 @@ export const translations: Record<Language, Record<string, string>> = {
     ErrorUpdatingPassword: "Error updating password",
     passwordUpdatedSuccessfully: "Password updated successfully",
     redirectingToHome: "Redirecting to home",
+    errorLoadingHistory: "Error loading history",
+    BadRequest: "The request is invalid. Please try again",
+    InvalidRequest: "Please complete all required fields",
+    UserAlreadyExists: "The username or email address is already in use",
+    UserCreationError: "The account could not be created. Please try again later",
+    InternalServerError: "Internal server error. Please try again later",
+    InvalidCredentials: "Incorrect email or password",
+    networkError: "Network error",
+    userConflict: "User Conflict",
+    /* Modal */
+    modalLogoutTitle: "Log out",
+    modalLogoutTitleText: "Are you sure you want to log out?",
+    modalLogoutText: "You will need to log in again to continue.",
+    modalLogoutConfirmButtonText: "Yes, log out",
+    modalLogoutCancelButtonText: "Cancel",
+    modalLogoutIsConfirmedTitle: "Come back soon!",
+    modalLogoutIsConfirmedText: "We are going to miss you 😭",
+    modalLogoutIsConfirmedConfirmButtonText: "Accept",
   },
   es: {
     start: "Comenzar",
@@ -179,6 +197,24 @@ export const translations: Record<Language, Record<string, string>> = {
     ErrorUpdatingPassword: "Error al actualizar la contraseña",
     passwordUpdatedSuccessfully: "Contraseña actualizada correctamente",
     redirectingToHome: "Redirigiendo al inicio",
+    errorLoadingHistory: "Error al cargar el historial",
+    BadRequest: "La solicitud no es válida. Por favor, inténtalo de nuevo",
+    InvalidRequest: "Por favor, completa todos los campos obligatorios",
+    UserAlreadyExists: "El nombre de usuario o el correo electrónico ya están en uso",
+    UserCreationError: "No se pudo crear la cuenta. Por favor, inténtalo más tarde",
+    InternalServerError: "Error interno del servidor. Por favor, inténtalo más tarde",
+    InvalidCredentials: "Correo electrónico o contraseña incorrectos",
+    networkError: "Error de red",
+    userConflict: "Conflicto de usuario",
+    /* Modal */
+    modalLogoutTitle: "Cerrar sesión",
+    modalLogoutTitleText: "¿Seguro que quieres cerrar sesión?",
+    modalLogoutText: "Tendrás que iniciar sesión de nuevo para continuar.",
+    modalLogoutConfirmButtonText: "Sí, cerrar sesión",
+    modalLogoutCancelButtonText: "Cancelar",
+    modalLogoutIsConfirmedTitle: "¡Vuelve pronto!",
+    modalLogoutIsConfirmedText: "Te vamos a echar de menos 😭",
+    modalLogoutIsConfirmedConfirmButtonText: "Aceptar",
   },
   fr: {
     start: "Démarrer",
@@ -268,6 +304,24 @@ export const translations: Record<Language, Record<string, string>> = {
     ErrorUpdatingPassword: "Erreur lors de la mise à jour du mot de passe",
     passwordUpdatedSuccessfully: "Mot de passe mis à jour avec succès",
     redirectingToHome: "Redirection vers l’accueil",
+    errorLoadingHistory: "Erreur lors du chargement de l'historique",
+    BadRequest: "La demande est invalide. Veuillez réessayer",
+    InvalidRequest: "Veuillez remplir tous les champs obligatoires",
+    UserAlreadyExists: "Le nom d'utilisateur ou l'adresse e-mail est déjà utilisé",
+    UserCreationError: "Impossible de créer le compte. Veuillez réessayer ultérieurement.",
+    InternalServerError: "Erreur interne du serveur. Veuillez réessayer ultérieurement",
+    InvalidCredentials: "E-mail ou mot de passe incorrect",
+    networkError: "Erreur réseau",
+    userConflict: "Conflit d'utilisateur",
+    /* Modal */
+    modalLogoutTitle: "Se déconnecter",
+    modalLogoutTitleText: "Êtes-vous sûr de vouloir vous déconnecter?",
+    modalLogoutText: "Vous devrez vous reconnecter pour continuer.",
+    modalLogoutConfirmButtonText: "Oui, se déconnecter",
+    modalLogoutCancelButtonText: "Annuler",
+    modalLogoutIsConfirmedTitle: "Revenez vite!",
+    modalLogoutIsConfirmedText: "Vous allez nous manquer 😭",
+    modalLogoutIsConfirmedConfirmButtonText: "Accepter",
   },
 };
 
@@ -283,7 +337,7 @@ export let currentLang: Language = "en";
 export function setLanguage(lang: Language) {
   currentLang = lang;
   localStorage.setItem("lang", lang);
-  //updateTexts();
+  updateTexts();
   document.dispatchEvent(new Event("i18n-updated"));
 }
 
@@ -322,7 +376,7 @@ export function t(key: string): string {
 } */
 
 export function updateTexts() {
-  console.log("🌐 Updating texts for language:", currentLang);
+  //console.log("🌐 Updating texts for language:", currentLang);
   document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((el) => {
     const key = el.dataset.i18n!;
     const translated = t(key); // Traducción obtenida

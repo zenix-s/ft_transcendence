@@ -108,7 +108,7 @@ export default class UploadAvatarCommand implements ICommand<IUploadAvatarReques
             const updateResult = await this.UserRepository.updateUserAvatar(request.userId, avatarUrl);
 
             if (!updateResult.isSuccess) {
-                return Result.error(ApplicationError.UserCreationError);
+                return Result.error(ApplicationError.AvatarUpdateError);
             }
 
             return Result.success({
@@ -122,7 +122,7 @@ export default class UploadAvatarCommand implements ICommand<IUploadAvatarReques
                 }
             }
 
-            return Result.error(ApplicationError.UserCreationError);
+            return Result.error(ApplicationError.AvatarUpdateError);
         }
     }
 

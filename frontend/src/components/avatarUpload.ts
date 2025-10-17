@@ -57,7 +57,7 @@ export function setupAvatarUpload() {
   // 👉 Previsualización
   function handleFile(file: File) {
     if (!file.type.startsWith("image/")) {
-      showToast(t("selectValidImage"));
+      showToast(t("selectValidImage"), "error");
       return;
     }
 
@@ -87,7 +87,7 @@ export function setupAvatarUpload() {
     formData.append("avatar", file);
 
     try {
-      const res = await fetch("/api/user-manager/upload-avatar", {
+      const response = await fetch("/api/user-manager/upload-avatar", {
         method: "POST",
         body: formData,
         headers: {
@@ -95,10 +95,12 @@ export function setupAvatarUpload() {
         },
       });
 
-      if (res.ok) {
+      if (response.ok) {
         // Recuperar la url de la bbdd
         const userResponse = await getCurrentUser();
         if (!userResponse) return; // ❌ si falla, aborta todo
+
+        // Guardar ruta del avatar con la url devuelta por el backend
         const avatarSrc = "https://localhost:3000" + userResponse.user.avatar;
 
         // ✅ Actualizar avatar en la web
@@ -109,9 +111,14 @@ export function setupAvatarUpload() {
 
         showToast(t("avatarUpdatedSuccessfully"));
       } else {
-        const errorText = await res.text();
-        console.error("Error:", errorText);
-        showToast(t("errorUploadingAvatar"), "error");
+        const data = await response.json();
+        const errorcode = data.error || "errorUploadingAvatar";
+        if (errorcode === "UserCreationError")
+          showToast(t("UserAvatarCreationError"), "error");
+        else if (errorcode === "InvalidRequest")
+          showToast(t("InvalidImageFormat"), "error");
+        else
+          showToast(t(errorcode), "error");
       }
     } catch (err) {
       console.error(err);

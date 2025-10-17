@@ -41,7 +41,7 @@ export default class UsernameUpdateCommand
             }
 
             // Verificar si el username ya está en uso
-            const existingUser = await this.fastify.UserRepository.getUserByUsername(username);
+            const existingUser = await this.fastify.UserRepository.getUserByUsernameInsensitive(username);
 
             if (existingUser.isSuccess) {
                 return Result.error(ApplicationError.UserAlreadyExists);

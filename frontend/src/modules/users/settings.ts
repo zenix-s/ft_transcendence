@@ -103,8 +103,11 @@ function updateUserName() {
         const data = await response.json();
 
         if (!response.ok) {
-          const errorcode = data.error?.code || data.code || "ErrorUpdatingUserName";
-          showToast(t(errorcode), "error");
+          const errorcode = data.error || "ErrorUpdatingUserName";
+          if (errorcode === "UserAlreadyExists")
+            showToast(t("UsernameAlreadyExists"), "error");
+          else
+            showToast(t(errorcode), "error");
           return;
         }
 

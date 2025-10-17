@@ -113,9 +113,7 @@ export function setupAvatarUpload() {
       } else {
         const data = await response.json();
         const errorcode = data.error || "errorUploadingAvatar";
-        if (errorcode === "UserCreationError")
-          showToast(t("UserAvatarCreationError"), "error");
-        else if (errorcode === "InvalidRequest")
+        if (errorcode === "InvalidRequest")
           showToast(t("InvalidImageFormat"), "error");
         else
           showToast(t(errorcode), "error");

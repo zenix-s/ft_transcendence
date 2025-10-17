@@ -24,21 +24,17 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 {
 	const token = localStorage.getItem("access_token");
 	const socket = new WebSocket("wss://localhost:3000/game/pong");
-	let pingInterval: NodeJS.Timeout | undefined;
+	let pingInterval: ReturnType<typeof setInterval> | undefined;
 	let up = 0;
 	let down = 0;
 	
 	socket.addEventListener("open", () => {
 		console.log("conectado websockket");
 		let obj : message = {
-			action: 0,
+			action: 1,
 			gameId:gameId,
 			token: token
 		};
-		socket.send(JSON.stringify(obj));
-		obj.action = 1;
-		socket.send(JSON.stringify(obj));
-		obj.action = 4;
 		socket.send(JSON.stringify(obj));
 		obj.action = 1;
 		pingInterval = setInterval(() => {
@@ -75,9 +71,29 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 			}
 		}
 		else if (data.type == "error") {
-			clearInterval(pingInterval);
-			pingInterval = undefined;
-			console.log("ping detenido por un error");
+			if (data.error == "GameNotFound")
+			{
+				console.log("game not found");
+			}
+			if (data.error == "notAuthenticated")
+			{
+				let obj : message = {
+				action: 0,
+				gameId:gameId,
+				token: token
+				};
+				socket.send(JSON.stringify(obj));
+				obj.action = 1;
+				socket.send(JSON.stringify(obj));
+				obj.action = 4;
+				socket.send(JSON.stringify(obj));
+				console.log("not autenticated");
+			}
+			else {
+				clearInterval(pingInterval);
+				pingInterval = undefined;
+				console.log("ping detenido por un error");
+			}
 		}
 	});
 

@@ -1,8 +1,6 @@
 import { navigateTo } from "@/app/navigation";
-//import { t } from "@/app/i18n";
 import { modal } from "@/components/modal";
-
-//let avatarNumber = 1;
+import { wsClient } from "@/modules/users";
 
 /**
  * The `setupEventListeners` function adds event listeners for click and popstate events to handle
@@ -19,6 +17,9 @@ export function setupEventListeners() {
       const confirmed = await modal("logout");
       if (confirmed)
       {
+        if (wsClient) {
+          wsClient.disconnect();
+      }
         localStorage.removeItem("access_token");
         navigateTo("login");
       }
@@ -50,48 +51,5 @@ export function setupEventListeners() {
       navigateTo(target.dataset.page!);
       return;
     }
-
-    // 🔹 4. User Settings: Avatar Selection
-    // Default Avatar Selection
-    /* {
-      const avatarSelector = document.getElementById("avatarSelector") as HTMLImageElement;
-      //const leftArrow = document.getElementById("leftArrow");
-      //const rightArrow = document.getElementById("rightArrow");
-      //const updateAvatar = document.getElementById("updateAvatar");
-
-      if (target.closest("#leftArrow"))
-      {
-        if (avatarNumber === 1)
-          avatarNumber = 10;
-        else
-          avatarNumber--;
-        avatarSelector.src = "/images/avatar" + avatarNumber + ".jpg";
-        return;
-      }
-      if (target.closest("#rightArrow"))
-      {
-        if (avatarNumber === 10)
-          avatarNumber = 1;
-        else
-          avatarNumber++;
-        avatarSelector.src = "/images/avatar" + avatarNumber + ".jpg";
-        return;
-      }
-      if (target.closest("#updateAvatar"))
-      {
-        event.preventDefault();
-        // console.log("Avatar SRC to send: ");
-        // console.log("/images/avatar" + avatarNumber + ".jpg");
-        alert("Avatar SRC to send: /images/avatar" + avatarNumber + ".jpg"); // DB
-        //alert("Avatar correctly updated"); // FINAL (needed translation)
-      }
-    } */
-
-
   });
-
-  /* window.addEventListener("popstate", () => {
-    const page = location.pathname.replace("/", "") || "home";
-    navigateTo(page);
-  }); */
 }

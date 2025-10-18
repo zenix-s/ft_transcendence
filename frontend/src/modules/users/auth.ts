@@ -7,6 +7,9 @@ import { navigateTo } from "@/app/navigation";
 import { t } from "@/app/i18n";
 import { showToast } from "@/components/toast";
 import type { GetCurrentUserResponse } from "@/types/user";
+import { SocialWebSocketClient } from "@/modules/social/socialSocket"
+
+export let wsClient: SocialWebSocketClient | null = null;
 
 /* REGISTER NEW USER */
 export function setupRegisterForm() {
@@ -86,7 +89,12 @@ export function setupRegisterForm() {
         }
 
         // ✅ Guardar el token recibido
-        localStorage.setItem("access_token", data.token);
+        const token = data.token;
+        localStorage.setItem("access_token", token);
+
+        // Conectar WebSocket
+        wsClient = new SocialWebSocketClient(token);
+        wsClient.connect();
 
         showToast(t("UserCreatedSuccessfully"));
         registerForm.reset();
@@ -138,7 +146,12 @@ export function validateLogin() {
 
         // ✅ Guardar el token recibido
         //console.log("Respuesta completa del login:", data); // DB
-        localStorage.setItem("access_token", data.token);
+        const token = data.token;
+        localStorage.setItem("access_token", token);
+
+        // Conectar WebSocket
+        wsClient = new SocialWebSocketClient(token);
+        wsClient.connect();
 
         showToast(t("welcome"));
         navigateTo("dashboard");

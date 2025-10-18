@@ -4,17 +4,17 @@ import { AbstractRepository } from '@shared/infrastructure/db/AbstractRepository
 import fp from 'fastify-plugin';
 
 export interface IMatchRepository {
-    findAll(limit?: number, offset?: number): Promise<Match[]>;
-    findById(id: number): Promise<Match | null>;
-    findUserMatches(userId: number): Promise<Match[]>;
-    create(match: Match): Promise<Match>;
-    update(match: Match): Promise<Match | null>;
-    delete(id: number): Promise<boolean>;
-    getMatchCount(gameTypeId?: number): Promise<number>;
+    findAll({ limit, offset }: { limit?: number; offset?: number }): Promise<Match[]>;
+    findById({ id }: { id: number }): Promise<Match | null>;
+    findUserMatches({ userId }: { userId: number }): Promise<Match[]>;
+    create({ match }: { match: Match }): Promise<Match>;
+    update({ match }: { match: Match }): Promise<Match | null>;
+    delete({ id }: { id: number }): Promise<boolean>;
+    getMatchCount({ gameTypeId }: { gameTypeId?: number }): Promise<number>;
 }
 
 class MatchRepository extends AbstractRepository implements IMatchRepository {
-    async findAll(limit = 100, offset = 0): Promise<Match[]> {
+    async findAll({ limit = 100, offset = 0 }: { limit?: number; offset?: number } = {}): Promise<Match[]> {
         const result = await this.findMany<MatchRow>(
             'SELECT * FROM matches ORDER BY created_at DESC LIMIT ? OFFSET ?',
             [limit, offset]
@@ -50,7 +50,7 @@ class MatchRepository extends AbstractRepository implements IMatchRepository {
         return matches;
     }
 
-    async findById(id: number): Promise<Match | null> {
+    async findById({ id }: { id: number }): Promise<Match | null> {
         const result = await this.findOne<MatchRow>('SELECT * FROM matches WHERE id = ?', [id]);
         if (!result) return null;
 
@@ -67,7 +67,7 @@ class MatchRepository extends AbstractRepository implements IMatchRepository {
         });
     }
 
-    async findUserMatches(userId: number): Promise<Match[]> {
+    async findUserMatches({ userId }: { userId: number }): Promise<Match[]> {
         const result = await this.findMany<MatchRow>(
             'SELECT m.* FROM matches m JOIN match_players mp ON m.id = mp.match_id WHERE mp.user_id = ? ORDER BY m.created_at DESC',
             [userId]
@@ -103,7 +103,7 @@ class MatchRepository extends AbstractRepository implements IMatchRepository {
         return matches;
     }
 
-    async create(match: Match): Promise<Match> {
+    async create({ match }: { match: Match }): Promise<Match> {
         await this.run('BEGIN TRANSACTION');
 
         try {
@@ -141,7 +141,7 @@ class MatchRepository extends AbstractRepository implements IMatchRepository {
         }
     }
 
-    async update(match: Match): Promise<Match | null> {
+    async update({ match }: { match: Match }): Promise<Match | null> {
         if (!match.id) throw new Error('Cannot update match without ID');
 
         await this.run('BEGIN TRANSACTION');
@@ -176,12 +176,12 @@ class MatchRepository extends AbstractRepository implements IMatchRepository {
         }
     }
 
-    async delete(id: number): Promise<boolean> {
+    async delete({ id }: { id: number }): Promise<boolean> {
         const result = await this.run('DELETE FROM matches WHERE id = ?', [id]);
         return Number(result.affectedRows) > 0;
     }
 
-    async getMatchCount(gameTypeId?: number): Promise<number> {
+    async getMatchCount({ gameTypeId }: { gameTypeId?: number } = {}): Promise<number> {
         const query = gameTypeId
             ? 'SELECT COUNT(*) as count FROM matches WHERE game_type_id = ?'
             : 'SELECT COUNT(*) as count FROM matches';

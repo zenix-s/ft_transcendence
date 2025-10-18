@@ -28,7 +28,7 @@ export default class GetCurrentUserQuery implements IQuery<IGetCurrentUserReques
         if (!request) return Result.error(ApplicationError.BadRequest);
 
         try {
-            const userResult = await this.fastify.UserRepository.getUserById(request.userId);
+            const userResult = await this.fastify.UserRepository.getUserById({ id: request.userId });
             if (!userResult.isSuccess || !userResult.value)
                 return Result.error(ApplicationError.UserNotFound);
 

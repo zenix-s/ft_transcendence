@@ -33,29 +33,37 @@ export class AddFriendCommand implements ICommand<AddFriendCommandRequest, null>
 
             const { userId, newFriendUsername } = request;
 
-            const friendResult = await this._fastify.UserRepository.getUserByUsername(newFriendUsername);
+            const friendResult = await this._fastify.UserRepository.getUserByUsername({
+                username: newFriendUsername,
+            });
             if (!friendResult.isSuccess || !friendResult.value || !friendResult.value.id) {
                 return Result.error(ApplicationError.UserNotFound);
             }
 
             const friendId = friendResult.value.id;
 
-            const userExists = await this._fastify.UserRepository.getUserById(userId);
+            const userExists = await this._fastify.UserRepository.getUserById({ id: userId });
             if (!userExists.isSuccess || !userExists.value) {
                 return Result.error(ApplicationError.UserNotFound);
             }
 
-            const friendExists = await this._fastify.UserRepository.getUserById(friendId);
+            const friendExists = await this._fastify.UserRepository.getUserById({ id: friendId });
             if (!friendExists.isSuccess || !friendExists.value) {
                 return Result.error(ApplicationError.UserNotFound);
             }
 
-            const alreadyFriends = await this._fastify.FriendShipRepository.areFriends(userId, friendId);
+            const alreadyFriends = await this._fastify.FriendShipRepository.areFriends({
+                userId1: userId,
+                userId2: friendId,
+            });
             if (alreadyFriends.isSuccess && alreadyFriends.value) {
                 return Result.error(ApplicationError.AlreadyFriendsError);
             }
 
-            const addFriendResult = await this._fastify.FriendShipRepository.addFriend(userId, friendId);
+            const addFriendResult = await this._fastify.FriendShipRepository.addFriend({
+                userId1: userId,
+                userId2: friendId,
+            });
             if (!addFriendResult.isSuccess) {
                 return Result.error(ApplicationError.FriendshipCreationError);
             }

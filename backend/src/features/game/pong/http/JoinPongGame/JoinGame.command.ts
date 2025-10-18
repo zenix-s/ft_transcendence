@@ -48,14 +48,14 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
         try {
             const { gameId, userId } = request;
 
-            const gameResult = await this.gameRepository.getGame(gameId);
+            const gameResult = await this.gameRepository.getGame({ gameId });
             if (!gameResult.isSuccess || !gameResult.value) {
                 return Result.error(ApplicationError.GameNotFound);
             }
 
             const game = gameResult.value;
 
-            const match = await this.matchRepository.findById(gameId);
+            const match = await this.matchRepository.findById({ id: gameId });
             if (!match) {
                 return Result.error(ApplicationError.MatchNotFound);
             }
@@ -81,10 +81,10 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
 
                 const playerAdded = match.addPlayer(userId);
                 if (playerAdded) {
-                    await this.matchRepository.update(match);
+                    await this.matchRepository.update({ match });
                 }
 
-                const updateResult = await this.gameRepository.updateGame(gameId, game);
+                const updateResult = await this.gameRepository.updateGame({ gameId, game });
                 if (!updateResult.isSuccess) {
                     return Result.error(ApplicationError.GameUpdateError);
                 }
@@ -112,17 +112,17 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
 
             const playerAdded = match.addPlayer(userId);
             if (playerAdded) {
-                await this.matchRepository.update(match);
+                await this.matchRepository.update({ match });
 
                 if (game.getPlayerCount() === 2 && match.canStart()) {
                     const started = match.start();
                     if (started) {
-                        await this.matchRepository.update(match);
+                        await this.matchRepository.update({ match });
                     }
                 }
             }
 
-            const updateResult = await this.gameRepository.updateGame(gameId, game);
+            const updateResult = await this.gameRepository.updateGame({ gameId, game });
             if (!updateResult.isSuccess) {
                 return Result.error(ApplicationError.GameUpdateError);
             }

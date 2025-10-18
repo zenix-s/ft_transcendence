@@ -12,19 +12,25 @@ export interface AuthenticationUserDto extends User {
 export type CreateUserDto = Omit<AuthenticationUserDto, 'id'>;
 
 export interface IUserRepository {
-    createUser(user: CreateUserDto): Promise<Result<User>>;
-    getUserByEmail(email: string): Promise<Result<AuthenticationUserDto>>;
-    getUserByUsername(username: string): Promise<Result<AuthenticationUserDto>>;
-    getUserById(id: number): Promise<Result<AuthenticationUserDto>>;
-    updateUserAvatar(userId: number, avatarUrl: string): Promise<Result<void>>;
-    updateUsername(id: number, newUsername: string): Promise<Result<User>>;
-    updatePassword(id: number, newPassword: string): Promise<Result<User>>;
-    updateConnectionStatus(userId: number, isConnected: boolean): Promise<Result<void>>;
-    getUserByUsernameInsensitive(username: string): Promise<Result<AuthenticationUserDto>>;
+    createUser({ user }: { user: CreateUserDto }): Promise<Result<User>>;
+    getUserByEmail({ email }: { email: string }): Promise<Result<AuthenticationUserDto>>;
+    getUserByUsername({ username }: { username: string }): Promise<Result<AuthenticationUserDto>>;
+    getUserById({ id }: { id: number }): Promise<Result<AuthenticationUserDto>>;
+    updateUserAvatar({ userId, avatarUrl }: { userId: number; avatarUrl: string }): Promise<Result<void>>;
+    updateUsername({ id, newUsername }: { id: number; newUsername: string }): Promise<Result<User>>;
+    updatePassword({ id, newPassword }: { id: number; newPassword: string }): Promise<Result<User>>;
+    updateConnectionStatus({
+        userId,
+        isConnected,
+    }: {
+        userId: number;
+        isConnected: boolean;
+    }): Promise<Result<void>>;
+    getUserByUsernameInsensitive({ username }: { username: string }): Promise<Result<AuthenticationUserDto>>;
 }
 
 class UserRepository extends AbstractRepository implements IUserRepository {
-    async createUser(user: CreateUserDto): Promise<Result<AuthenticationUserDto>> {
+    async createUser({ user }: { user: CreateUserDto }): Promise<Result<AuthenticationUserDto>> {
         await this.run('INSERT INTO users (username, email, password) VALUES (?, ?, ?)', [
             user.username,
             user.email,
@@ -43,13 +49,20 @@ class UserRepository extends AbstractRepository implements IUserRepository {
         return Result.success(row);
     }
 
-    async getUserByEmail(email: string): Promise<Result<AuthenticationUserDto>> {
-        // Convertir el email recibido a lowerCase
-        const normalizedEmail = email.toLowerCase();
-
+    async getUserByEmail({ email }: { email: string }): Promise<Result<AuthenticationUserDto>> {
         const row = await this.findOne<AuthenticationUserRow>(
-            'SELECT id, username, email, password, avatar, is_connected FROM users WHERE email = ?',
-            [normalizedEmail]
+            `SELECT
+                id,
+                username,
+                email,
+                password,
+                avatar,
+                is_connected
+            FROM
+                users
+            WHERE
+                LOWER(email) = LOWER(?)`,
+            [email]
         );
 
         if (!row) {
@@ -59,7 +72,7 @@ class UserRepository extends AbstractRepository implements IUserRepository {
         return Result.success(row);
     }
 
-    async getUserByUsername(username: string): Promise<Result<AuthenticationUserDto>> {
+    async getUserByUsername({ username }: { username: string }): Promise<Result<AuthenticationUserDto>> {
         const row = await this.findOne<AuthenticationUserRow>(
             'SELECT id, username, email, password, avatar, is_connected FROM users WHERE username = ?',
             [username]
@@ -72,7 +85,11 @@ class UserRepository extends AbstractRepository implements IUserRepository {
         return Result.success(row);
     }
 
-    async getUserByUsernameInsensitive(username: string): Promise<Result<AuthenticationUserDto>> {
+    async getUserByUsernameInsensitive({
+        username,
+    }: {
+        username: string;
+    }): Promise<Result<AuthenticationUserDto>> {
         // Convertir el username recibido a lowerCase
         const normalizedUsername = username.toLowerCase();
 
@@ -88,7 +105,7 @@ class UserRepository extends AbstractRepository implements IUserRepository {
         return Result.success(row);
     }
 
-    async getUserById(id: number): Promise<Result<AuthenticationUserDto>> {
+    async getUserById({ id }: { id: number }): Promise<Result<AuthenticationUserDto>> {
         const row = await this.findOne<AuthenticationUserRow>(
             'SELECT id, username, email, password, avatar, is_connected FROM users WHERE id = ?',
             [id]
@@ -101,7 +118,13 @@ class UserRepository extends AbstractRepository implements IUserRepository {
         return Result.success(row);
     }
 
-    async updateUserAvatar(userId: number, avatarUrl: string): Promise<Result<void>> {
+    async updateUserAvatar({
+        userId,
+        avatarUrl,
+    }: {
+        userId: number;
+        avatarUrl: string;
+    }): Promise<Result<void>> {
         try {
             await this.run('UPDATE users SET avatar = ? WHERE id = ?', [avatarUrl, userId]);
             return Result.success(undefined);
@@ -110,7 +133,7 @@ class UserRepository extends AbstractRepository implements IUserRepository {
         }
     }
 
-    async updateUsername(id: number, newUsername: string): Promise<Result<User>> {
+    async updateUsername({ id, newUsername }: { id: number; newUsername: string }): Promise<Result<User>> {
         await this.run('UPDATE users SET username = ? WHERE id = ?', [newUsername, id]);
 
         const row = await this.findOne<AuthenticationUserRow>(
@@ -124,8 +147,8 @@ class UserRepository extends AbstractRepository implements IUserRepository {
         return Result.success(row);
     }
 
-    async updatePassword(id: number, password: string): Promise<Result<User>> {
-        await this.run('UPDATE users SET password = ? WHERE id = ?', [password, id]);
+    async updatePassword({ id, newPassword }: { id: number; newPassword: string }): Promise<Result<User>> {
+        await this.run('UPDATE users SET password = ? WHERE id = ?', [newPassword, id]);
 
         const row = await this.findOne<AuthenticationUserRow>(
             'SELECT id, username, email, password, avatar, is_connected FROM users WHERE id = ?',
@@ -138,7 +161,13 @@ class UserRepository extends AbstractRepository implements IUserRepository {
         return Result.success(row);
     }
 
-    async updateConnectionStatus(userId: number, isConnected: boolean): Promise<Result<void>> {
+    async updateConnectionStatus({
+        userId,
+        isConnected,
+    }: {
+        userId: number;
+        isConnected: boolean;
+    }): Promise<Result<void>> {
         try {
             await this.run('UPDATE users SET is_connected = ? WHERE id = ?', [isConnected ? 1 : 0, userId]);
             return Result.success(undefined);

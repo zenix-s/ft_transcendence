@@ -41,7 +41,7 @@ export default class LoginCommand implements ICommand<ILoginRequest, IAuthRespon
         const { email, password } = request;
 
         try {
-            const userResult = await this.fastify.UserRepository.getUserByEmail(email);
+            const userResult = await this.fastify.UserRepository.getUserByEmail({ email });
             if (!userResult.isSuccess || !userResult.value) {
                 return Result.error(ApplicationError.InvalidCredentials);
             }

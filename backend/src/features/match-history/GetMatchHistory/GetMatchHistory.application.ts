@@ -51,13 +51,13 @@ export default class GetMatchHistoryQuery
             let total: number;
 
             if (request?.userId) {
-                matches = await this.matchRepository.findUserMatches(request.userId);
+                matches = await this.matchRepository.findUserMatches({ userId: request.userId });
                 total = matches.length;
 
                 matches = matches.slice(offset, offset + limit);
             } else {
-                matches = await this.matchRepository.findAll(limit, offset);
-                total = await this.matchRepository.getMatchCount();
+                matches = await this.matchRepository.findAll({ limit, offset });
+                total = await this.matchRepository.getMatchCount({});
             }
 
             return Result.success({

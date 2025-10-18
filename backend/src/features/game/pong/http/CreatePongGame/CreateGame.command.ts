@@ -62,7 +62,7 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
             const winnerScore = request?.winnerScore || 5;
             const maxGameTime = request?.maxGameTime || 120;
 
-            const gameType = await this.gameTypeRepository.findByName('pong');
+            const gameType = await this.gameTypeRepository.findByName({ name: 'pong' });
             if (!gameType) {
                 return Result.error(ApplicationError.GameTypeNotFound);
             }
@@ -70,14 +70,17 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
             const playerIds = request?.userId ? [request.userId] : [];
             const match = new Match(gameType.id, playerIds);
 
-            const createdMatch = await this.matchRepository.create(match);
+            const createdMatch = await this.matchRepository.create({ match });
 
             const game = new PongGame(winnerScore, maxGameTime);
-            const gameIdResult = await this.gameRepository.createGame(game, createdMatch.id as number);
+            const gameIdResult = await this.gameRepository.createGame({
+                game,
+                matchId: createdMatch.id as number,
+            });
 
             if (!gameIdResult.isSuccess || !gameIdResult.value) {
                 try {
-                    await this.matchRepository.delete(createdMatch.id as number);
+                    await this.matchRepository.delete({ id: createdMatch.id as number });
                 } catch (deleteError) {
                     this.fastify.log.error(deleteError, 'Failed to delete match after game creation failure');
                 }

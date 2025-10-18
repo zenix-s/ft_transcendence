@@ -50,12 +50,14 @@ export default class CreateUserCommand implements ICommand<IRegisterRequest, IAu
         const email = request.email.toLowerCase();
 
         try {
-            const existingUserEmail = await this.fastify.UserRepository.getUserByEmail(email);
+            const existingUserEmail = await this.fastify.UserRepository.getUserByEmail({ email });
             if (existingUserEmail.isSuccess) {
                 return Result.error(ApplicationError.UserAlreadyExists);
             }
 
-            const existingUsername = await this.fastify.UserRepository.getUserByUsernameInsensitive(username);
+            const existingUsername = await this.fastify.UserRepository.getUserByUsernameInsensitive({
+                username,
+            });
             if (existingUsername.isSuccess) {
                 return Result.error(ApplicationError.UserAlreadyExists);
             }
@@ -63,9 +65,11 @@ export default class CreateUserCommand implements ICommand<IRegisterRequest, IAu
             const hashedPassword = await hashPassword(password);
 
             const user = await this.fastify.UserRepository.createUser({
-                username,
-                email,
-                password: hashedPassword,
+                user: {
+                    username,
+                    email,
+                    password: hashedPassword,
+                },
             });
 
             if (!user.isSuccess || !user.value) {

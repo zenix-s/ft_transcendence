@@ -6,12 +6,12 @@ import fp from 'fastify-plugin';
 import { ApplicationError } from '@shared/Errors';
 
 export interface IPongGameRepository {
-    createGame(game: PongGame, matchId: number): Promise<Result<number>>;
-    getGame(gameId: number): Promise<Result<PongGame>>;
-    updateGame(gameId: number, game: PongGame): Promise<Result<void>>;
-    deleteGame(gameId: number): Promise<Result<void>>;
+    createGame({ game, matchId }: { game: PongGame; matchId: number }): Promise<Result<number>>;
+    getGame({ gameId }: { gameId: number }): Promise<Result<PongGame>>;
+    updateGame({ gameId, game }: { gameId: number; game: PongGame }): Promise<Result<void>>;
+    deleteGame({ gameId }: { gameId: number }): Promise<Result<void>>;
     getAllGames(): Promise<Result<Map<number, PongGame>>>;
-    exists(gameId: number): Promise<Result<boolean>>;
+    exists({ gameId }: { gameId: number }): Promise<Result<boolean>>;
 }
 
 class PongGameRepository implements IPongGameRepository {
@@ -21,7 +21,7 @@ class PongGameRepository implements IPongGameRepository {
         this.gameManager = new PongGameManager(fastify);
     }
 
-    async createGame(game: PongGame, matchId: number): Promise<Result<number>> {
+    async createGame({ game, matchId }: { game: PongGame; matchId: number }): Promise<Result<number>> {
         try {
             // Use matchId as gameId for consistency - they should be the same in this system
             const gameId = matchId;
@@ -35,7 +35,7 @@ class PongGameRepository implements IPongGameRepository {
         }
     }
 
-    async getGame(gameId: number): Promise<Result<PongGame>> {
+    async getGame({ gameId }: { gameId: number }): Promise<Result<PongGame>> {
         const game = this.gameManager.getGame(gameId);
         if (!game) {
             return Result.error(ApplicationError.GameNotFound);
@@ -43,7 +43,7 @@ class PongGameRepository implements IPongGameRepository {
         return Result.success(game);
     }
 
-    async updateGame(gameId: number, game: PongGame): Promise<Result<void>> {
+    async updateGame({ gameId, game }: { gameId: number; game: PongGame }): Promise<Result<void>> {
         if (!this.gameManager.gameExists(gameId)) {
             return Result.error(ApplicationError.GameNotFound);
         }
@@ -51,7 +51,7 @@ class PongGameRepository implements IPongGameRepository {
         return Result.success(undefined);
     }
 
-    async deleteGame(gameId: number): Promise<Result<void>> {
+    async deleteGame({ gameId }: { gameId: number }): Promise<Result<void>> {
         if (!this.gameManager.gameExists(gameId)) {
             return Result.error(ApplicationError.GameNotFound);
         }
@@ -63,7 +63,7 @@ class PongGameRepository implements IPongGameRepository {
         return Result.success(this.gameManager.getAllGames());
     }
 
-    async exists(gameId: number): Promise<Result<boolean>> {
+    async exists({ gameId }: { gameId: number }): Promise<Result<boolean>> {
         return Result.success(this.gameManager.gameExists(gameId));
     }
 }

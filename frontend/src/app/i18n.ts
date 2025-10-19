@@ -119,6 +119,10 @@ export const translations: Record<Language, Record<string, string>> = {
     add: "Add",
     connected: "Connected",
     disconnected: "Disconnected",
+    AlreadyFriendsError: "Existing friend",
+    FriendshipCreationError: "Error adding friend. Please try again later.",
+    FriendAddedSuccessfully: "Friend added successfully",
+    YourOwnFriend: "Trust yourself, you can make more friends 😅",
   },
   es: {
     start: "Comenzar",
@@ -237,6 +241,10 @@ export const translations: Record<Language, Record<string, string>> = {
     add: "Agregar",
     connected: "Conectados",
     disconnected: "Desconectados",
+    AlreadyFriendsError: "Amigo ya existente",
+    FriendshipCreationError: "Error al agregar amigo. Por favor, inténtalo más tarde",
+    FriendAddedSuccessfully: "Amigo agregado correctamente",
+    YourOwnFriend: "Confía en ti, puedes conseguir más amigos 😅",
   },
   fr: {
     start: "Démarrer",
@@ -355,6 +363,10 @@ export const translations: Record<Language, Record<string, string>> = {
     add: "Ajouter",
     connected: "Connecté",
     disconnected: "Déconnecté",
+    AlreadyFriendsError: "Ami existant",
+    FriendshipCreationError: "Erreur lors de l'ajout d'un ami. Veuillez réessayer ultérieurement",
+    FriendAddedSuccessfully: "Ami ajouté avec succès",
+    YourOwnFriend: "Fais-toi confiance, tu peux te faire plus d’amis 😅",
   },
 };
 

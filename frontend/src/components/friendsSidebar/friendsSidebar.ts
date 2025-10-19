@@ -1,6 +1,17 @@
 import { updateTexts } from "@/app/i18n";
+import { addFriend } from "@/modules/social/addFriend";
+import { getCurrentUser } from "@/modules/users";
+import type { User } from "@/types/user";
 
-export async function initFriendsSidebar() {
+
+export async function initFriendsSidebar(user?: User) {
+  // 1. Si no recibo un user se lo solicito a getCurrentUser()
+  if (!user) {
+    const userResponse = await getCurrentUser();
+    if (!userResponse) return;
+    user = userResponse.user;
+  }
+
   const container = document.getElementById("friends-sidebar-container");
   if (!container) return console.warn("⚠️ No se encontró #friends-sidebar-container");
 
@@ -15,8 +26,8 @@ export async function initFriendsSidebar() {
   // 🔹 Ahora sí, obtener referencias
   const toggleBtn = document.getElementById("friends-toggle-btn")!;
   const panel = document.getElementById("friends-panel")!;
-  const addFriendBtn = document.getElementById("add-friend-btn")!;
   const friendInput = document.getElementById("friend-input") as HTMLInputElement;
+  const addFriendBtn = document.getElementById("add-friend-btn")!;
   const onlineList = document.getElementById("online-friends")!;
   const offlineList = document.getElementById("offline-friends")!;
 
@@ -58,9 +69,18 @@ export async function initFriendsSidebar() {
   });
 
   // 🔹 Agregar amigo
-  addFriendBtn.addEventListener("click", () => {
+  addFriendBtn.addEventListener("click", async () => {
+    const response = await addFriend(user, friendInput.value);
+    if (response)
+      friendInput.value = "";
+  });
+
+  /* addFriendBtn.addEventListener("click", () => {
     const name = friendInput.value.trim();
-    if (!name) return;
+    if (!name) {
+      friendInput.value = "";
+      return;
+    }
     if (onlineFriends.includes(name) || offlineFriends.includes(name)) {
       alert("Ese amigo ya está en la lista");
       return;
@@ -68,7 +88,7 @@ export async function initFriendsSidebar() {
     offlineFriends.push(name);
     renderLists();
     friendInput.value = "";
-  });
+  }); */
 
   // 🔹 Invitar a jugar
   document.addEventListener("click", (event) => {

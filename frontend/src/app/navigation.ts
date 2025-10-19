@@ -115,7 +115,9 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
 
           case "settings":
             await loadSettings();
-            initFriendsSidebar();
+            requestAnimationFrame(async () => {
+              initFriendsSidebar();
+            });
             break;
 
           case "game":

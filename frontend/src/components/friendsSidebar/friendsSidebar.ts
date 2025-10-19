@@ -1,3 +1,5 @@
+import { updateTexts } from "@/app/i18n";
+
 export async function initFriendsSidebar() {
   const container = document.getElementById("friends-sidebar-container");
   if (!container) return console.warn("⚠️ No se encontró #friends-sidebar-container");
@@ -76,4 +78,6 @@ export async function initFriendsSidebar() {
       alert(`Invitación enviada a ${name}`);
     }
   });
+
+  updateTexts();
 }

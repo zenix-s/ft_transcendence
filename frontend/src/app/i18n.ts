@@ -113,6 +113,12 @@ export const translations: Record<Language, Record<string, string>> = {
     modalLogoutIsConfirmedTitle: "Come back soon!",
     modalLogoutIsConfirmedText: "We are going to miss you 😭",
     modalLogoutIsConfirmedConfirmButtonText: "Accept",
+    /* Friends */
+    friends: "Friends",
+    friendName: "Friend's name...",
+    add: "Add",
+    connected: "Connected",
+    disconnected: "Disconnected",
   },
   es: {
     start: "Comenzar",
@@ -225,6 +231,12 @@ export const translations: Record<Language, Record<string, string>> = {
     modalLogoutIsConfirmedTitle: "¡Vuelve pronto!",
     modalLogoutIsConfirmedText: "Te vamos a echar de menos 😭",
     modalLogoutIsConfirmedConfirmButtonText: "Aceptar",
+    /* Friends */
+    friends: "Amigos",
+    friendName: "Nombre del amigo...",
+    add: "Agregar",
+    connected: "Conectados",
+    disconnected: "Desconectados",
   },
   fr: {
     start: "Démarrer",
@@ -337,6 +349,12 @@ export const translations: Record<Language, Record<string, string>> = {
     modalLogoutIsConfirmedTitle: "Revenez vite!",
     modalLogoutIsConfirmedText: "Vous allez nous manquer 😭",
     modalLogoutIsConfirmedConfirmButtonText: "Accepter",
+    /* Friends */
+    friends: "Amis",
+    friendName: "Nom de l'ami...",
+    add: "Ajouter",
+    connected: "Connecté",
+    disconnected: "Déconnecté",
   },
 };
 
@@ -396,13 +414,18 @@ export function updateTexts() {
     const key = el.dataset.i18n!;
     const translated = t(key); // Traducción obtenida
 
+    // Si el elemento tiene data-label, SOLO se traduce ese atributo
     if (el.hasAttribute("data-label")) {
-      // 🔹 Si el elemento tiene data-label, SOLO se traduce ese atributo
       el.setAttribute("data-label", translated);
-    } else if (el.getAttribute("role") === "tooltip") {
-      el.innerHTML = translated; // Permite HTML en tooltips
-    } else {
-      // 🔹 Si NO tiene data-label, se traduce el contenido visible
+    }
+
+    // Permite HTML en tooltips
+    else if (el.getAttribute("role") === "tooltip") {
+      el.innerHTML = translated;
+    }
+
+    // 🔹 Si NO tiene data-label, se traduce el contenido visible
+    else {
       el.textContent = translated;
     }
 

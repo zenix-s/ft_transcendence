@@ -1,5 +1,5 @@
 import { updateTexts } from "@/app/i18n";
-import { addFriend } from "@/modules/social/addFriend";
+import { addFriend, deleteFriend } from "@/modules/social/friendsManager";
 import { getCurrentUser } from "@/modules/users";
 import type { User } from "@/types/user";
 
@@ -30,6 +30,8 @@ export async function initFriendsSidebar(user?: User) {
   const addFriendBtn = document.getElementById("add-friend-btn")!;
   const onlineList = document.getElementById("online-friends")!;
   const offlineList = document.getElementById("offline-friends")!;
+  const deleteFriendInput = document.getElementById("delete-friend-input") as HTMLInputElement;
+  const deleteFriendBtn = document.getElementById("delete-friend-btn")!;
 
   // Ejemplo de datos simulados
   const onlineFriends = ["María", "Carlos"];
@@ -37,6 +39,26 @@ export async function initFriendsSidebar(user?: User) {
 
   // 🔹 Renderizado dinámico
   function renderLists() {
+    onlineList.innerHTML = onlineFriends
+      .map(
+        (name) => `
+        <li class="flex justify-between items-center bg-white/20 rounded-md px-3 py-2">
+          <span>${name}</span>
+        </li>`
+      )
+      .join("");
+
+    offlineList.innerHTML = offlineFriends
+      .map(
+        (name) => `
+        <li class="flex justify-between items-center bg-white/10 rounded-md px-3 py-2">
+          <span>${name}</span>
+        </li>`
+      )
+      .join("");
+  }
+
+  /* function renderLists() {
     onlineList.innerHTML = onlineFriends
       .map(
         (name) => `
@@ -57,7 +79,7 @@ export async function initFriendsSidebar(user?: User) {
         </li>`
       )
       .join("");
-  }
+  } */
 
   renderLists();
 
@@ -73,6 +95,13 @@ export async function initFriendsSidebar(user?: User) {
     const response = await addFriend(user, friendInput.value);
     if (response)
       friendInput.value = "";
+  });
+
+  // 🔹 Eliminar amigo
+  deleteFriendBtn.addEventListener("click", async () => {
+    const response = await deleteFriend(deleteFriendInput.value);
+    if (response)
+      deleteFriendInput.value = "";
   });
 
   /* addFriendBtn.addEventListener("click", () => {

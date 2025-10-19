@@ -35,7 +35,6 @@ export async function addFriend(user: User, friendUsername: string): Promise<boo
 		});
 
 		const data = await response.json();
-		console.log("data = " + data);
 
 		if (!response.ok) {
 			const errorcode = data.error || "UserNotFound";
@@ -44,6 +43,44 @@ export async function addFriend(user: User, friendUsername: string): Promise<boo
 		}
 
 		showToast(t("FriendAddedSuccessfully"));
+		return true;
+
+	} catch (error) {
+		showToast(t("NetworkOrServerError"), "error");
+		return false;
+	}
+}
+
+export async function deleteFriend(friendUsername: string): Promise<boolean> {
+	if (!friendUsername || !friendUsername.trim())
+	{
+		showToast(t("fillAllFields"), "error");
+		return false;
+	}
+
+	try {
+		const token = localStorage.getItem("access_token");
+		if (!token) {
+			console.warn(t("NoTokenFound"));
+			showToast(t("NoTokenFound"), "error");
+			navigateTo("login");
+			return false;
+		}
+
+		const response = await fetch(`/api/friendship/${friendUsername}`, {
+			method: "DELETE",
+			headers: { "Authorization": `Bearer ${token}` }
+		});
+
+		const data = await response.json().catch(() => ({})); // evita crash si no hay body
+
+		if (!response.ok) {
+			const errorcode = data.error || "DeletionError";
+			showToast(t(errorcode), "error");
+			return false;
+		}
+
+		showToast(t("FriendRemovedSuccessfully"));
 		return true;
 
 	} catch (error) {

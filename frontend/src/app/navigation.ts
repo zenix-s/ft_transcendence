@@ -21,7 +21,7 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
 
   // Para que cuando le paso parámetros a la url las cosas funcionen
   const pageBase: string = (page.split("?"))[0];
-  console.log("pageBase=", pageBase); // DB
+  //console.log("pageBase=", pageBase); // DB
 
   // 🚨 Bloquear números SOLO cuando vienen de la SPA (clicks internos)
   if (!skipPushState && !isNaN(Number(page))) {

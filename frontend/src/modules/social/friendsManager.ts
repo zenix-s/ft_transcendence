@@ -2,6 +2,7 @@ import { t } from "@/app/i18n";
 import { navigateTo } from "@/app/navigation";
 import { showToast } from "@/components/toast";
 import type { User } from "@/types/user";
+//import { getSocialSocket } from "@/modules/social/socketInstance";
 
 export async function addFriend(user: User, friendUsername: string): Promise<boolean> {
 	if (!friendUsername || !friendUsername.trim())
@@ -43,6 +44,8 @@ export async function addFriend(user: User, friendUsername: string): Promise<boo
 		}
 
 		showToast(t("FriendAddedSuccessfully"));
+		//const ws = getSocialSocket();
+		//ws?.requestFriendsList(); // 🔁 Fuerza actualización
 		return true;
 
 	} catch (error) {

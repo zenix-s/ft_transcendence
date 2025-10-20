@@ -1,6 +1,7 @@
 import { navigateTo } from "@/app/navigation";
 import { modal } from "@/components/modal";
-import { wsClient } from "@/modules/users";
+//import { wsClient } from "@/modules/users";
+import { destroySocialSocket } from "@/modules/social/socketInstance";
 
 /**
  * The `setupEventListeners` function adds event listeners for click and popstate events to handle
@@ -17,9 +18,10 @@ export function setupEventListeners() {
       const confirmed = await modal("logout");
       if (confirmed)
       {
-        if (wsClient) {
+        /* if (wsClient) {
           wsClient.disconnect();
-      }
+        } */
+        destroySocialSocket(); // Desconectar y limpiar el WebSocket
         localStorage.removeItem("access_token");
         navigateTo("login");
       }

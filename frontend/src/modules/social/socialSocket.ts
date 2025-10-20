@@ -43,14 +43,24 @@ export class SocialWebSocketClient {
     this.send(msg);
   }
 
-  private requestFriendsList() {
+  public requestFriendsList() {
     if (!this.isAuthenticated) {
       console.error("❌ No autenticado todavía");
       return;
     }
+
+    if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+      console.warn("⚠️ WebSocket no está abierto todavía");
+      return;
+    }
+
     const msg = { action: 1 };
     console.log("📋 Solicitando lista de amigos...");
     this.send(msg);
+  }
+
+  public refreshFriendsList() {
+    this.requestFriendsList();
   }
 
   private send(obj: any) {
@@ -66,12 +76,15 @@ export class SocialWebSocketClient {
       case "authSuccess":
         this.isAuthenticated = true;
         console.log("✅ Autenticado correctamente:", message.userId);
-        setTimeout(() => this.requestFriendsList(), 100);
+        // Mejor sólo devolver lista cuando la página lo solicite????
+        // setTimeout(() => this.requestFriendsList(), 100);
         break;
 
       case "friendsList":
         this.friends = message.friends;
         console.log("👥 Lista de amigos recibida:", this.friends);
+        if (this.onFriendsUpdateCallback)
+          this.onFriendsUpdateCallback(this.friends);
         break;
 
       case "friendConnectionStatus":
@@ -85,6 +98,13 @@ export class SocialWebSocketClient {
       default:
         console.log("📨 Mensaje recibido:", message);
     }
+  }
+
+  private onFriendsUpdateCallback: ((friends: any[]) => void) | null = null;
+
+  public onFriendsUpdate(callback: (friends: any[]) => void) {
+    if (this.onFriendsUpdateCallback) return; // Ignorar si ya hay uno
+    this.onFriendsUpdateCallback = callback;
   }
 
   disconnect() {

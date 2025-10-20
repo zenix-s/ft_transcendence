@@ -27,6 +27,40 @@ import { setLanguage, t, currentLang } from "@/app/i18n";
 const initialPage = location.pathname.replace("/", "") || "home";
 navigateTo(initialPage, true);
 
+// 🌐 Inicializar WebSocket Social si hay token
+import { createSocialSocket, getSocialSocket } from "@/modules/social/socketInstance";
+
+/* const token = localStorage.getItem("access_token");
+if (token && !getSocialSocket()) {
+  console.log("🌐 Inicializando WebSocket Social desde main.ts");
+  createSocialSocket(token);
+} */
+
+async function initSocialSocket() {
+  const token = localStorage.getItem("access_token");
+  if (!token) return null;
+
+  let ws = getSocialSocket();
+  if (!ws) {
+    console.log("🌐 Inicializando WebSocket Social desde main.ts");
+    ws = createSocialSocket(token);
+    // Esperar a que el socket se conecte y autentique antes de continuar
+    await new Promise<void>((resolve) => {
+      const interval = setInterval(() => {
+        if ((ws as any).isAuthenticated) { // marca pública o usa un getter
+          clearInterval(interval);
+          resolve();
+        }
+      }, 50);
+    });
+  }
+
+  return ws;
+}
+
+// Inicializa el WebSocket al cargar
+initSocialSocket();
+
 // Configurar los eventos
 setupEventListeners();
 window.addEventListener("popstate", handlePopState);

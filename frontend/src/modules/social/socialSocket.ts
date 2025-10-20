@@ -43,14 +43,24 @@ export class SocialWebSocketClient {
     this.send(msg);
   }
 
-  private requestFriendsList() {
+  public requestFriendsList() {
     if (!this.isAuthenticated) {
       console.error("❌ No autenticado todavía");
       return;
     }
+
+    if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+      console.warn("⚠️ WebSocket no está abierto todavía");
+      return;
+    }
+
     const msg = { action: 1 };
     console.log("📋 Solicitando lista de amigos...");
     this.send(msg);
+  }
+
+  public refreshFriendsList() {
+    this.requestFriendsList();
   }
 
   private send(obj: any) {
@@ -66,25 +76,50 @@ export class SocialWebSocketClient {
       case "authSuccess":
         this.isAuthenticated = true;
         console.log("✅ Autenticado correctamente:", message.userId);
+        // Mejor sólo devolver lista cuando la página lo solicite????
         setTimeout(() => this.requestFriendsList(), 100);
         break;
 
       case "friendsList":
         this.friends = message.friends;
         console.log("👥 Lista de amigos recibida:", this.friends);
+        if (this.onFriendsUpdateCallback)
+          this.onFriendsUpdateCallback([...this.friends]);
         break;
 
       case "friendConnectionStatus":
         const friend = this.friends.find(f => f.id === message.friendId);
-        if (friend) friend.is_connected = message.isConnected;
-        console.log(
-          `🔄 ${message.username} está ahora ${message.isConnected ? "🟢 conectado" : "🔴 desconectado"}`
-        );
+        if (friend) {
+          friend.is_connected = message.isConnected;
+          console.log(
+            `🔄 ${message.username} está ahora ${message.isConnected ? "🟢 conectado" : "🔴 desconectado"}`
+          );
+          // Notificar al frontend
+          if (this.onFriendsUpdateCallback) {
+            this.onFriendsUpdateCallback([...this.friends]); // clonar para forzar re-render
+          }
+        }
         break;
 
       default:
         console.log("📨 Mensaje recibido:", message);
     }
+  }
+
+  private onFriendsUpdateCallback: ((friends: any[]) => void) | null = null;
+
+  public onFriendsUpdate(callback: (friends: any[]) => void) {
+    //if (this.onFriendsUpdateCallback) return; // Ignorar si ya hay uno
+    this.onFriendsUpdateCallback = callback;
+    // Para que el sidebar pinte algo inmediatamente al llamar onFriendsUpdate()
+    if (this.friends.length > 0) {
+      callback([...this.friends]);
+    }
+  }
+
+  // Para acceder a la lista cacheada
+  public getFriends() {
+    return [...this.friends];
   }
 
   disconnect() {

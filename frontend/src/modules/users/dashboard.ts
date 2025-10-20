@@ -1,6 +1,7 @@
 import { getStats } from "@/modules/users";
 import { t } from "@/app/i18n";
 import type { User } from "@/types/user";
+import { renderAvatar } from "@/components/renderAvatar";
 
 export async function loadDashboard(user: User) {
   // console.log("Cargando dashboard..."); // DB
@@ -37,13 +38,7 @@ export async function loadDashboard(user: User) {
 
   if (useridElement) { useridElement.textContent = user.id.toString(); } // Ejemplo: reemplazar "dashboard" por su id
 
-  // **Actualizar imagen**
-  if (avatarElement instanceof HTMLImageElement) {
-    avatarElement.src = user.avatar && user.avatar.trim() !== "" 
-      ? "https://localhost:3000" + user.avatar 
-      // 👆 Aquí `user.avatarUrl` debe ser la URL que te devuelve tu backend.
-      : "/images/avatar1.jpg"; // Imagen por defecto
-  }
+  renderAvatar(user, avatarElement);
 
   if (totalGamesElement) { totalGamesElement.textContent = userStats.totalMatches; }
 }

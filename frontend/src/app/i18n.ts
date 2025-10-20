@@ -123,6 +123,22 @@ export const translations: Record<Language, Record<string, string>> = {
     modalLogoutIsConfirmedTitle: "Come back soon!",
     modalLogoutIsConfirmedText: "We are going to miss you 😭",
     modalLogoutIsConfirmedConfirmButtonText: "Accept",
+    /* Friends */
+    friends: "Friends",
+    friendName: "Friend's name...",
+    add: "Add",
+    delete: "Delete",
+    connected: "Connected",
+    disconnected: "Disconnected",
+    AlreadyFriendsError: "Existing friend",
+    FriendshipCreationError: "Error adding friend. Please try again later",
+    FriendAddedSuccessfully: "Friend added successfully",
+    YourOwnFriend: "Trust yourself, you can make more friends 😅",
+    FriendRemovedSuccessfully: "Friend removed successfully",
+    NotFriendsError: "The user entered is not on your friends list",
+    DeletionError: "Error deleting friend. Please try again later",
+    NoFriendsOnline: "There are no friends online right now.",
+    NoFriendsOffline: "There are no friends offline right now.",
   },
   es: {
     start: "Comenzar",
@@ -245,6 +261,22 @@ export const translations: Record<Language, Record<string, string>> = {
     modalLogoutIsConfirmedTitle: "¡Vuelve pronto!",
     modalLogoutIsConfirmedText: "Te vamos a echar de menos 😭",
     modalLogoutIsConfirmedConfirmButtonText: "Aceptar",
+    /* Friends */
+    friends: "Amigos",
+    friendName: "Nombre del amigo...",
+    add: "Agregar",
+    delete: "Eliminar",
+    connected: "Conectados",
+    disconnected: "Desconectados",
+    AlreadyFriendsError: "Amigo ya existente",
+    FriendshipCreationError: "Error al agregar amigo. Por favor, inténtalo más tarde",
+    FriendAddedSuccessfully: "Amigo agregado correctamente",
+    YourOwnFriend: "Confía en ti, puedes conseguir más amigos 😅",
+    FriendRemovedSuccessfully: "Amigo eliminado exitosamente",
+    NotFriendsError: "El usuario introducido no está en tu lista de amigos",
+    DeletionError: "Error eliminando amigo. Por favor, inténtalo más tarde",
+    NoFriendsOnline: "No hay amigos conectados ahora mismo.",
+    NoFriendsOffline: "No hay amigos desconectados ahora mismo.",
   },
   fr: {
     start: "Démarrer",
@@ -367,6 +399,22 @@ export const translations: Record<Language, Record<string, string>> = {
     modalLogoutIsConfirmedTitle: "Revenez vite!",
     modalLogoutIsConfirmedText: "Vous allez nous manquer 😭",
     modalLogoutIsConfirmedConfirmButtonText: "Accepter",
+    /* Friends */
+    friends: "Amis",
+    friendName: "Nom de l'ami...",
+    add: "Ajouter",
+    delete: "Supprimer",
+    connected: "Connecté",
+    disconnected: "Déconnecté",
+    AlreadyFriendsError: "Ami existant",
+    FriendshipCreationError: "Erreur lors de l'ajout d'un ami. Veuillez réessayer ultérieurement",
+    FriendAddedSuccessfully: "Ami ajouté avec succès",
+    YourOwnFriend: "Fais-toi confiance, tu peux te faire plus d’amis 😅",
+    FriendRemovedSuccessfully: "Ami supprimé avec succès",
+    NotFriendsError: "L'utilisateur saisi n'est pas dans votre liste d'amis",
+    DeletionError: "Erreur lors de la suppression de l'ami. Veuillez réessayer plus tard.",
+    NoFriendsOnline: "Il n'y a aucun ami en ligne en ce moment.",
+    NoFriendsOffline: "Il n'y a aucun ami hors ligne pour le moment.",
   },
 };
 
@@ -426,13 +474,18 @@ export function updateTexts() {
     const key = el.dataset.i18n!;
     const translated = t(key); // Traducción obtenida
 
+    // Si el elemento tiene data-label, SOLO se traduce ese atributo
     if (el.hasAttribute("data-label")) {
-      // 🔹 Si el elemento tiene data-label, SOLO se traduce ese atributo
       el.setAttribute("data-label", translated);
-    } else if (el.getAttribute("role") === "tooltip") {
-      el.innerHTML = translated; // Permite HTML en tooltips
-    } else {
-      // 🔹 Si NO tiene data-label, se traduce el contenido visible
+    }
+
+    // Permite HTML en tooltips
+    else if (el.getAttribute("role") === "tooltip") {
+      el.innerHTML = translated;
+    }
+
+    // 🔹 Si NO tiene data-label, se traduce el contenido visible
+    else {
       el.textContent = translated;
     }
 

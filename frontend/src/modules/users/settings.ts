@@ -3,6 +3,7 @@ import { t } from "@/app/i18n";
 import { setupAvatarUpload } from "@/components/avatarUpload";
 import { showToast } from "@/components/toast";
 import { navigateTo } from "@/app/navigation";
+import { renderAvatar } from "@/components/renderAvatar";
 
 export async function loadSettings() {
   // console.log("Cargando dashboard..."); // DB
@@ -44,13 +45,7 @@ export async function loadSettings() {
 	useridElement.textContent = user.id.toString(); // Ejemplo: reemplazar "dashboard" por su id
   }
 
-  // **Actualizar imagen**
-  if (avatarElement instanceof HTMLImageElement) {
-	avatarElement.src = user.avatar && user.avatar.trim() !== "" 
-	  ? "https://localhost:3000" + user.avatar 
-	  // 👆 Aquí `user.avatarUrl` debe ser la URL que te devuelve tu backend.
-	  : "/images/avatar1.jpg"; // Imagen por defecto
-  }
+  renderAvatar(user, avatarElement);
 }
 
 // Update User Name Form
@@ -112,14 +107,16 @@ function updateUserName() {
         }
 
         // ✅ Actualizar nombre en la web
-        const usernameElement = document.getElementById("user-name");
+        // Funciona correctamente, pero no necesario con el navigateTo() de abajo
+        /* const usernameElement = document.getElementById("user-name");
         if (usernameElement) {
           usernameElement.textContent = username;
-        }
+        } */
 
         //alert(t("UserNameUpdatedSuccessfully"));
         showToast(t("UserNameUpdatedSuccessfully"));
-        userNamerForm.reset();
+        //userNamerForm.reset();
+        navigateTo("settings", true, true);
 
       } catch (err) {
         showToast(t("NetworkOrServerError"), "error");

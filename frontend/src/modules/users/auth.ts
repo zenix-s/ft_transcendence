@@ -2,14 +2,14 @@
 /* Login, register y validaciones → Aquí irían las funciones relacionadas con autenticación. */
 /*********************************************************************************************/
 
-// import { fetchUserByUsername, fetchUserByEmail } from "@/modules/users";
 import { navigateTo } from "@/app/navigation";
 import { t } from "@/app/i18n";
 import { showToast } from "@/components/toast";
 import type { GetCurrentUserResponse } from "@/types/user";
-import { SocialWebSocketClient } from "@/modules/social/socialSocket"
+//import { SocialWebSocketClient } from "@/modules/social/socialSocket"
+import { createSocialSocket } from "@/modules/social/socketInstance";
 
-export let wsClient: SocialWebSocketClient | null = null;
+//export let wsClient: SocialWebSocketClient | null = null;
 
 /* REGISTER NEW USER */
 export function setupRegisterForm() {
@@ -93,8 +93,9 @@ export function setupRegisterForm() {
         localStorage.setItem("access_token", token);
 
         // Conectar WebSocket
-        wsClient = new SocialWebSocketClient(token);
-        wsClient.connect();
+        createSocialSocket(token);
+        /* wsClient = new SocialWebSocketClient(token);
+        wsClient.connect(); */
 
         showToast(t("UserCreatedSuccessfully"));
         registerForm.reset();
@@ -150,8 +151,9 @@ export function validateLogin() {
         localStorage.setItem("access_token", token);
 
         // Conectar WebSocket
-        wsClient = new SocialWebSocketClient(token);
-        wsClient.connect();
+        createSocialSocket(token);
+        /* wsClient = new SocialWebSocketClient(token);
+        wsClient.connect(); */
 
         showToast(t("welcome"));
         navigateTo("dashboard");

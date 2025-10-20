@@ -1,14 +1,14 @@
 <!-- Botón flotante SIEMPRE visible -->
 <button
   id="friends-toggle-btn"
-  class="fixed top-4 left-4 z-50 bg-magenta text-primary rounded-full p-3 shadow-lg hover:bg-fuchsia-600 transition-all"
+  class="group fixed top-4 left-4 z-50 bg-secondary dark:bg-primary text-cyan-400 dark:text-cyan-600 hover:text-secondary rounded-full p-3 shadow-lg hover:bg-cyan-400 transition-all duration-300 ease-in-out active:translate-y-1 active:shadow-sm"
   title="Amigos"
 >
   <!-- Icono de amigos -->
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-       fill="none" stroke="currentColor" stroke-width="1.5"
+       fill="none" stroke="currentColor" stroke-width="2"
        stroke-linecap="round" stroke-linejoin="round"
-       class="icon icon-tabler icon-tabler-friends">
+       class="icon icon-tabler icon-tabler-friends transition-all duration-700 ease-in-out group-hover:rotate-[360deg]">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
     <path d="M7 5m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
     <path d="M5 22v-5l-1 -1v-4a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4l-1 1v5" />
@@ -23,32 +23,60 @@
   class="fixed inset-0 bg-cyan-400 text-white z-40 transform -translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto max-w-full sm:max-w-2xl"
 >
   <div class="p-6 mt-12 space-y-4">
-    <h2 class="text-2xl font-semibold mb-4">Amigos</h2>
+    <h2 class="text-2xl font-semibold mb-4" data-i18n="friends"></h2>
 
     <!-- Campo de búsqueda / agregar -->
-    <div class="flex space-x-2">
-      <input
-        id="friend-input"
-        type="text"
-        placeholder="Nombre del amigo..."
-        class="w-full px-3 py-2 rounded-md text-black"
-      />
-      <button
-        id="add-friend-btn"
-        class="bg-white text-fuchsia-600 px-4 py-2 rounded-md hover:bg-fuchsia-100"
-      >
-        Agregar
-      </button>
+    <div>
+      <form id="add-friend-form" class="flex space-x-2">
+        <input
+          id="friend-input"
+          type="text"
+          data-i18n="friendName"
+          placeholder="friendName"
+          autocomplete="username"
+          class="w-full px-3 py-2 focus:rounded-md text-secondary border-b-2 border-white focus:border-transparent"
+        />
+        <button
+          id="add-friend-btn"
+          data-i18n="add"
+          class="bg-white text-cyan-700 px-4 py-2 rounded-md hover:bg-green-600 hover:text-white transition-all duration-300 ease-in-out"
+        >
+          <!-- Add -->
+        </button>
+      </form>
     </div>
 
     <div>
-      <h3 class="text-lg font-semibold mt-4 mb-2">Conectados</h3>
+      <!-- Connected -->
+      <h3 class="text-lg font-semibold mt-4 mb-2" data-i18n="connected"></h3>
       <ul id="online-friends" class="space-y-2"></ul>
     </div>
 
     <div>
-      <h3 class="text-lg font-semibold mt-4 mb-2">Desconectados</h3>
+      <!-- Disconnected -->
+      <h3 class="text-lg font-semibold mt-4 mb-2" data-i18n="disconnected"></h3>
       <ul id="offline-friends" class="space-y-2"></ul>
+    </div>
+
+    <!-- Campo de eliminar -->
+    <div>
+      <form id="delete-friend-form" class="flex space-x-2">
+        <input
+          id="delete-friend-input"
+          type="text"
+          data-i18n="friendName"
+          placeholder="friendName"
+          autocomplete="username"
+          class="w-full px-3 py-2 focus:rounded-md text-secondary border-b-2 border-white focus:border-transparent"
+        />
+        <button
+          id="delete-friend-btn"
+          data-i18n="delete"
+          class="bg-white text-cyan-700 px-4 py-2 rounded-md hover:bg-red-600 hover:text-white transition-all duration-300 ease-in-out"
+        >
+          <!-- Delete -->
+        </button>
+      </form>
     </div>
   </div>
 </div>

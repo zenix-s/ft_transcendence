@@ -35,20 +35,25 @@ export default class UsernameUpdateCommand
 
         try {
             // Verify if user exists
-            const userExists = await this.fastify.UserRepository.getUserById(userId);
-            if (!userExists) {
+            const userExists = await this.fastify.UserRepository.getUser({ id: userId });
+            if (!userExists.isSuccess || !userExists.value) {
                 return Result.error(ApplicationError.UserNotFound);
             }
 
             // Verificar si el username ya está en uso
-            const existingUser = await this.fastify.UserRepository.getUserByUsernameInsensitive(username);
+            const existingUser = await this.fastify.UserRepository.getUser({
+                username,
+            });
 
             if (existingUser.isSuccess) {
                 return Result.error(ApplicationError.UserAlreadyExists);
             }
 
             // Actualizar username
-            const updatedUser = await this.fastify.UserRepository.updateUsername(userId, username);
+            const updatedUser = await this.fastify.UserRepository.updateUsername({
+                id: userId,
+                newUsername: username,
+            });
             if (!updatedUser.isSuccess || !updatedUser.value) {
                 return Result.error(ApplicationError.UsernameUpdateError);
             }

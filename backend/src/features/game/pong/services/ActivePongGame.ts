@@ -71,7 +71,7 @@ export class ActivePongGame {
     private async saveMatchHistory(): Promise<void> {
         try {
             const gameState = this.game.getGameState();
-            const match = await this.fastify.MatchRepository.findById(this.matchId);
+            const match = await this.fastify.MatchRepository.findById({ id: this.matchId });
 
             if (!match) {
                 this.fastify.log.error(`Match with ID ${this.matchId} not found`);
@@ -103,7 +103,7 @@ export class ActivePongGame {
                 return;
             }
 
-            const updatedMatch = await this.fastify.MatchRepository.update(match);
+            const updatedMatch = await this.fastify.MatchRepository.update({ match });
             if (!updatedMatch) {
                 this.fastify.log.error(`Failed to update match ${this.matchId} for game ${this.gameId}`);
             } else {

@@ -33,32 +33,37 @@ export class RemoveFriendCommand implements ICommand<RemoveFriendRequest, null> 
 
             const { userId, friendUsername } = request;
 
-            const friendResult = await this._fastify.UserRepository.getUserByUsername(friendUsername);
+            const friendResult = await this._fastify.UserRepository.getUser({
+                username: friendUsername,
+            });
             if (!friendResult.isSuccess || !friendResult.value || !friendResult.value.id) {
                 return Result.error(ApplicationError.UserNotFound);
             }
 
             const friendId = friendResult.value.id;
 
-            const userExists = await this._fastify.UserRepository.getUserById(userId);
+            const userExists = await this._fastify.UserRepository.getUser({ id: userId });
             if (!userExists.isSuccess || !userExists.value) {
                 return Result.error(ApplicationError.UserNotFound);
             }
 
-            const friendExists = await this._fastify.UserRepository.getUserById(friendId);
+            const friendExists = await this._fastify.UserRepository.getUser({ id: friendId });
             if (!friendExists.isSuccess || !friendExists.value) {
                 return Result.error(ApplicationError.UserNotFound);
             }
 
-            const areFriends = await this._fastify.FriendShipRepository.areFriends(userId, friendId);
+            const areFriends = await this._fastify.FriendShipRepository.areFriends({
+                userId1: userId,
+                userId2: friendId,
+            });
             if (!areFriends.isSuccess || !areFriends.value) {
                 return Result.error(ApplicationError.NotFriendsError);
             }
 
-            const removeFriendResult = await this._fastify.FriendShipRepository.removeFriend(
-                userId,
-                friendId
-            );
+            const removeFriendResult = await this._fastify.FriendShipRepository.removeFriend({
+                userId1: userId,
+                userId2: friendId,
+            });
             if (!removeFriendResult.isSuccess) {
                 return Result.error(ApplicationError.DeletionError);
             }

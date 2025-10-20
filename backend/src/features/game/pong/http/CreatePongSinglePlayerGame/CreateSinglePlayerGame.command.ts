@@ -81,7 +81,7 @@ export default class CreateSinglePlayerGameCommand
 
             this.fastify.log.info('Creating single player game');
 
-            const gameType = await this.gameTypeRepository.findByName('single_player_pong');
+            const gameType = await this.gameTypeRepository.findByName({ name: 'single_player_pong' });
             if (!gameType) {
                 this.fastify.log.error('Single player game type not found');
                 return Result.error(ApplicationError.SinglePlayerGameTypeNotFound);
@@ -95,7 +95,7 @@ export default class CreateSinglePlayerGameCommand
             const match = new Match(gameType.id, playerIds);
 
             this.fastify.log.info('Saving match to database');
-            const createdMatch = await this.matchRepository.create(match);
+            const createdMatch = await this.matchRepository.create({ match });
 
             this.fastify.log.info('Match created successfully');
 
@@ -115,15 +115,18 @@ export default class CreateSinglePlayerGameCommand
             const started = createdMatch.start();
             if (started) {
                 this.fastify.log.info('Match started, updating in database');
-                await this.matchRepository.update(createdMatch);
+                await this.matchRepository.update({ match: createdMatch });
             }
 
             this.fastify.log.info('Creating game in repository');
-            const gameIdResult = await this.gameRepository.createGame(game, createdMatch.id as number);
+            const gameIdResult = await this.gameRepository.createGame({
+                game,
+                matchId: createdMatch.id as number,
+            });
 
             if (!gameIdResult.isSuccess || !gameIdResult.value) {
                 try {
-                    await this.matchRepository.delete(createdMatch.id as number);
+                    await this.matchRepository.delete({ id: createdMatch.id as number });
                 } catch (deleteError) {
                     this.fastify.log.error(deleteError, 'Failed to delete match after game creation failure');
                 }

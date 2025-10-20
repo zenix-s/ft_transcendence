@@ -5,11 +5,11 @@ import { FastifyInstance } from 'fastify/types/instance';
 import fp from 'fastify-plugin';
 
 export interface IGameTypeRepository {
-    findByName(name: string): Promise<GameType | null>;
+    findByName({ name }: { name: string }): Promise<GameType | null>;
 }
 
 class GameTypeRepository extends AbstractRepository implements IGameTypeRepository {
-    async findByName(name: string): Promise<GameType | null> {
+    async findByName({ name }: { name: string }): Promise<GameType | null> {
         const result = await this.findOne<GameTypeRow>('SELECT * FROM game_types WHERE name = ?', [name]);
         return result;
     }

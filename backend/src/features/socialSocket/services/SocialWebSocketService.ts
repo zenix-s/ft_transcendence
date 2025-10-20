@@ -29,7 +29,7 @@ export class SocialWebSocketService {
     async getFriendsList(userId: number): Promise<Result<Friend[]>> {
         try {
             // Get friends with their user data
-            const friendsResult = await this.fastify.FriendShipRepository.getFriends(userId);
+            const friendsResult = await this.fastify.FriendShipRepository.getFriends({ userId });
             if (!friendsResult.isSuccess) {
                 return Result.error(ApplicationError.NotFoundError);
             }
@@ -56,10 +56,10 @@ export class SocialWebSocketService {
 
     async updateUserConnectionStatus(userId: number, isConnected: boolean): Promise<Result<void>> {
         try {
-            const updateResult = await this.fastify.UserRepository.updateConnectionStatus(
+            const updateResult = await this.fastify.UserRepository.updateConnectionStatus({
                 userId,
-                isConnected
-            );
+                isConnected,
+            });
             if (!updateResult.isSuccess) {
                 return Result.error(ApplicationError.InternalServerError);
             }
@@ -80,14 +80,14 @@ export class SocialWebSocketService {
 
     async notifyFriendsConnectionStatus(userId: number, isConnected: boolean): Promise<void> {
         try {
-            const userResult = await this.fastify.UserRepository.getUserById(userId);
+            const userResult = await this.fastify.UserRepository.getUser({ id: userId });
             if (!userResult.isSuccess || !userResult.value) {
                 return;
             }
 
             const user = userResult.value;
 
-            const friendsOfResult = await this.fastify.FriendShipRepository.getFriendsOf(userId);
+            const friendsOfResult = await this.fastify.FriendShipRepository.getFriendsOf({ userId });
             if (!friendsOfResult.isSuccess || !friendsOfResult.value) {
                 return;
             }

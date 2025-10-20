@@ -6,15 +6,15 @@ import { ApplicationError } from '@shared/Errors';
 import { User } from '@shared/domain/entity/User.entity';
 
 export interface IFriendShipRepository {
-    areFriends(userId1: number, userId2: number): Promise<Result<boolean>>;
-    addFriend(userId1: number, userId2: number): Promise<Result<void>>;
-    removeFriend(userId1: number, userId2: number): Promise<Result<void>>;
-    getFriends(userId: number): Promise<Result<User[]>>;
-    getFriendsOf(userId: number): Promise<Result<User[]>>;
+    areFriends({ userId1, userId2 }: { userId1: number; userId2: number }): Promise<Result<boolean>>;
+    addFriend({ userId1, userId2 }: { userId1: number; userId2: number }): Promise<Result<void>>;
+    removeFriend({ userId1, userId2 }: { userId1: number; userId2: number }): Promise<Result<void>>;
+    getFriends({ userId }: { userId: number }): Promise<Result<User[]>>;
+    getFriendsOf({ userId }: { userId: number }): Promise<Result<User[]>>;
 }
 
 class FriendShipRepository extends AbstractRepository implements IFriendShipRepository {
-    async areFriends(userId1: number, userId2: number): Promise<Result<boolean>> {
+    async areFriends({ userId1, userId2 }: { userId1: number; userId2: number }): Promise<Result<boolean>> {
         const row = await this.findOne<{ id: number }>(
             `
                 SELECT
@@ -30,7 +30,7 @@ class FriendShipRepository extends AbstractRepository implements IFriendShipRepo
         return Result.success(true);
     }
 
-    async addFriend(userId1: number, userId2: number): Promise<Result<void>> {
+    async addFriend({ userId1, userId2 }: { userId1: number; userId2: number }): Promise<Result<void>> {
         const insertResult = await this.run(
             `
                 INSERT INTO friendships (user_id, friend_id)
@@ -46,7 +46,7 @@ class FriendShipRepository extends AbstractRepository implements IFriendShipRepo
         return Result.success(undefined);
     }
 
-    async removeFriend(userId1: number, userId2: number): Promise<Result<void>> {
+    async removeFriend({ userId1, userId2 }: { userId1: number; userId2: number }): Promise<Result<void>> {
         const deleteResult = await this.run(
             `
                 DELETE FROM friendships
@@ -62,7 +62,7 @@ class FriendShipRepository extends AbstractRepository implements IFriendShipRepo
         return Result.success(undefined);
     }
 
-    async getFriends(userId: number): Promise<Result<User[]>> {
+    async getFriends({ userId }: { userId: number }): Promise<Result<User[]>> {
         const rows = await this.findMany<{
             id: number;
             username: string;
@@ -93,7 +93,7 @@ class FriendShipRepository extends AbstractRepository implements IFriendShipRepo
         return Result.success(rows);
     }
 
-    async getFriendsOf(userId: number): Promise<Result<User[]>> {
+    async getFriendsOf({ userId }: { userId: number }): Promise<Result<User[]>> {
         const rows = await this.findMany<{
             id: number;
             username: string;

@@ -117,6 +117,9 @@ export default fp(
 
         fastify.decorate('DbConnection', connection);
         fastify.addHook('onClose', async () => {
+            // Set all users as disconnected on server shutdown
+            await connection.execute('UPDATE users SET is_connected = 0');
+
             await connection.disconnect();
         });
     },

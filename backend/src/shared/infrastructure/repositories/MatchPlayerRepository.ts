@@ -3,7 +3,7 @@ import { AbstractRepository } from '@shared/infrastructure/db/AbstractRepository
 import fp from 'fastify-plugin';
 
 export interface IMatchPlayerRepository {
-    getUserStats(userId: number): Promise<{
+    getUserStats({ userId }: { userId: number }): Promise<{
         totalMatches: number;
         wins: number;
         losses: number;
@@ -13,7 +13,7 @@ export interface IMatchPlayerRepository {
 }
 
 class MatchPlayerRepository extends AbstractRepository implements IMatchPlayerRepository {
-    async getUserStats(userId: number): Promise<{
+    async getUserStats({ userId }: { userId: number }): Promise<{
         totalMatches: number;
         wins: number;
         losses: number;

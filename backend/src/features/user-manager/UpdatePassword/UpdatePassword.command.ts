@@ -37,8 +37,8 @@ export default class PasswordUpdateCommand
 
         try {
             // Verify if user exists
-            const userExists = await this.fastify.UserRepository.getUserById(userId);
-            if (!userExists) {
+            const userExists = await this.fastify.UserRepository.getUser({ id: userId });
+            if (!userExists.isSuccess || !userExists.value) {
                 return Result.error(ApplicationError.UserNotFound);
             }
 
@@ -46,7 +46,10 @@ export default class PasswordUpdateCommand
             const hashedPassword = await hashPassword(password);
 
             // Update password in bbdd
-            const updatedPassword = await this.fastify.UserRepository.updatePassword(userId, hashedPassword);
+            const updatedPassword = await this.fastify.UserRepository.updatePassword({
+                id: userId,
+                newPassword: hashedPassword,
+            });
             if (!updatedPassword.isSuccess || !updatedPassword.value) {
                 return Result.error(ApplicationError.PasswordUpdateError);
             }

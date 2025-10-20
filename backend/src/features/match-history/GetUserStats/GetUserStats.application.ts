@@ -41,7 +41,7 @@ export default class GetUserStatsQuery implements IQuery<IGetUserStatsRequest, I
 
         try {
             const { userId } = request;
-            const stats = await this.matchPlayerRepository.getUserStats(userId);
+            const stats = await this.matchPlayerRepository.getUserStats({ userId });
 
             return Result.success({
                 userId,

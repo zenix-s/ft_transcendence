@@ -31,7 +31,9 @@ function actualizeGame(playerLeft: Player, playerRight: Player,
 	const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
 	if (!canvas)
 	{
-		console.log("Error: no canvas");
+		showToast(t("CanvasNotFound"), "error");
+		console.warn(t("CanvasNotFound"));
+		navigateTo("dashboard");
 		return ;
 	}
 	console.log("hight=", canvas.height);

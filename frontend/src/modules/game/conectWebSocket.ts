@@ -1,5 +1,9 @@
+import { showToast } from "@/components/toast";
 import { actualizeValues } from "./game"
 import type { Ball, Player, Score } from "./gameData";
+import { t } from "@/app/i18n";
+import { navigateTo } from "@/app/navigation";
+
 //import { fetchGameId, fetchSinglePlayerGameId, toJoinGame, fetchGameState } from "./getData.js";
 
 interface message {
@@ -67,13 +71,21 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 			{
 				clearInterval(pingInterval);
 				pingInterval = undefined;
-				console.log("⏹ Ping detenido porque isRunning=false");
+				showToast(t("noActiveGame"), "error");
+				console.warn(t("noActiveGame"));
+				navigateTo("dashboard");
 			}
 		}
 		else if (data.type == "error") {
 			if (data.error == "GameNotFound")
 			{
-				console.log("game not found");
+				showToast(t("GameNotFound"), "error");
+				console.warn(t("GameNotFound"));
+			}
+			if (data.error == "noActiveGame")
+			{
+				showToast(t("noActiveGame"), "error");
+				console.warn(t("noActiveGame"));
 			}
 			if (data.error == "notAuthenticated")
 			{
@@ -87,12 +99,12 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 				socket.send(JSON.stringify(obj));
 				obj.action = 4;
 				socket.send(JSON.stringify(obj));
-				console.log("not autenticated");
 			}
 			else {
 				clearInterval(pingInterval);
 				pingInterval = undefined;
-				console.log("ping detenido por un error");
+				console.warn(t("GameError"));
+				navigateTo("dashboard");
 			}
 		}
 	});
@@ -184,8 +196,9 @@ export async function socketAndRender(player1: Player, player2: Player, scores: 
 	const id = params.get("id");
 	if (!id)
 	{
-		console.log("no iddd");
-		return ;
+		showToast(t("NoGameId"), "error");
+		console.warn(t("NoGameId"));
+		navigateTo("dashboard");
 	}
 	conectWebSocket(Number(id), player1, player2, scores, ball);
 }

@@ -29,6 +29,6 @@ export function ready1()
 			return ;
 		}
 		console.log("si gameState");
-		navigateTo(`game?id=${id}&singlePlayer`);
+		navigateTo(`game?id=${id}&singlePlayer=true&mutiPlayer=false`);
 	});
 }

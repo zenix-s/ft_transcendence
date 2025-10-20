@@ -7,6 +7,9 @@ Hola12345
 
 import type { Player, Score, Ball } from "./gameData.js";
 import { socketAndRender } from "./conectWebSocket.js";
+import { t } from "@/app/i18n.js";
+import { navigateTo } from "@/app/navigation.js";
+import { showToast } from "@/components/toast.js";
 
 export function actualizeValues(posPlayerL:number, playerL:Player, posPlayerR:number, playerR:Player,
 	pointsL:number, pointsR:number, scores:Score, ballX:number, ballY:number, ball:Ball)
@@ -77,10 +80,13 @@ export function startGame()
 	console.log("entrando en game");
 	const params = new URLSearchParams(window.location.search);
 	const id = params.get("id");
-	const singlePlayer = params.has("singlePlayer");
-	if (!id || !singlePlayer)
+	const singlePlayer = params.get("singlePlayer");
+	const mutiPlayer = params.get("mutiPlayer");
+	if (!id || !singlePlayer || !mutiPlayer)
 	{
-		console.log("no gameid o singleplayer");
+		showToast(t("URLNotCorrect"), "error");
+		console.warn(t("URLNotCorrect"));
+		navigateTo("dashboard");
 		return ;
 	}
 
@@ -89,20 +95,24 @@ export function startGame()
 
 
 	const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
-	const ctx = canvas.getContext("2d")!; // as CanvasRenderingContext2D
-	console.log(canvas);
 	if (!canvas)
 	{
-		console.log("Error: no canvas");
+		showToast(t("CanvasNotFound"), "error");
+		console.warn(t("CanvasNotFound"));
+		navigateTo("dashboard");
 		return ;
 	}
+	const ctx = canvas.getContext("2d")!; // as CanvasRenderingContext2D
+	console.log(canvas);
 	
 	/* JUGADORES */
 	const paddle1 = document.getElementById("playerLeft") as HTMLElement;
 	const paddle2 = document.getElementById("playerRight") as HTMLElement;
 	if (!paddle1 || !paddle2)
 	{
-		console.log("Error: no paddles");
+		showToast(t("PaddlesNotFound"), "error");
+		console.warn(t("PaddlesNotFound"));
+		navigateTo("dashboard");
 		return ;
 	}
 
@@ -134,18 +144,22 @@ export function startGame()
 	paddle2.style.top = "50%";
 
 	/* SCORE */
+	const left = document.getElementById("scoreLeft");
+	const right = document.getElementById("scoreRight");
+	if (!left || !right)
+	{
+		showToast(t("ScoresNotFound"), "error");
+		console.warn(t("ScoresNotFound"));
+		navigateTo("dashboard");
+		return ;
+	}
 	const scores : Score = {
-		scoreLeft : document.getElementById("scoreLeft"),
+		scoreLeft : left,
 		pointsLeft : 0,
-		scoreRight : document.getElementById("scoreRight"),
+		scoreRight : right,
 		pointsRight : 0,
 		maxScore : 5
 	};
-	if (!scores.scoreLeft || !scores.scoreRight)
-	{
-		console.log("Error: no scores");
-		return ;
-	}
 	console.log("Scores=", scores);
 
 	/* PELOTA */

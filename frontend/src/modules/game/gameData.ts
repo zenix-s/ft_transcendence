@@ -10,9 +10,9 @@ export interface Player {
 }
 
 export interface Score {
-	scoreLeft: HTMLElement | null;
+	scoreLeft: HTMLElement;
 	pointsLeft: number;
-	scoreRight: HTMLElement | null;
+	scoreRight: HTMLElement;
 	pointsRight: number;
 	maxScore: number;
 }

@@ -127,6 +127,8 @@ export const translations: Record<Language, Record<string, string>> = {
     FriendRemovedSuccessfully: "Friend removed successfully",
     NotFriendsError: "The user entered is not on your friends list",
     DeletionError: "Error deleting friend. Please try again later",
+    NoFriendsOnline: "There are no friends online right now.",
+    NoFriendsOffline: "There are no friends offline right now.",
   },
   es: {
     start: "Comenzar",
@@ -253,6 +255,8 @@ export const translations: Record<Language, Record<string, string>> = {
     FriendRemovedSuccessfully: "Amigo eliminado exitosamente",
     NotFriendsError: "El usuario introducido no está en tu lista de amigos",
     DeletionError: "Error eliminando amigo. Por favor, inténtalo más tarde",
+    NoFriendsOnline: "No hay amigos conectados ahora mismo.",
+    NoFriendsOffline: "No hay amigos desconectados ahora mismo.",
   },
   fr: {
     start: "Démarrer",
@@ -379,6 +383,8 @@ export const translations: Record<Language, Record<string, string>> = {
     FriendRemovedSuccessfully: "Ami supprimé avec succès",
     NotFriendsError: "L'utilisateur saisi n'est pas dans votre liste d'amis",
     DeletionError: "Erreur lors de la suppression de l'ami. Veuillez réessayer plus tard.",
+    NoFriendsOnline: "Il n'y a aucun ami en ligne en ce moment.",
+    NoFriendsOffline: "Il n'y a aucun ami hors ligne pour le moment.",
   },
 };
 

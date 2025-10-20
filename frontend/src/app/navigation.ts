@@ -110,7 +110,9 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
               loadMatchHistory(user),
             ]);
             renderButtons();
-            initFriendsSidebar(user);
+            requestAnimationFrame(async () => {
+              initFriendsSidebar(user);
+            });
             break;
 
           case "settings":

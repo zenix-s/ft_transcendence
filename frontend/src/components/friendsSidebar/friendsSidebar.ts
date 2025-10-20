@@ -1,8 +1,10 @@
-import { updateTexts } from "@/app/i18n";
+import { t, updateTexts } from "@/app/i18n";
 import { addFriend, deleteFriend } from "@/modules/social/friendsManager";
 import { getCurrentUser } from "@/modules/users";
 import type { User } from "@/types/user";
+import type { Friend } from "@/types/friend";
 import { getReadySocialSocket } from "@/modules/social/socketUtils";
+import { renderAvatar } from "../renderAvatar";
 
 export async function initFriendsSidebar(user?: User) {
   // 1. Si no recibo un user se lo solicito a getCurrentUser()
@@ -26,15 +28,17 @@ export async function initFriendsSidebar(user?: User) {
   // 🔹 Obtener referencias del DOM
   const toggleBtn = document.getElementById("friends-toggle-btn")!;
   const panel = document.getElementById("friends-panel")!;
+  const addFriendForm = document.getElementById("add-friend-form") as HTMLElement;
   const friendInput = document.getElementById("friend-input") as HTMLInputElement;
-  const addFriendBtn = document.getElementById("add-friend-btn")!;
+  //const addFriendBtn = document.getElementById("add-friend-btn")!;
   const onlineList = document.getElementById("online-friends")!;
   const offlineList = document.getElementById("offline-friends")!;
+  const deleteFriendForm  = document.getElementById("delete-friend-form") as HTMLElement;
   const deleteFriendInput = document.getElementById("delete-friend-input") as HTMLInputElement;
-  const deleteFriendBtn = document.getElementById("delete-friend-btn")!;
+  //const deleteFriendBtn = document.getElementById("delete-friend-btn")!;
 
   // 🔹 Función para renderizar listas de amigos
-  function renderLists(friends: { username: string; is_connected: boolean }[]) {
+  /* function renderLists(friends: { username: string; is_connected: boolean }[]) {
     const onlineFriends = friends.filter(f => f.is_connected).map(f => f.username);
     const offlineFriends = friends.filter(f => !f.is_connected).map(f => f.username);
 
@@ -45,6 +49,48 @@ export async function initFriendsSidebar(user?: User) {
     offlineList.innerHTML = offlineFriends
       .map(name => `<li class="flex justify-between items-center bg-white/10 rounded-md px-3 py-2"><span>${name}</span></li>`)
       .join("");
+  } */
+
+  function renderLists(friends: Friend[]) {
+    const render = (listEl: HTMLElement, items: Friend[], emptyText: string) => {
+      listEl.innerHTML = ""; // limpiar lista
+
+      if (items.length === 0) {
+        const emptyItem = document.createElement("li");
+        emptyItem.className = "text-white/70 italic text-sm px-3 py-2";
+        emptyItem.textContent = t(emptyText);
+        emptyItem.dataset.i18n = emptyText;
+        listEl.appendChild(emptyItem);
+        return;
+      }
+
+      for (const friend of items) {
+        const li = document.createElement("li");
+        li.className = friend.is_connected
+          ? "flex items-center gap-3 rounded-md px-3 py-2 bg-white/30 hover:bg-white/40 transition-all duration-300 ease-in-out"
+          : "flex items-center gap-3 rounded-md px-3 py-2 bg-white/10 hover:bg-white/20 text-gray-500 transition-all duration-300 ease-in-out";
+
+        const img = document.createElement("img");
+        img.alt = `${friend.username} avatar`;
+        img.className = "w-8 h-8 rounded-full object-cover border border-primary";
+        img.loading = "lazy";
+
+        renderAvatar(friend, img);
+
+        const span = document.createElement("span");
+        span.textContent = friend.username;
+
+        li.appendChild(img);
+        li.appendChild(span);
+        listEl.appendChild(li);
+      }
+    };
+
+    const online = friends.filter(friend => friend.is_connected);
+    const offline = friends.filter(friend => !friend.is_connected);
+
+    render(onlineList, online, "NoFriendsOnline");
+    render(offlineList, offline, "NoFriendsOffline");
   }
 
   // 🔹 Conectar al WebSocket singleton y suscribirse a actualizaciones
@@ -53,7 +99,7 @@ export async function initFriendsSidebar(user?: User) {
     renderLists(friends);
   });
   // NO llamamos ws.refreshFriendsList() porque ya se actualiza al autenticarse
-  ws.refreshFriendsList();
+  //ws.refreshFriendsList();
 
   // 🔹 Mostrar / ocultar panel
   toggleBtn.addEventListener("click", () => {
@@ -63,15 +109,17 @@ export async function initFriendsSidebar(user?: User) {
   });
 
   // 🔹 Agregar amigo
-  addFriendBtn.addEventListener("click", async () => {
-    const response = await addFriend(user, friendInput.value);
+  addFriendForm.addEventListener("submit", async (event) => {
+    event.preventDefault(); // evita recarga
+    const response = await addFriend(user!, friendInput.value);
     if (response)
       friendInput.value = "";
       ws?.refreshFriendsList();
   });
 
   // 🔹 Eliminar amigo
-  deleteFriendBtn.addEventListener("click", async () => {
+  deleteFriendForm.addEventListener("submit", async (event) => {
+    event.preventDefault(); // evita recarga
     const response = await deleteFriend(deleteFriendInput.value);
     if (response) {
       deleteFriendInput.value = "";

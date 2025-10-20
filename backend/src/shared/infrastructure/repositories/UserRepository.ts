@@ -13,9 +13,15 @@ export type CreateUserDto = Omit<AuthenticationUserDto, 'id'>;
 
 export interface IUserRepository {
     createUser({ user }: { user: CreateUserDto }): Promise<Result<User>>;
-    getUserByEmail({ email }: { email: string }): Promise<Result<AuthenticationUserDto>>;
-    getUserByUsername({ username }: { username: string }): Promise<Result<AuthenticationUserDto>>;
-    getUserById({ id }: { id: number }): Promise<Result<AuthenticationUserDto>>;
+    getUser({
+        id,
+        email,
+        username,
+    }: {
+        id?: number;
+        email?: string;
+        username?: string;
+    }): Promise<Result<AuthenticationUserDto>>;
     updateUserAvatar({ userId, avatarUrl }: { userId: number; avatarUrl: string }): Promise<Result<void>>;
     updateUsername({ id, newUsername }: { id: number; newUsername: string }): Promise<Result<User>>;
     updatePassword({ id, newPassword }: { id: number; newPassword: string }): Promise<Result<User>>;
@@ -26,7 +32,6 @@ export interface IUserRepository {
         userId: number;
         isConnected: boolean;
     }): Promise<Result<void>>;
-    getUserByUsernameInsensitive({ username }: { username: string }): Promise<Result<AuthenticationUserDto>>;
 }
 
 class UserRepository extends AbstractRepository implements IUserRepository {
@@ -49,9 +54,41 @@ class UserRepository extends AbstractRepository implements IUserRepository {
         return Result.success(row);
     }
 
-    async getUserByEmail({ email }: { email: string }): Promise<Result<AuthenticationUserDto>> {
-        const row = await this.findOne<AuthenticationUserRow>(
-            `SELECT
+    async getUser({
+        id,
+        email,
+        username,
+    }: {
+        id?: number;
+        email?: string;
+        username?: string;
+    }): Promise<Result<AuthenticationUserDto>> {
+        // Validar que al menos uno de los parámetros esté presente
+        if (!id && !email && !username) {
+            return Result.error(ApplicationError.InvalidRequest);
+        }
+
+        const conditions: string[] = [];
+        const params: (string | number)[] = [];
+
+        if (id !== undefined) {
+            conditions.push('id = ?');
+            params.push(id);
+        }
+
+        if (email !== undefined) {
+            conditions.push('LOWER(email) = LOWER(?)');
+            params.push(email);
+        }
+
+        if (username !== undefined) {
+            conditions.push('LOWER(username) = LOWER(?)');
+            params.push(username);
+        }
+
+        const whereClause = conditions.join(' AND ');
+        const query = `
+            SELECT
                 id,
                 username,
                 email,
@@ -61,55 +98,10 @@ class UserRepository extends AbstractRepository implements IUserRepository {
             FROM
                 users
             WHERE
-                LOWER(email) = LOWER(?)`,
-            [email]
-        );
+                ${whereClause}
+        `;
 
-        if (!row) {
-            return Result.error(ApplicationError.UserNotFound);
-        }
-
-        return Result.success(row);
-    }
-
-    async getUserByUsername({ username }: { username: string }): Promise<Result<AuthenticationUserDto>> {
-        const row = await this.findOne<AuthenticationUserRow>(
-            'SELECT id, username, email, password, avatar, is_connected FROM users WHERE username = ?',
-            [username]
-        );
-
-        if (!row) {
-            return Result.error(ApplicationError.UserNotFound);
-        }
-
-        return Result.success(row);
-    }
-
-    async getUserByUsernameInsensitive({
-        username,
-    }: {
-        username: string;
-    }): Promise<Result<AuthenticationUserDto>> {
-        // Convertir el username recibido a lowerCase
-        const normalizedUsername = username.toLowerCase();
-
-        const row = await this.findOne<AuthenticationUserRow>(
-            'SELECT * FROM users WHERE LOWER(username) = ?',
-            [normalizedUsername]
-        );
-
-        if (!row) {
-            return Result.error(ApplicationError.UserNotFound);
-        }
-
-        return Result.success(row);
-    }
-
-    async getUserById({ id }: { id: number }): Promise<Result<AuthenticationUserDto>> {
-        const row = await this.findOne<AuthenticationUserRow>(
-            'SELECT id, username, email, password, avatar, is_connected FROM users WHERE id = ?',
-            [id]
-        );
+        const row = await this.findOne<AuthenticationUserRow>(query, params);
 
         if (!row) {
             return Result.error(ApplicationError.UserNotFound);

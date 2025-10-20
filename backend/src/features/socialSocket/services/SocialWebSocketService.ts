@@ -80,7 +80,7 @@ export class SocialWebSocketService {
 
     async notifyFriendsConnectionStatus(userId: number, isConnected: boolean): Promise<void> {
         try {
-            const userResult = await this.fastify.UserRepository.getUserById({ id: userId });
+            const userResult = await this.fastify.UserRepository.getUser({ id: userId });
             if (!userResult.isSuccess || !userResult.value) {
                 return;
             }

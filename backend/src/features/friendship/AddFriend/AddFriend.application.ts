@@ -33,7 +33,7 @@ export class AddFriendCommand implements ICommand<AddFriendCommandRequest, null>
 
             const { userId, newFriendUsername } = request;
 
-            const friendResult = await this._fastify.UserRepository.getUserByUsername({
+            const friendResult = await this._fastify.UserRepository.getUser({
                 username: newFriendUsername,
             });
             if (!friendResult.isSuccess || !friendResult.value || !friendResult.value.id) {
@@ -42,12 +42,12 @@ export class AddFriendCommand implements ICommand<AddFriendCommandRequest, null>
 
             const friendId = friendResult.value.id;
 
-            const userExists = await this._fastify.UserRepository.getUserById({ id: userId });
+            const userExists = await this._fastify.UserRepository.getUser({ id: userId });
             if (!userExists.isSuccess || !userExists.value) {
                 return Result.error(ApplicationError.UserNotFound);
             }
 
-            const friendExists = await this._fastify.UserRepository.getUserById({ id: friendId });
+            const friendExists = await this._fastify.UserRepository.getUser({ id: friendId });
             if (!friendExists.isSuccess || !friendExists.value) {
                 return Result.error(ApplicationError.UserNotFound);
             }

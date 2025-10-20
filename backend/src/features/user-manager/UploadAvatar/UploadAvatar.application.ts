@@ -62,7 +62,7 @@ export default class UploadAvatarCommand implements ICommand<IUploadAvatarReques
     async execute(request: IUploadAvatarRequest): Promise<Result<IUploadAvatarResponse>> {
         try {
             // 1. Validamos la existencia del usuario
-            const userResult = await this.UserRepository.getUserById(request.userId);
+            const userResult = await this.UserRepository.getUser({ id: request.userId });
             if (!userResult.isSuccess) {
                 return Result.error(ApplicationError.UserNotFound);
             }
@@ -105,7 +105,10 @@ export default class UploadAvatarCommand implements ICommand<IUploadAvatarReques
             // 5. Actualizamos la URL del avatar en la base de datos
             const avatarUrl = `/uploads/avatars/${fileName}`;
 
-            const updateResult = await this.UserRepository.updateUserAvatar(request.userId, avatarUrl);
+            const updateResult = await this.UserRepository.updateUserAvatar({
+                userId: request.userId,
+                avatarUrl,
+            });
 
             if (!updateResult.isSuccess) {
                 return Result.error(ApplicationError.AvatarUpdateError);

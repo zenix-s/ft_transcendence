@@ -112,6 +112,8 @@ export const translations: Record<Language, Record<string, string>> = {
     CanvasNotFound: "Canvas not found",
     PaddlesNotFound: "Paddles not found",
     ScoresNotFound: "Scores not found",
+    DiffAndMax: "Difficulty or maximum points not found",
+    GameState: "Game state not found",
     /* Modal */
     modalLogoutTitle: "Log out",
     modalLogoutTitleText: "Are you sure you want to log out?",
@@ -232,6 +234,8 @@ export const translations: Record<Language, Record<string, string>> = {
     CanvasNotFound: "Canvas no encontrado",
     PaddlesNotFound: "Paletas no encontradas",
     ScoresNotFound: "Puntuaciones no encontradas",
+    DiffAndMax: "Dificultad o máximo de puntos no encontrado",
+    GameState: "Estado del juego no encontrado",
     /* Modal */
     modalLogoutTitle: "Cerrar sesión",
     modalLogoutTitleText: "¿Seguro que quieres cerrar sesión?",
@@ -352,6 +356,8 @@ export const translations: Record<Language, Record<string, string>> = {
     CanvasNotFound: "Toile non trouvée",
     PaddlesNotFound: "Pagaies non trouvées",
     ScoresNotFound: "Scores non trouvés",
+    DiffAndMax: "Difficulté ou points maximum non trouvés",
+    GameState: "État du jeu non trouvé",
     /* Modal */
     modalLogoutTitle: "Se déconnecter",
     modalLogoutTitleText: "Êtes-vous sûr de vouloir vous déconnecter?",

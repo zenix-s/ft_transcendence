@@ -76,6 +76,17 @@ export class PongWebSocketService {
 
         const moveResult = await this.playerService.movePaddle(gameId, playerId, direction);
         if (!moveResult.isSuccess) {
+            // Si el error es GameNotFound, verificar si el juego existe en el historial
+            if (moveResult.error === 'GameNotFound') {
+                const stateResult = await this.gameService.getGameState(gameId);
+                if (stateResult.error === 'GameAlreadyFinished') {
+                    return {
+                        type: 'error',
+                        error: 'gameAlreadyFinished',
+                        message: 'This game has already finished. Movement is not allowed.',
+                    };
+                }
+            }
             return {
                 type: 'error',
                 error: moveResult.error,
@@ -105,6 +116,20 @@ export class PongWebSocketService {
 
         const readyResult = await this.playerService.setPlayerReady(gameId, playerId, true);
         if (!readyResult.isSuccess) {
+            // Si el error es GameNotFound, verificar si el juego existe en el historial
+            if (readyResult.error === 'GameNotFound') {
+                const stateResult = await this.gameService.getGameState(gameId);
+                if (stateResult.error === 'GameAlreadyFinished') {
+                    return {
+                        response: {
+                            type: 'error',
+                            error: 'gameAlreadyFinished',
+                            message: 'This game has already finished. Cannot change ready status.',
+                        },
+                        gameStarted: false,
+                    };
+                }
+            }
             return {
                 response: {
                     type: 'error',

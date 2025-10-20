@@ -39,6 +39,48 @@ export default async function GetGameStateRoute(fastify: FastifyInstance) {
                             error: { type: 'string' },
                         },
                     },
+                    401: {
+                        description: 'Unauthorized - Invalid token or player not authorized',
+                        type: 'object',
+                        properties: {
+                            error: { type: 'string' },
+                        },
+                    },
+                    403: {
+                        description: 'Forbidden - Action not allowed or player not in game',
+                        type: 'object',
+                        properties: {
+                            error: { type: 'string' },
+                        },
+                    },
+                    404: {
+                        description: 'Game not found',
+                        type: 'object',
+                        properties: {
+                            error: { type: 'string' },
+                        },
+                    },
+                    409: {
+                        description: 'Conflict - Game full or match in progress',
+                        type: 'object',
+                        properties: {
+                            error: { type: 'string' },
+                        },
+                    },
+                    410: {
+                        description: 'Game already finished',
+                        type: 'object',
+                        properties: {
+                            error: { type: 'string' },
+                        },
+                    },
+                    500: {
+                        description: 'Internal server error',
+                        type: 'object',
+                        properties: {
+                            error: { type: 'string' },
+                        },
+                    },
                 },
             },
         },

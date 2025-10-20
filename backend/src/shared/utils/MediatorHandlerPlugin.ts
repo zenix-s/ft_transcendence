@@ -3,6 +3,39 @@ import { IQuery } from '../application/abstractions/IQuery.interface';
 import { ICommand } from '../application/abstractions/ICommand.interface';
 import { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
+import { ApplicationError } from '../Errors';
+
+function getStatusCodeForError(error: string): number {
+    switch (error) {
+        case ApplicationError.GameNotFound:
+        case ApplicationError.UserNotFound:
+        case ApplicationError.MatchNotFound:
+            return 404;
+        case ApplicationError.GameAlreadyFinished:
+        case ApplicationError.MatchAlreadyFinished:
+            return 410;
+        case ApplicationError.BadRequest:
+        case ApplicationError.InvalidRequest:
+        case ApplicationError.InvalidCredentials:
+            return 400;
+        case ApplicationError.InvalidToken:
+        case ApplicationError.PlayerNotAuthorized:
+            return 401;
+        case ApplicationError.ActionNotAllowed:
+        case ApplicationError.PlayerNotInGame:
+            return 403;
+        case ApplicationError.GameFull:
+        case ApplicationError.UserAlreadyExists:
+        case ApplicationError.AlreadyFriendsError:
+        case ApplicationError.MatchInProgress:
+            return 409;
+        case ApplicationError.InternalServerError:
+        case ApplicationError.DatabaseServiceUnavailable:
+            return 500;
+        default:
+            return 409; // Default conflict status
+    }
+}
 
 async function handleQuery<TRequest, TResponse>({
     query,
@@ -22,7 +55,8 @@ async function handleQuery<TRequest, TResponse>({
 
     const result = await query.execute(request);
     if (!result.isSuccess) {
-        return reply.status(409).send({ error: result.error });
+        const statusCode = getStatusCodeForError(result.error || 'UnknownError');
+        return reply.status(statusCode).send({ error: result.error });
     }
 
     return reply.status(successStatus).send(result.value);
@@ -46,7 +80,8 @@ async function handleCommand<TRequest, TResponse>({
 
     const result = await command.execute(request);
     if (!result.isSuccess) {
-        return reply.status(409).send({ error: result.error });
+        const statusCode = getStatusCodeForError(result.error || 'UnknownError');
+        return reply.status(statusCode).send({ error: result.error });
     }
 
     return reply.status(successStatus).send(result.value);

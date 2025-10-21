@@ -3,6 +3,7 @@
 /**********************************************************************************/
 
 import { loadAndRender, getNested } from "@/modules/users";
+import { apiUrl } from "@/api";
 
 /** Conveniencia: obtener el objeto usuario para manipularlo en código */
 export async function loadUserForCode(userId: number) {
@@ -67,7 +68,7 @@ export async function loadUsers(userId?: number, fieldsOrMapping?: string[] | Re
 
 /** Fetch robusto: admite backend que devuelva un array directamente o { value: { users: [...] } } */
 export async function fetchUsersFromBackend(): Promise<any[]> {
-  const res = await fetch("/api/users"); // Vite proxy → https://backend:3000/users
+  const res = await fetch(apiUrl(`/users`)); // Vite proxy → https://backend:3000/users
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const data = await res.json();
   // Si el backend devuelve { value: { users: [...] } }

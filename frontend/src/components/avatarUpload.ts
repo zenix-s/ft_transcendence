@@ -1,6 +1,7 @@
 import { t } from "@/app/i18n";
 import { showToast } from "./toast";
 import { getCurrentUser } from "@/modules/users";
+import { API_BASE_URL } from "@/api";
 
 /**
  * Módulo para manejar drag & drop y vista previa de un avatar.
@@ -101,7 +102,7 @@ export function setupAvatarUpload() {
         if (!userResponse) return; // ❌ si falla, aborta todo
 
         // Guardar ruta del avatar con la url devuelta por el backend
-        const avatarSrc = "https://localhost:3000" + userResponse.user.avatar;
+        const avatarSrc = API_BASE_URL + userResponse.user.avatar;
 
         // ✅ Actualizar avatar en la web
         const avatarElement = document.getElementById("user-avatar");

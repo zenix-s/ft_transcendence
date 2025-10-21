@@ -129,6 +129,7 @@ export class SocialWebSocketService implements ISocialWebSocketService {
                 type: 'gameInvitation',
                 fromUserId: notification.fromUserId,
                 fromUsername: notification.fromUsername,
+                fromUserAvatar: notification.fromUserAvatar,
                 gameType: notification.gameType,
                 message: notification.message,
             };

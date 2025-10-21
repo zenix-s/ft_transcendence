@@ -36,7 +36,8 @@ export default fp(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT UNIQUE NOT NULL,
                 min_players INTEGER NOT NULL DEFAULT 2,
-                max_players INTEGER NOT NULL DEFAULT 2
+                max_players INTEGER NOT NULL DEFAULT 2,
+                supports_invitations BOOLEAN NOT NULL DEFAULT 1
             )
         `);
 
@@ -109,10 +110,10 @@ export default fp(
         );
 
         await connection.execute(`
-            INSERT OR IGNORE INTO game_types (name, min_players, max_players)
+            INSERT OR IGNORE INTO game_types (name, min_players, max_players, supports_invitations)
             VALUES
-                ('pong', 2, 2),
-                ('single_player_pong', 1, 1)
+                ('pong', 2, 2, 1),
+                ('single_player_pong', 1, 1, 0)
         `);
 
         fastify.decorate('DbConnection', connection);

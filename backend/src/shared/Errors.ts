@@ -174,6 +174,7 @@ export enum ApplicationError {
     InvalidRequestData = 'InvalidRequestData',
     UnauthorizedAccess = 'UnauthorizedAccess',
     UserNotConnected = 'UserNotConnected',
+    GameTypeDoesNotSupportInvitations = 'GameTypeDoesNotSupportInvitations',
     CannotAddSelfAsFriend = 'CannotAddSelfAsFriend',
     CannotRemoveSelfAsFriend = 'CannotRemoveSelfAsFriend',
 }

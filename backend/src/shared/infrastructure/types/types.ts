@@ -31,6 +31,7 @@ export interface GameTypeRow {
     name: string;
     min_players: number;
     max_players: number;
+    supports_invitations: number;
 }
 
 export interface UserStatsRow {

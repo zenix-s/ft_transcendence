@@ -10,13 +10,8 @@ export interface GameInvitation {
 export interface SendGameInvitationNotification {
     fromUserId: number;
     fromUsername: string;
+    fromUserAvatar: string | null;
     toUserId: number;
     gameType: string;
     message: string;
 }
-
-export enum GameType {
-    PONG = 'pong',
-}
-
-export const VALID_GAME_TYPES = [GameType.PONG];

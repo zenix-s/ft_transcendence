@@ -11,7 +11,14 @@ export interface IGameTypeRepository {
 class GameTypeRepository extends AbstractRepository implements IGameTypeRepository {
     async findByName({ name }: { name: string }): Promise<GameType | null> {
         const result = await this.findOne<GameTypeRow>('SELECT * FROM game_types WHERE name = ?', [name]);
-        return result;
+        if (!result) {
+            return null;
+        }
+
+        return {
+            ...result,
+            supports_invitations: result.supports_invitations === 1,
+        };
     }
 }
 

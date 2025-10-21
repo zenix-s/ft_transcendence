@@ -135,6 +135,6 @@ export async function loadChart(user?: User) {
       });
     }
   } catch (error) {
-    console.error("Error cargando datos:", error);
+    console.error(error);
   }
 }

@@ -1,20 +1,13 @@
 import { t } from "@/app/i18n";
 import { navigateTo } from "@/app/navigation";
 import { showToast } from "@/components/toast";
-import type { User } from "@/types/user";
 import { apiUrl } from "@/api";
 //import { getSocialSocket } from "@/modules/social/socketInstance";
 
-export async function addFriend(user: User, friendUsername: string): Promise<boolean> {
+export async function addFriend(friendUsername: string): Promise<boolean> {
 	if (!friendUsername || !friendUsername.trim())
 	{
 		showToast(t("fillAllFields"), "error");
-		return false;
-	}
-
-	if (user.username === friendUsername)
-	{
-		showToast(t("YourOwnFriend"), "error");
 		return false;
 	}
 
@@ -51,6 +44,7 @@ export async function addFriend(user: User, friendUsername: string): Promise<boo
 
 	} catch (error) {
 		showToast(t("NetworkOrServerError"), "error");
+		console.error(error);
 		return false;
 	}
 }
@@ -89,6 +83,7 @@ export async function deleteFriend(friendUsername: string): Promise<boolean> {
 
 	} catch (error) {
 		showToast(t("NetworkOrServerError"), "error");
+		console.error(error);
 		return false;
 	}
 }

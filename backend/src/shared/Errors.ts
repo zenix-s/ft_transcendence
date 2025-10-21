@@ -74,6 +74,11 @@ export enum ApplicationError {
     GameNotFound = 'GameNotFound',
 
     /**
+     * Juego Ya Terminado - El juego ha terminado y no acepta más acciones
+     */
+    GameAlreadyFinished = 'GameAlreadyFinished',
+
+    /**
      * Tipo de Juego No Encontrado - El tipo de juego especificado no existe
      */
     GameTypeNotFound = 'GameTypeNotFound',
@@ -134,6 +139,26 @@ export enum ApplicationError {
      * Partida No Encontrada - La partida especificada no existe
      */
     MatchNotFound = 'MatchNotFound',
+
+    /**
+     * Partida Ya Terminada - La partida ha finalizado y no acepta más modificaciones
+     */
+    MatchAlreadyFinished = 'MatchAlreadyFinished',
+
+    /**
+     * Partida En Progreso - La partida está actualmente en curso y no puede ser modificada
+     */
+    MatchInProgress = 'MatchInProgress',
+
+    /**
+     * Jugador No Autorizado - El jugador no tiene permisos para realizar esta acción en el juego
+     */
+    PlayerNotAuthorized = 'PlayerNotAuthorized',
+
+    /**
+     * Acción No Permitida - La acción solicitada no está permitida en el estado actual del juego
+     */
+    ActionNotAllowed = 'ActionNotAllowed',
 
     // Errores de manejo de amistades
 

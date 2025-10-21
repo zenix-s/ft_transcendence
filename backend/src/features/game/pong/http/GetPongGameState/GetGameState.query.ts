@@ -3,6 +3,7 @@ import { Result } from '@shared/abstractions/Result';
 import { IQuery } from '@shared/application/abstractions/IQuery.interface';
 import { ApplicationError } from '@shared/Errors';
 import { IPongGameRepository } from '../../infrastructure/PongGame.repository';
+import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
 
 export interface IGetGameStateRequest {
     gameId: number;
@@ -42,9 +43,11 @@ export interface IGetGameStateResponse {
 
 export default class GetGameStateQuery implements IQuery<IGetGameStateRequest, IGetGameStateResponse> {
     private readonly gameRepository: IPongGameRepository;
+    private readonly matchRepository: IMatchRepository;
 
     constructor(private readonly fastify: FastifyInstance) {
         this.gameRepository = this.fastify.PongGameRepository;
+        this.matchRepository = this.fastify.MatchRepository;
     }
 
     validate(request?: IGetGameStateRequest): Result<void> {
@@ -65,9 +68,15 @@ export default class GetGameStateQuery implements IQuery<IGetGameStateRequest, I
         try {
             const { gameId } = request;
 
-            const gameResult = await this.gameRepository.getGame(gameId);
+            const gameResult = await this.gameRepository.getGame({ gameId });
             if (!gameResult.isSuccess || !gameResult.value) {
-                return Result.error(ApplicationError.GameNotFound);
+                // Verificar si el juego existió alguna vez en el historial
+                const match = await this.matchRepository.findById({ id: gameId });
+                if (match) {
+                    return Result.error(ApplicationError.GameAlreadyFinished);
+                } else {
+                    return Result.error(ApplicationError.GameNotFound);
+                }
             }
 
             const game = gameResult.value;

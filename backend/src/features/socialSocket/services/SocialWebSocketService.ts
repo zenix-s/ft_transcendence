@@ -7,7 +7,9 @@ import {
     SocialWebSocketResponse,
     Friend,
     FriendConnectionStatusResponse,
+    GameInvitationResponse,
 } from '../Social.types';
+import { SendGameInvitationNotification } from '@features/game-invitation/GameInvitation.types';
 
 export class SocialWebSocketService {
     private activeConnections: Map<number, WebSocket> = new Map<number, WebSocket>();
@@ -108,6 +110,37 @@ export class SocialWebSocketService {
             }
         } catch (error) {
             this.fastify.log.error(error, 'Error notifying friends about connection status');
+        }
+    }
+
+    async sendGameInvitation(notification: SendGameInvitationNotification): Promise<boolean> {
+        try {
+            const targetSocket = this.activeConnections.get(notification.toUserId);
+
+            if (!targetSocket) {
+                this.fastify.log.info(
+                    `User ${notification.toUserId} is not connected, invitation not sent via WebSocket`
+                );
+                return false;
+            }
+
+            const gameInvitationMessage: GameInvitationResponse = {
+                type: 'gameInvitation',
+                fromUserId: notification.fromUserId,
+                fromUsername: notification.fromUsername,
+                gameType: notification.gameType,
+                message: notification.message,
+            };
+
+            this.sendMessage(targetSocket, gameInvitationMessage);
+
+            this.fastify.log.info(
+                `Game invitation sent to user ${notification.toUserId} from user ${notification.fromUserId}`
+            );
+            return true;
+        } catch (error) {
+            this.fastify.log.error(error, 'Error sending game invitation');
+            return false;
         }
     }
 

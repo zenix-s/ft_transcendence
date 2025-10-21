@@ -9,6 +9,7 @@ import type { GetCurrentUserResponse } from "@/types/user";
 //import { SocialWebSocketClient } from "@/modules/social/socialSocket"
 import { createSocialSocket } from "@/modules/social/socketInstance";
 import { apiUrl } from "@/api";
+import { applySavedColors, migrateLegacyColorsToUser } from "@/components/colorPicker";
 
 //export let wsClient: SocialWebSocketClient | null = null;
 
@@ -93,6 +94,10 @@ export function setupRegisterForm() {
         const token = data.token;
         localStorage.setItem("access_token", token);
 
+        // ✅ Guardar el userId recibido
+        const userId = data.user.id;
+        localStorage.setItem("userId", userId);
+
         // Conectar WebSocket
         createSocialSocket(token);
         /* wsClient = new SocialWebSocketClient(token);
@@ -151,6 +156,13 @@ export function validateLogin() {
         const token = data.token;
         localStorage.setItem("access_token", token);
 
+        // ✅ Guardar el userId recibido
+        const userId = data.user.id;
+        localStorage.setItem("userId", userId);
+
+        // MIGRAR claves globales antiguas al usuario (si existen)
+        migrateLegacyColorsToUser(userId);
+
         // Conectar WebSocket
         createSocialSocket(token);
         /* wsClient = new SocialWebSocketClient(token);
@@ -158,6 +170,9 @@ export function validateLogin() {
 
         showToast(t("welcome"));
         navigateTo("dashboard");
+
+        // 🔹 Espera breve y luego aplica los colores del usuario logueado
+        requestAnimationFrame(() => applySavedColors());
 
       } catch (err) {
         console.error("Login error:", err);

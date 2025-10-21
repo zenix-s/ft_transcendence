@@ -1,7 +1,7 @@
 import { t } from "@/app/i18n";
 import { showToast } from "./toast";
 import { getCurrentUser } from "@/modules/users";
-import { API_BASE_URL } from "@/api";
+import { apiUrl } from "@/api";
 
 /**
  * Módulo para manejar drag & drop y vista previa de un avatar.
@@ -88,7 +88,7 @@ export function setupAvatarUpload() {
     formData.append("avatar", file);
 
     try {
-      const response = await fetch("/api/user-manager/upload-avatar", {
+      const response = await fetch(apiUrl(`/user-manager/upload-avatar`), {
         method: "POST",
         body: formData,
         headers: {

@@ -8,6 +8,7 @@ import { showToast } from "@/components/toast";
 import type { GetCurrentUserResponse } from "@/types/user";
 //import { SocialWebSocketClient } from "@/modules/social/socialSocket"
 import { createSocialSocket } from "@/modules/social/socketInstance";
+import { apiUrl } from "@/api";
 
 //export let wsClient: SocialWebSocketClient | null = null;
 
@@ -74,7 +75,7 @@ export function setupRegisterForm() {
       /* This block of code is handling the registration process for a new user. Here's a breakdown of
       what it does: */
       try {
-        const response = await fetch("/api/auth/register", {
+        const response = await fetch(apiUrl(`/auth/register`), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, email, password }),
@@ -129,7 +130,7 @@ export function validateLogin() {
       }
 
        try {
-        const response = await fetch("/api/auth/login", {
+        const response = await fetch(apiUrl(`/auth/login`), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
@@ -178,7 +179,7 @@ export async function getCurrentUser(): Promise<GetCurrentUserResponse  | null> 
   }
 
   try {
-    const response = await fetch("/api/auth/me", {
+    const response = await fetch(apiUrl(`/auth/me`), {
       headers: {
         "Authorization": `Bearer ${token}`,
       },
@@ -249,7 +250,7 @@ export async function getStats(userId: number) {
   // const userId = userResponse.user.id;
 
   try {
-    const response = await fetch(`/api/match-history/stats/${userId}`, {
+    const response = await fetch(apiUrl(`/match-history/stats/${userId}`), {
       headers: {
         "Authorization": `Bearer ${token}`,
       },
@@ -283,7 +284,7 @@ export async function getHistory(userId: number) {
   // const userId = userResponse.user.id;
 
   try {
-    return await fetch(`/api/match-history/user/${userId}`, {
+    return await fetch(apiUrl(`/match-history/user/${userId}`), {
       headers: {
         "Authorization": `Bearer ${token}`,
       },

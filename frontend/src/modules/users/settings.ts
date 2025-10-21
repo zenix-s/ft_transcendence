@@ -4,6 +4,7 @@ import { setupAvatarUpload } from "@/components/avatarUpload";
 import { showToast } from "@/components/toast";
 import { navigateTo } from "@/app/navigation";
 import { renderAvatar } from "@/components/renderAvatar";
+import { apiUrl } from "@/api";
 
 export async function loadSettings() {
   // console.log("Cargando dashboard..."); // DB
@@ -86,7 +87,7 @@ function updateUserName() {
           return;
         }
 
-        const response = await fetch("/api/user-manager/update-username", {
+        const response = await fetch(apiUrl("/user-manager/update-username"), {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
@@ -173,7 +174,7 @@ function updatePassword() {
           return;
         }
         
-        const response = await fetch("/api/user-manager/update-password", { // NEEDED UPDATE API ENDPOINT
+        const response = await fetch(apiUrl("/user-manager/update-password"), { // NEEDED UPDATE API ENDPOINT
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",

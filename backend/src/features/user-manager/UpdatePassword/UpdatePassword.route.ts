@@ -5,7 +5,7 @@ import PasswordUpdateCommand from './UpdatePassword.command';
 
 interface UpdatePasswordRequest {
     Body: {
-        password: string;
+        newPassword: string;
     };
 }
 
@@ -19,7 +19,7 @@ export default async function UpdatePasswordRoute(fastify: FastifyInstance) {
                 security: [{ bearerAuth: [] }],
                 body: {
                     type: 'object',
-                    required: ['password'],
+                    required: ['newPassword'],
                     properties: {
                         password: {
                             type: 'string',
@@ -59,7 +59,7 @@ export default async function UpdatePasswordRoute(fastify: FastifyInstance) {
 
             const request = {
                 userId,
-                password: req.body.password,
+                password: req.body.newPassword,
             };
 
             return fastify.handleCommand({

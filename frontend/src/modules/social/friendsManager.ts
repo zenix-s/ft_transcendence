@@ -2,6 +2,7 @@ import { t } from "@/app/i18n";
 import { navigateTo } from "@/app/navigation";
 import { showToast } from "@/components/toast";
 import type { User } from "@/types/user";
+import { apiUrl } from "@/api";
 //import { getSocialSocket } from "@/modules/social/socketInstance";
 
 export async function addFriend(user: User, friendUsername: string): Promise<boolean> {
@@ -26,7 +27,7 @@ export async function addFriend(user: User, friendUsername: string): Promise<boo
 			return false;
 		}
 
-		const response = await fetch("/api/friendship", {
+		const response = await fetch(apiUrl(`/friendship`), {
 			method: "POST",
 			headers: {
 				"Content-type": "application/json",
@@ -70,7 +71,7 @@ export async function deleteFriend(friendUsername: string): Promise<boolean> {
 			return false;
 		}
 
-		const response = await fetch(`/api/friendship/${friendUsername}`, {
+		const response = await fetch(apiUrl(`/friendship/${friendUsername}`), {
 			method: "DELETE",
 			headers: { "Authorization": `Bearer ${token}` }
 		});

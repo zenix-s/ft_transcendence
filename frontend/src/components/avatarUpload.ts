@@ -1,7 +1,7 @@
 import { t } from "@/app/i18n";
 import { showToast } from "./toast";
 import { getCurrentUser } from "@/modules/users";
-import { apiUrl } from "@/api";
+import { API_BASE_URL, apiUrl } from "@/api";
 
 /**
  * Módulo para manejar drag & drop y vista previa de un avatar.

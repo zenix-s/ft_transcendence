@@ -33,7 +33,7 @@ export function modal(type: "success" | "logout" = "success"): Promise<boolean> 
       title,
       titleText,
       text,
-      color: isDark ? "#fff" : "#131313",
+      color: isDark ? "#131313" : "#ffffff",
       icon: type === "success" ? "success" : "warning",
       iconColor,
       showCancelButton,
@@ -41,7 +41,7 @@ export function modal(type: "success" | "logout" = "success"): Promise<boolean> 
       //cancelButtonColor: "#F00",
       confirmButtonText,
       buttonsStyling: false, // to use our own classes
-      background: isDark ? "#131313" : "#ffffff",
+      background: isDark ? "#ffffff" : "#131313",
       animation,
       customClass: {
         actions: "gap-10",

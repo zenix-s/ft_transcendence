@@ -1,4 +1,5 @@
 import { WS_BASE_URL } from "@/api";
+import { showToast } from "@/components/toast";
 
 export class SocialWebSocketClient {
   private socket: WebSocket | null = null;
@@ -96,6 +97,7 @@ export class SocialWebSocketClient {
           console.log(
             `🔄 ${message.username} está ahora ${message.isConnected ? "🟢 conectado" : "🔴 desconectado"}`
           );
+          showToast(`🔄 ${message.username} está ahora ${message.isConnected ? "🟢 conectado" : "🔴 desconectado"}`, "success");
           // Notificar al frontend
           if (this.onFriendsUpdateCallback) {
             this.onFriendsUpdateCallback([...this.friends]); // clonar para forzar re-render

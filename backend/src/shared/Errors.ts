@@ -173,4 +173,5 @@ export enum ApplicationError {
     CannotInviteSelf = 'CannotInviteSelf',
     InvalidRequestData = 'InvalidRequestData',
     UnauthorizedAccess = 'UnauthorizedAccess',
+    UserNotConnected = 'UserNotConnected',
 }

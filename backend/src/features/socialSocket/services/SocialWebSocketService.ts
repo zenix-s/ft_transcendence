@@ -10,8 +10,9 @@ import {
     GameInvitationResponse,
 } from '../Social.types';
 import { SendGameInvitationNotification } from '@features/game-invitation/GameInvitation.types';
+import { ISocialWebSocketService } from './ISocialWebSocketService.interface';
 
-export class SocialWebSocketService {
+export class SocialWebSocketService implements ISocialWebSocketService {
     private activeConnections: Map<number, WebSocket> = new Map<number, WebSocket>();
 
     constructor(private readonly fastify: FastifyInstance) {}
@@ -113,7 +114,7 @@ export class SocialWebSocketService {
         }
     }
 
-    async sendGameInvitation(notification: SendGameInvitationNotification): Promise<boolean> {
+    async sendGameInvitation(notification: SendGameInvitationNotification): Promise<Result<void>> {
         try {
             const targetSocket = this.activeConnections.get(notification.toUserId);
 
@@ -121,7 +122,7 @@ export class SocialWebSocketService {
                 this.fastify.log.info(
                     `User ${notification.toUserId} is not connected, invitation not sent via WebSocket`
                 );
-                return false;
+                return Result.error(ApplicationError.UserNotConnected);
             }
 
             const gameInvitationMessage: GameInvitationResponse = {
@@ -137,10 +138,10 @@ export class SocialWebSocketService {
             this.fastify.log.info(
                 `Game invitation sent to user ${notification.toUserId} from user ${notification.fromUserId}`
             );
-            return true;
+            return Result.success(undefined);
         } catch (error) {
             this.fastify.log.error(error, 'Error sending game invitation');
-            return false;
+            return Result.error(ApplicationError.InternalServerError);
         }
     }
 

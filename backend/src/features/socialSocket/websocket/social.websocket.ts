@@ -1,10 +1,9 @@
 import { WebSocket } from '@fastify/websocket';
 import { FastifyInstance } from 'fastify';
 import { SocialActions, PossibleSocialActions } from '../Social.types';
-import { SocialWebSocketService } from '../services';
 
 export default async function socialWebSocketRoutes(fastify: FastifyInstance) {
-    const webSocketService = new SocialWebSocketService(fastify);
+    const webSocketService = fastify.SocialWebSocketService;
 
     fastify.get(
         '/',

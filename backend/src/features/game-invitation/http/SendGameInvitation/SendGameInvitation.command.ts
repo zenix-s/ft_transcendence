@@ -2,7 +2,7 @@ import { FastifyInstance } from 'fastify';
 import { Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { ApplicationError } from '@shared/Errors';
-import { SocialWebSocketService } from '@features/socialSocket/services/SocialWebSocketService';
+import { ISocialWebSocketService } from '@features/socialSocket/services/ISocialWebSocketService.interface';
 
 export interface ISendGameInvitationResponse {
     message: string;
@@ -12,7 +12,7 @@ export interface ISendGameInvitationResponse {
 
 export interface ISendGameInvitationRequest {
     fromUserId?: number;
-    friendId: number;
+    toUserId: number;
     gameType: string;
     message?: string;
 }
@@ -20,10 +20,10 @@ export interface ISendGameInvitationRequest {
 export default class SendGameInvitationCommand
     implements ICommand<ISendGameInvitationRequest, ISendGameInvitationResponse>
 {
-    private readonly socialWebSocketService: SocialWebSocketService;
+    private readonly socialWebSocketService: ISocialWebSocketService;
 
     constructor(private readonly fastify: FastifyInstance) {
-        this.socialWebSocketService = new SocialWebSocketService(this.fastify);
+        this.socialWebSocketService = this.fastify.SocialWebSocketService;
     }
 
     validate(request?: ISendGameInvitationRequest | undefined): Result<void> {
@@ -35,7 +35,7 @@ export default class SendGameInvitationCommand
             return Result.error(ApplicationError.UnauthorizedAccess);
         }
 
-        if (!request.friendId || typeof request.friendId !== 'number') {
+        if (!request.toUserId || typeof request.toUserId !== 'number') {
             return Result.error(ApplicationError.InvalidRequestData);
         }
 
@@ -51,7 +51,7 @@ export default class SendGameInvitationCommand
             return Result.error(ApplicationError.MessageTooLong);
         }
 
-        if (request.fromUserId === request.friendId) {
+        if (request.fromUserId === request.toUserId) {
             return Result.error(ApplicationError.CannotInviteSelf);
         }
 
@@ -66,25 +66,15 @@ export default class SendGameInvitationCommand
                 return Result.error(ApplicationError.InvalidRequestData);
             }
 
-            const { fromUserId, friendId, gameType, message } = request;
+            const { fromUserId, toUserId, gameType, message } = request;
 
-            // Verify that the friend exists and is actually a friend
-            const friendshipResult = await this.fastify.FriendShipRepository.areFriends({
-                userId1: fromUserId as number,
-                userId2: friendId,
-            });
-
-            if (!friendshipResult.isSuccess || !friendshipResult.value) {
-                return Result.error(ApplicationError.FriendshipNotFound);
-            }
-
-            // Get friend's information
-            const friendResult = await this.fastify.UserRepository.getUser({ id: friendId });
-            if (!friendResult.isSuccess || !friendResult.value) {
+            // Get target user's information
+            const targetUserResult = await this.fastify.UserRepository.getUser({ id: toUserId });
+            if (!targetUserResult.isSuccess || !targetUserResult.value) {
                 return Result.error(ApplicationError.UserNotFound);
             }
 
-            const friend = friendResult.value;
+            const targetUser = targetUserResult.value;
 
             // Get sender's information
             const senderResult = await this.fastify.UserRepository.getUser({ id: fromUserId as number });
@@ -94,23 +84,23 @@ export default class SendGameInvitationCommand
 
             const sender = senderResult.value;
 
-            // Send notification through WebSocket if friend is connected
-            const notificationSent = await this.socialWebSocketService.sendGameInvitation({
+            // Send notification through WebSocket
+            const invitationResult = await this.socialWebSocketService.sendGameInvitation({
                 fromUserId: fromUserId as number,
                 fromUsername: sender.username,
-                toUserId: friendId,
+                toUserId: toUserId,
                 gameType,
                 message: message || `${sender.username} te ha invitado a jugar ${gameType}!`,
             });
 
-            const responseMessage = notificationSent
-                ? `Invitación enviada a ${friend.username}`
-                : `Invitación enviada a ${friend.username} (usuario no conectado)`;
+            if (!invitationResult.isSuccess) {
+                return Result.error(invitationResult.error || ApplicationError.InternalServerError);
+            }
 
             return Result.success({
-                message: responseMessage,
-                toUserId: friendId,
-                toUsername: friend.username,
+                message: `Invitación enviada a ${targetUser.username}`,
+                toUserId: toUserId,
+                toUsername: targetUser.username,
             });
         } catch (error) {
             return this.fastify.handleError<ISendGameInvitationResponse>({

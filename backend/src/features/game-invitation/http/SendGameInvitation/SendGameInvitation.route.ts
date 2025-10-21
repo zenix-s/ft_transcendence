@@ -5,7 +5,7 @@ import { FastifyRequest } from 'fastify/types/request';
 
 interface SendGameInvitationRequest {
     Body: {
-        friendId: number;
+        toUserId: number;
         gameType?: string;
         message?: string;
     };
@@ -16,16 +16,16 @@ export default async function SendGameInvitationRoute(fastify: FastifyInstance) 
         '/send-invitation',
         {
             schema: {
-                description: 'Send a game invitation to a friend',
+                description: 'Send a game invitation to a user',
                 tags: ['Game Invitation'],
                 security: [{ bearerAuth: [] }],
                 body: {
                     type: 'object',
-                    required: ['friendId'],
+                    required: ['toUserId'],
                     properties: {
-                        friendId: {
+                        toUserId: {
                             type: 'number',
-                            description: 'ID of the friend to invite',
+                            description: 'ID of the user to invite',
                         },
                         gameType: {
                             type: 'string',
@@ -58,7 +58,14 @@ export default async function SendGameInvitationRoute(fastify: FastifyInstance) 
                         },
                     },
                     404: {
-                        description: 'Friend not found or not connected',
+                        description: 'User not found',
+                        type: 'object',
+                        properties: {
+                            error: { type: 'string' },
+                        },
+                    },
+                    409: {
+                        description: 'User not connected',
                         type: 'object',
                         properties: {
                             error: { type: 'string' },
@@ -72,7 +79,7 @@ export default async function SendGameInvitationRoute(fastify: FastifyInstance) 
             const userId = req.user?.id;
             const request = {
                 fromUserId: userId,
-                friendId: req.body.friendId,
+                toUserId: req.body.toUserId,
                 gameType: req.body.gameType || 'pong',
                 message: req.body.message,
             };

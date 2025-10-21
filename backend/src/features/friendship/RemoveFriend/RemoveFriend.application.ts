@@ -42,6 +42,10 @@ export class RemoveFriendCommand implements ICommand<RemoveFriendRequest, null> 
 
             const friendId = friendResult.value.id;
 
+            if (userId === friendId) {
+                return Result.error(ApplicationError.CannotRemoveSelfAsFriend);
+            }
+
             const userExists = await this._fastify.UserRepository.getUser({ id: userId });
             if (!userExists.isSuccess || !userExists.value) {
                 return Result.error(ApplicationError.UserNotFound);

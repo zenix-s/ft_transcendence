@@ -36,7 +36,7 @@ function actualizeGame(playerLeft: Player, playerRight: Player,
 		navigateTo("dashboard");
 		return ;
 	}
-	console.log("hight=", canvas.height);
+	console.log("height=", canvas.height);
 	if (canvas.height < 500)
 	{
 		playerLeft.paddle.classList.replace("h-32", "h-10");
@@ -106,6 +106,17 @@ export function startGame()
 	}
 	const ctx = canvas.getContext("2d")!; // as CanvasRenderingContext2D
 	console.log(canvas);
+
+
+	function resizeCanvas() {
+	  canvas.width = canvas.offsetWidth;
+	  canvas.height = canvas.offsetHeight;
+	  // Optional: re-render or adjust game logic
+	}
+
+	window.addEventListener('load', resizeCanvas);
+	window.addEventListener('resize', resizeCanvas);
+
 	
 	/* JUGADORES */
 	const paddle1 = document.getElementById("playerLeft") as HTMLElement;

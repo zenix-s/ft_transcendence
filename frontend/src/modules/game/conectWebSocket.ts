@@ -3,6 +3,7 @@ import { actualizeValues } from "./game"
 import type { Ball, Player, Score } from "./gameData";
 import { t } from "@/app/i18n";
 import { navigateTo } from "@/app/navigation";
+import { fetchGameAlreadyFinished } from "./getData";
 
 //import { fetchGameId, fetchSinglePlayerGameId, toJoinGame, fetchGameState } from "./getData.js";
 
@@ -31,6 +32,7 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 	let pingInterval: ReturnType<typeof setInterval> | undefined;
 	let up = 0;
 	let down = 0;
+	let	finBool = 0;
 	
 	socket.addEventListener("open", () => {
 		console.log("conectado websockket");
@@ -58,7 +60,7 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
   		}, 10);
 	})
 
-	socket.addEventListener("message", (msg) => {
+	socket.addEventListener("message", async (msg) => {
 		console.log("mensaje recibido=", msg.data);
 		let data = JSON.parse(msg.data);
 		if (data.type ==  "gameState")
@@ -77,6 +79,33 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 			}
 		}
 		else if (data.type == "error") {
+			if (data.error == "GameAlreadyFinished")
+			{
+				clearInterval(pingInterval);
+				pingInterval = undefined;
+				if (finBool == 0)
+				{
+					let finished = await fetchGameAlreadyFinished(gameId);
+					if (!finished)
+					{
+						showToast(t("GameError"));
+						console.warn(t("GameError"));
+						navigateTo("dashboard");
+					}
+					console.log("game = ", JSON.stringify(finished));
+					const player1 = finished.match.players[0].userId;
+					const player2 = finished.match.players[1].userId;
+					const score1 = finished.match.players[0].score;
+					const score2 = finished.match.players[1].score;
+					let winner = 1;
+					if (finished.match.players[1].isWinner == true)
+						winner = 2;
+					console.log("1=", player1, " 2=", player2, " 1=", score1, " 2=", score2, " winner=", winner);
+				}	
+				finBool = 1;
+				navigateTo("dashboard");
+				return ;
+			}
 			if (data.error == "GameNotFound")
 			{
 				showToast(t("GameNotFound"), "error");

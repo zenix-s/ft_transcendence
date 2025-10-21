@@ -1,19 +1,10 @@
 import { t, updateTexts } from "@/app/i18n";
 import { addFriend, deleteFriend } from "@/modules/social/friendsManager";
-import { getCurrentUser } from "@/modules/users";
-import type { User } from "@/types/user";
 import type { Friend } from "@/types/friend";
 import { getReadySocialSocket } from "@/modules/social/socketUtils";
 import { renderAvatar } from "../renderAvatar";
 
-export async function initFriendsSidebar(user?: User) {
-  // 1. Si no recibo un user se lo solicito a getCurrentUser()
-  if (!user) {
-    const userResponse = await getCurrentUser();
-    if (!userResponse) return;
-    user = userResponse.user;
-  }
-
+export async function initFriendsSidebar() {
   const container = document.getElementById("friends-sidebar-container");
   if (!container) return console.warn("⚠️ No se encontró #friends-sidebar-container");
 
@@ -36,20 +27,6 @@ export async function initFriendsSidebar(user?: User) {
   const deleteFriendForm  = document.getElementById("delete-friend-form") as HTMLElement;
   const deleteFriendInput = document.getElementById("delete-friend-input") as HTMLInputElement;
   //const deleteFriendBtn = document.getElementById("delete-friend-btn")!;
-
-  // 🔹 Función para renderizar listas de amigos
-  /* function renderLists(friends: { username: string; is_connected: boolean }[]) {
-    const onlineFriends = friends.filter(f => f.is_connected).map(f => f.username);
-    const offlineFriends = friends.filter(f => !f.is_connected).map(f => f.username);
-
-    onlineList.innerHTML = onlineFriends
-      .map(name => `<li class="flex justify-between items-center bg-white/20 rounded-md px-3 py-2"><span>${name}</span></li>`)
-      .join("");
-
-    offlineList.innerHTML = offlineFriends
-      .map(name => `<li class="flex justify-between items-center bg-white/10 rounded-md px-3 py-2"><span>${name}</span></li>`)
-      .join("");
-  } */
 
   function renderLists(friends: Friend[]) {
     const render = (listEl: HTMLElement, items: Friend[], emptyText: string) => {
@@ -111,7 +88,7 @@ export async function initFriendsSidebar(user?: User) {
   // 🔹 Agregar amigo
   addFriendForm.addEventListener("submit", async (event) => {
     event.preventDefault(); // evita recarga
-    const response = await addFriend(user!, friendInput.value);
+    const response = await addFriend(friendInput.value);
     if (response)
       friendInput.value = "";
       ws?.refreshFriendsList();

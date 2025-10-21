@@ -111,14 +111,14 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
             ]);
             renderButtons();
             requestAnimationFrame(async () => {
-              initFriendsSidebar(user);
+              initFriendsSidebar();
             });
             break;
 
           case "settings":
             await loadSettings();
             requestAnimationFrame(async () => {
-              initFriendsSidebar(user);
+              initFriendsSidebar();
             });
             break;
 

@@ -1,3 +1,5 @@
+import { WS_BASE_URL } from "@/api";
+
 export class SocialWebSocketClient {
   private socket: WebSocket | null = null;
   private token: string;
@@ -6,7 +8,7 @@ export class SocialWebSocketClient {
   private friends: any[] = [];
 
   constructor(token: string) {
-    this.wsUrl = "wss://localhost:3000/social/"; // ajusta si cambia el puerto
+    this.wsUrl = `${WS_BASE_URL}/social/`; // ajusta si cambia el puerto
     this.token = token;
   }
 

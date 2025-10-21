@@ -6,11 +6,15 @@
   /* --color-mint-500: oklch(0.72 0.11 178); */
   --color-primary: #FFF;       /* white */
   --color-secondary: #131313;  /* dark-grey */
-  --color-cyan: #00ffff;       /* cyan */
+  --color-cyan: #00d3f2;       /* cyan-400 */
   --color-magenta: #ff00ff;    /* magenta */
 }
 
 @layer components{
+  :root, .dark {
+    transition: background-color 0.3s ease, color 0.3s ease, filter 0.3s ease;
+  }
+
   .center-screen {
     @apply flex flex-col min-w-screen min-h-[100dvh] items-center justify-center;
   }

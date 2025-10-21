@@ -3,6 +3,7 @@ import "@/app/styles/global.css";
 import { navigateTo, handlePopState } from "@/app/navigation";
 import { setupEventListeners } from "@/app/events";
 import { loadAndRender, loadUserForCode } from "@/modules/users";
+import { applySavedColors } from "@/components/colorPicker";
 
 //import { startGame } from "./game";
 
@@ -21,7 +22,8 @@ import { setLanguage, t, currentLang } from "@/app/i18n";
 (window as any).loadUserForCode = loadUserForCode;
 (window as any).GlitchButton = GlitchButton;
 
-// console.log("✅ main.ts cargado"); // DB
+// Al cargar toda la SPA, aplica los colores guardados
+applySavedColors();
 
 // Detectar la página inicial según la URL actual
 const initialPage = location.pathname.replace("/", "") || "home";
@@ -29,12 +31,6 @@ navigateTo(initialPage, true);
 
 // 🌐 Inicializar WebSocket Social si hay token
 import { createSocialSocket, getSocialSocket } from "@/modules/social/socketInstance";
-
-/* const token = localStorage.getItem("access_token");
-if (token && !getSocialSocket()) {
-  console.log("🌐 Inicializando WebSocket Social desde main.ts");
-  createSocialSocket(token);
-} */
 
 async function initSocialSocket() {
   const token = localStorage.getItem("access_token");
@@ -150,20 +146,4 @@ document.addEventListener("i18n-updated", async () => {
     matchTable.destroy();
     await loadMatchHistory(undefined, currentPerPage);
   }
-
-  /* // Reload History
-  let currentPerPage = 5; // default
-  
-  const perPageSelect = document.querySelector<HTMLSelectElement>(".datatable-selector");
-  if (perPageSelect) {
-    currentPerPage = parseInt(perPageSelect.value, 10); // lee lo que el usuario ha seleccionado
-  }
-
-  // Destruir la tabla existente si ya hay una
-  if (matchTable) {
-    matchTable.destroy();
-  }
-
-  // Volver a cargar la tabla (la misma función loadMatchHistory recrea la DataTable)
-  await loadMatchHistory(undefined, currentPerPage); */
 });

@@ -5,6 +5,7 @@ import { showToast } from "@/components/toast";
 import { navigateTo } from "@/app/navigation";
 import { renderAvatar } from "@/components/renderAvatar";
 import { apiUrl } from "@/api";
+import { setupColorPicker } from "@/components/colorPicker";
 
 export async function loadSettings() {
   // console.log("Cargando dashboard..."); // DB
@@ -23,30 +24,20 @@ export async function loadSettings() {
 
   const user = response.user; 
 
-  //console.log("Usuario obtenido:", user); // DB
-
   // Actualizar elementos dinámicos
   const usernameElement = document.getElementById("user-name");
-  const emailElement = document.getElementById("user-email");
-  const useridElement = document.getElementById("user-id");
   const avatarElement = document.getElementById("user-avatar");
-
-  // console.log("Elementos encontrados:", { usernameElement, emailElement, useridElement }); // DB
 
   // Actualizar texto
   if (usernameElement) {
 	usernameElement.textContent = user.username;
   }
 
-  if (emailElement) {
-	emailElement.textContent = user.email;
-  }
-
-  if (useridElement) {
-	useridElement.textContent = user.id.toString(); // Ejemplo: reemplazar "dashboard" por su id
-  }
-
+  // Display user avatar
   renderAvatar(user, avatarElement);
+
+  // Inicializar selector de color
+  setupColorPicker();
 }
 
 // Update User Name Form
@@ -107,16 +98,7 @@ function updateUserName() {
           return;
         }
 
-        // ✅ Actualizar nombre en la web
-        // Funciona correctamente, pero no necesario con el navigateTo() de abajo
-        /* const usernameElement = document.getElementById("user-name");
-        if (usernameElement) {
-          usernameElement.textContent = username;
-        } */
-
-        //alert(t("UserNameUpdatedSuccessfully"));
         showToast(t("UserNameUpdatedSuccessfully"));
-        //userNamerForm.reset();
         navigateTo("settings", true, true);
 
       } catch (err) {

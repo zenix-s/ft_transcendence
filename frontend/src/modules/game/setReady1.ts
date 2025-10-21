@@ -1,6 +1,7 @@
 import { navigateTo } from "@/app/navigation";
-import { fetchGameState, fetchSinglePlayerGameId } from "./getData";
+import { fetchSinglePlayerGameId } from "./getData";
 import { showToast } from "@/components/toast.js";
+import { t } from "@/app/i18n";
 
 export function ready1()
 {
@@ -27,15 +28,15 @@ export function ready1()
 			return ;
 		}
 		console.log("single player id =", id);
-		const gameState = await fetchGameState(id);
-		if (!gameState)
-		{
-			showToast(t("GameState"), "error");
-			console.warn("GameState");
-			navigateTo("dashboard");
-			return ;
-		}
-		console.log("si gameState");
+		// const gameState = await fetchGameState(id);
+		// if (!gameState)
+		// {
+		// 	showToast(t("GameState"), "error");
+		// 	console.warn("GameState");
+		// 	navigateTo("dashboard");
+		// 	return ;
+		// }
+		// console.log("si gameState");
 		navigateTo(`game?id=${id}&singlePlayer=true&mutiPlayer=false`);
 	});
 }

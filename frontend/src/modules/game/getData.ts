@@ -86,13 +86,14 @@ export function toJoinGame(gameId:any) {
     });
 }
 
-export function fetchGameState(gameId:any)
+export function fetchGameAlreadyFinished(gameId:any)
 {
-  return fetch("https://localhost:3000/game/pong/state/" + gameId, {
+  return fetch("https://localhost:3000/match-history/final-state/" + gameId, {
     method: "GET",
     headers: {
       "accept": "application/json",
-      "Authorization": "Bearer " + localStorage.getItem("access_token")
+      "Authorization": "Bearer " + localStorage.getItem("access_token"),
+      "Content-Type": "application/json"
     }
   })
     .then(response => {
@@ -103,12 +104,37 @@ export function fetchGameState(gameId:any)
     })
     .then(data => {
       console.log("Respuesta del servidor:", data);
-      return data;   // ✅ devolvemos respuesta completa
+      return data; 
     })
     .catch(error => {
       console.error("Error:", error);
       return null;
     });
 }
+
+// export function fetchGameState(gameId:any)
+// {
+//   return fetch("https://localhost:3000/game/pong/state/" + gameId, {
+//     method: "GET",
+//     headers: {
+//       "accept": "application/json",
+//       "Authorization": "Bearer " + localStorage.getItem("access_token")
+//     }
+//   })
+//     .then(response => {
+//       if (!response.ok) {
+//         throw new Error("Error en la petición: " + response.status);
+//       }
+//       return response.json();
+//     })
+//     .then(data => {
+//       console.log("Respuesta del servidor:", data);
+//       return data;   // ✅ devolvemos respuesta completa
+//     })
+//     .catch(error => {
+//       console.error("Error:", error);
+//       return null;
+//     });
+// }
 
 //guardar esto:   "userId": "182ed9a4-d773-46e7-a303-b7f3a48ad13a",

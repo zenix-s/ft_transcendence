@@ -165,4 +165,6 @@ export enum ApplicationError {
     AlreadyFriendsError = 'AlreadyFriendsError',
     FriendshipCreationError = 'FriendshipCreationError',
     NotFriendsError = 'NotFriendsError',
+    CannotAddSelfAsFriend = 'CannotAddSelfAsFriend',
+    CannotRemoveSelfAsFriend = 'CannotRemoveSelfAsFriend',
 }

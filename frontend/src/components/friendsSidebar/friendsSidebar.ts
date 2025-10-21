@@ -75,8 +75,10 @@ export async function initFriendsSidebar() {
   ws.onFriendsUpdate((friends) => {
     renderLists(friends);
   });
-  // NO llamamos ws.refreshFriendsList() porque ya se actualiza al autenticarse
-  //ws.refreshFriendsList();
+
+  // Render inicial de la lista directamente desde el estado actual
+  ws.refreshFriendsList();
+  //renderLists(ws.getFriends()); // Otra opción para lo mismo
 
   // 🔹 Mostrar / ocultar panel
   toggleBtn.addEventListener("click", () => {

@@ -27,6 +27,8 @@ function getStatusCodeForError(error: string): number {
         case ApplicationError.GameFull:
         case ApplicationError.UserAlreadyExists:
         case ApplicationError.AlreadyFriendsError:
+        case ApplicationError.CannotAddSelfAsFriend:
+        case ApplicationError.CannotRemoveSelfAsFriend:
         case ApplicationError.MatchInProgress:
             return 409;
         case ApplicationError.InternalServerError:

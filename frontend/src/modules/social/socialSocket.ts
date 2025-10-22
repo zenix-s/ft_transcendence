@@ -1,4 +1,4 @@
-import { WS_BASE_URL } from "@/api";
+import { getWsUrl, WS_BASE_URL } from "@/api";
 import { showToast } from "@/components/toast";
 
 export class SocialWebSocketClient {
@@ -9,7 +9,7 @@ export class SocialWebSocketClient {
   private friends: any[] = [];
 
   constructor(token: string) {
-    this.wsUrl = `${WS_BASE_URL}/social/`; // ajusta si cambia el puerto
+    this.wsUrl = getWsUrl("/social/");
     this.token = token;
   }
 

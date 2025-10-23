@@ -4,6 +4,7 @@ import type { Ball, Player, Score } from "./gameData";
 import { t } from "@/app/i18n";
 import { navigateTo } from "@/app/navigation";
 import { fetchGameAlreadyFinished } from "./getData";
+import { modal } from "@/components/modal";
 
 //import { fetchGameId, fetchSinglePlayerGameId, toJoinGame, fetchGameState } from "./getData.js";
 
@@ -92,18 +93,20 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 						console.warn(t("GameError"));
 						navigateTo("dashboard");
 					}
-					console.log("game = ", JSON.stringify(finished));
-					const player1 = finished.match.players[0].userId;
-					const player2 = finished.match.players[1].userId;
 					const score1 = finished.match.players[0].score;
 					const score2 = finished.match.players[1].score;
+					actualizeValues(50, player1, 50, player2, score1, score2, scores, 50, 50, ball);
+					console.log("game = ", JSON.stringify(finished));
+					const playerL = finished.match.players[0].userId;
+					const playerR = finished.match.players[1].userId;
 					let winner = 1;
 					if (finished.match.players[1].isWinner == true)
 						winner = 2;
-					console.log("1=", player1, " 2=", player2, " 1=", score1, " 2=", score2, " winner=", winner);
+					console.log("1=", playerL, " 2=", playerR, " 1=", score1, " 2=", score2, " winner=", winner);
+					await modal("gameFinished", finished.match.players[0], finished.match.players[1], "patata");
+					navigateTo("dashboard");
 				}	
 				finBool = 1;
-				navigateTo("dashboard");
 				return ;
 			}
 			if (data.error == "GameNotFound")

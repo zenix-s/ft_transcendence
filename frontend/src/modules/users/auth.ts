@@ -19,6 +19,9 @@ export function setupRegisterForm() {
     const registerForm = forms[1];
     if (!registerForm) return;
 
+    // Char counter
+    countUsernameLenght(registerForm);
+
     registerForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const formData = new FormData(registerForm);
@@ -26,7 +29,6 @@ export function setupRegisterForm() {
       const email = formData.get("email") as string;
       const password = formData.get("password") as string;
       const repeatPassword = formData.get("repeat_password") as string;
-
 
       /* Validate all fields are filled */
       if (!username || !email || !password || !repeatPassword) {
@@ -113,6 +115,16 @@ export function setupRegisterForm() {
       }
     });
   }, 100); // Espera breve para asegurar que el HTML está en el DOM
+}
+
+export function countUsernameLenght(registerForm: HTMLFormElement) {
+  const usernameInput = registerForm.querySelector<HTMLInputElement>('input[name="username"]');
+  const counter = document.getElementById("username-counter");
+  if (usernameInput && counter) {
+    usernameInput.addEventListener("input", () => {
+      counter.textContent = `${usernameInput.value.length}/20`;
+    });
+  }
 }
 
 /* LOG-IN */

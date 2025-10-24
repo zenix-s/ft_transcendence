@@ -6,6 +6,7 @@ import { renderAvatar } from "@/components/renderAvatar";
 import { apiUrl } from "@/api";
 import { setupColorPicker } from "@/components/colorPicker";
 import type { User } from "@/types/user"
+import { countUsernameLenght } from "./auth";
 
 export async function loadSettings(user: User) {
   // ✅ activa el drag & drop
@@ -38,6 +39,8 @@ function updateUserName() {
     const forms = document.querySelectorAll("form");
     const userNamerForm = forms[0];
     if (!userNamerForm) return;
+
+    countUsernameLenght(userNamerForm);
 
     userNamerForm.addEventListener("submit", async (e) => {
       e.preventDefault();

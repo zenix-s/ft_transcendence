@@ -1,7 +1,6 @@
 import { t } from "@/app/i18n";
-import Swal from 'sweetalert2'
-//import Swal from 'sweetalert2/dist/sweetalert2.js'
-//import 'sweetalert2/src/sweetalert2.scss'
+import Swal from 'sweetalert2';
+import type { SweetAlertIcon } from 'sweetalert2';
 
 export function modal(type: "success" | "logout" | "gameFinished" = "success", player1?: any, player2?: any, winner?: any): Promise<boolean> {
   return new Promise((resolve) => {
@@ -13,9 +12,9 @@ export function modal(type: "success" | "logout" | "gameFinished" = "success", p
     let text = "Everything went well.";
     let confirmButtonText = "OK";
     let showCancelButton = false;
-    let iconColor = "#00d3f2";
-    let animation = true;
-    let icon_msg = "success";
+    const iconColor = "#00d3f2";
+    const animation = true;
+    let icon_msg: SweetAlertIcon | undefined = "success";
     let color_modal = isDark ? "#fff" : "#131313";
     let color_back = isDark ? "#131313" : "#ffffff";
 
@@ -36,7 +35,7 @@ export function modal(type: "success" | "logout" | "gameFinished" = "success", p
       titleText = `🏆 Winner: ${winnerName ?? "Unknown"}`;
       text = `Final Score: ${scoreText}`;
       confirmButtonText = "Return";
-      icon_msg = "";
+      icon_msg = undefined;
       color_modal = "#131313";
       color_back = "#ffffff";
     }

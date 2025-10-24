@@ -36,7 +36,7 @@ const start = async () => {
             origin: '*',
         });
         await server.listen({ port, host });
-        console.log(`Server is running at http://localhost:${port}`);
+        console.log(`Server is running at https://localhost:${port}`);
     } catch (err) {
         server.log.error(err);
         process.exit(1);

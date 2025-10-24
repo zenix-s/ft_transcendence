@@ -1,6 +1,6 @@
 import { DataTable } from "simple-datatables";
 import { t, updateTexts } from "@/app/i18n";
-import { getCurrentUser, getHistory } from "@/modules/users";
+import { getHistory } from "@/modules/users";
 import type { User } from "@/types/user";
 
 // Jugador dentro de un Match
@@ -29,15 +29,8 @@ interface MatchesResponse {
 
 export let matchTable: DataTable; // Variable global o de módulo
 
-export async function loadMatchHistory(user?: User, perPage: number = 5) {
+export async function loadMatchHistory(user: User, perPage: number = 5) {
   try {
-    // Si no recibo un user se lo solicito a getCurrentUser()
-    if (!user) {
-      const userResponse = await getCurrentUser();
-      if (!userResponse) return;
-      user = userResponse.user;
-    }
-
     const currentUser: User = user;
 
     // 1. Fetch al backend
@@ -99,7 +92,6 @@ export async function loadMatchHistory(user?: User, perPage: number = 5) {
     });
 
     // 5. Traducir las celdas recién insertadas
-    //console.log("Updating history language");
     updateTexts();
 
   } catch (error) {

@@ -1,4 +1,3 @@
-import { getCurrentUser } from "@/modules/users";
 import { t } from "@/app/i18n";
 import { setupAvatarUpload } from "@/components/avatarUpload";
 import { showToast } from "@/components/toast";
@@ -6,23 +5,16 @@ import { navigateTo } from "@/app/navigation";
 import { renderAvatar } from "@/components/renderAvatar";
 import { apiUrl } from "@/api";
 import { setupColorPicker } from "@/components/colorPicker";
+import type { User } from "@/types/user"
 
-export async function loadSettings() {
-  // console.log("Cargando dashboard..."); // DB
-  const response = await getCurrentUser();
-
-  if (!response) {
-	console.warn(t("UserNotFound"));
-	return;
-  }
-
+export async function loadSettings(user: User) {
   // ✅ activa el drag & drop
   setupAvatarUpload();
   // ⭐ Activar uso de formularios
   updateUserName();
   updatePassword();
 
-  const user = response.user; 
+  //const user = response.user; 
 
   // Actualizar elementos dinámicos
   const usernameElement = document.getElementById("user-name");

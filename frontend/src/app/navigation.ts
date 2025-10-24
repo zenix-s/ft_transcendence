@@ -9,6 +9,7 @@ import { redirect } from "@/components/redirect";
 import { initFriendsSidebar } from "@/components/friendsSidebar/friendsSidebar"
 import { getCurrentUser } from "@/modules/users";
 import { ready1 } from "@/modules/game/setReady1";
+import { t } from "@/app/i18n"
 
 // Llamada                            Efecto
 // navigateTo("home")                 Carga "home" y añade al historial
@@ -99,7 +100,11 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
     case "setReady1": {
       requestAnimationFrame(async () => {
         const userResponse = await getCurrentUser();
-        if (!userResponse || !localStorage.getItem("access_token")) return;
+        if (!userResponse || !localStorage.getItem("access_token"))
+        {
+          console.warn(t("UserNotFound"));
+          return;
+        }
         const user = userResponse.user;
 
         switch (pageBase) {
@@ -116,7 +121,7 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
             break;
 
           case "settings":
-            await loadSettings();
+            await loadSettings(user);
             requestAnimationFrame(async () => {
               initFriendsSidebar();
             });

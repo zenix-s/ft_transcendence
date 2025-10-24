@@ -29,7 +29,7 @@ interface MatchesResponse {
 
 export let matchTable: DataTable; // Variable global o de módulo
 
-export async function loadMatchHistory(user: User, perPage: number = 5) {
+export async function loadMatchHistory(user?: User, perPage: number = 5) {
   try {
     // Si no recibo un user se lo solicito a getCurrentUser()
     if (!user) {

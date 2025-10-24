@@ -16,7 +16,7 @@ export function ready1()
 		{
 			showToast(t("DiffAndMax"), "error");
 			console.warn("DiffAndMax");
-			navigateTo("dashboard");
+			navigateTo("dashboard", false, true);
 			return ;
 		}
 		const id = await fetchSinglePlayerGameId(Number(maxPoints), Number(difficulty));
@@ -24,19 +24,10 @@ export function ready1()
 		{
 			showToast(t("NoGameId"), "error");
 			console.warn("NoGameId");
-			navigateTo("dashboard");
+			navigateTo("dashboard", false, true);
 			return ;
 		}
 		console.log("single player id =", id);
-		// const gameState = await fetchGameState(id);
-		// if (!gameState)
-		// {
-		// 	showToast(t("GameState"), "error");
-		// 	console.warn("GameState");
-		// 	navigateTo("dashboard");
-		// 	return ;
-		// }
-		// console.log("si gameState");
 		navigateTo(`game?id=${id}&singlePlayer=true&mutiPlayer=false`);
 	});
 }

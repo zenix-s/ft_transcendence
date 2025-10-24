@@ -5,6 +5,7 @@ import { t } from "@/app/i18n";
 import { navigateTo } from "@/app/navigation";
 import { fetchGameAlreadyFinished } from "./getData";
 import { modal } from "@/components/modal";
+import { getWsUrl } from "@/api";
 
 //import { fetchGameId, fetchSinglePlayerGameId, toJoinGame, fetchGameState } from "./getData.js";
 
@@ -29,7 +30,9 @@ interface message {
 export function conectWebSocket(gameId: number, player1: Player, player2: Player, scores: Score, ball: Ball)
 {
 	const token = localStorage.getItem("access_token");
-	const socket = new WebSocket("wss://localhost:3000/game/pong");
+	// const socket = new WebSocket("wss://localhost:3000/game/pong");
+	console.log("ws=", getWsUrl("/game/pong"));
+	const socket = new WebSocket(getWsUrl("/game/pong"));
 	let pingInterval: ReturnType<typeof setInterval> | undefined;
 	let up = 0;
 	let down = 0;
@@ -84,14 +87,14 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 			{
 				clearInterval(pingInterval);
 				pingInterval = undefined;
-				if (finBool == 0)
+				if (finBool == 0 && document.getElementById("gameCanvas") as HTMLCanvasElement)
 				{
 					let finished = await fetchGameAlreadyFinished(gameId);
 					if (!finished)
 					{
 						showToast(t("GameError"));
 						console.warn(t("GameError"));
-						navigateTo("dashboard");
+						navigateTo("dashboard", false, true);
 					}
 					const score1 = finished.match.players[0].score;
 					const score2 = finished.match.players[1].score;
@@ -103,8 +106,8 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 					if (finished.match.players[1].isWinner == true)
 						winner = 2;
 					console.log("1=", playerL, " 2=", playerR, " 1=", score1, " 2=", score2, " winner=", winner);
+					navigateTo("dashboard", false, true);
 					await modal("gameFinished", finished.match.players[0], finished.match.players[1], "patata");
-					navigateTo("dashboard");
 				}	
 				finBool = 1;
 				return ;
@@ -136,7 +139,7 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 				clearInterval(pingInterval);
 				pingInterval = undefined;
 				console.warn(t("GameError"));
-				navigateTo("dashboard");
+				navigateTo("dashboard", false, true);
 			}
 		}
 	});
@@ -230,7 +233,7 @@ export async function socketAndRender(player1: Player, player2: Player, scores: 
 	{
 		showToast(t("NoGameId"), "error");
 		console.warn(t("NoGameId"));
-		navigateTo("dashboard");
+		navigateTo("dashboard", false, true);
 	}
 	conectWebSocket(Number(id), player1, player2, scores, ball);
 }

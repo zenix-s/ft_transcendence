@@ -30,12 +30,7 @@ function actualizeGame(playerLeft: Player, playerRight: Player,
 {
 	const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
 	if (!canvas)
-	{
-		showToast(t("CanvasNotFound"), "error");
-		console.warn(t("CanvasNotFound"));
-		navigateTo("dashboard");
 		return ;
-	}
 	console.log("height=", canvas.height);
 	if (canvas.height < 500)
 	{
@@ -88,7 +83,7 @@ export function startGame()
 	{
 		showToast(t("URLNotCorrect"), "error");
 		console.warn(t("URLNotCorrect"));
-		navigateTo("dashboard");
+		navigateTo("dashboard", false, true);
 		return ;
 	}
 
@@ -101,7 +96,7 @@ export function startGame()
 	{
 		showToast(t("CanvasNotFound"), "error");
 		console.warn(t("CanvasNotFound"));
-		navigateTo("dashboard");
+		navigateTo("dashboard", false, true);
 		return ;
 	}
 	const ctx = canvas.getContext("2d")!; // as CanvasRenderingContext2D
@@ -125,7 +120,7 @@ export function startGame()
 	{
 		showToast(t("PaddlesNotFound"), "error");
 		console.warn(t("PaddlesNotFound"));
-		navigateTo("dashboard");
+		navigateTo("dashboard", false, true);
 		return ;
 	}
 
@@ -163,7 +158,7 @@ export function startGame()
 	{
 		showToast(t("ScoresNotFound"), "error");
 		console.warn(t("ScoresNotFound"));
-		navigateTo("dashboard");
+		navigateTo("dashboard", false, true);
 		return ;
 	}
 	const scores : Score = {

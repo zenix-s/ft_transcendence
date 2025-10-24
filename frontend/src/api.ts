@@ -7,6 +7,7 @@ export function apiUrl(path: string) {
   // Si estás en desarrollo, usa proxy (Vite se encarga)
   if (import.meta.env.DEV) return `/api${path}`;
   // En producción o entorno real, usa la IP detectada
+  console.log("❌ NO entré en el if");
   return `${API_BASE_URL}${path}`;
 }
 

@@ -2,7 +2,6 @@ import "@/app/styles/global.css";
 
 import { navigateTo, handlePopState } from "@/app/navigation";
 import { setupEventListeners } from "@/app/events";
-import { loadAndRender, loadUserForCode } from "@/modules/users";
 import { applySavedColors } from "@/components/colorPicker";
 
 //import { startGame } from "./game";
@@ -18,9 +17,12 @@ import { matchTable, loadMatchHistory } from "@/components/history";
 import { setLanguage, t, currentLang } from "@/app/i18n";
 
 // Exponer utilidades al ámbito global
-(window as any).loadAndRender = loadAndRender;
-(window as any).loadUserForCode = loadUserForCode;
-(window as any).GlitchButton = GlitchButton;
+declare global {
+  interface Window {
+    GlitchButton: typeof GlitchButton;
+  }
+}
+(window).GlitchButton = GlitchButton;
 
 // Al cargar toda la SPA, aplica los colores guardados
 applySavedColors();
@@ -31,19 +33,21 @@ navigateTo(initialPage, true);
 
 // 🌐 Inicializar WebSocket Social si hay token
 import { createSocialSocket, getSocialSocket } from "@/modules/social/socketInstance";
+import { SocialWebSocketClient } from "@/modules/social/socialSocket";
 
-async function initSocialSocket() {
+async function initSocialSocket(): Promise<SocialWebSocketClient | null> {
   const token = localStorage.getItem("access_token");
   if (!token) return null;
 
-  let ws = getSocialSocket();
+  let ws: SocialWebSocketClient | null = getSocialSocket();
+
   if (!ws) {
     console.log("🌐 Inicializando WebSocket Social desde main.ts");
     ws = createSocialSocket(token);
     // Esperar a que el socket se conecte y autentique antes de continuar
     await new Promise<void>((resolve) => {
       const interval = setInterval(() => {
-        if ((ws as any).isAuthenticated) { // marca pública o usa un getter
+        if ((ws?.getAuthenticated())) {
           clearInterval(interval);
           resolve();
         }
@@ -109,8 +113,9 @@ renderButtons();
 const langSelector = document.getElementById("lang_selector") as HTMLSelectElement | null;
 if (langSelector) {
   langSelector.value = savedLang || currentLang;
-  langSelector.addEventListener("change", (e) => {
-    setLanguage((e.target as HTMLSelectElement).value as any);
+  langSelector.addEventListener("change", (event: Event) => {
+    const select = event.target as HTMLSelectElement;
+    setLanguage(select.value as "en" | "es" | "fr");
   });
 }
 

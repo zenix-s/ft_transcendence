@@ -4,9 +4,17 @@ import { getCurrentUser } from "@/modules/users";
 import { apiUrl } from "@/api";
 
 /**
+ * Extiende el objeto window para añadir selectedAvatarFile
+ */
+declare global {
+  interface Window {
+    selectedAvatarFile?: File;
+  }
+}
+
+/**
  * Módulo para manejar drag & drop y vista previa de un avatar.
  */
-
 export function setupAvatarUpload() {
   const dropZone = document.getElementById("avatarDropZone") as HTMLElement | null;
   const fileInput = document.getElementById("avatarFileInput") as HTMLInputElement | null;
@@ -72,12 +80,12 @@ export function setupAvatarUpload() {
     reader.readAsDataURL(file);
 
     // Guardamos el archivo para su posterior envío
-    (window as any).selectedAvatarFile = file;
+    (window as unknown as {selectedAvatarFile?: File}).selectedAvatarFile = file;
   }
 
   // 💾 Subida al backend
   updateAvatarBtn!.addEventListener("click", async () => {
-    const file = (window as any).selectedAvatarFile as File | undefined;
+    const file = (window as unknown as {selectedAvatarFile?: File}).selectedAvatarFile;
 
     if (!file) {
       showToast(t("selectImageFile"), "error");

@@ -141,6 +141,7 @@ export const translations: Record<Language, Record<string, string>> = {
     NoFriendsOnline: "There are no friends online right now.",
     NoFriendsOffline: "There are no friends offline right now.",
     /* WebSocket */
+    InitializingSocialWs: "Initializing Social WebSocket from main.ts",
     ConnectingToWs: "Connecting to WebSocket...",
     WsConnected: "WebSocket connected",
     ErrorParsingMsg: "Error parsing message:",
@@ -157,6 +158,9 @@ export const translations: Record<Language, Record<string, string>> = {
     Online: "online",
     MsgReceived: "Message received (unknown):",
     ClosingWs: "Closing WebSocket connection...",
+    /* Color Picker */
+    ColorPickerNotFound: "ColorPicker: Elements not found in the DOM.",
+    ColorPickerInitialized: "ColorPicker initialized successfully.",
   },
   es: {
     start: "Comenzar",
@@ -297,6 +301,7 @@ export const translations: Record<Language, Record<string, string>> = {
     NoFriendsOnline: "No hay amigos conectados ahora mismo.",
     NoFriendsOffline: "No hay amigos desconectados ahora mismo.",
     /* WebSocket */
+    InitializingSocialWs: "Inicializando WebSocket Social desde main.ts",
     ConnectingToWs: "Conectando a WebSocket...",
     WsConnected: "WebSocket conectado",
     ErrorParsingMsg: "Error parseando mensaje:",
@@ -313,6 +318,9 @@ export const translations: Record<Language, Record<string, string>> = {
     Online: "conectado",
     MsgReceived: "Mensaje recibido (desconocido):",
     ClosingWs: "Cerrando conexión WebSocket...",
+    /* Color Picker */
+    ColorPickerNotFound: "ColorPicker: elementos no encontrados en el DOM.",
+    ColorPickerInitialized: "ColorPicker inicializado correctamente.",
   },
   fr: {
     start: "Démarrer",
@@ -453,6 +461,7 @@ export const translations: Record<Language, Record<string, string>> = {
     NoFriendsOnline: "Il n'y a aucun ami en ligne en ce moment.",
     NoFriendsOffline: "Il n'y a aucun ami hors ligne pour le moment.",
     /* WebSocket */
+    InitializingSocialWs: "Initialisation de WebSocket Social à partir de main.ts",
     ConnectingToWs: "Connexion au WebSocket...",
     WsConnected: "WebSocket connecté",
     ErrorParsingMsg: "Erreur lors de l'analyse du message :",
@@ -469,6 +478,9 @@ export const translations: Record<Language, Record<string, string>> = {
     Online: "en ligne",
     MsgReceived: "Message reçu (inconnu):",
     ClosingWs: "Fermeture de la connexion WebSocket...",
+    /* Color Picker */
+    ColorPickerNotFound: "ColorPicker: elementos no encontrados en el DOM.",
+    ColorPickerInitialized: "ColorPicker initialisé avec succès.",
   },
 };
 

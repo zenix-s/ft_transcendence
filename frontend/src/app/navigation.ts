@@ -18,7 +18,7 @@ import { t } from "@/app/i18n"
 // navigateTo("home", true, true)     Rara vez útil — no cambia URL ni historial
 export async function navigateTo(page: string, skipPushState = false, replace = false) {
   // console.log("navigation"); // DB
-  console.log(page); // DB
+  //console.log(page); // DB
 
   // Para que cuando le paso parámetros a la url las cosas funcionen
   const pageBase: string = (page.split("?"))[0];

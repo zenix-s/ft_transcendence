@@ -1,3 +1,5 @@
+import { t } from "@/app/i18n";
+
 function getUserKey(key: string) {
   const userId = localStorage.getItem("userId");
   return userId ? `${userId}_${key}` : key;
@@ -30,7 +32,7 @@ export function setupColorPicker() {
   const colorResetBtn = document.getElementById("color_reset") as HTMLButtonElement | null;
 
   if (!colorPrimaryInput || !colorSecondaryInput || !colorResetBtn) {
-    console.warn("🎨 ColorPicker: elementos no encontrados en el DOM.");
+    console.warn(`🎨 ${t("ColorPickerNotFound")}`);
     return;
   }
 
@@ -75,7 +77,7 @@ export function setupColorPicker() {
     colorSecondaryInput.value = DEFAULT_SECONDARY;
   });
 
-  console.log("🎨 ColorPicker inicializado correctamente.");
+  console.log(`🎨 ${t("ColorPickerInitialized")}`);
 }
 
 /**

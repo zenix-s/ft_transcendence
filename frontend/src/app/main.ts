@@ -42,7 +42,7 @@ async function initSocialSocket(): Promise<SocialWebSocketClient | null> {
   let ws: SocialWebSocketClient | null = getSocialSocket();
 
   if (!ws) {
-    console.log("🌐 Inicializando WebSocket Social desde main.ts");
+    console.log(`🌐 ${t("InitializingSocialWs")}`);
     ws = createSocialSocket(token);
     // Esperar a que el socket se conecte y autentique antes de continuar
     await new Promise<void>((resolve) => {

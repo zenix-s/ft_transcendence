@@ -1,4 +1,5 @@
 import { getWsUrl } from "@/api";
+import { t } from "@/app/i18n";
 import { showToast } from "@/components/toast";
 import type { Friend } from "@/types/friend"
 
@@ -32,11 +33,11 @@ export class SocialWebSocketClient {
   }
 
   connect() {
-    console.log("🔌 Conectando a WebSocket...");
+    console.log("🔌", t("ConnectingToWs"));
     this.socket = new WebSocket(this.wsUrl);
 
     this.socket.onopen = () => {
-      console.log("🟢 WebSocket conectado");
+      console.log("🟢", t("WsConnected"));
       this.authenticate();
     };
 
@@ -45,17 +46,17 @@ export class SocialWebSocketClient {
         const message = JSON.parse(event.data);
         this.handleMessage(message);
       } catch (err) {
-        console.error("❌ Error parseando mensaje:", err);
+        console.error(`❌ ${t("ErrorParsingMsg")}`, err);
       }
     };
 
     this.socket.onclose = () => {
-      console.log("🔴 WebSocket cerrado");
+      console.log("🔴", t("WsClosed"));
       this.isAuthenticated = false;
     };
 
     this.socket.onerror = (err) => {
-      console.error("⚠️ Error WebSocket:", err);
+      console.error(`⚠️ ${t("WsError")}`, err);
     };
   }
 
@@ -66,17 +67,17 @@ export class SocialWebSocketClient {
 
   public requestFriendsList() {
     if (!this.isAuthenticated) {
-      console.error("❌ No autenticado todavía");
+      console.error("❌", t("NotAuthenticated"));
       return;
     }
 
     if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
-      console.warn("⚠️ WebSocket no está abierto todavía");
+      console.warn("⚠️", t("WsNotOpen"));
       return;
     }
 
     const msg = { action: 1 };
-    console.log("📋 Solicitando lista de amigos...");
+    console.log("📋", t("RequestFriends"));
     this.send(msg);
   }
 
@@ -88,7 +89,7 @@ export class SocialWebSocketClient {
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       this.socket.send(JSON.stringify(obj));
     } else {
-      console.warn("⚠️ WebSocket no está listo todavía");
+      console.warn("⚠️", t("WsNotReady"));
     }
   }
 
@@ -102,7 +103,7 @@ export class SocialWebSocketClient {
       case "authSuccess": {
         const msg = message as AuthSuccessMessage;
         this.isAuthenticated = true;
-        console.log("✅ Autenticado correctamente:", msg.userId);
+        console.log(`✅ ${t("SuccessAuthenticated")}`, msg.userId);
         // Mejor sólo devolver lista cuando la página lo solicite????
         setTimeout(() => this.requestFriendsList(), 100);
         break;
@@ -111,7 +112,7 @@ export class SocialWebSocketClient {
       case "friendsList": {
         const msg = message as FriendsListMessage;
         this.friends = msg.friends;
-        console.log("👥 Lista de amigos recibida:", this.friends);
+        console.log(`👥 ${t("FriendListReceived")}`, this.friends);
         if (this.onFriendsUpdateCallback)
           this.onFriendsUpdateCallback([...this.friends]);
         break;
@@ -134,8 +135,8 @@ export class SocialWebSocketClient {
           // Programamos desconexión real en 3s
           const timer = setTimeout(() => {
             friend.is_connected = false;
-            console.log(`🔄 ${msg.username} está ahora 🔴 desconectado`);
-            showToast(`🔄 ${msg.username} está ahora 🔴 desconectado`, "success");
+            console.log(`🔄 ${msg.username} ${t("IsNow")} 🔴 ${t("Offline")}`);
+            showToast(`🔄 ${msg.username} ${t("IsNow")} 🔴 ${t("Offline")}`, "success");
             if (this.onFriendsUpdateCallback) {
               this.onFriendsUpdateCallback([...this.friends]);
             }
@@ -157,8 +158,8 @@ export class SocialWebSocketClient {
           } else {
             // Conexión real → mostramos toast inmediatamente
             friend.is_connected = true;
-            console.log(`🔄 ${msg.username} está ahora 🟢 conectado`);
-            showToast(`🔄 ${msg.username} está ahora 🟢 conectado`, "success");
+            console.log(`🔄 ${msg.username} ${t("IsNow")} 🟢 ${t("Online")}`);
+            showToast(`🔄 ${msg.username} ${t("IsNow")} 🟢 ${t("Online")}`, "success");
             if (this.onFriendsUpdateCallback) {
               this.onFriendsUpdateCallback([...this.friends]);
             }
@@ -169,7 +170,7 @@ export class SocialWebSocketClient {
       }
 
       default:
-        console.log("📨 Mensaje recibido (desconocido):", message);
+        console.log(`📨 ${t("MsgReceived")}`, message);
     }
   }
 
@@ -196,7 +197,7 @@ export class SocialWebSocketClient {
 
   disconnect() {
     if (this.socket) {
-      console.log("👋 Cerrando conexión WebSocket...");
+      console.log(`👋 ${t("ClosingWs")}`);
       this.socket.close();
     }
   }

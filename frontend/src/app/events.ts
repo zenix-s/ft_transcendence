@@ -1,7 +1,6 @@
 import { navigateTo } from "@/app/navigation";
 import { applySavedColors } from "@/components/colorPicker";
 import { modal } from "@/components/modal";
-//import { wsClient } from "@/modules/users";
 import { destroySocialSocket } from "@/modules/social/socketInstance";
 
 /**

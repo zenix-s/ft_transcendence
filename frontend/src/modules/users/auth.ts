@@ -6,7 +6,6 @@ import { navigateTo } from "@/app/navigation";
 import { t } from "@/app/i18n";
 import { showToast } from "@/components/toast";
 import type { GetCurrentUserResponse } from "@/types/user";
-//import { SocialWebSocketClient } from "@/modules/social/socialSocket"
 import { createSocialSocket } from "@/modules/social/socketInstance";
 import { apiUrl } from "@/api";
 import { applySavedColors, migrateLegacyColorsToUser } from "@/components/colorPicker";
@@ -109,7 +108,7 @@ export function setupRegisterForm() {
         // Redirigir al dashboard
         navigateTo("dashboard");
 
-      } catch (err) {
+      } catch {
         showToast(t("NetworkOrServerError"), "error");
       }
     });
@@ -255,15 +254,6 @@ export async function getStats(userId: number) {
   const token = localStorage.getItem("access_token");
   if (!token) { return null; }
 
-  // Getting ID
-  // const userResponse = await getCurrentUser();
-  /* if (!userResponse) {
-    console.warn(t("UserNotFound"));
-    return;
-  } */
-
-  // const userId = userResponse.user.id;
-
   try {
     const response = await fetch(apiUrl(`/match-history/stats/${userId}`), {
       headers: {
@@ -288,15 +278,6 @@ export async function getStats(userId: number) {
 export async function getHistory(userId: number) {
   const token = localStorage.getItem("access_token");
   if (!token) return null;
-
-  // Getting ID
-  // const userResponse = await getCurrentUser();
-  // if (!userResponse) {
-  //   console.warn(t("UserNotFound"));
-  //   return;
-  // }
-
-  // const userId = userResponse.user.id;
 
   try {
     return await fetch(apiUrl(`/match-history/user/${userId}`), {

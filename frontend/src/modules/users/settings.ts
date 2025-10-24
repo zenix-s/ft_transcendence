@@ -101,7 +101,7 @@ function updateUserName() {
         showToast(t("UserNameUpdatedSuccessfully"));
         navigateTo("settings", true, true);
 
-      } catch (err) {
+      } catch {
         showToast(t("NetworkOrServerError"), "error");
       }
     });
@@ -176,7 +176,7 @@ function updatePassword() {
         showToast(t("passwordUpdatedSuccessfully"));
         passwordForm.reset();
 
-      } catch (err) {
+      } catch {
         showToast(t("NetworkOrServerError"), "error");
       }
     });

@@ -72,12 +72,12 @@ export async function initFriendsSidebar() {
 
   // 🔹 Conectar al WebSocket singleton y suscribirse a actualizaciones
   const ws = await getReadySocialSocket(); // espera a que el WS esté listo
-  ws.onFriendsUpdate((friends) => {
+  ws?.onFriendsUpdate((friends) => {
     renderLists(friends);
   });
 
   // Render inicial de la lista directamente desde el estado actual
-  ws.refreshFriendsList();
+  ws?.refreshFriendsList();
   //renderLists(ws.getFriends()); // Otra opción para lo mismo
 
   // 🔹 Mostrar / ocultar panel

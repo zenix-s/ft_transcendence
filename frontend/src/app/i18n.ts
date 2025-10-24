@@ -450,24 +450,6 @@ export function t(key: string): string {
   return translations[currentLang][key] || key;
 }
 
-/**
- * The function `updateTexts` logs a message indicating the language being updated and then updates the
- * text content of elements with a `data-i18n` attribute using a translation function `t`.
- */
-/* export function updateTexts() {
-  console.log("🌐 Updating texts for language:", currentLang);
-
-  document.querySelectorAll<HTMLElement>("[data-i18n], [placeholder]").forEach((el) => {
-    if (el.hasAttribute("placeholder")) {
-      console.log("Updating placeholder for element:", el);
-      const placeholderKey = (el as HTMLInputElement).placeholder;
-      (el as HTMLInputElement).placeholder = t(placeholderKey);
-    } else if (el.dataset.i18n) {
-      el.textContent = t(el.dataset.i18n);
-    }
-  });
-} */
-
 export function updateTexts() {
   //console.log("🌐 Updating texts for language:", currentLang);
   document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((el) => {
@@ -495,14 +477,3 @@ export function updateTexts() {
     }
   });
 }
-
-/* export function updateTexts() {
-  console.log("🌐 Updating texts for language:", currentLang);
-  document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((el) => {
-    const key = el.dataset.i18n!;
-    el.textContent = t(key);
-    if (el.hasAttribute("placeholder")) {
-      (el as HTMLInputElement).placeholder = t(key);
-    }
-  });
-} */

@@ -42,9 +42,8 @@ export async function addFriend(friendUsername: string): Promise<boolean> {
 		//ws?.requestFriendsList(); // 🔁 Fuerza actualización
 		return true;
 
-	} catch (error) {
+	} catch {
 		showToast(t("NetworkOrServerError"), "error");
-		console.error(error);
 		return false;
 	}
 }
@@ -81,9 +80,8 @@ export async function deleteFriend(friendUsername: string): Promise<boolean> {
 		showToast(t("FriendRemovedSuccessfully"));
 		return true;
 
-	} catch (error) {
+	} catch {
 		showToast(t("NetworkOrServerError"), "error");
-		console.error(error);
 		return false;
 	}
 }

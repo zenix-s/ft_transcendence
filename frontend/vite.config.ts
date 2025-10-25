@@ -4,6 +4,7 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 import fs from 'fs';
 
 const BACKEND_URL = "https://backend:3000";
+const BACKEND_WSS = "wss://backend:3000";
 
 export default defineConfig({
   plugins: [
@@ -11,11 +12,12 @@ export default defineConfig({
     tsconfigPaths(), // 🔹 Lee automáticamente "paths" de tsconfig.json
   ],
   server: {
+    host: true, // permite --host 0.0.0.0 y accesos desde la red
+    port: 5173,
     https: {
       key: fs.readFileSync('./certs/key.pem'),
       cert: fs.readFileSync('./certs/cert.pem'),
     },
-    host: true, // permite --host 0.0.0.0 y accesos desde la red
     proxy: {
       '/api': {
         target: BACKEND_URL, // URL del backend (nombre del servicio Docker)
@@ -24,7 +26,7 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, ''), // Opcional: elimina el prefijo '/api'
       },
       "/social": {
-        target: BACKEND_URL,
+        target: BACKEND_WSS,
         ws: true, // => proxy de WS
         changeOrigin: true,
         secure: false,

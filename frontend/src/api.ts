@@ -1,5 +1,44 @@
 /* The code provided is setting up base URLs for API and WebSocket connections based on the current
 host and protocol. Here's a breakdown of what the code is doing: */
+
+/* FIXED CODE */
+/* const BACKEND_HOST = "backend"; // Nombre del servicio en docker-compose
+const BACKEND_PORT = 3000;
+
+// Detectar si estamos en entorno de desarrollo (vite) o no
+const isDev = import.meta.env.DEV;
+
+// Detectar si el frontend está accediéndose desde localhost (fuera de docker)
+const isLocalhost = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+
+// Construir URLs base
+export const API_BASE_URL = isDev && isLocalhost
+  ? "" // Vite usará el proxy: /api -> backend
+  : `${window.location.protocol}//${BACKEND_HOST}:${BACKEND_PORT}`;
+
+export const WS_BASE_URL = isDev && isLocalhost
+  ? "" // También dejar que el proxy gestione los WS
+  : `${window.location.protocol === "https:" ? "wss" : "ws"}://${BACKEND_HOST}:${BACKEND_PORT}`;
+
+// Función para rutas HTTP
+export function apiUrl(path: string) {
+  if (isDev && isLocalhost) {
+    return `/api${path}`; // Vite proxy
+  }
+  return `${API_BASE_URL}${path}`;
+}
+
+// Función para rutas WebSocket
+export function getWsUrl(path: string) {
+  if (isDev && isLocalhost) {
+    return path; // el proxy de Vite se encarga
+  }
+  return `${WS_BASE_URL}${path}`;
+} */
+
+//////////////////////////////
+
+/* EXTENDED CODE */
 /* const BACKEND_PORT = 3000;
 
 // Detecta el host actual (IP, dominio o localhost)
@@ -36,6 +75,7 @@ export function getWsUrl(path: string) {
 
 //////////////////////////////
 
+/* SIMPLE CODE */
 export const API_BASE_URL =
   `${window.location.protocol}//${window.location.hostname}:3000`;
 

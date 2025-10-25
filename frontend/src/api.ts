@@ -93,8 +93,8 @@ export function getWsUrl(path: string): string {
   if (import.meta.env.DEV) {
     // En desarrollo, el proxy de Vite se encarga
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-    //return `${protocol}://${window.location.hostname}:3000${path}`;
-    return `${protocol}://${window.location.host}${path}`;
+    return `${protocol}://${window.location.hostname}:3000${path}`;
+    //return `${protocol}://${window.location.host}${path}`;
   }
 
   // En producción, usar directamente el WS_BASE_URL

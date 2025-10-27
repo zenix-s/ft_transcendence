@@ -12,17 +12,11 @@ export function modal(type: "success" | "logout" | "gameFinished" = "success", p
     let text = "Everything went well.";
     let confirmButtonText = "OK";
     let showCancelButton = false;
-<<<<<<< HEAD
     let iconColor = "#00d3f2";
     let animation = true;
-    let icon_msg = "success";
-=======
-    const iconColor = "#00d3f2";
-    const animation = true;
     let icon_msg: SweetAlertIcon | undefined = "success";
     let color_modal = isDark ? "#fff" : "#131313";
     let color_back = isDark ? "#131313" : "#ffffff";
->>>>>>> main
 
     /* Overwrite options */
     if (type === "logout") {
@@ -41,30 +35,16 @@ export function modal(type: "success" | "logout" | "gameFinished" = "success", p
       titleText = `🏆 Winner: ${winnerName ?? "Unknown"}`;
       text = `Final Score: ${scoreText}`;
       confirmButtonText = "Return";
-<<<<<<< HEAD
-      icon_msg = "";
-    }
-=======
       icon_msg = undefined;
       color_modal = "#131313";
       color_back = "#ffffff";
     }
-     /* else if (type === "success") {
-      title = "Action completed!";
-      text = "Everything went well.";
-      confirmButtonText = "OK";
-    } */
->>>>>>> main
 
     Swal.fire({
       title,
       titleText,
       text,
-<<<<<<< HEAD
-      color: isDark ? "#fff" : "#131313",
-=======
       color: color_modal,
->>>>>>> main
       icon: icon_msg,
       iconColor,
       showCancelButton,

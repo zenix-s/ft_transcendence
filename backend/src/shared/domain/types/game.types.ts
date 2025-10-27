@@ -3,6 +3,7 @@ export interface GameType {
     name: string;
     min_players: number;
     max_players: number;
+    supports_invitations: boolean;
 }
 
 export enum MatchStatus {

@@ -165,6 +165,16 @@ export enum ApplicationError {
     AlreadyFriendsError = 'AlreadyFriendsError',
     FriendshipCreationError = 'FriendshipCreationError',
     NotFriendsError = 'NotFriendsError',
+    FriendshipNotFound = 'FriendshipNotFound',
+
+    // Errores de invitaciones de juego
+    InvalidGameType = 'InvalidGameType',
+    MessageTooLong = 'MessageTooLong',
+    CannotInviteSelf = 'CannotInviteSelf',
+    InvalidRequestData = 'InvalidRequestData',
+    UnauthorizedAccess = 'UnauthorizedAccess',
+    UserNotConnected = 'UserNotConnected',
+    GameTypeDoesNotSupportInvitations = 'GameTypeDoesNotSupportInvitations',
     CannotAddSelfAsFriend = 'CannotAddSelfAsFriend',
     CannotRemoveSelfAsFriend = 'CannotRemoveSelfAsFriend',
 }

@@ -5,8 +5,10 @@ import MediatorHandlerPlugin from '@shared/utils/MediatorHandlerPlugin';
 import ErrorhandlerPlugin from '@shared/utils/ErrorHandlerPlugin';
 import { fastifyWebsocket } from '@fastify/websocket';
 import PongGameHttpRoutes from '@features/game/pong/http/pong.http';
+import GameInvitationHttpRoutes from '@features/game-invitation/http/game-invitation.http';
 import pongWebSocketRoutes from '@features/game/pong/websocket/pong.websocket';
 import socialWebSocketRoutes from '@features/socialSocket/websocket/social.websocket';
+import SocialWebSocketServicePlugin from '@features/socialSocket/plugins/SocialWebSocketServicePlugin';
 import matchHistoryPresentation from '@features/match-history/MatchHistory.presentation';
 import fastifyAuth from '@fastify/auth';
 import fastifyJWT from '@fastify/jwt';
@@ -33,6 +35,7 @@ async function App(fastify: FastifyInstance) {
     fastify.register(MediatorHandlerPlugin);
     fastify.register(ErrorhandlerPlugin);
     fastify.register(Repositories);
+    fastify.register(SocialWebSocketServicePlugin);
 
     fastify.register(fastifyMultipart, {
         limits: {
@@ -96,6 +99,7 @@ async function App(fastify: FastifyInstance) {
         fastify.addHook('preHandler', fastify.auth([fastify.authenticate]));
 
         fastify.register(PongGameHttpRoutes, { prefix: '/game/pong' });
+        fastify.register(GameInvitationHttpRoutes, { prefix: '/game-invitation' });
         fastify.register(matchHistoryPresentation, { prefix: '/match-history' });
         fastify.register(userManagerRoutes, { prefix: '/user-manager' });
         fastify.register(FriendShipController, { prefix: '/friendship' });

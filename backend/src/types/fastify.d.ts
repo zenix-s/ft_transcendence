@@ -11,6 +11,7 @@ import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepos
 import { IUserRepository } from '@shared/infrastructure/repositories/UserRepository';
 import { IPongGameRepository } from '@features/game/pong/infrastructure/PongGame.repository';
 import { IFriendShipRepository } from '@shared/infrastructure/repositories/FriendShipRepository';
+import { ISocialWebSocketService } from '@features/socialSocket/services/ISocialWebSocketService.interface';
 
 declare module 'fastify' {
     interface FastifyInstance {
@@ -55,6 +56,9 @@ declare module 'fastify' {
         UserRepository: IUserRepository;
         PongGameRepository: IPongGameRepository;
         FriendShipRepository: IFriendShipRepository;
+
+        // Services
+        SocialWebSocketService: ISocialWebSocketService;
     }
 
     interface FastifyRequest {

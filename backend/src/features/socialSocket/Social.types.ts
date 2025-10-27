@@ -44,3 +44,12 @@ export interface FriendConnectionStatusResponse extends SocialWebSocketResponse 
     username: string;
     isConnected: boolean;
 }
+
+export interface GameInvitationResponse extends SocialWebSocketResponse {
+    type: 'gameInvitation';
+    fromUserId: number;
+    fromUsername: string;
+    fromUserAvatar: string | null;
+    gameId: number;
+    message: string;
+}

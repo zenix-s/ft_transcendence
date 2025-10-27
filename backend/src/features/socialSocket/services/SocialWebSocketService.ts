@@ -7,9 +7,12 @@ import {
     SocialWebSocketResponse,
     Friend,
     FriendConnectionStatusResponse,
+    GameInvitationResponse,
 } from '../Social.types';
+import { SendGameInvitationNotification } from '@features/game-invitation/GameInvitation.types';
+import { ISocialWebSocketService } from './ISocialWebSocketService.interface';
 
-export class SocialWebSocketService {
+export class SocialWebSocketService implements ISocialWebSocketService {
     private activeConnections: Map<number, WebSocket> = new Map<number, WebSocket>();
 
     constructor(private readonly fastify: FastifyInstance) {}
@@ -108,6 +111,38 @@ export class SocialWebSocketService {
             }
         } catch (error) {
             this.fastify.log.error(error, 'Error notifying friends about connection status');
+        }
+    }
+
+    async sendGameInvitation(notification: SendGameInvitationNotification): Promise<Result<void>> {
+        try {
+            const targetSocket = this.activeConnections.get(notification.toUserId);
+
+            if (!targetSocket) {
+                this.fastify.log.info(
+                    `User ${notification.toUserId} is not connected, invitation not sent via WebSocket`
+                );
+                return Result.error(ApplicationError.UserNotConnected);
+            }
+
+            const gameInvitationMessage: GameInvitationResponse = {
+                type: 'gameInvitation',
+                fromUserId: notification.fromUserId,
+                fromUsername: notification.fromUsername,
+                fromUserAvatar: notification.fromUserAvatar,
+                gameId: notification.gameId,
+                message: notification.message,
+            };
+
+            this.sendMessage(targetSocket, gameInvitationMessage);
+
+            this.fastify.log.info(
+                `Game invitation sent to user ${notification.toUserId} from user ${notification.fromUserId}`
+            );
+            return Result.success(undefined);
+        } catch (error) {
+            this.fastify.log.error(error, 'Error sending game invitation');
+            return Result.error(ApplicationError.InternalServerError);
         }
     }
 

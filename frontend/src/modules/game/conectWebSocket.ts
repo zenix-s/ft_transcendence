@@ -106,8 +106,8 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 					if (finished.match.players[1].isWinner == true)
 						winner = 2;
 					console.log("1=", playerL, " 2=", playerR, " 1=", score1, " 2=", score2, " winner=", winner);
-					//navigateTo("dashboard", false, true);
-					//await modal("gameFinished", finished.match.players[0], finished.match.players[1], "patata");
+					navigateTo("dashboard", false, true);
+					await modal("gameFinished", finished.match.players[0], finished.match.players[1], "patata");
 				}	
 				finBool = 1;
 				return ;
@@ -139,7 +139,7 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 				clearInterval(pingInterval);
 				pingInterval = undefined;
 				console.warn(t("GameError"));
-				//navigateTo("dashboard", false, true);
+				navigateTo("dashboard", false, true);
 			}
 		}
 		return ;

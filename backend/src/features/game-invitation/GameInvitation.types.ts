@@ -2,7 +2,7 @@ export interface GameInvitation {
     fromUserId: number;
     fromUsername: string;
     toUserId: number;
-    gameType: string;
+    gameId: number;
     message: string;
     timestamp: Date;
 }
@@ -12,6 +12,6 @@ export interface SendGameInvitationNotification {
     fromUsername: string;
     fromUserAvatar: string | null;
     toUserId: number;
-    gameType: string;
+    gameId: number;
     message: string;
 }

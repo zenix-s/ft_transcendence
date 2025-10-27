@@ -4,6 +4,7 @@ import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { ApplicationError } from '@shared/Errors';
 import { ISocialWebSocketService } from '@features/socialSocket/services/ISocialWebSocketService.interface';
 import { IGameTypeRepository } from '@shared/infrastructure/repositories/GameTypeRepository';
+import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
 
 export interface ISendGameInvitationResponse {
     success: boolean;
@@ -12,7 +13,7 @@ export interface ISendGameInvitationResponse {
 export interface ISendGameInvitationRequest {
     fromUserId?: number;
     username: string;
-    gameType: string;
+    gameId: number;
     message?: string;
 }
 
@@ -20,10 +21,12 @@ export default class SendGameInvitationCommand
     implements ICommand<ISendGameInvitationRequest, ISendGameInvitationResponse>
 {
     private readonly socialWebSocketService: ISocialWebSocketService;
+    private readonly matchRepository: IMatchRepository;
     private readonly gameTypeRepository: IGameTypeRepository;
 
     constructor(private readonly fastify: FastifyInstance) {
         this.socialWebSocketService = this.fastify.SocialWebSocketService;
+        this.matchRepository = this.fastify.MatchRepository;
         this.gameTypeRepository = this.fastify.GameTypeRepository;
     }
 
@@ -40,7 +43,7 @@ export default class SendGameInvitationCommand
             return Result.error(ApplicationError.InvalidRequestData);
         }
 
-        if (!request.gameType || typeof request.gameType !== 'string') {
+        if (!request.gameId || typeof request.gameId !== 'number') {
             return Result.error(ApplicationError.InvalidRequestData);
         }
 
@@ -59,20 +62,27 @@ export default class SendGameInvitationCommand
                 return Result.error(ApplicationError.InvalidRequestData);
             }
 
-            const { fromUserId, username, gameType, message } = request;
+            const { fromUserId, username, gameId, message } = request;
 
-            // Validate game type exists in database
-            const gameTypeResult = await this.gameTypeRepository.findByName({ name: gameType });
-            if (!gameTypeResult) {
-                return Result.error(ApplicationError.InvalidGameType);
+            // 1: Validar que el juego existe y obtener su tipo
+            const match = await this.matchRepository.findById({ id: gameId });
+            if (!match) {
+                return Result.error(ApplicationError.GameNotFound);
             }
 
-            // Validate that the game type supports invitations
+            // 2: Obtener el tipo de juego usando el gameTypeId del match
+            const gameTypeId = match.gameTypeId;
+            const gameTypeResult = await this.gameTypeRepository.findById({ id: gameTypeId });
+            if (!gameTypeResult) {
+                return Result.error(ApplicationError.GameTypeNotFound);
+            }
+
+            // 3: Validar si el tipo de juego soporta invitaciones
             if (!gameTypeResult.supports_invitations) {
                 return Result.error(ApplicationError.GameTypeDoesNotSupportInvitations);
             }
 
-            // Get target user's information by username
+            // 3: Obtener la información del usuario objetivo
             const targetUserResult = await this.fastify.UserRepository.getUser({ username });
             if (!targetUserResult.isSuccess || !targetUserResult.value) {
                 return Result.error(ApplicationError.UserNotFound);
@@ -80,12 +90,12 @@ export default class SendGameInvitationCommand
 
             const targetUser = targetUserResult.value;
 
-            // Check if user is trying to invite themselves
+            // 4: Prevenir auto-invitaciones
             if (fromUserId === targetUser.id) {
                 return Result.error(ApplicationError.CannotInviteSelf);
             }
 
-            // Get sender's information
+            // 5: Obtener la información del usuario que envía la invitación
             const senderResult = await this.fastify.UserRepository.getUser({ id: fromUserId as number });
             if (!senderResult.isSuccess || !senderResult.value) {
                 return Result.error(ApplicationError.UserNotFound);
@@ -93,14 +103,14 @@ export default class SendGameInvitationCommand
 
             const sender = senderResult.value;
 
-            // Send notification through WebSocket
+            // 7: Enviar la invitación a través del servicio de WebSocket
             const invitationResult = await this.socialWebSocketService.sendGameInvitation({
                 fromUserId: fromUserId as number,
                 fromUsername: sender.username,
                 fromUserAvatar: sender.avatar || null,
                 toUserId: targetUser.id,
-                gameType,
-                message: message || `${sender.username} te ha invitado a jugar ${gameType}!`,
+                gameId,
+                message: message || `${sender.username} te ha invitado a jugar!`,
             });
 
             if (!invitationResult.isSuccess) {

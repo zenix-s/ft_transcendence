@@ -6,7 +6,7 @@ import { FastifyRequest } from 'fastify/types/request';
 interface SendGameInvitationRequest {
     Body: {
         username: string;
-        gameType?: string;
+        gameId: number;
         message?: string;
     };
 }
@@ -21,16 +21,15 @@ export default async function SendGameInvitationRoute(fastify: FastifyInstance) 
                 security: [{ bearerAuth: [] }],
                 body: {
                     type: 'object',
-                    required: ['username'],
+                    required: ['username', 'gameId'],
                     properties: {
                         username: {
                             type: 'string',
                             description: 'Username of the user to invite',
                         },
-                        gameType: {
-                            type: 'string',
-                            description: 'Type of game to invite to (must support invitations)',
-                            default: 'pong',
+                        gameId: {
+                            type: 'number',
+                            description: 'ID of the game to invite to',
                         },
                         message: {
                             type: 'string',
@@ -84,7 +83,7 @@ export default async function SendGameInvitationRoute(fastify: FastifyInstance) 
             const request = {
                 fromUserId: userId,
                 username: req.body.username,
-                gameType: req.body.gameType,
+                gameId: req.body.gameId,
                 message: req.body.message,
             };
 

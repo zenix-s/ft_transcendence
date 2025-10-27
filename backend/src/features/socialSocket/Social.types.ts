@@ -50,6 +50,6 @@ export interface GameInvitationResponse extends SocialWebSocketResponse {
     fromUserId: number;
     fromUsername: string;
     fromUserAvatar: string | null;
-    gameType: string;
+    gameId: number;
     message: string;
 }

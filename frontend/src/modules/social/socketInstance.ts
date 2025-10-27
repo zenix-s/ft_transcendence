@@ -1,4 +1,4 @@
-import { SocialWebSocketClient } from "./socialSocket";
+import { SocialWebSocketClient } from "@/modules/social/socialSocket";
 
 let instance: SocialWebSocketClient | null = null;
 

@@ -1,52 +1,36 @@
-import { getCurrentUser } from "@/modules/users";
 import { t } from "@/app/i18n";
 import { setupAvatarUpload } from "@/components/avatarUpload";
 import { showToast } from "@/components/toast";
 import { navigateTo } from "@/app/navigation";
 import { renderAvatar } from "@/components/renderAvatar";
 import { apiUrl } from "@/api";
+import { setupColorPicker } from "@/components/colorPicker";
+import type { User } from "@/types/user"
+import { countUsernameLenght } from "./auth";
 
-export async function loadSettings() {
-  // console.log("Cargando dashboard..."); // DB
-  const response = await getCurrentUser();
-
-  if (!response) {
-	console.warn(t("UserNotFound"));
-	return;
-  }
-
+export async function loadSettings(user: User) {
   // ✅ activa el drag & drop
   setupAvatarUpload();
   // ⭐ Activar uso de formularios
   updateUserName();
   updatePassword();
 
-  const user = response.user; 
-
-  //console.log("Usuario obtenido:", user); // DB
+  //const user = response.user; 
 
   // Actualizar elementos dinámicos
   const usernameElement = document.getElementById("user-name");
-  const emailElement = document.getElementById("user-email");
-  const useridElement = document.getElementById("user-id");
   const avatarElement = document.getElementById("user-avatar");
-
-  // console.log("Elementos encontrados:", { usernameElement, emailElement, useridElement }); // DB
 
   // Actualizar texto
   if (usernameElement) {
 	usernameElement.textContent = user.username;
   }
 
-  if (emailElement) {
-	emailElement.textContent = user.email;
-  }
-
-  if (useridElement) {
-	useridElement.textContent = user.id.toString(); // Ejemplo: reemplazar "dashboard" por su id
-  }
-
+  // Display user avatar
   renderAvatar(user, avatarElement);
+
+  // Inicializar selector de color
+  setupColorPicker();
 }
 
 // Update User Name Form
@@ -55,6 +39,8 @@ function updateUserName() {
     const forms = document.querySelectorAll("form");
     const userNamerForm = forms[0];
     if (!userNamerForm) return;
+
+    countUsernameLenght(userNamerForm);
 
     userNamerForm.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -107,19 +93,10 @@ function updateUserName() {
           return;
         }
 
-        // ✅ Actualizar nombre en la web
-        // Funciona correctamente, pero no necesario con el navigateTo() de abajo
-        /* const usernameElement = document.getElementById("user-name");
-        if (usernameElement) {
-          usernameElement.textContent = username;
-        } */
-
-        //alert(t("UserNameUpdatedSuccessfully"));
         showToast(t("UserNameUpdatedSuccessfully"));
-        //userNamerForm.reset();
         navigateTo("settings", true, true);
 
-      } catch (err) {
+      } catch {
         showToast(t("NetworkOrServerError"), "error");
       }
     });
@@ -194,7 +171,7 @@ function updatePassword() {
         showToast(t("passwordUpdatedSuccessfully"));
         passwordForm.reset();
 
-      } catch (err) {
+      } catch {
         showToast(t("NetworkOrServerError"), "error");
       }
     });

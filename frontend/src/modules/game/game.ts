@@ -30,12 +30,7 @@ function actualizeGame(playerLeft: Player, playerRight: Player,
 {
 	const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
 	if (!canvas)
-	{
-		showToast(t("CanvasNotFound"), "error");
-		console.warn(t("CanvasNotFound"));
-		navigateTo("dashboard");
 		return ;
-	}
 	console.log("height=", canvas.height);
 	if (canvas.height < 500)
 	{
@@ -88,10 +83,30 @@ export function startGame()
 	{
 		showToast(t("URLNotCorrect"), "error");
 		console.warn(t("URLNotCorrect"));
-		navigateTo("dashboard");
+		navigateTo("dashboard", false, true);
 		return ;
 	}
 
+
+
+
+	// 	const canvas = document.getElementById('gameCanvas');
+	// const ctx = canvas.getContext('2d');
+
+	// // Maintain virtual resolution
+	// canvas.width = 2000;
+	// canvas.height = 1250;
+
+	// // Scale drawing to fit CSS size
+	// function resizeCanvas() {
+	//   const scale = Math.min(
+	//     canvas.clientWidth / canvas.width,
+	//     canvas.clientHeight / canvas.height
+	//   );
+	//   ctx.setTransform(scale, 0, 0, scale, 0, 0);
+	// }
+	// window.addEventListener('resize', resizeCanvas);
+	// resizeCanvas();
 
 
 
@@ -101,21 +116,11 @@ export function startGame()
 	{
 		showToast(t("CanvasNotFound"), "error");
 		console.warn(t("CanvasNotFound"));
-		navigateTo("dashboard");
+		navigateTo("dashboard", false, true);
 		return ;
 	}
 	const ctx = canvas.getContext("2d")!; // as CanvasRenderingContext2D
 	console.log(canvas);
-
-
-	function resizeCanvas() {
-	  canvas.width = canvas.offsetWidth;
-	  canvas.height = canvas.offsetHeight;
-	  // Optional: re-render or adjust game logic
-	}
-
-	window.addEventListener('load', resizeCanvas);
-	window.addEventListener('resize', resizeCanvas);
 
 	
 	/* JUGADORES */
@@ -125,7 +130,7 @@ export function startGame()
 	{
 		showToast(t("PaddlesNotFound"), "error");
 		console.warn(t("PaddlesNotFound"));
-		navigateTo("dashboard");
+		navigateTo("dashboard", false, true);
 		return ;
 	}
 
@@ -163,7 +168,7 @@ export function startGame()
 	{
 		showToast(t("ScoresNotFound"), "error");
 		console.warn(t("ScoresNotFound"));
-		navigateTo("dashboard");
+		navigateTo("dashboard", false, true);
 		return ;
 	}
 	const scores : Score = {

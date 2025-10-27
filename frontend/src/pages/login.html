@@ -66,7 +66,9 @@
               placeholder="User"
               autocomplete="username"
               data-tooltip-target="tooltip-name"
+              maxlength="20"
             />
+            <span id="username-counter" class="absolute right-2 top-2 text-xs text-secondary">0/20</span>
             <div
               data-tooltip="tooltip-name"
               role="tooltip"
@@ -138,6 +140,7 @@
           <button
             title="Register"
             class="w-full relative bg-transparent text-secondary dark:text-primary border border-secondary dark:border-primary px-6 py-2 font-mono text-xl cursor-pointer transition-all duration-700 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[0px_0_0_red,-0px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] mt-2"
+            data-i18n="form_register_title"
           >
             Register
           </button>

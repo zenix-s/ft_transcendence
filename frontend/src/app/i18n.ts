@@ -52,6 +52,7 @@ export const translations: Record<Language, Record<string, string>> = {
     win: "Win",
     lose: "Lose",
     gameHistory: "Game history",
+    rps: "RPS",
     opponent: "Opponent",
     result: "Result",
     winner: "Winner",
@@ -133,12 +134,33 @@ export const translations: Record<Language, Record<string, string>> = {
     AlreadyFriendsError: "Existing friend",
     FriendshipCreationError: "Error adding friend. Please try again later",
     FriendAddedSuccessfully: "Friend added successfully",
-    YourOwnFriend: "Trust yourself, you can make more friends 😅",
+    CannotAddSelfAsFriend: "Trust yourself, you can make more friends 😅",
     FriendRemovedSuccessfully: "Friend removed successfully",
     NotFriendsError: "The user entered is not on your friends list",
     DeletionError: "Error deleting friend. Please try again later",
     NoFriendsOnline: "There are no friends online right now.",
     NoFriendsOffline: "There are no friends offline right now.",
+    /* WebSocket */
+    InitializingSocialWs: "Initializing Social WebSocket from main.ts",
+    ConnectingToWs: "Connecting to WebSocket...",
+    WsConnected: "WebSocket connected",
+    ErrorParsingMsg: "Error parsing message:",
+    WsClosed: "WebSocket closed",
+    WsError: "WebSocket error:",
+    NotAuthenticated: "Not authenticated yet",
+    WsNotOpen: "WebSocket is not open yet",
+    RequestFriends: "Requesting friends list...",
+    WsNotReady: "WebSocket is not ready yet",
+    SuccessAuthenticated: "Successfully authenticated with id:",
+    FriendListReceived: "Friends list received:",
+    IsNow: "is now",
+    Offline: "offline",
+    Online: "online",
+    MsgReceived: "Message received (unknown):",
+    ClosingWs: "Closing WebSocket connection...",
+    /* Color Picker */
+    ColorPickerNotFound: "ColorPicker: Elements not found in the DOM.",
+    ColorPickerInitialized: "ColorPicker initialized successfully.",
   },
   es: {
     start: "Comenzar",
@@ -190,6 +212,7 @@ export const translations: Record<Language, Record<string, string>> = {
     win: "Victórias",
     lose: "Derrotas",
     gameHistory: "Historial de partidas",
+    rps: "PPT",
     opponent: "Oponente",
     result: "Resultado",
     winner: "Ganador",
@@ -271,12 +294,33 @@ export const translations: Record<Language, Record<string, string>> = {
     AlreadyFriendsError: "Amigo ya existente",
     FriendshipCreationError: "Error al agregar amigo. Por favor, inténtalo más tarde",
     FriendAddedSuccessfully: "Amigo agregado correctamente",
-    YourOwnFriend: "Confía en ti, puedes conseguir más amigos 😅",
+    CannotAddSelfAsFriend: "Confía en ti, puedes conseguir más amigos 😅",
     FriendRemovedSuccessfully: "Amigo eliminado exitosamente",
     NotFriendsError: "El usuario introducido no está en tu lista de amigos",
     DeletionError: "Error eliminando amigo. Por favor, inténtalo más tarde",
     NoFriendsOnline: "No hay amigos conectados ahora mismo.",
     NoFriendsOffline: "No hay amigos desconectados ahora mismo.",
+    /* WebSocket */
+    InitializingSocialWs: "Inicializando WebSocket Social desde main.ts",
+    ConnectingToWs: "Conectando a WebSocket...",
+    WsConnected: "WebSocket conectado",
+    ErrorParsingMsg: "Error parseando mensaje:",
+    WsClosed: "WebSocket cerrado",
+    WsError: "Error WebSocket:",
+    NotAuthenticated: "No autenticado todavía",
+    WsNotOpen: "WebSocket no está abierto todavía",
+    RequestFriends: "Solicitando lista de amigos...",
+    WsNotReady: "WebSocket no está listo todavía",
+    SuccessAuthenticated: "Autenticado correctamente con el id:",
+    FriendListReceived: "Lista de amigos recibida:",
+    IsNow: "está ahora",
+    Offline: "desconectado",
+    Online: "conectado",
+    MsgReceived: "Mensaje recibido (desconocido):",
+    ClosingWs: "Cerrando conexión WebSocket...",
+    /* Color Picker */
+    ColorPickerNotFound: "ColorPicker: elementos no encontrados en el DOM.",
+    ColorPickerInitialized: "ColorPicker inicializado correctamente.",
   },
   fr: {
     start: "Démarrer",
@@ -328,6 +372,7 @@ export const translations: Record<Language, Record<string, string>> = {
     win: "Victoires",
     lose: "Défaites",
     gameHistory: "Historique des parties",
+    rps: "PFC",
     opponent: "Adversaire",
     result: "Résultat",
     winner: "Gagnant",
@@ -409,12 +454,33 @@ export const translations: Record<Language, Record<string, string>> = {
     AlreadyFriendsError: "Ami existant",
     FriendshipCreationError: "Erreur lors de l'ajout d'un ami. Veuillez réessayer ultérieurement",
     FriendAddedSuccessfully: "Ami ajouté avec succès",
-    YourOwnFriend: "Fais-toi confiance, tu peux te faire plus d’amis 😅",
+    CannotAddSelfAsFriend: "Fais-toi confiance, tu peux te faire plus d’amis 😅",
     FriendRemovedSuccessfully: "Ami supprimé avec succès",
     NotFriendsError: "L'utilisateur saisi n'est pas dans votre liste d'amis",
     DeletionError: "Erreur lors de la suppression de l'ami. Veuillez réessayer plus tard.",
     NoFriendsOnline: "Il n'y a aucun ami en ligne en ce moment.",
     NoFriendsOffline: "Il n'y a aucun ami hors ligne pour le moment.",
+    /* WebSocket */
+    InitializingSocialWs: "Initialisation de WebSocket Social à partir de main.ts",
+    ConnectingToWs: "Connexion au WebSocket...",
+    WsConnected: "WebSocket connecté",
+    ErrorParsingMsg: "Erreur lors de l'analyse du message :",
+    WsClosed: "WebSocket fermé",
+    WsError: "Erreur WebSocket:",
+    NotAuthenticated: "Pas encore authentifié",
+    WsNotOpen: "Le WebSocket n’est pas encore ouvert",
+    RequestFriends: "Demande de la liste d’amis...",
+    WsNotReady: "Le WebSocket n’est pas encore prêt",
+    SuccessAuthenticated: "Authentifié avec succès avec l’identifiant:",
+    FriendListReceived: "Liste d’amis reçue:",
+    IsNow: "est maintenant",
+    Offline: "hors ligne",
+    Online: "en ligne",
+    MsgReceived: "Message reçu (inconnu):",
+    ClosingWs: "Fermeture de la connexion WebSocket...",
+    /* Color Picker */
+    ColorPickerNotFound: "ColorPicker: elementos no encontrados en el DOM.",
+    ColorPickerInitialized: "ColorPicker initialisé avec succès.",
   },
 };
 
@@ -450,24 +516,6 @@ export function t(key: string): string {
   return translations[currentLang][key] || key;
 }
 
-/**
- * The function `updateTexts` logs a message indicating the language being updated and then updates the
- * text content of elements with a `data-i18n` attribute using a translation function `t`.
- */
-/* export function updateTexts() {
-  console.log("🌐 Updating texts for language:", currentLang);
-
-  document.querySelectorAll<HTMLElement>("[data-i18n], [placeholder]").forEach((el) => {
-    if (el.hasAttribute("placeholder")) {
-      console.log("Updating placeholder for element:", el);
-      const placeholderKey = (el as HTMLInputElement).placeholder;
-      (el as HTMLInputElement).placeholder = t(placeholderKey);
-    } else if (el.dataset.i18n) {
-      el.textContent = t(el.dataset.i18n);
-    }
-  });
-} */
-
 export function updateTexts() {
   //console.log("🌐 Updating texts for language:", currentLang);
   document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((el) => {
@@ -495,14 +543,3 @@ export function updateTexts() {
     }
   });
 }
-
-/* export function updateTexts() {
-  console.log("🌐 Updating texts for language:", currentLang);
-  document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((el) => {
-    const key = el.dataset.i18n!;
-    el.textContent = t(key);
-    if (el.hasAttribute("placeholder")) {
-      (el as HTMLInputElement).placeholder = t(key);
-    }
-  });
-} */

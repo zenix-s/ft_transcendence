@@ -57,9 +57,11 @@ export async function loadMatchHistory(user?: User, perPage: number = 5) {
         const opponent = match.players.find(p => p.userId !== currentUser.id)?.username ?? "N/A";
         const score = match.players.map(p => p.score).join(" - ");
         const winner = match.players.find(p => p.isWinner)?.username ?? "-";
+        const game = (match.gameTypeId === 1 || match.gameTypeId === 2) ? "Pong" : t("rps");
 
         return `
           <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+            <td data-label="" data-i18n="game" class="px-4 py-2 text-center text-primary sm:text-gray-800 sm:dark:text-gray-200 font-light whitespace-nowrap">${game}</td>
             <td data-label="" data-i18n="opponent" class="px-4 py-2 text-center text-primary sm:text-gray-800 sm:dark:text-gray-200 font-light whitespace-nowrap">${opponent}</td>
             <td data-label="" data-i18n="result" class="px-4 py-2 text-center text-primary sm:text-gray-800 sm:dark:text-gray-200 font-light whitespace-nowrap">${score}</td>
             <td data-label="" data-i18n="winner" class="px-4 py-2 text-center text-green-600 dark:text-green-400 whitespace-nowrap">${winner}</td>
@@ -99,7 +101,6 @@ export async function loadMatchHistory(user?: User, perPage: number = 5) {
     });
 
     // 5. Traducir las celdas recién insertadas
-    //console.log("Updating history language");
     updateTexts();
 
   } catch (error) {

@@ -6,13 +6,13 @@ import type { SocialWebSocketClient } from "./socialSocket";
  * after ensuring it is authenticated within a specified time interval.
  * @returns A Promise that resolves to a SocialWebSocketClient object.
  */
-export async function getReadySocialSocket(): Promise<SocialWebSocketClient> {
+export async function getReadySocialSocket(): Promise<SocialWebSocketClient | null> {
   return new Promise((resolve, reject) => {
     const checkInterval = setInterval(() => {
-      const ws = getSocialSocket();
+      const ws: SocialWebSocketClient | null = getSocialSocket();
       if (ws) {
         // Si ya está autenticado
-        if ((ws as any).isAuthenticated) {
+        if (ws?.getAuthenticated()) {
           clearInterval(checkInterval);
           resolve(ws);
         }

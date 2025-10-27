@@ -1,6 +1,6 @@
 import { navigateTo } from "@/app/navigation";
+import { applySavedColors } from "@/components/colorPicker";
 import { modal } from "@/components/modal";
-//import { wsClient } from "@/modules/users";
 import { destroySocialSocket } from "@/modules/social/socketInstance";
 
 /**
@@ -18,11 +18,15 @@ export function setupEventListeners() {
       const confirmed = await modal("logout");
       if (confirmed)
       {
-        /* if (wsClient) {
-          wsClient.disconnect();
-        } */
+        localStorage.removeItem("userId");
+        localStorage.removeItem("color_primary");
+        localStorage.removeItem("color_secondary");
         destroySocialSocket(); // Desconectar y limpiar el WebSocket
         localStorage.removeItem("access_token");
+
+        // Forzar colores por defecto
+        applySavedColors();
+
         navigateTo("login");
       }
       return;

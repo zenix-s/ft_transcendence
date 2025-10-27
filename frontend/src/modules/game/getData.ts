@@ -1,6 +1,8 @@
+import { apiUrl } from "@/api";
 
-export function fetchGameId() {
-  return fetch("https://localhost:3000/game/pong/create", {
+export function fetchGameId(winnerScore:number) {
+  // return fetch("https://localhost:3000/game/pong/create", {
+  return fetch(apiUrl("/game/pong/create"), {
     method: "POST",
     headers: {
       "accept": "application/json",
@@ -8,7 +10,7 @@ export function fetchGameId() {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      winnerScore: 5,
+      winnerScore: winnerScore,
       maxGameTime: 120
     })
   })
@@ -29,7 +31,9 @@ export function fetchGameId() {
 }
 
 export function fetchSinglePlayerGameId(winnerScore: number, aiDifficulty: number) {
-  return fetch("https://localhost:3000/game/pong/create-singleplayer", {
+  // return fetch("https://localhost:3000/game/pong/create-singleplayer", {
+  console.log("get id=", apiUrl("/game/pong/create-singleplayer"));
+  return fetch(apiUrl("/game/pong/create-singleplayer"), {
     method: "POST",
     headers: {
       "accept": "application/json",
@@ -59,7 +63,8 @@ export function fetchSinglePlayerGameId(winnerScore: number, aiDifficulty: numbe
 }
 
 export function toJoinGame(gameId:any) {
-  return fetch("https://localhost:3000/game/pong/join/" + gameId, {
+  // return fetch("https://localhost:3000/game/pong/join/" + gameId, {
+  return fetch(apiUrl("/game/pong/join/" + gameId), {
     method: "POST",
     headers: {
       "accept": "application/json",
@@ -88,7 +93,9 @@ export function toJoinGame(gameId:any) {
 
 export function fetchGameAlreadyFinished(gameId:any)
 {
-  return fetch("https://localhost:3000/match-history/final-state/" + gameId, {
+  // return fetch("https://localhost:3000/match-history/final-state/" + gameId, {
+  console.log("finish=", apiUrl("/match-history/final-state/" + gameId));
+  return fetch(apiUrl("/match-history/final-state/" + gameId), {
     method: "GET",
     headers: {
       "accept": "application/json",
@@ -111,30 +118,5 @@ export function fetchGameAlreadyFinished(gameId:any)
       return null;
     });
 }
-
-// export function fetchGameState(gameId:any)
-// {
-//   return fetch("https://localhost:3000/game/pong/state/" + gameId, {
-//     method: "GET",
-//     headers: {
-//       "accept": "application/json",
-//       "Authorization": "Bearer " + localStorage.getItem("access_token")
-//     }
-//   })
-//     .then(response => {
-//       if (!response.ok) {
-//         throw new Error("Error en la petición: " + response.status);
-//       }
-//       return response.json();
-//     })
-//     .then(data => {
-//       console.log("Respuesta del servidor:", data);
-//       return data;   // ✅ devolvemos respuesta completa
-//     })
-//     .catch(error => {
-//       console.error("Error:", error);
-//       return null;
-//     });
-// }
 
 //guardar esto:   "userId": "182ed9a4-d773-46e7-a303-b7f3a48ad13a",

@@ -3,6 +3,7 @@ import ChartDataLabels from "chartjs-plugin-datalabels";
 import { t } from "@/app/i18n";
 import { getCurrentUser, getStats } from "@/modules/users";
 import type { User } from "@/types/user";
+import type { ChartConfiguration, ChartDataset, Plugin } from 'chart.js/auto';
 
 export async function loadChart(user?: User) {
   try {
@@ -22,7 +23,7 @@ export async function loadChart(user?: User) {
     const values = [response.wins, response.losses];
 
     // 2. Obtener el canvas
-    const ctx = document.getElementById("donutChart") as HTMLCanvasElement;
+    const ctx = document.getElementById("donutChart") as HTMLCanvasElement | null;
     if (!ctx)
     {
       console.log("Canvas 'donutChart' no encontrado.");
@@ -38,9 +39,6 @@ export async function loadChart(user?: User) {
           background: [
             "rgba(255, 99, 132, 0.6)",
             "rgba(54, 162, 235, 0.6)",
-            // "rgba(255, 159, 64, 0.6)",
-            // "rgba(153, 102, 255, 0.6)",
-            // "rgba(75, 192, 192, 0.6)",
           ],
           border: "#131313",
           legendText: "#fff", // Win, Lose
@@ -51,9 +49,6 @@ export async function loadChart(user?: User) {
           background: [
             "rgba(255, 99, 132, 0.6)",
             "rgba(54, 162, 235, 0.6)",
-            // "rgba(255, 99, 132, 0.6)",
-            // "rgba(54, 162, 235, 0.6)",
-            // "rgba(255, 206, 86, 0.6)"
           ],
           border: "#fff",
           legendText: "#131313", // Win, Lose
@@ -69,72 +64,59 @@ export async function loadChart(user?: User) {
     // 6. Comprobar si ambos valores son 0
     const bothZero = values[0] === 0 && values[1] === 0;
 
-    // 7. Crear gráfico tipo donut
-    if (bothZero) {
-      // ⚪ CASO SIN DATOS → gráfico gris sin labels ni datalabels
-      new Chart(ctx, {
-        type: "doughnut",
-        data: {
-          labels: ["Sin datos"],
-          datasets: [
-            {
-              data: [1], // valor ficticio, donut completo
+    // Tipos para datasets
+    type DoughnutDataset = ChartDataset<"doughnut", number[]>;
+
+    const config: ChartConfiguration<"doughnut", number[], string> = {
+      type: "doughnut",
+      data: {
+        labels: bothZero ? ["Sin datos"] : [t("win"), t("lose")],
+        datasets: bothZero
+          ? [{
+              data: [1],
               backgroundColor: [colors.placeholder],
               borderColor: colors.border,
               borderWidth: 2,
-              cutout: "70%" as any
-            } as any
-          ]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { display: false },
-            tooltip: { enabled: false },
-            datalabels: { display: false } // 👈 NO mostramos nada
-          }
-        },
-        plugins: [] // 👈 OJO: aquí no registramos ChartDataLabels
-      });
-    } else {
-      // ✅ CASO NORMAL
-      new Chart(ctx, {
-        type: "doughnut",
-        data: {
-          labels: [t("win"), t("lose")],
-          datasets: [
-            {
+              cutout: "70%" // Chart.js soporta string directamente
+            } as DoughnutDataset]
+          : [{
               data: values,
               backgroundColor: colors.background,
               borderColor: colors.border,
               borderWidth: 2,
-              cutout: "70%" as any
-            } as any
-          ]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              position: "bottom",
-              labels: {
-                color: colors.legendText,
-                font: { size: 18 }
+              cutout: "70%"
+            } as DoughnutDataset]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: bothZero
+            ? { display: false }
+            : {
+                position: "bottom",
+                labels: {
+                  color: colors.legendText,
+                  font: { size: 18 }
+                }
+              },
+          tooltip: { enabled: false },
+          datalabels: bothZero
+            ? { display: false }
+            : {
+                color: colors.dataLabel,
+                font: { weight: "bold", size: 18 },
+                display: (ctx) => ctx.dataset.data[ctx.dataIndex] !== 0,
+                formatter: (value: number) => value
               }
-            },
-            tooltip: { enabled: false },
-            datalabels: {
-              color: colors.dataLabel,
-              font: { weight: "bold", size: 18 },
-              display: (ctx) => ctx.dataset.data[ctx.dataIndex] !== 0, // 👈 solo si el valor ≠ 0
-              formatter: (value: number) => value
-            }
-          }
-        },
-        plugins: [ChartDataLabels]
-      });
-    }
+        }
+      },
+      plugins: bothZero ? [] : [ChartDataLabels as Plugin<"doughnut">]
+    };
+
+    // 7. Crear gráfico tipo donut
+    new Chart(ctx, config);
+
   } catch (error) {
-    console.error("Error cargando datos:", error);
+    console.error(error);
   }
 }

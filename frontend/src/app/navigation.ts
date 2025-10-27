@@ -9,6 +9,7 @@ import { redirect } from "@/components/redirect";
 import { initFriendsSidebar } from "@/components/friendsSidebar/friendsSidebar"
 import { getCurrentUser } from "@/modules/users";
 import { ready1 } from "@/modules/game/setReady1";
+import { t } from "@/app/i18n"
 
 // Llamada                            Efecto
 // navigateTo("home")                 Carga "home" y añade al historial
@@ -17,7 +18,7 @@ import { ready1 } from "@/modules/game/setReady1";
 // navigateTo("home", true, true)     Rara vez útil — no cambia URL ni historial
 export async function navigateTo(page: string, skipPushState = false, replace = false) {
   // console.log("navigation"); // DB
-  console.log(page); // DB
+  //console.log(page); // DB
 
   // Para que cuando le paso parámetros a la url las cosas funcionen
   const pageBase: string = (page.split("?"))[0];
@@ -99,7 +100,11 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
     case "setReady1": {
       requestAnimationFrame(async () => {
         const userResponse = await getCurrentUser();
-        if (!userResponse || !localStorage.getItem("access_token")) return;
+        if (!userResponse || !localStorage.getItem("access_token"))
+        {
+          console.warn(t("UserNotFound"));
+          return;
+        }
         const user = userResponse.user;
 
         switch (pageBase) {
@@ -111,14 +116,14 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
             ]);
             renderButtons();
             requestAnimationFrame(async () => {
-              initFriendsSidebar(user);
+              initFriendsSidebar();
             });
             break;
 
           case "settings":
-            await loadSettings();
+            await loadSettings(user);
             requestAnimationFrame(async () => {
-              initFriendsSidebar(user);
+              initFriendsSidebar();
             });
             break;
 

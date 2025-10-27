@@ -4,9 +4,17 @@ import { getCurrentUser } from "@/modules/users";
 import { apiUrl } from "@/api";
 
 /**
+ * Extiende el objeto window para añadir selectedAvatarFile
+ */
+declare global {
+  interface Window {
+    selectedAvatarFile?: File;
+  }
+}
+
+/**
  * Módulo para manejar drag & drop y vista previa de un avatar.
  */
-
 export function setupAvatarUpload() {
   const dropZone = document.getElementById("avatarDropZone") as HTMLElement | null;
   const fileInput = document.getElementById("avatarFileInput") as HTMLInputElement | null;
@@ -72,12 +80,12 @@ export function setupAvatarUpload() {
     reader.readAsDataURL(file);
 
     // Guardamos el archivo para su posterior envío
-    (window as any).selectedAvatarFile = file;
+    (window as unknown as {selectedAvatarFile?: File}).selectedAvatarFile = file;
   }
 
   // 💾 Subida al backend
   updateAvatarBtn!.addEventListener("click", async () => {
-    const file = (window as any).selectedAvatarFile as File | undefined;
+    const file = (window as unknown as {selectedAvatarFile?: File}).selectedAvatarFile;
 
     if (!file) {
       showToast(t("selectImageFile"), "error");
@@ -102,7 +110,7 @@ export function setupAvatarUpload() {
         if (!userResponse) return; // ❌ si falla, aborta todo
 
         // Guardar ruta del avatar con la url devuelta por el backend
-        const avatarSrc = API_BASE_URL + userResponse.user.avatar;
+        const avatarSrc = apiUrl(userResponse.user.avatar || "/images/avatar1.jpg");
 
         // ✅ Actualizar avatar en la web
         const avatarElement = document.getElementById("user-avatar");

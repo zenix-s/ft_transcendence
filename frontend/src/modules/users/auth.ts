@@ -6,9 +6,9 @@ import { navigateTo } from "@/app/navigation";
 import { t } from "@/app/i18n";
 import { showToast } from "@/components/toast";
 import type { GetCurrentUserResponse } from "@/types/user";
-//import { SocialWebSocketClient } from "@/modules/social/socialSocket"
 import { createSocialSocket } from "@/modules/social/socketInstance";
 import { apiUrl } from "@/api";
+import { applySavedColors, migrateLegacyColorsToUser } from "@/components/colorPicker";
 
 //export let wsClient: SocialWebSocketClient | null = null;
 
@@ -19,6 +19,9 @@ export function setupRegisterForm() {
     const registerForm = forms[1];
     if (!registerForm) return;
 
+    // Char counter
+    countUsernameLenght(registerForm);
+
     registerForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const formData = new FormData(registerForm);
@@ -26,7 +29,6 @@ export function setupRegisterForm() {
       const email = formData.get("email") as string;
       const password = formData.get("password") as string;
       const repeatPassword = formData.get("repeat_password") as string;
-
 
       /* Validate all fields are filled */
       if (!username || !email || !password || !repeatPassword) {
@@ -93,6 +95,10 @@ export function setupRegisterForm() {
         const token = data.token;
         localStorage.setItem("access_token", token);
 
+        // ✅ Guardar el userId recibido
+        const userId = data.user.id;
+        localStorage.setItem("userId", userId);
+
         // Conectar WebSocket
         createSocialSocket(token);
         /* wsClient = new SocialWebSocketClient(token);
@@ -104,11 +110,21 @@ export function setupRegisterForm() {
         // Redirigir al dashboard
         navigateTo("dashboard");
 
-      } catch (err) {
+      } catch {
         showToast(t("NetworkOrServerError"), "error");
       }
     });
   }, 100); // Espera breve para asegurar que el HTML está en el DOM
+}
+
+export function countUsernameLenght(registerForm: HTMLFormElement) {
+  const usernameInput = registerForm.querySelector<HTMLInputElement>('input[name="username"]');
+  const counter = document.getElementById("username-counter");
+  if (usernameInput && counter) {
+    usernameInput.addEventListener("input", () => {
+      counter.textContent = `${usernameInput.value.length}/20`;
+    });
+  }
 }
 
 /* LOG-IN */
@@ -151,6 +167,13 @@ export function validateLogin() {
         const token = data.token;
         localStorage.setItem("access_token", token);
 
+        // ✅ Guardar el userId recibido
+        const userId = data.user.id;
+        localStorage.setItem("userId", userId);
+
+        // MIGRAR claves globales antiguas al usuario (si existen)
+        migrateLegacyColorsToUser(userId);
+
         // Conectar WebSocket
         createSocialSocket(token);
         /* wsClient = new SocialWebSocketClient(token);
@@ -158,6 +181,9 @@ export function validateLogin() {
 
         showToast(t("welcome"));
         navigateTo("dashboard");
+
+        // 🔹 Espera breve y luego aplica los colores del usuario logueado
+        requestAnimationFrame(() => applySavedColors());
 
       } catch (err) {
         console.error("Login error:", err);
@@ -240,15 +266,6 @@ export async function getStats(userId: number) {
   const token = localStorage.getItem("access_token");
   if (!token) { return null; }
 
-  // Getting ID
-  // const userResponse = await getCurrentUser();
-  /* if (!userResponse) {
-    console.warn(t("UserNotFound"));
-    return;
-  } */
-
-  // const userId = userResponse.user.id;
-
   try {
     const response = await fetch(apiUrl(`/match-history/stats/${userId}`), {
       headers: {
@@ -273,15 +290,6 @@ export async function getStats(userId: number) {
 export async function getHistory(userId: number) {
   const token = localStorage.getItem("access_token");
   if (!token) return null;
-
-  // Getting ID
-  // const userResponse = await getCurrentUser();
-  // if (!userResponse) {
-  //   console.warn(t("UserNotFound"));
-  //   return;
-  // }
-
-  // const userId = userResponse.user.id;
 
   try {
     return await fetch(apiUrl(`/match-history/user/${userId}`), {

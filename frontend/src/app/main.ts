@@ -2,7 +2,7 @@ import "@/app/styles/global.css";
 
 import { navigateTo, handlePopState } from "@/app/navigation";
 import { setupEventListeners } from "@/app/events";
-import { loadAndRender, loadUserForCode } from "@/modules/users";
+import { applySavedColors } from "@/components/colorPicker";
 
 //import { startGame } from "./game";
 
@@ -17,11 +17,15 @@ import { matchTable, loadMatchHistory } from "@/components/history";
 import { setLanguage, t, currentLang } from "@/app/i18n";
 
 // Exponer utilidades al ámbito global
-(window as any).loadAndRender = loadAndRender;
-(window as any).loadUserForCode = loadUserForCode;
-(window as any).GlitchButton = GlitchButton;
+declare global {
+  interface Window {
+    GlitchButton: typeof GlitchButton;
+  }
+}
+(window).GlitchButton = GlitchButton;
 
-// console.log("✅ main.ts cargado"); // DB
+// Al cargar toda la SPA, aplica los colores guardados
+applySavedColors();
 
 // Detectar la página inicial según la URL actual
 const initialPage = location.pathname.replace("/", "") || "home";
@@ -29,25 +33,21 @@ navigateTo(initialPage, true);
 
 // 🌐 Inicializar WebSocket Social si hay token
 import { createSocialSocket, getSocialSocket } from "@/modules/social/socketInstance";
+import { SocialWebSocketClient } from "@/modules/social/socialSocket";
 
-/* const token = localStorage.getItem("access_token");
-if (token && !getSocialSocket()) {
-  console.log("🌐 Inicializando WebSocket Social desde main.ts");
-  createSocialSocket(token);
-} */
-
-async function initSocialSocket() {
+async function initSocialSocket(): Promise<SocialWebSocketClient | null> {
   const token = localStorage.getItem("access_token");
   if (!token) return null;
 
-  let ws = getSocialSocket();
+  let ws: SocialWebSocketClient | null = getSocialSocket();
+
   if (!ws) {
-    console.log("🌐 Inicializando WebSocket Social desde main.ts");
+    console.log(`🌐 ${t("InitializingSocialWs")}`);
     ws = createSocialSocket(token);
     // Esperar a que el socket se conecte y autentique antes de continuar
     await new Promise<void>((resolve) => {
       const interval = setInterval(() => {
-        if ((ws as any).isAuthenticated) { // marca pública o usa un getter
+        if ((ws?.getAuthenticated())) {
           clearInterval(interval);
           resolve();
         }
@@ -113,8 +113,9 @@ renderButtons();
 const langSelector = document.getElementById("lang_selector") as HTMLSelectElement | null;
 if (langSelector) {
   langSelector.value = savedLang || currentLang;
-  langSelector.addEventListener("change", (e) => {
-    setLanguage((e.target as HTMLSelectElement).value as any);
+  langSelector.addEventListener("change", (event: Event) => {
+    const select = event.target as HTMLSelectElement;
+    setLanguage(select.value as "en" | "es" | "fr");
   });
 }
 
@@ -150,20 +151,4 @@ document.addEventListener("i18n-updated", async () => {
     matchTable.destroy();
     await loadMatchHistory(undefined, currentPerPage);
   }
-
-  /* // Reload History
-  let currentPerPage = 5; // default
-  
-  const perPageSelect = document.querySelector<HTMLSelectElement>(".datatable-selector");
-  if (perPageSelect) {
-    currentPerPage = parseInt(perPageSelect.value, 10); // lee lo que el usuario ha seleccionado
-  }
-
-  // Destruir la tabla existente si ya hay una
-  if (matchTable) {
-    matchTable.destroy();
-  }
-
-  // Volver a cargar la tabla (la misma función loadMatchHistory recrea la DataTable)
-  await loadMatchHistory(undefined, currentPerPage); */
 });

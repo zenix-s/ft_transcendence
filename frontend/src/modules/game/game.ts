@@ -90,6 +90,26 @@ export function startGame()
 
 
 
+	// 	const canvas = document.getElementById('gameCanvas');
+	// const ctx = canvas.getContext('2d');
+
+	// // Maintain virtual resolution
+	// canvas.width = 2000;
+	// canvas.height = 1250;
+
+	// // Scale drawing to fit CSS size
+	// function resizeCanvas() {
+	//   const scale = Math.min(
+	//     canvas.clientWidth / canvas.width,
+	//     canvas.clientHeight / canvas.height
+	//   );
+	//   ctx.setTransform(scale, 0, 0, scale, 0, 0);
+	// }
+	// window.addEventListener('resize', resizeCanvas);
+	// resizeCanvas();
+
+
+
 
 	const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
 	if (!canvas)
@@ -101,16 +121,6 @@ export function startGame()
 	}
 	const ctx = canvas.getContext("2d")!; // as CanvasRenderingContext2D
 	console.log(canvas);
-
-
-	function resizeCanvas() {
-	  canvas.width = canvas.offsetWidth;
-	  canvas.height = canvas.offsetHeight;
-	  // Optional: re-render or adjust game logic
-	}
-
-	window.addEventListener('load', resizeCanvas);
-	window.addEventListener('resize', resizeCanvas);
 
 	
 	/* JUGADORES */

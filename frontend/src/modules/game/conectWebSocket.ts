@@ -5,10 +5,7 @@ import { t } from "@/app/i18n";
 import { navigateTo } from "@/app/navigation";
 import { fetchGameAlreadyFinished } from "./getData";
 import { modal } from "@/components/modal";
-<<<<<<< HEAD
-=======
 import { getWsUrl } from "@/api";
->>>>>>> main
 
 //import { fetchGameId, fetchSinglePlayerGameId, toJoinGame, fetchGameState } from "./getData.js";
 
@@ -108,12 +105,8 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 					let winner = 1;
 					if (finished.match.players[1].isWinner == true)
 						winner = 2;
-<<<<<<< HEAD
-					console.log("1=", player1, " 2=", player2, " 1=", score1, " 2=", score2, " winner=", winner);
-=======
 					console.log("1=", playerL, " 2=", playerR, " 1=", score1, " 2=", score2, " winner=", winner);
 					navigateTo("dashboard", false, true);
->>>>>>> main
 					await modal("gameFinished", finished.match.players[0], finished.match.players[1], "patata");
 				}	
 				finBool = 1;

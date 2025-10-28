@@ -33,7 +33,24 @@ const start = async () => {
     try {
         await server.register(app);
         await server.register(cors, {
-            origin: '*',
+            origin: (origin, cb) => {
+                if (!origin) return cb(null, true); // peticiones internas (curl, etc.)
+
+                const allowed = [
+                    /^https:\/\/localhost(:\d+)?$/,
+                    /^https:\/\/127\.0\.0\.1(:\d+)?$/,
+                    /^https:\/\/\d+\.\d+\.\d+\.\d+(:\d+)?$/, // cualquier IP
+                    /^https:\/\/frontend(:\d+)?$/,
+                ];
+
+                if (allowed.some((re) => re.test(origin))) {
+                    cb(null, true);
+                } else {
+                    cb(new Error(`Not allowed by CORS: ${origin}`), false);
+                }
+            },
+            credentials: true,
+            methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
         });
         await server.listen({ port, host });
         console.log(`Server is running at https://localhost:${port}`);
@@ -44,3 +61,51 @@ const start = async () => {
 };
 
 start();
+
+/* BACKUP*/
+/* import app from './app';
+import fastify from 'fastify';
+import cors from '@fastify/cors';
+import { loadEnvFile } from 'node:process';
+import fs from 'fs';
+
+const port = 3000;
+const host = '0.0.0.0';
+
+const server = fastify({
+    logger: true,
+    https: {
+        key: fs.readFileSync('./certs/key.pem'),
+        cert: fs.readFileSync('./certs/cert.pem'),
+    },
+});
+
+const start = async () => {
+    loadEnvFile();
+
+    server.addHook('preClose', () => {
+        server.log.info('Closed connection');
+    });
+
+    const signals = ['SIGTERM', 'SIGINT'];
+
+    signals.forEach((signal) => {
+        process.once(signal, async () => {
+            await server.close();
+        });
+    });
+
+    try {
+        await server.register(app);
+        await server.register(cors, {
+            origin: '*',
+        });
+        await server.listen({ port, host });
+        console.log(`Server is running at https://localhost:${port}`);
+    } catch (err) {
+        server.log.error(err);
+        process.exit(1);
+    }
+};
+
+start(); */

@@ -4,7 +4,7 @@ import GameTypeRepository from './GameTypeRepository';
 import MatchPlayerRepository from './MatchPlayerRepository';
 import MatchRepository from './MatchRepository';
 import UserRepository from './UserRepository';
-import PongGameRepository from '../../../features/game/pong/infrastructure/PongGame.repository';
+import PongGameRepository from '../../../features/pong-game-manager/infrastructure/PongGame.repository';
 import FriendShipRepository from './FriendShipRepository';
 
 export default fp(

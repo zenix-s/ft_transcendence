@@ -2,8 +2,8 @@ import { FastifyInstance } from 'fastify';
 import { Result } from '@shared/abstractions/Result';
 import { IQuery } from '@shared/application/abstractions/IQuery.interface';
 import { ApplicationError } from '@shared/Errors';
-import { IPongGameRepository } from '../../infrastructure/PongGame.repository';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
+import { GameState } from '../../../pong-game-manager/Pong.types';
 
 export interface IGetGameStateRequest {
     gameId: number;
@@ -11,42 +11,13 @@ export interface IGetGameStateRequest {
 
 export interface IGetGameStateResponse {
     gameId: number;
-    state: {
-        isRunning: boolean;
-        gameTimer: number;
-        player1: {
-            id: string;
-            position: number;
-            score: number;
-            isReady: boolean;
-        } | null;
-        player2: {
-            id: string;
-            position: number;
-            score: number;
-            isReady: boolean;
-        } | null;
-        ball: {
-            position: { x: number; y: number };
-            velocity: { x: number; y: number };
-        };
-        arePlayersReady: boolean;
-        gameRules: {
-            winnerScore: number;
-            maxGameTime?: number;
-        };
-        isGameOver: boolean;
-        winner: string | null;
-        isSinglePlayer?: boolean;
-    };
+    state: GameState;
 }
 
 export default class GetGameStateQuery implements IQuery<IGetGameStateRequest, IGetGameStateResponse> {
-    private readonly gameRepository: IPongGameRepository;
     private readonly matchRepository: IMatchRepository;
 
     constructor(private readonly fastify: FastifyInstance) {
-        this.gameRepository = this.fastify.PongGameRepository;
         this.matchRepository = this.fastify.MatchRepository;
     }
 
@@ -68,8 +39,8 @@ export default class GetGameStateQuery implements IQuery<IGetGameStateRequest, I
         try {
             const { gameId } = request;
 
-            const gameResult = await this.gameRepository.getGame({ gameId });
-            if (!gameResult.isSuccess || !gameResult.value) {
+            const game = this.fastify.PongGameManager.getGame(gameId);
+            if (!game) {
                 // Verificar si el juego existió alguna vez en el historial
                 const match = await this.matchRepository.findById({ id: gameId });
                 if (match) {
@@ -79,12 +50,16 @@ export default class GetGameStateQuery implements IQuery<IGetGameStateRequest, I
                 }
             }
 
-            const game = gameResult.value;
+            const gameStateResult = this.fastify.PongGameManager.getGameState(gameId);
+            if (!gameStateResult.isSuccess) {
+                return Result.error(gameStateResult.error || ApplicationError.GameNotFound);
+            }
 
-            return Result.success({
-                gameId: gameId,
-                state: game.getGameState(),
-            });
+            if (!gameStateResult.value) {
+                return Result.error(ApplicationError.GameNotFound);
+            }
+
+            return Result.success(gameStateResult.value);
         } catch (error) {
             return this.fastify.handleError<IGetGameStateResponse>({
                 code: ApplicationError.InternalServerError,

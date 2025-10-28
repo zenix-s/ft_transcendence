@@ -1,6 +1,33 @@
 /* The code provided is setting up base URLs for API and WebSocket connections based on the current
 host and protocol. Here's a breakdown of what the code is doing: */
 
+/* 42 WORKING VERSION */
+const BACKEND_PORT = 3000;
+const isDev = import.meta.env.DEV;
+const hostname = window.location.hostname;
+const protocol = window.location.protocol;
+
+// --- En DEV: siempre usar el proxy de Vite (rutas relativas)
+// Esto evita que el navegador haga peticiones directas a :3000 desde otra máquina.
+export const API_BASE_URL = isDev ? "" : `${protocol}//${hostname}:${BACKEND_PORT}`;
+export const WS_BASE_URL  = isDev ? "" : `${protocol === "https:" ? "wss" : "ws"}://${hostname}:${BACKEND_PORT}`;
+
+export function apiUrl(path: string) {
+  if (isDev) return `/api${path}`; // <<<<<<<<<<<<<<<<<<< cambio clave
+  return `${API_BASE_URL}${path}`;
+}
+
+export function getWsUrl(path: string) {
+  if (isDev) {
+    // Ligar el WS al front dev server; Vite proxy (ws: true) lo reenviará.
+    const wsProto = protocol === "https:" ? "wss" : "ws";
+    return `${wsProto}://${window.location.host}${path}`;
+  }
+  return `${WS_BASE_URL}${path}`;
+}
+
+//////////////////////////////
+
 /* FIXED CODE */
 /* const BACKEND_HOST = "backend"; // Nombre del servicio en docker-compose
 const BACKEND_PORT = 3000;
@@ -75,8 +102,8 @@ export function getWsUrl(path: string) {
 
 //////////////////////////////
 
-/* SIMPLE CODE */
-export const API_BASE_URL =
+/* DANI */
+/* export const API_BASE_URL =
   `${window.location.protocol}//${window.location.hostname}:3000`;
 
 export const WS_BASE_URL = API_BASE_URL.replace(/^https/, "wss").replace(/^http/, "ws");
@@ -99,4 +126,4 @@ export function getWsUrl(path: string): string {
 
   // En producción, usar directamente el WS_BASE_URL
   return `${WS_BASE_URL}${path}`;
-}
+} */

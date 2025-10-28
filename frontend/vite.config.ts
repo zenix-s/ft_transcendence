@@ -31,6 +31,12 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      '/game': {
+        target: BACKEND_WSS,
+        ws: true,
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
   optimizeDeps: {

@@ -31,8 +31,9 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 {
 	const token = localStorage.getItem("access_token");
 	// const socket = new WebSocket("wss://localhost:3000/game/pong");
-	console.log("ws=", getWsUrl("/game/pong"));
-	const socket = new WebSocket(getWsUrl("/game/pong"));
+	const ws = getWsUrl("/game/pong");
+	console.log("ws=", ws);
+	const socket = new WebSocket(ws);
 	let pingInterval: ReturnType<typeof setInterval> | undefined;
 	let up = 0;
 	let down = 0;
@@ -113,16 +114,13 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 				return ;
 			}
 			if (data.error == "GameNotFound")
-			{
-				showToast(t("GameNotFound"), "error");
-				console.warn(t("GameNotFound"));
-			}
+				return ;
 			if (data.error == "noActiveGame")
 			{
 				showToast(t("noActiveGame"), "error");
 				console.warn(t("noActiveGame"));
 			}
-			if (data.error == "notAuthenticated")
+			if (data.error == "UnauthorizedAccess")
 			{
 				let obj : message = {
 				action: 0,

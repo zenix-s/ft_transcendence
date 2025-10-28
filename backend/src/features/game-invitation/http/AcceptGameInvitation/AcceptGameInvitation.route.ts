@@ -1,49 +1,46 @@
 import { FastifyInstance } from 'fastify/types/instance';
 import { FastifyReply } from 'fastify/types/reply';
-import SendGameInvitationCommand from './SendGameInvitation.command';
+import AcceptGameInvitationCommand from './AcceptGameInvitation.command';
 import { FastifyRequest } from 'fastify/types/request';
 
-interface SendGameInvitationRequest {
+interface AcceptGameInvitationRequest {
     Body: {
-        username: string;
         gameId: number;
-        message?: string;
     };
 }
 
-export default async function SendGameInvitationRoute(fastify: FastifyInstance) {
+export default async function AcceptGameInvitationRoute(fastify: FastifyInstance) {
     fastify.post(
-        '/send-invitation',
+        '/accept-invitation',
         {
             schema: {
-                description: 'Send a game invitation to a user',
+                description: 'Accept a game invitation',
                 tags: ['Game Invitation'],
                 security: [{ bearerAuth: [] }],
                 body: {
                     type: 'object',
-                    required: ['username', 'gameId'],
+                    required: ['gameId'],
                     properties: {
-                        username: {
-                            type: 'string',
-                            description: 'Username of the user to invite',
-                        },
                         gameId: {
                             type: 'number',
-                            description: 'ID of the game to invite to',
-                        },
-                        message: {
-                            type: 'string',
-                            description: 'Optional custom message',
-                            maxLength: 200,
+                            description: 'ID of the game to accept invitation for',
                         },
                     },
                 },
                 response: {
                     200: {
-                        description: 'Invitation sent successfully',
+                        description: 'Invitation accepted successfully',
                         type: 'object',
                         properties: {
                             success: { type: 'boolean' },
+                            gameType: {
+                                type: 'string',
+                                description: 'Type of game that was accepted',
+                            },
+                            message: {
+                                type: 'string',
+                                description: 'Success message',
+                            },
                         },
                     },
                     400: {
@@ -54,21 +51,21 @@ export default async function SendGameInvitationRoute(fastify: FastifyInstance) 
                         },
                     },
                     404: {
-                        description: 'User not found',
+                        description: 'Game not found',
                         type: 'object',
                         properties: {
                             error: { type: 'string' },
                         },
                     },
                     409: {
-                        description: 'User not connected',
+                        description: 'Game is full or cannot be joined',
                         type: 'object',
                         properties: {
                             error: { type: 'string' },
                         },
                     },
                     422: {
-                        description: 'Game type does not support invitations',
+                        description: 'Game type not supported',
                         type: 'object',
                         properties: {
                             error: { type: 'string' },
@@ -77,18 +74,16 @@ export default async function SendGameInvitationRoute(fastify: FastifyInstance) 
                 },
             },
         },
-        async (req: FastifyRequest<SendGameInvitationRequest>, reply: FastifyReply) => {
-            const sendGameInvitationCommand = new SendGameInvitationCommand(fastify);
+        async (req: FastifyRequest<AcceptGameInvitationRequest>, reply: FastifyReply) => {
+            const acceptGameInvitationCommand = new AcceptGameInvitationCommand(fastify);
             const userId = req.user?.id;
             const request = {
-                fromUserId: userId,
-                username: req.body.username,
+                userId: userId,
                 gameId: req.body.gameId,
-                message: req.body.message,
             };
 
             return fastify.handleCommand({
-                command: sendGameInvitationCommand,
+                command: acceptGameInvitationCommand,
                 request: request,
                 reply: reply,
                 successStatus: 200,

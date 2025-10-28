@@ -5,6 +5,8 @@ export class ActivePongGame {
     private loop?: NodeJS.Timeout;
     private isEnding = false;
     private lastUpdate = Date.now();
+    private gameStartTime = Date.now();
+    private readonly GAME_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutos timeout
 
     constructor(
         public readonly gameId: number,
@@ -41,8 +43,9 @@ export class ActivePongGame {
 
     private processTick(): void {
         try {
-            if (!this.game.isGameRunning() || this.game.isGameOver()) {
-                if (this.game.isGameOver() && !this.isEnding) {
+            // Solo eliminar el juego si está terminado, no si simplemente no está corriendo
+            if (this.game.isGameOver()) {
+                if (!this.isEnding) {
                     this.isEnding = true;
                     this.saveMatchHistory();
                 }
@@ -51,9 +54,21 @@ export class ActivePongGame {
                 return;
             }
 
+            // Si el juego no está corriendo pero no está terminado, verificar timeout
+            if (!this.game.isGameRunning()) {
+                // Si el juego ha estado esperando por más del timeout, cancelarlo y actualizar match
+                if (Date.now() - this.gameStartTime > this.GAME_TIMEOUT_MS) {
+                    this.cancelMatchDueToTimeout();
+                    this.stop();
+                    this.onGameEnd(this.gameId);
+                }
+                return;
+            }
+
             this.game.update();
             this.lastUpdate = Date.now();
 
+            // Verificar si el juego terminó después de la actualización
             if (this.game.isGameOver() && !this.isEnding) {
                 this.isEnding = true;
                 this.saveMatchHistory();
@@ -64,6 +79,26 @@ export class ActivePongGame {
             this.fastify.log.error(error, `Error processing game tick for game ${this.gameId}`);
             this.stop();
             this.onGameEnd(this.gameId);
+        }
+    }
+
+    private async cancelMatchDueToTimeout(): Promise<void> {
+        try {
+            const match = await this.fastify.MatchRepository.findById({ id: this.matchId });
+
+            if (!match) {
+                this.fastify.log.error(`Match with ID ${this.matchId} not found for timeout cancellation`);
+                return;
+            }
+
+            match.cancel();
+
+            const updatedMatch = await this.fastify.MatchRepository.update({ match });
+            if (!updatedMatch) {
+                this.fastify.log.error(`Failed to update match ${this.matchId} status to cancelled`);
+            }
+        } catch (error) {
+            this.fastify.log.error(error, `Error cancelling match ${this.matchId} due to timeout`);
         }
     }
 
@@ -105,8 +140,6 @@ export class ActivePongGame {
             const updatedMatch = await this.fastify.MatchRepository.update({ match });
             if (!updatedMatch) {
                 this.fastify.log.error(`Failed to update match ${this.matchId} for game ${this.gameId}`);
-            } else {
-                this.fastify.log.info(`Match history saved for game ${this.gameId}`);
             }
         } catch (error) {
             this.fastify.log.error(error, `Error saving match history for game ${this.gameId}`);

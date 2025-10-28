@@ -9,7 +9,6 @@ import {
     FriendConnectionStatusResponse,
     GameInvitationResponse,
 } from '../Social.types';
-import { SendGameInvitationNotification } from '@features/game-invitation/GameInvitation.types';
 import { ISocialWebSocketService } from './ISocialWebSocketService.interface';
 
 export class SocialWebSocketService implements ISocialWebSocketService {
@@ -114,31 +113,41 @@ export class SocialWebSocketService implements ISocialWebSocketService {
         }
     }
 
-    async sendGameInvitation(notification: SendGameInvitationNotification): Promise<Result<void>> {
+    async sendGameInvitation({
+        fromUserId,
+        fromUsername,
+        fromUserAvatar,
+        toUserId,
+        gameId,
+        message,
+    }: {
+        fromUserId: number;
+        fromUsername: string;
+        fromUserAvatar: string | null;
+        toUserId: number;
+        gameId: number;
+        message: string;
+    }): Promise<Result<void>> {
         try {
-            const targetSocket = this.activeConnections.get(notification.toUserId);
+            const targetSocket = this.activeConnections.get(toUserId);
 
             if (!targetSocket) {
-                this.fastify.log.info(
-                    `User ${notification.toUserId} is not connected, invitation not sent via WebSocket`
-                );
                 return Result.error(ApplicationError.UserNotConnected);
             }
 
-            const gameInvitationMessage: GameInvitationResponse = {
+            const gameInvitationResponse: GameInvitationResponse = {
                 type: 'gameInvitation',
-                fromUserId: notification.fromUserId,
-                fromUsername: notification.fromUsername,
-                fromUserAvatar: notification.fromUserAvatar,
-                gameId: notification.gameId,
-                message: notification.message,
+                success: true,
+                fromUserId,
+                fromUsername,
+                fromUserAvatar,
+                gameId,
+                message,
             };
 
-            this.sendMessage(targetSocket, gameInvitationMessage);
+            this.sendMessage(targetSocket, gameInvitationResponse);
 
-            this.fastify.log.info(
-                `Game invitation sent to user ${notification.toUserId} from user ${notification.fromUserId}`
-            );
+            this.fastify.log.info(`Game invitation sent to user ${toUserId} from user ${fromUserId}`);
             return Result.success(undefined);
         } catch (error) {
             this.fastify.log.error(error, 'Error sending game invitation');

@@ -1,7 +1,6 @@
 import { WebSocket } from '@fastify/websocket';
 import { Result } from '@shared/abstractions/Result';
 import { Friend, SocialWebSocketMessage, SocialWebSocketResponse } from '../Social.types';
-import { SendGameInvitationNotification } from '@features/game-invitation/GameInvitation.types';
 
 export interface ISocialWebSocketService {
     /**
@@ -37,7 +36,21 @@ export interface ISocialWebSocketService {
     /**
      * Envía una notificación de invitación de juego a un usuario
      */
-    sendGameInvitation(notification: SendGameInvitationNotification): Promise<Result<void>>;
+    sendGameInvitation({
+        fromUserId,
+        fromUsername,
+        fromUserAvatar,
+        toUserId,
+        gameId,
+        message,
+    }: {
+        fromUserId: number;
+        fromUsername: string;
+        fromUserAvatar: string | null;
+        toUserId: number;
+        gameId: number;
+        message: string;
+    }): Promise<Result<void>>;
 
     /**
      * Envía un mensaje WebSocket a un socket específico

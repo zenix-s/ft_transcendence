@@ -37,12 +37,20 @@ export class PongWebSocketService implements IPongService {
         if (!gameId) {
             return {
                 type: 'error',
-                error: 'missingGameId',
+                error: ApplicationError.BadRequest,
             };
         }
 
         const gameStateResult = this.fastify.PongGameManager.getGameState(gameId);
         if (!gameStateResult.isSuccess) {
+            const gameHistoryStatus = await this.fastify.MatchRepository.findById({ id: gameId });
+            if (gameHistoryStatus != null && gameHistoryStatus.isCompleted()) {
+                return {
+                    type: 'error',
+                    error: ApplicationError.GameAlreadyFinished,
+                };
+            }
+
             return {
                 type: 'error',
                 error: gameStateResult.error,
@@ -63,7 +71,7 @@ export class PongWebSocketService implements IPongService {
         if (!gameId || !playerId) {
             return {
                 type: 'error',
-                error: 'noActiveGame',
+                error: ApplicationError.GameNotFound,
             };
         }
 
@@ -90,7 +98,7 @@ export class PongWebSocketService implements IPongService {
             return {
                 response: {
                     type: 'error',
-                    error: 'noActiveGame',
+                    error: ApplicationError.GameNotFound,
                 },
                 gameStarted: false,
             };

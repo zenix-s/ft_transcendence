@@ -2,6 +2,7 @@ import { WebSocket } from '@fastify/websocket';
 import { FastifyInstance } from 'fastify';
 import { Actions, PossibleActions } from '../../pong-game-manager/Pong.types';
 import { PongWebSocketService, WebSocketMessage } from '../services/PongWebSocketService';
+import { ApplicationError } from '@shared/Errors';
 
 export default async function pongWebSocketRoutes(fastify: FastifyInstance) {
     const webSocketService = new PongWebSocketService(fastify);
@@ -26,26 +27,26 @@ export default async function pongWebSocketRoutes(fastify: FastifyInstance) {
                     const data = JSON.parse(message.toString());
 
                     if (!webSocketService.validateMessage(data)) {
-                        webSocketService.sendError(socket, 'invalidFormat');
+                        webSocketService.sendError(socket, ApplicationError.InvalidRequest);
                         return;
                     }
 
                     const { action, gameId, token } = data as WebSocketMessage;
 
                     if (!PossibleActions.includes(action)) {
-                        webSocketService.sendError(socket, 'unknownAction');
+                        webSocketService.sendError(socket, ApplicationError.ActionNotAllowed);
                         return;
                     }
 
                     if (action === Actions.AUTH) {
                         if (!token) {
-                            webSocketService.sendError(socket, 'missingToken');
+                            webSocketService.sendError(socket, ApplicationError.InvalidToken);
                             return;
                         }
 
                         const authResult = await webSocketService.authenticateUser(token);
                         if (!authResult.isSuccess) {
-                            webSocketService.sendError(socket, 'invalidToken');
+                            webSocketService.sendError(socket, ApplicationError.InvalidToken);
                             socket.close();
                             return;
                         }
@@ -56,14 +57,14 @@ export default async function pongWebSocketRoutes(fastify: FastifyInstance) {
                             currentUserId = userId;
                             webSocketService.sendAuthSuccess(socket, userId);
                         } else {
-                            webSocketService.sendError(socket, 'invalidToken');
+                            webSocketService.sendError(socket, ApplicationError.InvalidToken);
                             socket.close();
                         }
                         return;
                     }
 
                     if (!isAuthenticated) {
-                        webSocketService.sendError(socket, 'notAuthenticated');
+                        webSocketService.sendError(socket, ApplicationError.UnauthorizedAccess);
                         return;
                     }
 
@@ -100,11 +101,11 @@ export default async function pongWebSocketRoutes(fastify: FastifyInstance) {
                         }
 
                         default:
-                            webSocketService.sendError(socket, 'unknownAction');
+                            webSocketService.sendError(socket, ApplicationError.ActionNotAllowed);
                     }
                 } catch (error) {
                     fastify.log.error(error, 'WebSocket message processing error');
-                    webSocketService.sendError(socket, 'invalidJson');
+                    webSocketService.sendError(socket, ApplicationError.InvalidRequest);
                 }
             });
 

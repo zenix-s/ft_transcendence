@@ -1,8 +1,7 @@
 import { FastifyInstance } from 'fastify';
-import { IPongGameRepository } from '../../infrastructure/PongGame.repository';
 import { Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
-import { PongGame } from '../../domain/PongGame';
+import { PongGame } from '../../../pong-game-manager/domain/PongGame';
 
 import { Match } from '@shared/domain/entity/Match.entity';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
@@ -25,12 +24,10 @@ export interface ICreateSinglePlayerGameRequest {
 export default class CreateSinglePlayerGameCommand
     implements ICommand<ICreateSinglePlayerGameRequest, ICreateSinglePlayerGameResponse>
 {
-    private readonly gameRepository: IPongGameRepository;
     private readonly matchRepository: IMatchRepository;
     private readonly gameTypeRepository: IGameTypeRepository;
 
     constructor(private readonly fastify: FastifyInstance) {
-        this.gameRepository = this.fastify.PongGameRepository;
         this.matchRepository = this.fastify.MatchRepository;
         this.gameTypeRepository = this.fastify.GameTypeRepository;
     }
@@ -106,7 +103,7 @@ export default class CreateSinglePlayerGameCommand
                 this.fastify.log.info('Adding player to game');
                 game.addPlayer(request.userId);
 
-                // In single player, mark the player as ready and start the game
+                // En modo un jugador, marcar el jugador como listo e iniciar el juego
                 this.fastify.log.info('Setting player as ready for single player game');
                 game.setPlayerReady(request.userId, true);
             }
@@ -118,26 +115,23 @@ export default class CreateSinglePlayerGameCommand
                 await this.matchRepository.update({ match: createdMatch });
             }
 
-            this.fastify.log.info('Creating game in repository');
-            const gameIdResult = await this.gameRepository.createGame({
-                game,
-                matchId: createdMatch.id as number,
-            });
+            const matchId = createdMatch.id as number;
 
-            if (!gameIdResult.isSuccess || !gameIdResult.value) {
+            this.fastify.log.info('Creating game with PongGameManager');
+            const gameResult = await this.fastify.PongGameManager.createGame(matchId, matchId, game);
+
+            if (!gameResult.isSuccess) {
                 try {
-                    await this.matchRepository.delete({ id: createdMatch.id as number });
+                    await this.matchRepository.delete({ id: matchId });
                 } catch (deleteError) {
                     this.fastify.log.error(deleteError, 'Failed to delete match after game creation failure');
                 }
                 return Result.error(ApplicationError.GameCreationError);
             }
 
-            const gameId = gameIdResult.value;
-
             return Result.success({
-                message: `Single player game created successfully with ID: ${gameId}`,
-                gameId: gameId,
+                message: `Single player game created successfully with ID: ${matchId}`,
+                gameId: matchId,
                 mode: 'singleplayer',
             });
         } catch (error) {

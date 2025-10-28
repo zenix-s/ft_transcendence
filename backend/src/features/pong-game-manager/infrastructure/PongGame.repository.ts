@@ -1,6 +1,5 @@
 import { Result } from '@shared/abstractions/Result';
 import { PongGame } from '../domain/PongGame';
-import { PongGameManager } from '../services/PongGameManager';
 import { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
 import { ApplicationError } from '@shared/Errors';
@@ -8,26 +7,21 @@ import { ApplicationError } from '@shared/Errors';
 export interface IPongGameRepository {
     createGame({ game, matchId }: { game: PongGame; matchId: number }): Promise<Result<number>>;
     getGame({ gameId }: { gameId: number }): Promise<Result<PongGame>>;
-    updateGame({ gameId, game }: { gameId: number; game: PongGame }): Promise<Result<void>>;
     deleteGame({ gameId }: { gameId: number }): Promise<Result<void>>;
     getAllGames(): Promise<Result<Map<number, PongGame>>>;
     exists({ gameId }: { gameId: number }): Promise<Result<boolean>>;
 }
 
 class PongGameRepository implements IPongGameRepository {
-    private gameManager: PongGameManager;
-
-    public constructor(fastify: FastifyInstance) {
-        this.gameManager = new PongGameManager(fastify);
-    }
+    public constructor(private readonly fastify: FastifyInstance) {}
 
     async createGame({ game, matchId }: { game: PongGame; matchId: number }): Promise<Result<number>> {
         try {
-            // Use matchId as gameId for consistency - they should be the same in this system
+            // Usar matchId como gameId para consistencia - deben ser lo mismo en este sistema
             const gameId = matchId;
-            const createResult = await this.gameManager.createGame(gameId, matchId, game);
+            const createResult = await this.fastify.PongGameManager.createGame(gameId, matchId, game);
             if (!createResult.isSuccess) {
-                return Result.error(ApplicationError.GameCreationError);
+                return Result.error(createResult.error || ApplicationError.GameCreationError);
             }
             return Result.success(gameId);
         } catch {
@@ -36,35 +30,33 @@ class PongGameRepository implements IPongGameRepository {
     }
 
     async getGame({ gameId }: { gameId: number }): Promise<Result<PongGame>> {
-        const game = this.gameManager.getGame(gameId);
-        if (!game) {
+        const gameResult = this.fastify.PongGameManager.getGame(gameId);
+        if (!gameResult.isSuccess) {
+            return Result.error(gameResult.error || ApplicationError.GameNotFound);
+        }
+        if (!gameResult.value) {
             return Result.error(ApplicationError.GameNotFound);
         }
-        return Result.success(game);
-    }
-
-    async updateGame({ gameId, game }: { gameId: number; game: PongGame }): Promise<Result<void>> {
-        if (!this.gameManager.gameExists(gameId)) {
-            return Result.error(ApplicationError.GameNotFound);
-        }
-        this.gameManager.updateGame(gameId, game);
-        return Result.success(undefined);
+        return Result.success(gameResult.value);
     }
 
     async deleteGame({ gameId }: { gameId: number }): Promise<Result<void>> {
-        if (!this.gameManager.gameExists(gameId)) {
+        const existsResult = this.fastify.PongGameManager.gameExists(gameId);
+        if (!existsResult.isSuccess) {
+            return Result.error(existsResult.error || ApplicationError.InternalServerError);
+        }
+        if (!existsResult.value) {
             return Result.error(ApplicationError.GameNotFound);
         }
-        this.gameManager.deleteGame(gameId);
-        return Result.success(undefined);
+        return this.fastify.PongGameManager.deleteGame(gameId);
     }
 
     async getAllGames(): Promise<Result<Map<number, PongGame>>> {
-        return Result.success(this.gameManager.getAllGames());
+        return this.fastify.PongGameManager.getAllGames();
     }
 
     async exists({ gameId }: { gameId: number }): Promise<Result<boolean>> {
-        return Result.success(this.gameManager.gameExists(gameId));
+        return this.fastify.PongGameManager.gameExists(gameId);
     }
 }
 

@@ -1,7 +1,7 @@
 import { WebSocket } from '@fastify/websocket';
 import { FastifyInstance } from 'fastify';
-import { Actions, PossibleActions } from '../Pong.types';
-import { PongWebSocketService, WebSocketMessage } from '../services';
+import { Actions, PossibleActions } from '../../pong-game-manager/Pong.types';
+import { PongWebSocketService, WebSocketMessage } from '../services/PongWebSocketService';
 
 export default async function pongWebSocketRoutes(fastify: FastifyInstance) {
     const webSocketService = new PongWebSocketService(fastify);

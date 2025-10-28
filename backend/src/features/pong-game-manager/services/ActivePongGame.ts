@@ -35,8 +35,7 @@ export class ActivePongGame {
         return this.loop !== undefined;
     }
 
-    updateGame(game: PongGame): void {
-        Object.assign(this.game, game);
+    updateLastActivity(): void {
         this.lastUpdate = Date.now();
     }
 

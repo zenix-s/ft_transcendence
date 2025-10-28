@@ -2,9 +2,8 @@ import { FastifyInstance } from 'fastify';
 import { WebSocket } from '@fastify/websocket';
 import { Result } from '@shared/abstractions/Result';
 import { ApplicationError } from '@shared/Errors';
-import { Actions } from '../Pong.types';
-import { PongGameService } from './PongGameService';
-import { PongPlayerService } from './PongPlayerService';
+import { Actions } from '../../pong-game-manager/Pong.types';
+import { IPongService } from './IPongService.interface';
 
 export interface WebSocketMessage {
     action: Actions;
@@ -19,14 +18,8 @@ export interface WebSocketResponse {
     [key: string]: unknown;
 }
 
-export class PongWebSocketService {
-    private readonly gameService: PongGameService;
-    private readonly playerService: PongPlayerService;
-
-    constructor(private readonly fastify: FastifyInstance) {
-        this.gameService = new PongGameService(fastify);
-        this.playerService = new PongPlayerService(fastify);
-    }
+export class PongWebSocketService implements IPongService {
+    constructor(private readonly fastify: FastifyInstance) {}
 
     async authenticateUser(token: string): Promise<Result<number>> {
         try {
@@ -48,17 +41,17 @@ export class PongWebSocketService {
             };
         }
 
-        const stateResult = await this.gameService.getGameState(gameId);
-        if (!stateResult.isSuccess) {
+        const gameStateResult = this.fastify.PongGameManager.getGameState(gameId);
+        if (!gameStateResult.isSuccess) {
             return {
                 type: 'error',
-                error: stateResult.error,
+                error: gameStateResult.error,
             };
         }
 
         return {
             type: 'gameState',
-            ...stateResult.value,
+            ...gameStateResult.value,
         };
     }
 
@@ -74,19 +67,8 @@ export class PongWebSocketService {
             };
         }
 
-        const moveResult = await this.playerService.movePaddle(gameId, playerId, direction);
+        const moveResult = this.fastify.PongGameManager.movePaddle(gameId, playerId, direction);
         if (!moveResult.isSuccess) {
-            // Si el error es GameNotFound, verificar si el juego existe en el historial
-            if (moveResult.error === 'GameNotFound') {
-                const stateResult = await this.gameService.getGameState(gameId);
-                if (stateResult.error === 'GameAlreadyFinished') {
-                    return {
-                        type: 'error',
-                        error: 'gameAlreadyFinished',
-                        message: 'This game has already finished. Movement is not allowed.',
-                    };
-                }
-            }
             return {
                 type: 'error',
                 error: moveResult.error,
@@ -114,22 +96,8 @@ export class PongWebSocketService {
             };
         }
 
-        const readyResult = await this.playerService.setPlayerReady(gameId, playerId, true);
+        const readyResult = this.fastify.PongGameManager.setPlayerReady(gameId, playerId, true);
         if (!readyResult.isSuccess) {
-            // Si el error es GameNotFound, verificar si el juego existe en el historial
-            if (readyResult.error === 'GameNotFound') {
-                const stateResult = await this.gameService.getGameState(gameId);
-                if (stateResult.error === 'GameAlreadyFinished') {
-                    return {
-                        response: {
-                            type: 'error',
-                            error: 'gameAlreadyFinished',
-                            message: 'This game has already finished. Cannot change ready status.',
-                        },
-                        gameStarted: false,
-                    };
-                }
-            }
             return {
                 response: {
                     type: 'error',
@@ -139,7 +107,7 @@ export class PongWebSocketService {
             };
         }
 
-        const { isReady, gameStarted } = readyResult.value || { isReady: false, gameStarted: false };
+        const gameStarted = readyResult.value ? readyResult.value.gameStarted : false;
 
         if (gameStarted) {
             this.fastify.log.info(`Game ${gameId} started automatically via repository`);
@@ -150,7 +118,7 @@ export class PongWebSocketService {
                 type: 'readyConfirmed',
                 gameId,
                 playerId,
-                isReady,
+                isReady: true,
                 gameStarted,
                 message: gameStarted ? 'Game started!' : 'Ready confirmed, waiting for other player',
             },

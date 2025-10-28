@@ -1,8 +1,7 @@
 import { FastifyInstance } from 'fastify';
-import { IPongGameRepository } from '../../infrastructure/PongGame.repository';
 import { Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
-import { PongGame } from '../../domain/PongGame';
+import { PongGame } from '../../../pong-game-manager/domain/PongGame';
 
 import { Match } from '@shared/domain/entity/Match.entity';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
@@ -21,12 +20,10 @@ export interface ICreateGameRequest {
 }
 
 export default class CreateGameCommand implements ICommand<ICreateGameRequest, ICreateGameResponse> {
-    private readonly gameRepository: IPongGameRepository;
     private readonly matchRepository: IMatchRepository;
     private readonly gameTypeRepository: IGameTypeRepository;
 
     constructor(private readonly fastify: FastifyInstance) {
-        this.gameRepository = this.fastify.PongGameRepository;
         this.matchRepository = this.fastify.MatchRepository;
         this.gameTypeRepository = this.fastify.GameTypeRepository;
     }
@@ -71,27 +68,23 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
             const match = new Match(gameType.id, playerIds);
 
             const createdMatch = await this.matchRepository.create({ match });
+            const matchId = createdMatch.id as number;
 
             const game = new PongGame(winnerScore, maxGameTime);
-            const gameIdResult = await this.gameRepository.createGame({
-                game,
-                matchId: createdMatch.id as number,
-            });
+            const gameResult = await this.fastify.PongGameManager.createGame(matchId, matchId, game);
 
-            if (!gameIdResult.isSuccess || !gameIdResult.value) {
+            if (!gameResult.isSuccess) {
                 try {
-                    await this.matchRepository.delete({ id: createdMatch.id as number });
+                    await this.matchRepository.delete({ id: matchId });
                 } catch (deleteError) {
                     this.fastify.log.error(deleteError, 'Failed to delete match after game creation failure');
                 }
                 return Result.error(ApplicationError.GameCreationError);
             }
 
-            const gameId = gameIdResult.value;
-
             return Result.success({
-                message: `Game created successfully with ID: ${gameId}`,
-                gameId: gameId,
+                message: `Game created successfully with ID: ${matchId}`,
+                gameId: matchId,
             });
         } catch (error) {
             return this.fastify.handleError<ICreateGameResponse>({

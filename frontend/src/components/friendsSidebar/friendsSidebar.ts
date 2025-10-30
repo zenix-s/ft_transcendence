@@ -57,8 +57,17 @@ export async function initFriendsSidebar() {
         const span = document.createElement("span");
         span.textContent = friend.username;
 
+        const inviteBtn = document.createElement("button");
+        inviteBtn.className = "mr-auto bg-primary text-white px-2 py-1 rounded hover:bg-primary-dark transition-colors duration-200";
+        inviteBtn.textContent = t("InviteToGame");
+        inviteBtn.dataset.i18n = "InviteToGame";
+        inviteBtn.dataset.name = friend.username;
+
         li.appendChild(img);
         li.appendChild(span);
+        if (friend.is_connected) {
+          li.appendChild(inviteBtn);
+        }
         listEl.appendChild(li);
       }
     };

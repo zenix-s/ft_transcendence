@@ -18,6 +18,7 @@ export default defineConfig({
       key: fs.readFileSync('./certs/key.pem'),
       cert: fs.readFileSync('./certs/cert.pem'),
     },
+    hmr: false,
     proxy: {
       '/api': {
         target: BACKEND_URL, // URL del backend (nombre del servicio Docker)

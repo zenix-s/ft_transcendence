@@ -1,11 +1,13 @@
 import { showToast } from "@/components/toast";
-import { actualizeValues } from "./game"
+//import { actualizeValues } from "./game"
 import type { Ball, Player, Score } from "./gameData";
 import { t } from "@/app/i18n";
 import { navigateTo } from "@/app/navigation";
 import { fetchGameAlreadyFinished } from "./getData";
 import { modal } from "@/components/modal";
 import { getWsUrl } from "@/api";
+import { renderValues } from "./playing";
+import type { Engine, Scene } from "@babylonjs/core";
 
 //import { fetchGameId, fetchSinglePlayerGameId, toJoinGame, fetchGameState } from "./getData.js";
 
@@ -27,7 +29,7 @@ interface message {
 // }
 
 
-export function conectWebSocket(gameId: number, player1: Player, player2: Player, scores: Score, ball: Ball)
+export function conectWebSocket(gameId: number, player1: Player, player2: Player, scores: Score, ball: Ball, engine:Engine, scene:Scene)
 {
 	const token = localStorage.getItem("access_token");
 	// const socket = new WebSocket("wss://localhost:3000/game/pong");
@@ -41,7 +43,7 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 	
 	socket.addEventListener("open", () => {
 		console.log("conectado websockket");
-		let obj : message = {
+		const obj : message = {
 			action: 1,
 			gameId:gameId,
 			token: token
@@ -67,12 +69,12 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 
 	socket.addEventListener("message", async (msg) => {
 		console.log("mensaje recibido=", msg.data);
-		let data = JSON.parse(msg.data);
+		const data = JSON.parse(msg.data);
 		if (data.type ==  "gameState")
 		{
-			actualizeValues(data.state.player1.position, player1, data.state.player2.position, player2,
+			renderValues(data.state.player1.position, player1, data.state.player2.position, player2,
 				data.state.player1.score, data.state.player2.score, scores,
-				data.state.ball.position.x, data.state.ball.position.y, ball);
+				data.state.ball.position.x, data.state.ball.position.y, ball, engine, scene);
 
 			if (data.state.isRunning == false && data.state.arePlayersReady == true)
 			{
@@ -90,7 +92,7 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 				pingInterval = undefined;
 				if (finBool == 0 && document.getElementById("gameCanvas") as HTMLCanvasElement)
 				{
-					let finished = await fetchGameAlreadyFinished(gameId);
+					const finished = await fetchGameAlreadyFinished(gameId);
 					if (!finished)
 					{
 						showToast(t("GameError"));
@@ -99,7 +101,7 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 					}
 					const score1 = finished.match.players[0].score;
 					const score2 = finished.match.players[1].score;
-					actualizeValues(50, player1, 50, player2, score1, score2, scores, 50, 50, ball);
+					renderValues(50, player1, 50, player2, score1, score2, scores, 50, 50, ball, engine, scene);
 					console.log("game = ", JSON.stringify(finished));
 					const playerL = finished.match.players[0].userId;
 					const playerR = finished.match.players[1].userId;
@@ -122,7 +124,7 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 			}
 			if (data.error == "UnauthorizedAccess")
 			{
-				let obj : message = {
+				const obj : message = {
 				action: 0,
 				gameId:gameId,
 				token: token
@@ -200,7 +202,7 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 }
 
 
-export async function socketAndRender(player1: Player, player2: Player, scores: Score, ball: Ball)
+export async function socketAndRender(player1: Player, player2: Player, scores: Score, ball: Ball, engine : Engine, scene : Scene)
 {
 	// const gameId = await fetchGameId();
 	// if (!gameId)
@@ -234,5 +236,5 @@ export async function socketAndRender(player1: Player, player2: Player, scores: 
 		console.warn(t("NoGameId"));
 		navigateTo("dashboard", false, true);
 	}
-	conectWebSocket(Number(id), player1, player2, scores, ball);
+	conectWebSocket(Number(id), player1, player2, scores, ball, engine, scene);
 }

@@ -88,6 +88,30 @@ export default fp(
             [CONSTANTES_DB.AI_PLAYER_ID, CONSTANTES_DB.AI_PLAYER_NAME, hashedPasswordAI]
         );
 
+
+        await connection.execute(
+            `
+                INSERT OR IGNORE INTO game_types (name, min_players, max_players, supports_invitations)
+                VALUES
+                    (?,?,?,?),
+                    (?,?,?,?)
+            `,
+            [
+                // Pong
+                CONSTANTES_DB.MATCH_TYPE.PONG.NAME,
+                CONSTANTES_DB.MATCH_TYPE.PONG.MIN_PLAYERS,
+                CONSTANTES_DB.MATCH_TYPE.PONG.MAX_PLAYERS,
+                CONSTANTES_DB.MATCH_TYPE.PONG.SUPPORTS_INVITATIONS ? 1 : 0,
+                // Single Player Pong
+                CONSTANTES_DB.MATCH_TYPE.SINGLE_PLAYER_PONG.NAME,
+                CONSTANTES_DB.MATCH_TYPE.SINGLE_PLAYER_PONG.MIN_PLAYERS,
+                CONSTANTES_DB.MATCH_TYPE.SINGLE_PLAYER_PONG.MAX_PLAYERS,
+                CONSTANTES_DB.MATCH_TYPE.SINGLE_PLAYER_PONG.SUPPORTS_INVITATIONS ? 1 : 0,
+            ]
+        );
+
+        
+        // ESTO ES PARA TESTING NO LLEVAR A PROD
         // TestUsers
         const hashedPasswordTest = await hashPassword('Testpassword1234');
         await connection.execute(
@@ -109,14 +133,7 @@ export default fp(
                     (3, 2)
             `
         );
-
-        await connection.execute(`
-            INSERT OR IGNORE INTO game_types (name, min_players, max_players, supports_invitations)
-            VALUES
-                ('pong', 2, 2, 1),
-                ('single_player_pong', 1, 1, 0)
-        `);
-
+        
         fastify.decorate('DbConnection', connection);
         fastify.addHook('onClose', async () => {
             // Set all users as disconnected on server shutdown

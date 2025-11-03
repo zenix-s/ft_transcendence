@@ -104,7 +104,7 @@ class UserRepository extends AbstractRepository implements IUserRepository {
 
         const row = await this.findOne<AuthenticationUserRow>(query, params);
 
-        if (!row || row.id === CONSTANTES_DB.AI_PLAYER_ID) {
+        if (!row || row.id === CONSTANTES_DB.AI_PLAYER.ID) {
             return Result.error(ApplicationError.UserNotFound);
         }
 

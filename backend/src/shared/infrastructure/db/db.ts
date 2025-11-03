@@ -85,9 +85,8 @@ export default fp(
                 VALUES
                     (?, ?, 'ai@system.local', ?)
             `,
-            [CONSTANTES_DB.AI_PLAYER_ID, CONSTANTES_DB.AI_PLAYER_NAME, hashedPasswordAI]
+            [CONSTANTES_DB.AI_PLAYER.ID, CONSTANTES_DB.AI_PLAYER.NAME, hashedPasswordAI]
         );
-
 
         await connection.execute(
             `
@@ -110,7 +109,6 @@ export default fp(
             ]
         );
 
-        
         // ESTO ES PARA TESTING NO LLEVAR A PROD
         // TestUsers
         const hashedPasswordTest = await hashPassword('Testpassword1234');
@@ -133,7 +131,7 @@ export default fp(
                     (3, 2)
             `
         );
-        
+
         fastify.decorate('DbConnection', connection);
         fastify.addHook('onClose', async () => {
             // Set all users as disconnected on server shutdown

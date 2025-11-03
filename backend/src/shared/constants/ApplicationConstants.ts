@@ -13,8 +13,10 @@ export const GAME_TYPES = {
 export type GameType = (typeof GAME_TYPES)[keyof typeof GAME_TYPES];
 
 export const CONSTANTES_DB = {
-    AI_PLAYER_ID: 1,
-    AI_PLAYER_NAME: 'AI_Player',
+    AI_PLAYER: {
+        ID: 1,
+        NAME: 'AI_Player',
+    },
     MATCH_TYPE: {
         SINGLE_PLAYER_PONG: {
             NAME: 'single_player_pong',

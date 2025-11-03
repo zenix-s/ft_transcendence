@@ -2,6 +2,7 @@ import fp from 'fastify-plugin';
 import { FastifyInstance } from 'fastify';
 import { SQLiteConnection } from '@shared/infrastructure/db/SQLiteConnection';
 import { hashPassword } from '@shared/utils/password.utils';
+import { CONSTANTES_DB } from '@shared/constants/ApplicationConstants';
 
 export default fp(
     async (fastify: FastifyInstance) => {
@@ -80,11 +81,11 @@ export default fp(
 
         await connection.execute(
             `
-                INSERT OR IGNORE INTO users (username, email, password)
+                INSERT OR IGNORE INTO users (id, username, email, password)
                 VALUES
-                    ('AI_Player', 'ai@system.local', ?)
+                    (?, ?, 'ai@system.local', ?)
             `,
-            [hashedPasswordAI]
+            [CONSTANTES_DB.AI_PLAYER_ID, CONSTANTES_DB.AI_PLAYER_NAME, hashedPasswordAI]
         );
 
         // TestUsers

@@ -4,6 +4,7 @@ import { User } from '@shared/domain/entity/User.entity';
 import fp from 'fastify-plugin';
 import { AuthenticationUserRow } from '../types/types';
 import { ApplicationError } from '@shared/Errors';
+import { CONSTANTES_DB } from '@shared/constants/ApplicationConstants';
 
 export interface AuthenticationUserDto extends User {
     password: string;
@@ -103,7 +104,7 @@ class UserRepository extends AbstractRepository implements IUserRepository {
 
         const row = await this.findOne<AuthenticationUserRow>(query, params);
 
-        if (!row) {
+        if (!row || row.id === CONSTANTES_DB.AI_PLAYER_ID) {
             return Result.error(ApplicationError.UserNotFound);
         }
 

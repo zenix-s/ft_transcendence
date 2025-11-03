@@ -11,3 +11,8 @@ export const GAME_TYPES = {
  * Type helper para TypeScript
  */
 export type GameType = (typeof GAME_TYPES)[keyof typeof GAME_TYPES];
+
+export const CONSTANTES_DB = {
+    AI_PLAYER_ID: 1,
+    AI_PLAYER_NAME: 'AI_Player',
+} as const;

@@ -58,7 +58,7 @@ export async function initFriendsSidebar() {
         span.textContent = friend.username;
 
         const inviteBtn = document.createElement("button");
-        inviteBtn.className = "mr-auto bg-primary text-white px-2 py-1 rounded hover:bg-primary-dark transition-colors duration-200";
+        inviteBtn.className = "bg-primary dark:bg-secondary text-secondary dark:text-primary px-2 py-1 rounded hover:bg-primary-dark transition-colors duration-200 ml-auto";
         inviteBtn.textContent = t("InviteToGame");
         inviteBtn.dataset.i18n = "InviteToGame";
         inviteBtn.dataset.name = friend.username;

@@ -34,7 +34,7 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 	const token = localStorage.getItem("access_token");
 	// const socket = new WebSocket("wss://localhost:3000/game/pong");
 	const ws = getWsUrl("/game/pong");
-	console.log("ws=", ws);
+	console.log("ws=", ws, "token=", token);
 	const socket = new WebSocket(ws);
 	let pingInterval: ReturnType<typeof setInterval> | undefined;
 	let up = 0;
@@ -50,21 +50,29 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 		};
 		socket.send(JSON.stringify(obj));
 		obj.action = 1;
-		pingInterval = setInterval(() => {
-			obj.action = 1;
-		 	socket.send(JSON.stringify(obj));
-
-			if (up == 1 && down == 0)
+		engine.runRenderLoop(() => {
+			const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
+			if (!canvas)
 			{
-				obj.action = 2;
-				socket.send(JSON.stringify(obj));
+				console.warn("no canvas");
+				return ;
 			}
-			if (down == 1 && up == 0)
+
+			obj.action = 1;
+			 socket.send(JSON.stringify(obj));
+	
+			if (up == 1 && down == 0)
 			{
 				obj.action = 3;
 				socket.send(JSON.stringify(obj));
 			}
-  		}, 10);
+			if (down == 1 && up == 0)
+			{
+				obj.action = 2;
+				socket.send(JSON.stringify(obj));
+			}
+			scene.render();
+		});
 	})
 
 	socket.addEventListener("message", async (msg) => {
@@ -74,7 +82,7 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 		{
 			renderValues(data.state.player1.position, player1, data.state.player2.position, player2,
 				data.state.player1.score, data.state.player2.score, scores,
-				data.state.ball.position.x, data.state.ball.position.y, ball, engine, scene);
+				data.state.ball.position.x, data.state.ball.position.y, ball);
 
 			if (data.state.isRunning == false && data.state.arePlayersReady == true)
 			{
@@ -101,7 +109,7 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 					}
 					const score1 = finished.match.players[0].score;
 					const score2 = finished.match.players[1].score;
-					renderValues(50, player1, 50, player2, score1, score2, scores, 50, 50, ball, engine, scene);
+					renderValues(50, player1, 50, player2, score1, score2, scores, 50, 50, ball);
 					console.log("game = ", JSON.stringify(finished));
 					const playerL = finished.match.players[0].userId;
 					const playerR = finished.match.players[1].userId;

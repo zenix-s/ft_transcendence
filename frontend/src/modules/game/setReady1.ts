@@ -28,7 +28,7 @@ export function ready1()
 			return ;
 		}
 		console.log("single player id =", id);
-		navigateTo('playing?id=${id}&singleplayer');
+		navigateTo(`playing?id=${id}&singleplayer`);
 		//navigateTo(`game?id=${id}&singlePlayer=true&mutiPlayer=false`);
 	});
 }

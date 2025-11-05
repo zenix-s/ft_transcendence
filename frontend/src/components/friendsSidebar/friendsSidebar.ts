@@ -3,6 +3,8 @@ import { addFriend, deleteFriend } from "@/modules/social/friendsManager";
 import type { Friend } from "@/types/friend";
 import { getReadySocialSocket } from "@/modules/social/socketUtils";
 import { renderAvatar } from "../renderAvatar";
+import { showToast } from "../toast";
+import { fetchGameId } from "@/modules/game/getData";
 
 export async function initFriendsSidebar() {
   const container = document.getElementById("friends-sidebar-container");
@@ -57,8 +59,17 @@ export async function initFriendsSidebar() {
         const span = document.createElement("span");
         span.textContent = friend.username;
 
+        const inviteBtn = document.createElement("button");
+        inviteBtn.className = "bg-white text-cyan-700 hover:bg-cyan-700 hover:text-white px-2 py-1 rounded transition-all duration-300 ease-in-out ml-auto invite-btn";
+        inviteBtn.textContent = t("InviteToGame");
+        inviteBtn.dataset.i18n = "InviteToGame";
+        inviteBtn.dataset.name = friend.username;
+
         li.appendChild(img);
         li.appendChild(span);
+        if (friend.is_connected) {
+          li.appendChild(inviteBtn);
+        }
         listEl.appendChild(li);
       }
     };
@@ -107,11 +118,23 @@ export async function initFriendsSidebar() {
   });
 
   // 🔹 Invitar a jugar
-  document.addEventListener("click", (event) => {
+  /* document.addEventListener("click", (event) => {
     const target = event.target as HTMLElement;
     if (target.classList.contains("invite-btn")) {
       const name = target.dataset.name!;
       alert(`Invitación enviada a ${name}`);
+    }
+  }); */
+
+  const inviteBtn = document.getElementById("online-friends") as HTMLElement;
+  inviteBtn?.addEventListener("click", (event) => {
+    event.preventDefault();
+    const target = event.target as HTMLElement;
+    if (target.classList.contains("invite-btn")) {
+      const username = target.dataset.name;
+      fetchGameId(5); // Create game PONG --> Y si hay otro juego?
+      // Hay que enviar la invitación y poder elegir el juego
+      showToast("Invitando a: " + username, "success");
     }
   });
 

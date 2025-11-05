@@ -1,0 +1,5 @@
+1º: llamar a fetchGameId() que devuelve un id del juego --> la función existe
+2º: send-invitation con el game id --> hay que hacer la función
+3º: accept-invitation() con el game id del jugador
+4º: mandarlos al juego a los dos con navigateTo(playing?id=${id}&mutiPlayer); --> la función existe, el id es el game id  --> tener cuidado de q las cimillas que tiene sean estas
+5º: le tengo q añadir un modal para q puedas configurar y darle a listo--> mientras tanto el juego debería de empezar solo, cualqier cosa me dices

@@ -78,6 +78,16 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
             if (!userResult.isSuccess || !userResult.value)
                 return Result.error(ApplicationError.UserNotFound);
 
+            // Verificar si el usuario tiene partidas activas (pending o in_progress)
+            const activeMatches = await this.matchRepository.findUserMatches({
+                userId: userId,
+                status: [CONSTANTES_APP.MATCH.STATUS.PENDING, CONSTANTES_APP.MATCH.STATUS.IN_PROGRESS],
+            });
+
+            if (activeMatches.length > 0) {
+                return Result.error(ApplicationError.PlayerHasActiveMatch);
+            }
+
             const gameType = await this.gameTypeRepository.findByName({
                 name: CONSTANTES_APP.MATCH_TYPE.PONG.NAME,
             });

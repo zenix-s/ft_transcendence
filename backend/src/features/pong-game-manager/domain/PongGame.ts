@@ -1,4 +1,4 @@
-import { CONSTANTES_DB } from '@shared/constants/ApplicationConstants';
+import { CONSTANTES_APP } from '@shared/constants/ApplicationConstants';
 import { User } from '@shared/domain/entity/User.entity';
 
 interface PlayerState {
@@ -97,9 +97,9 @@ export class PongGame {
             this.player1 = new PongPlayer(playerId, userData);
             if (this.isPlayer2AI && !this.player2) {
                 this.player2 = new PongPlayer(1, {
-                    id: CONSTANTES_DB.AI_PLAYER.ID,
-                    username: CONSTANTES_DB.AI_PLAYER.NAME,
-                    email: CONSTANTES_DB.AI_PLAYER.EMAIL,
+                    id: CONSTANTES_APP.AI_PLAYER.ID,
+                    username: CONSTANTES_APP.AI_PLAYER.NAME,
+                    email: CONSTANTES_APP.AI_PLAYER.EMAIL,
                 });
                 this.player2.setReady(true);
             }

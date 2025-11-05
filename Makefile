@@ -52,8 +52,8 @@ certs: backend/certs/cert.pem frontend/certs/cert.pem
 
 backend/certs/cert.pem backend/certs/key.pem:
 	mkdir -p backend/certs
-	IP_ADDR=$$(hostname -I | awk '{print $$1}') ; \
-	@echo -e "$(GREEN)🔧 Generando certificado para IP $$IP_ADDR ...$(RESET)"; \
+	IP_ADDR=$$(ip route get 1 | grep -oP 'src \K[0-9.]+') ; \
+	echo -e "$(GREEN)🔧 Generando certificado para IP $$IP_ADDR ...$(RESET)"; \
 	openssl req -x509 -newkey rsa:4096 -nodes \
 		-keyout backend/certs/key.pem \
 		-out backend/certs/cert.pem \

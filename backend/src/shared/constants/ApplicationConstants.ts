@@ -12,7 +12,7 @@ export const GAME_TYPES = {
  */
 export type GameType = (typeof GAME_TYPES)[keyof typeof GAME_TYPES];
 
-export const CONSTANTES_DB = {
+export const CONSTANTES_APP = {
     AI_PLAYER: {
         ID: 1,
         NAME: 'AI_Player',
@@ -31,5 +31,24 @@ export const CONSTANTES_DB = {
             MAX_PLAYERS: 2,
             SUPPORTS_INVITATIONS: true,
         },
+    },
+    MATCH: {
+        STATUS: {
+            PENDING: 'pending',
+            IN_PROGRESS: 'in_progress',
+            COMPLETED: 'completed',
+            CANCELLED: 'cancelled',
+        },
+    },
+} as const;
+
+export const CONSTANTES_LISTA_APP = {
+    MATCH: {
+        VALID_STATUS: [
+            CONSTANTES_APP.MATCH.STATUS.PENDING,
+            CONSTANTES_APP.MATCH.STATUS.IN_PROGRESS,
+            CONSTANTES_APP.MATCH.STATUS.COMPLETED,
+            CONSTANTES_APP.MATCH.STATUS.CANCELLED,
+        ],
     },
 } as const;

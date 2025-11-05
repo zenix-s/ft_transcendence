@@ -7,7 +7,7 @@ import { Match } from '@shared/domain/entity/Match.entity';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
 import { IGameTypeRepository } from '@shared/infrastructure/repositories/GameTypeRepository';
 import { ApplicationError } from '@shared/Errors';
-import { CONSTANTES_DB } from '@shared/constants/ApplicationConstants';
+import { CONSTANTES_APP } from '@shared/constants/ApplicationConstants';
 
 export interface ICreateSinglePlayerGameResponse {
     message: string;
@@ -88,7 +88,7 @@ export default class CreateSinglePlayerGameCommand
             const aiDifficulty = request?.aiDifficulty || 0.95;
 
             const gameType = await this.gameTypeRepository.findByName({
-                name: CONSTANTES_DB.MATCH_TYPE.SINGLE_PLAYER_PONG.NAME,
+                name: CONSTANTES_APP.MATCH_TYPE.SINGLE_PLAYER_PONG.NAME,
             });
 
             if (!gameType) {
@@ -130,7 +130,7 @@ export default class CreateSinglePlayerGameCommand
             return Result.success({
                 message: `Single player game created successfully with ID: ${matchId}`,
                 gameId: matchId,
-                mode: CONSTANTES_DB.MATCH_TYPE.SINGLE_PLAYER_PONG.NAME,
+                mode: CONSTANTES_APP.MATCH_TYPE.SINGLE_PLAYER_PONG.NAME,
             });
         } catch (error) {
             return this.fastify.handleError<ICreateSinglePlayerGameResponse>({

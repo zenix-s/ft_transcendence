@@ -7,7 +7,7 @@ import { Match } from '@shared/domain/entity/Match.entity';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
 import { IGameTypeRepository } from '@shared/infrastructure/repositories/GameTypeRepository';
 import { ApplicationError } from '@shared/Errors';
-import { CONSTANTES_DB } from '@shared/constants/ApplicationConstants';
+import { CONSTANTES_APP } from '@shared/constants/ApplicationConstants';
 
 export interface ICreateGameResponse {
     message: string;
@@ -69,7 +69,7 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
                 return Result.error(ApplicationError.UserNotFound);
 
             const gameType = await this.gameTypeRepository.findByName({
-                name: CONSTANTES_DB.MATCH_TYPE.PONG.NAME,
+                name: CONSTANTES_APP.MATCH_TYPE.PONG.NAME,
             });
             if (!gameType) {
                 return Result.error(ApplicationError.GameTypeNotFound);

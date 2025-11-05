@@ -83,6 +83,16 @@ export interface ISocialWebSocketService {
     ): void;
 
     /**
+     * Notifica a los amigos sobre cambios en el perfil del usuario (avatar/username)
+     */
+    notifyFriendsProfileUpdate(userId: number, username: string, avatar: string | null): Promise<void>;
+
+    /**
+     * Notifica a los amigos sobre cambios en el perfil del usuario obteniendo datos actualizados de la BD
+     */
+    notifyFriendsProfileUpdate(userId: number): Promise<void>;
+
+    /**
      * Valida el formato del mensaje WebSocket entrante
      */
     validateMessage(data: unknown): data is SocialWebSocketMessage;

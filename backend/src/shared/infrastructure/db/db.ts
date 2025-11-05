@@ -52,16 +52,21 @@ export default fp(
                     ended_at DATETIME,
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (game_type_id) REFERENCES game_types(id),
-                    CHECK (status IN (?, ?, ?, ?))
+                    CHECK (status IN (
+                        '${CONSTANTES_APP.MATCH.STATUS.PENDING}',
+                        '${CONSTANTES_APP.MATCH.STATUS.IN_PROGRESS}',
+                        '${CONSTANTES_APP.MATCH.STATUS.COMPLETED}',
+                        '${CONSTANTES_APP.MATCH.STATUS.CANCELLED}')
+                    )
                 )
-            `,
-            [
-                // STATUS
-                CONSTANTES_APP.MATCH.STATUS.PENDING,
-                CONSTANTES_APP.MATCH.STATUS.IN_PROGRESS,
-                CONSTANTES_APP.MATCH.STATUS.COMPLETED,
-                CONSTANTES_APP.MATCH.STATUS.CANCELLED,
-            ]
+            `
+            // [
+            //     // STATUS
+            //     CONSTANTES_APP.MATCH.STATUS.PENDING,
+            //     CONSTANTES_APP.MATCH.STATUS.IN_PROGRESS,
+            //     CONSTANTES_APP.MATCH.STATUS.COMPLETED,
+            //     CONSTANTES_APP.MATCH.STATUS.CANCELLED,
+            // ]
         );
 
         await connection.execute(`

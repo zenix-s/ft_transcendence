@@ -81,7 +81,8 @@ class MatchRepository extends AbstractRepository implements IMatchRepository {
     async findUserMatches({ userId, status }: { userId: number; status: string[] }): Promise<Match[]> {
         let statusCondition = '';
         if (status.length > 0) {
-            statusCondition = `AND m.status IN (${status.map(() => '?').join(', ')})`;
+            const escapedStatus = status.map((s) => `'${s.replace(/'/g, "''")}'`).join(', ');
+            statusCondition = `AND m.status IN (${escapedStatus})`;
         }
 
         const result = await this.findMany<MatchRow>(

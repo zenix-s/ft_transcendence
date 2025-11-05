@@ -7,6 +7,7 @@ import { Match } from '@shared/domain/entity/Match.entity';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
 import { IGameTypeRepository } from '@shared/infrastructure/repositories/GameTypeRepository';
 import { ApplicationError } from '@shared/Errors';
+import { CONSTANTES_DB } from '@shared/constants/ApplicationConstants';
 
 export interface ICreateGameResponse {
     message: string;
@@ -58,8 +59,18 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
         try {
             const winnerScore = request?.winnerScore || 5;
             const maxGameTime = request?.maxGameTime || 120;
+            const userId = request?.userId || null;
 
-            const gameType = await this.gameTypeRepository.findByName({ name: 'pong' });
+            if (userId === null) return Result.error(ApplicationError.UserNotFound);
+            const userResult = await this.fastify.UserRepository.getUser({
+                id: userId,
+            });
+            if (!userResult.isSuccess || !userResult.value)
+                return Result.error(ApplicationError.UserNotFound);
+
+            const gameType = await this.gameTypeRepository.findByName({
+                name: CONSTANTES_DB.MATCH_TYPE.PONG.NAME,
+            });
             if (!gameType) {
                 return Result.error(ApplicationError.GameTypeNotFound);
             }

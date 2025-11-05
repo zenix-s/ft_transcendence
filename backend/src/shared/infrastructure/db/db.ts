@@ -83,9 +83,14 @@ export default fp(
             `
                 INSERT OR IGNORE INTO users (id, username, email, password)
                 VALUES
-                    (?, ?, 'ai@system.local', ?)
+                    (?, ?, ?, ?)
             `,
-            [CONSTANTES_DB.AI_PLAYER.ID, CONSTANTES_DB.AI_PLAYER.NAME, hashedPasswordAI]
+            [
+                CONSTANTES_DB.AI_PLAYER.ID,
+                CONSTANTES_DB.AI_PLAYER.NAME,
+                CONSTANTES_DB.AI_PLAYER.EMAIL,
+                hashedPasswordAI,
+            ]
         );
 
         await connection.execute(

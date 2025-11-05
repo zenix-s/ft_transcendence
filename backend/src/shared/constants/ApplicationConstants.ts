@@ -16,6 +16,7 @@ export const CONSTANTES_DB = {
     AI_PLAYER: {
         ID: 1,
         NAME: 'AI_Player',
+        EMAIL: 'ai@system.local',
     },
     MATCH_TYPE: {
         SINGLE_PLAYER_PONG: {

@@ -110,7 +110,7 @@ export default class AcceptGameInvitationCommand
                 return Result.error(ApplicationError.GameNotFound);
             }
 
-            const addPlayerResult = this.fastify.PongGameManager.addPlayerToGame(gameId, userId);
+            const addPlayerResult = await this.fastify.PongGameManager.addPlayerToGame(gameId, userId);
             if (!addPlayerResult.isSuccess) {
                 return Result.error(addPlayerResult.error || ApplicationError.InternalServerError);
             }

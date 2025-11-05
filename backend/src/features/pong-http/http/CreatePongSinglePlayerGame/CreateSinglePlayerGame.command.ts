@@ -7,6 +7,7 @@ import { Match } from '@shared/domain/entity/Match.entity';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
 import { IGameTypeRepository } from '@shared/infrastructure/repositories/GameTypeRepository';
 import { ApplicationError } from '@shared/Errors';
+import { CONSTANTES_DB } from '@shared/constants/ApplicationConstants';
 
 export interface ICreateSinglePlayerGameResponse {
     message: string;
@@ -72,52 +73,49 @@ export default class CreateSinglePlayerGameCommand
         request?: ICreateSinglePlayerGameRequest | undefined
     ): Promise<Result<ICreateSinglePlayerGameResponse>> {
         try {
+            if (!request) return Result.error(ApplicationError.BadRequest);
+
+            const userId = request.userId || null;
+            if (userId === null) return Result.error(ApplicationError.UserNotFound);
+            const userResult = await this.fastify.UserRepository.getUser({
+                id: userId,
+            });
+            if (!userResult.isSuccess || !userResult.value)
+                return Result.error(ApplicationError.UserNotFound);
+
             const winnerScore = request?.winnerScore || 5;
             const maxGameTime = request?.maxGameTime || 120;
             const aiDifficulty = request?.aiDifficulty || 0.95;
 
-            this.fastify.log.info('Creating single player game');
+            const gameType = await this.gameTypeRepository.findByName({
+                name: CONSTANTES_DB.MATCH_TYPE.SINGLE_PLAYER_PONG.NAME,
+            });
 
-            const gameType = await this.gameTypeRepository.findByName({ name: 'single_player_pong' });
             if (!gameType) {
                 this.fastify.log.error('Single player game type not found');
                 return Result.error(ApplicationError.SinglePlayerGameTypeNotFound);
             }
 
-            this.fastify.log.info('Found game type');
-
             const playerIds = request?.userId ? [request.userId, 1] : [1];
-            this.fastify.log.info('Creating match with players');
 
             const match = new Match(gameType.id, playerIds);
 
-            this.fastify.log.info('Saving match to database');
             const createdMatch = await this.matchRepository.create({ match });
 
-            this.fastify.log.info('Match created successfully');
-
-            this.fastify.log.info('Creating PongGame instance');
             const game = new PongGame(winnerScore, maxGameTime, true, aiDifficulty);
 
-            if (request?.userId) {
-                this.fastify.log.info('Adding player to game');
-                game.addPlayer(request.userId);
+            game.addPlayer(userResult.value.id, userResult.value);
 
-                // En modo un jugador, marcar el jugador como listo e iniciar el juego
-                this.fastify.log.info('Setting player as ready for single player game');
-                game.setPlayerReady(request.userId, true);
-            }
+            // En modo un jugador, marcar el jugador como listo e iniciar el juego
+            game.setPlayerReady(userResult.value.id, true);
 
-            this.fastify.log.info('Starting match');
             const started = createdMatch.start();
             if (started) {
-                this.fastify.log.info('Match started, updating in database');
                 await this.matchRepository.update({ match: createdMatch });
             }
 
             const matchId = createdMatch.id as number;
 
-            this.fastify.log.info('Creating game with PongGameManager');
             const gameResult = await this.fastify.PongGameManager.createGame(matchId, matchId, game);
 
             if (!gameResult.isSuccess) {
@@ -132,7 +130,7 @@ export default class CreateSinglePlayerGameCommand
             return Result.success({
                 message: `Single player game created successfully with ID: ${matchId}`,
                 gameId: matchId,
-                mode: 'singleplayer',
+                mode: CONSTANTES_DB.MATCH_TYPE.SINGLE_PLAYER_PONG.NAME,
             });
         } catch (error) {
             return this.fastify.handleError<ICreateSinglePlayerGameResponse>({

@@ -16,6 +16,7 @@ export const PossibleActions: Actions[] = [
 
 export interface PlayerState {
     id: string;
+    username: string;
     position: number;
     score: number;
     isReady: boolean;

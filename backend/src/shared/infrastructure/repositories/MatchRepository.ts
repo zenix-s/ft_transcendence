@@ -55,7 +55,18 @@ class MatchRepository extends AbstractRepository implements IMatchRepository {
         if (!result) return null;
 
         const players = await this.findMany<MatchPlayerRow>(
-            'SELECT user_id, score, is_winner FROM match_players WHERE match_id = ?',
+            `
+                SELECT
+                    mp.user_id,
+                    u.username,
+                    mp.score,
+                    mp.is_winner
+                FROM
+                    match_players mp
+                    JOIN users u ON mp.user_id = u.id
+                WHERE
+                    mp.match_id = ?
+            `,
             [id]
         );
 

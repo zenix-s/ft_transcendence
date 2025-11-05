@@ -72,13 +72,19 @@ export class PongGameManager implements IPongGameManager {
         return Result.success({ gameStarted });
     }
 
-    addPlayerToGame(gameId: number, playerId: number): Result<void> {
+    async addPlayerToGame(gameId: number, playerId: number): Promise<Result<void>> {
         const activeGame = this.activeGames.get(gameId);
         if (!activeGame) {
             return Result.error(ApplicationError.GameNotFound);
         }
 
-        const added = activeGame.game.addPlayer(playerId);
+        // Obtener los datos del usuario
+        const userResult = await this.fastify.UserRepository.getUser({ id: playerId });
+        if (!userResult.isSuccess || !userResult.value) {
+            return Result.error(userResult.error || ApplicationError.UserNotFound);
+        }
+
+        const added = activeGame.game.addPlayer(playerId, userResult.value);
         if (!added) {
             return Result.error(ApplicationError.GameFull);
         }

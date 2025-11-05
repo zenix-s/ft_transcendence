@@ -1,3 +1,6 @@
+import { CONSTANTES_DB } from '@shared/constants/ApplicationConstants';
+import { User } from '@shared/domain/entity/User.entity';
+
 interface PlayerState {
     position: number;
     score: number;
@@ -6,10 +9,12 @@ interface PlayerState {
 
 export class PongPlayer {
     private playerId: number;
+    private userData: User | null;
     private state: PlayerState;
 
-    constructor(playerId: number) {
+    constructor(playerId: number, userData?: User) {
         this.playerId = playerId;
+        this.userData = userData || null;
         this.state = {
             position: 50,
             score: 0,
@@ -48,6 +53,10 @@ export class PongPlayer {
     public isReady(): boolean {
         return this.state.isReady;
     }
+
+    public getUsername(): string {
+        return this.userData?.username || `Player ${this.playerId}`;
+    }
 }
 
 interface BallState {
@@ -83,16 +92,20 @@ export class PongGame {
         this.aiDifficulty = aiDifficulty;
     }
 
-    public addPlayer(playerId: number): boolean {
+    public addPlayer(playerId: number, userData?: User): boolean {
         if (!this.player1) {
-            this.player1 = new PongPlayer(playerId);
+            this.player1 = new PongPlayer(playerId, userData);
             if (this.isPlayer2AI && !this.player2) {
-                this.player2 = new PongPlayer(1);
+                this.player2 = new PongPlayer(1, {
+                    id: CONSTANTES_DB.AI_PLAYER.ID,
+                    username: CONSTANTES_DB.AI_PLAYER.NAME,
+                    email: CONSTANTES_DB.AI_PLAYER.EMAIL,
+                });
                 this.player2.setReady(true);
             }
             return true;
         } else if (!this.player2 && !this.isPlayer2AI) {
-            this.player2 = new PongPlayer(playerId);
+            this.player2 = new PongPlayer(playerId, userData);
             return true;
         }
         return false;
@@ -256,12 +269,14 @@ export class PongGame {
             player1: this.player1
                 ? {
                       id: this.player1.getId().toString(),
+                      username: this.player1.getUsername(),
                       ...this.player1.getState(),
                   }
                 : null,
             player2: this.player2
                 ? {
                       id: this.player2.getId().toString(),
+                      username: this.player2.getUsername(),
                       ...this.player2.getState(),
                   }
                 : null,

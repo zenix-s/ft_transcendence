@@ -5,6 +5,7 @@ import { ApplicationError } from '@shared/Errors';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
 import { Match } from '@shared/domain/entity/Match.entity';
 import { MatchStatus } from '@shared/domain/types/game.types';
+import { CONSTANTES_APP } from '@shared/constants/ApplicationConstants';
 
 export interface IGetGameFinalStateRequest {
     gameId: number;
@@ -116,7 +117,7 @@ export default class GetGameFinalStateQuery
         const player2 = sortedPlayers[1];
 
         // Determinar si es single player (si el jugador 2 tiene userId = 1, es AI)
-        const isSinglePlayer = player2?.userId === 1;
+        const isSinglePlayer = player2?.userId === CONSTANTES_APP.AI_PLAYER.ID;
 
         // Inferir reglas del juego
         const gameRules = this.inferGameRules(players);

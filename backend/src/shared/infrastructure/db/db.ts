@@ -2,7 +2,7 @@ import fp from 'fastify-plugin';
 import { FastifyInstance } from 'fastify';
 import { SQLiteConnection } from '@shared/infrastructure/db/SQLiteConnection';
 import { hashPassword } from '@shared/utils/password.utils';
-import { CONSTANTES_DB } from '@shared/constants/ApplicationConstants';
+import { CONSTANTES_APP } from '@shared/constants/ApplicationConstants';
 
 export default fp(
     async (fastify: FastifyInstance) => {
@@ -42,18 +42,27 @@ export default fp(
             )
         `);
 
-        await connection.execute(`
-            CREATE TABLE IF NOT EXISTS matches (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                game_type_id INTEGER NOT NULL,
-                status TEXT NOT NULL DEFAULT 'pending',
-                started_at DATETIME,
-                ended_at DATETIME,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (game_type_id) REFERENCES game_types(id),
-                CHECK (status IN ('pending', 'in_progress', 'completed', 'cancelled'))
-            )
-        `);
+        await connection.execute(
+            `
+                CREATE TABLE IF NOT EXISTS matches (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    game_type_id INTEGER NOT NULL,
+                    status TEXT NOT NULL DEFAULT 'pending',
+                    started_at DATETIME,
+                    ended_at DATETIME,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (game_type_id) REFERENCES game_types(id),
+                    CHECK (status IN (?, ?, ?, ?))
+                )
+            `,
+            [
+                // STATUS
+                CONSTANTES_APP.MATCH.STATUS.PENDING,
+                CONSTANTES_APP.MATCH.STATUS.IN_PROGRESS,
+                CONSTANTES_APP.MATCH.STATUS.COMPLETED,
+                CONSTANTES_APP.MATCH.STATUS.CANCELLED,
+            ]
+        );
 
         await connection.execute(`
             CREATE TABLE IF NOT EXISTS match_players (
@@ -86,9 +95,9 @@ export default fp(
                     (?, ?, ?, ?)
             `,
             [
-                CONSTANTES_DB.AI_PLAYER.ID,
-                CONSTANTES_DB.AI_PLAYER.NAME,
-                CONSTANTES_DB.AI_PLAYER.EMAIL,
+                CONSTANTES_APP.AI_PLAYER.ID,
+                CONSTANTES_APP.AI_PLAYER.NAME,
+                CONSTANTES_APP.AI_PLAYER.EMAIL,
                 hashedPasswordAI,
             ]
         );
@@ -102,15 +111,15 @@ export default fp(
             `,
             [
                 // Pong
-                CONSTANTES_DB.MATCH_TYPE.PONG.NAME,
-                CONSTANTES_DB.MATCH_TYPE.PONG.MIN_PLAYERS,
-                CONSTANTES_DB.MATCH_TYPE.PONG.MAX_PLAYERS,
-                CONSTANTES_DB.MATCH_TYPE.PONG.SUPPORTS_INVITATIONS ? 1 : 0,
+                CONSTANTES_APP.MATCH_TYPE.PONG.NAME,
+                CONSTANTES_APP.MATCH_TYPE.PONG.MIN_PLAYERS,
+                CONSTANTES_APP.MATCH_TYPE.PONG.MAX_PLAYERS,
+                CONSTANTES_APP.MATCH_TYPE.PONG.SUPPORTS_INVITATIONS ? 1 : 0,
                 // Single Player Pong
-                CONSTANTES_DB.MATCH_TYPE.SINGLE_PLAYER_PONG.NAME,
-                CONSTANTES_DB.MATCH_TYPE.SINGLE_PLAYER_PONG.MIN_PLAYERS,
-                CONSTANTES_DB.MATCH_TYPE.SINGLE_PLAYER_PONG.MAX_PLAYERS,
-                CONSTANTES_DB.MATCH_TYPE.SINGLE_PLAYER_PONG.SUPPORTS_INVITATIONS ? 1 : 0,
+                CONSTANTES_APP.MATCH_TYPE.SINGLE_PLAYER_PONG.NAME,
+                CONSTANTES_APP.MATCH_TYPE.SINGLE_PLAYER_PONG.MIN_PLAYERS,
+                CONSTANTES_APP.MATCH_TYPE.SINGLE_PLAYER_PONG.MAX_PLAYERS,
+                CONSTANTES_APP.MATCH_TYPE.SINGLE_PLAYER_PONG.SUPPORTS_INVITATIONS ? 1 : 0,
             ]
         );
 

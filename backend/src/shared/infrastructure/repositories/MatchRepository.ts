@@ -6,7 +6,7 @@ import fp from 'fastify-plugin';
 export interface IMatchRepository {
     findAll({ limit, offset }: { limit?: number; offset?: number }): Promise<Match[]>;
     findById({ id }: { id: number }): Promise<Match | null>;
-    findUserMatches({ userId }: { userId: number }): Promise<Match[]>;
+    findUserMatches({ userId, status }: { userId: number; status: string[] }): Promise<Match[]>;
     create({ match }: { match: Match }): Promise<Match>;
     update({ match }: { match: Match }): Promise<Match | null>;
     delete({ id }: { id: number }): Promise<boolean>;
@@ -78,9 +78,25 @@ class MatchRepository extends AbstractRepository implements IMatchRepository {
         });
     }
 
-    async findUserMatches({ userId }: { userId: number }): Promise<Match[]> {
+    async findUserMatches({ userId, status }: { userId: number; status: string[] }): Promise<Match[]> {
+        let statusCondition = '';
+        if (status.length > 0) {
+            statusCondition = `AND m.status IN (${status.map(() => '?').join(', ')})`;
+        }
+
         const result = await this.findMany<MatchRow>(
-            'SELECT m.* FROM matches m JOIN match_players mp ON m.id = mp.match_id WHERE mp.user_id = ? ORDER BY m.created_at DESC',
+            `
+                SELECT
+                    m.*
+                FROM
+                    matches m
+                    JOIN match_players mp ON m.id = mp.match_id
+                WHERE
+                    mp.user_id = ?
+                    ${statusCondition}
+                ORDER BY
+                    m.created_at DESC
+            `,
             [userId]
         );
 

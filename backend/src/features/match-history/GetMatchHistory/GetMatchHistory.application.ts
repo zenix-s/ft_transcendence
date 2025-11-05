@@ -5,6 +5,7 @@ import { ApplicationError } from '@shared/Errors';
 
 import { Match } from '@shared/domain/entity/Match.entity';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
+import { CONSTANTES_APP } from '@shared/constants/ApplicationConstants';
 
 export interface IGetMatchHistoryRequest {
     userId?: number;
@@ -51,7 +52,10 @@ export default class GetMatchHistoryQuery
             let total: number;
 
             if (request?.userId) {
-                matches = await this.matchRepository.findUserMatches({ userId: request.userId });
+                matches = await this.matchRepository.findUserMatches({
+                    userId: request.userId,
+                    status: [CONSTANTES_APP.MATCH.STATUS.COMPLETED],
+                });
                 total = matches.length;
 
                 matches = matches.slice(offset, offset + limit);

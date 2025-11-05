@@ -92,6 +92,16 @@ export default class CreateSinglePlayerGameCommand
             if (!userResult.isSuccess || !userResult.value)
                 return Result.error(ApplicationError.UserNotFound);
 
+            // Verificar si el usuario tiene partidas activas (pending o in_progress)
+            const activeMatches = await this.matchRepository.findUserMatches({
+                userId: userId,
+                status: [CONSTANTES_APP.MATCH.STATUS.PENDING, CONSTANTES_APP.MATCH.STATUS.IN_PROGRESS],
+            });
+
+            if (activeMatches.length > 0) {
+                return Result.error(ApplicationError.PlayerHasActiveMatch);
+            }
+
             const winnerScore = request.winnerScore || 5;
             const maxGameTime = request.maxGameTime || 120;
             const aiDifficulty = request.aiDifficulty || 0.95;

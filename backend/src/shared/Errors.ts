@@ -167,6 +167,11 @@ export enum ApplicationError {
     NotFriendsError = 'NotFriendsError',
     FriendshipNotFound = 'FriendshipNotFound',
 
+    /**
+     * Jugador Ya Tiene Partida Activa - El jugador ya tiene una partida en curso o pendiente
+     */
+    PlayerHasActiveMatch = 'PlayerHasActiveMatch',
+
     // Errores de invitaciones de juego
     InvalidGameType = 'InvalidGameType',
     MessageTooLong = 'MessageTooLong',

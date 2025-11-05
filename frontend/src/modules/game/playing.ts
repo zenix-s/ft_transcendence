@@ -1,7 +1,7 @@
 import { t } from "@/app/i18n";
 import { navigateTo } from "@/app/navigation";
 import { showToast } from "@/components/toast";
-import { Engine, Scene, ArcRotateCamera, HemisphericLight, MeshBuilder, Vector3, Mesh } from "@babylonjs/core";
+import { Engine, Scene, ArcRotateCamera, HemisphericLight, MeshBuilder, Vector3, Mesh, StandardMaterial, Color3 } from "@babylonjs/core";
 import type { Ball, Player, Score } from "./gameData";
 import { socketAndRender } from "./conectWebSocket";
 
@@ -63,47 +63,58 @@ export function initGame3D() {
 	const camera = new ArcRotateCamera("camera", Math.PI / 2 + Math.PI, 0 , 12, Vector3.Zero(), scene);
 	camera.attachControl(canvas, true);
 
+	//girar con el ratón
 	camera.inputs.removeByType("ArcRotateCameraPointersInput");
-	// ✅ Permitir el zoom (rueda del ratón sigue funcionando)
-	camera.lowerRadiusLimit = 9.5;
-	camera.upperRadiusLimit = 15;
+	//girar con el teclado
+	camera.inputs.removeByType("ArcRotateCameraKeyboardMoveInput");
+	// zoom (rueda del ratón sigue funcionando)
+	camera.lowerRadiusLimit = 10.5;
+	//camera.upperRadiusLimit = 15;
 
 
 
 
 	// Luz
 	const light = new HemisphericLight("light", new Vector3(0, 1, 0), scene);
-	light.intensity = 1;
+	light.intensity = 1.2;
 
 	// Mesa
 	const table : Mesh = MeshBuilder.CreateBox("table", { width: 8.8, depth: 8, height: 0.2 }, scene);
 	table.position.y = 0.1;
+	const tableMat = new StandardMaterial("tableMat", scene);
+	tableMat.emissiveColor = new Color3(0.7, 0.7, 0.7); // Gris claro visible (RGB 0-1)
+	tableMat.disableLighting = true;      // No le afectan luces
+
+	table.material = tableMat;
 
 	// JUGADORES
-	const paddle1 : Mesh = MeshBuilder.CreateBox("paddle1", { width: 0.2, height: 0.5, depth: 1.6 }, scene);
+	const paddle1 : Mesh = MeshBuilder.CreateBox("paddle1", { width: 0.2, height: 0.3, depth: 1.6 }, scene);
 	paddle1.position.set(-3.8, 0.25, 0);
-	const paddle2 : Mesh = MeshBuilder.CreateBox("paddle2", { width: 0.2, height: 0.5, depth: 1.6 }, scene);
+	const paddle1Mat = new StandardMaterial("paddle1Mat", scene);
+	paddle1Mat.diffuseColor = new Color3(0, 0, 1);  // Blue
+	paddle1.material = paddle1Mat;
+
+	const paddle2 : Mesh = MeshBuilder.CreateBox("paddle2", { width: 0.2, height: 0.3, depth: 1.6 }, scene);
 	paddle2.position.set(3.8, 0.25, 0);
+	const paddle2Mat = new StandardMaterial("paddle2Mat", scene);
+	paddle2Mat.diffuseColor = new Color3(1, 0, 0);  // Red
+	paddle2.material = paddle2Mat;
 
 	const playerLeft : Player = {
 		paddle : paddle1,
-		posX : 10,
-		posY : 50,
 		height : 32,
 		width : 4,
 		speed : 1,
-		topPercentage : -3.1,
-		bottomPercentage : 3.1
+		topPercentage : -3.15,
+		bottomPercentage : 3.15
 	};
 	const	playerRight : Player = {
 		paddle : paddle2,
-		posX : 1990,
-		posY : 50,
 		height : 32,
 		width : 4,
 		speed : 1,
-		topPercentage : -3.1,
-		bottomPercentage : 3.1
+		topPercentage : -3.15,
+		bottomPercentage : 3.15
 	};
 	console.log("playerL", playerLeft);
 	console.log("playerR", playerRight);
@@ -135,22 +146,10 @@ export function initGame3D() {
 		posY : 0.15,
 		speed : 1,
 	}
-	ball.ball.position.y = 0.15;
+	ball.ball.position.y = 0.3;
 	console.log("Ball=", ball);
 
 	socketAndRender(playerLeft, playerRight, scores, ball, engine, scene);
-
-	// Loop
-	// engine.runRenderLoop(() => {
-	// 	const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
-	// 	if (!canvas)
-	// 	{
-	// 		console.warn("no canvas");
-	// 		return ;
-	// 	}
-	// 	console.log("hola");
-	// 	scene.render();
-	// });
 		
 	window.addEventListener("resize", () => {
 		const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;

@@ -58,6 +58,12 @@ export default class UsernameUpdateCommand
                 return Result.error(ApplicationError.UsernameUpdateError);
             }
 
+            try {
+                await this.fastify.SocialWebSocketService.notifyFriendsProfileUpdate(userId);
+            } catch (error) {
+                this.fastify.log.error(error, 'Failed to notify friends about username update');
+            }
+
             return Result.success({
                 message: 'Username updated successfully',
                 user: {

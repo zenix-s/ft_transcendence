@@ -114,6 +114,12 @@ export default class UploadAvatarCommand implements ICommand<IUploadAvatarReques
                 return Result.error(ApplicationError.AvatarUpdateError);
             }
 
+            try {
+                await this.fastify.SocialWebSocketService.notifyFriendsProfileUpdate(request.userId);
+            } catch (error) {
+                this.fastify.log.error(error, 'Failed to notify friends about avatar update');
+            }
+
             return Result.success({
                 avatarUrl,
                 message: 'Avatar uploaded successfully',

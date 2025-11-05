@@ -53,3 +53,10 @@ export interface GameInvitationResponse extends SocialWebSocketResponse {
     gameId: number;
     message: string;
 }
+
+export interface FriendProfileUpdateResponse extends SocialWebSocketResponse {
+    type: 'friendProfileUpdate';
+    friendId: number;
+    username: string;
+    avatar: string | null;
+}

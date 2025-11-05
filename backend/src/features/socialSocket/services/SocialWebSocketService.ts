@@ -8,6 +8,7 @@ import {
     Friend,
     FriendConnectionStatusResponse,
     GameInvitationResponse,
+    FriendProfileUpdateResponse,
 } from '../Social.types';
 import { ISocialWebSocketService } from './ISocialWebSocketService.interface';
 
@@ -110,6 +111,41 @@ export class SocialWebSocketService implements ISocialWebSocketService {
             }
         } catch (error) {
             this.fastify.log.error(error, 'Error notifying friends about connection status');
+        }
+    }
+
+    async notifyFriendsProfileUpdate(userId: number): Promise<void> {
+        try {
+            const userResult = await this.fastify.UserRepository.getUser({ id: userId });
+            if (!userResult.isSuccess || !userResult.value) {
+                return;
+            }
+
+            const user = userResult.value;
+
+            const friendsOfResult = await this.fastify.FriendShipRepository.getFriendsOf({
+                userId: user.id,
+            });
+            if (!friendsOfResult.isSuccess || !friendsOfResult.value) {
+                return;
+            }
+
+            const friendsOf = friendsOfResult.value;
+
+            for (const friend of friendsOf) {
+                const friendSocket = this.activeConnections.get(friend.id);
+                if (friendSocket) {
+                    const notification: FriendProfileUpdateResponse = {
+                        type: 'friendProfileUpdate',
+                        friendId: user.id,
+                        username: user.username,
+                        avatar: user.avatar || null,
+                    };
+                    this.sendMessage(friendSocket, notification);
+                }
+            }
+        } catch (error) {
+            this.fastify.log.error(error, 'Error notifying friends about profile update');
         }
     }
 

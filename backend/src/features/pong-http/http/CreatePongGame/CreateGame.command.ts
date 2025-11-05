@@ -30,7 +30,12 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
     }
 
     validate(request?: ICreateGameRequest | undefined): Result<void> {
-        if (!request) return Result.success(undefined);
+        if (!request) return Result.error(ApplicationError.InvalidRequest);
+
+        // Validar que userId esté presente
+        if (!request.userId || typeof request.userId !== 'number') {
+            return Result.error(ApplicationError.UnauthorizedAccess);
+        }
 
         if (request.winnerScore !== undefined) {
             if (
@@ -57,11 +62,16 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
 
     async execute(request?: ICreateGameRequest | undefined): Promise<Result<ICreateGameResponse>> {
         try {
-            const winnerScore = request?.winnerScore || 5;
-            const maxGameTime = request?.maxGameTime || 120;
-            const userId = request?.userId || null;
+            // Validar que request y userId existan
+            if (!request || !request.userId) {
+                return Result.error(ApplicationError.UnauthorizedAccess);
+            }
 
-            if (userId === null) return Result.error(ApplicationError.UserNotFound);
+            const winnerScore = request.winnerScore || 5;
+            const maxGameTime = request.maxGameTime || 120;
+            const userId = request.userId;
+
+            // Validar que el usuario existe
             const userResult = await this.fastify.UserRepository.getUser({
                 id: userId,
             });
@@ -75,7 +85,7 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
                 return Result.error(ApplicationError.GameTypeNotFound);
             }
 
-            const playerIds = request?.userId ? [request.userId] : [];
+            const playerIds = [userId];
             const match = new Match(gameType.id, playerIds);
 
             const createdMatch = await this.matchRepository.create({ match });
@@ -91,6 +101,19 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
                     this.fastify.log.error(deleteError, 'Failed to delete match after game creation failure');
                 }
                 return Result.error(ApplicationError.GameCreationError);
+            }
+
+            // Unir automáticamente al creador del juego como anfitrión
+            const addPlayerResult = await this.fastify.PongGameManager.addPlayerToGame(matchId, userId);
+            if (!addPlayerResult.isSuccess) {
+                // Si falla al agregar el jugador, eliminar el juego y el match
+                try {
+                    await this.fastify.PongGameManager.deleteGame(matchId);
+                    await this.matchRepository.delete({ id: matchId });
+                } catch (deleteError) {
+                    this.fastify.log.error(deleteError, 'Failed to clean up after player addition failure');
+                }
+                return Result.error(addPlayerResult.error || ApplicationError.GameCreationError);
             }
 
             return Result.success({

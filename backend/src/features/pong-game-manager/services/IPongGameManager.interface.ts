@@ -26,7 +26,7 @@ export interface IPongGameManager {
     /**
      * Agrega un jugador al juego
      */
-    addPlayerToGame(gameId: number, playerId: number): Result<void>;
+    addPlayerToGame(gameId: number, playerId: number): Promise<Result<void>>;
 
     /**
      * Obtiene el estado actual de un juego

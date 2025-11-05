@@ -73,7 +73,7 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
                     return Result.error(ApplicationError.SinglePlayerGameAlreadyHasPlayer);
                 }
 
-                const addResult = this.fastify.PongGameManager.addPlayerToGame(gameId, userId);
+                const addResult = await this.fastify.PongGameManager.addPlayerToGame(gameId, userId);
                 if (!addResult.isSuccess) {
                     return Result.error(addResult.error || ApplicationError.CannotJoinSinglePlayerGame);
                 }
@@ -99,7 +99,7 @@ export default class JoinGameCommand implements ICommand<IJoinGameRequest, IJoin
                 });
             }
 
-            const addResult = this.fastify.PongGameManager.addPlayerToGame(gameId, userId);
+            const addResult = await this.fastify.PongGameManager.addPlayerToGame(gameId, userId);
             if (!addResult.isSuccess) {
                 return Result.error(addResult.error || ApplicationError.GameFull);
             }

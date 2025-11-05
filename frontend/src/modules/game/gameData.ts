@@ -1,7 +1,7 @@
+import type { Mesh } from "@babylonjs/core";
+
 export interface Player {
-	paddle: HTMLElement;
-	posX: number;
-	posY: number;
+	paddle: Mesh;
 	height: number;
 	width: number;
 	speed: number;
@@ -18,9 +18,8 @@ export interface Score {
 }
 
 export interface Ball {
-	prevPosX: number;
+	ball : Mesh;
 	posX: number;
-	prevPosY: number;
 	posY: number;
 	speed: number;
 }

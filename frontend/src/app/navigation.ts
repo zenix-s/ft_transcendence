@@ -2,7 +2,9 @@ import { setupRegisterForm, validateLogin, loadDashboard, loadSettings } from "@
 import { renderButtons } from "@/app/main";
 import { updateTexts } from "@/app/i18n";
 import { loadChart } from "@/components/graph"
-import { startGame } from "@/modules/game/game.ts";
+
+//import { initGame3D } from "@/modules/game/game";
+
 import { Tooltip } from "@/components/tooltip";
 import { loadMatchHistory } from "@/components/history";
 import { redirect } from "@/components/redirect";
@@ -10,6 +12,7 @@ import { initFriendsSidebar } from "@/components/friendsSidebar/friendsSidebar"
 import { getCurrentUser } from "@/modules/users";
 import { ready1 } from "@/modules/game/setReady1";
 import { t } from "@/app/i18n"
+import { initGame3D } from "@/modules/game/playing";
 
 // Llamada                            Efecto
 // navigateTo("home")                 Carga "home" y añade al historial
@@ -22,7 +25,7 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
 
   // Para que cuando le paso parámetros a la url las cosas funcionen
   const pageBase: string = (page.split("?"))[0];
-  //console.log("pageBase=", pageBase); // DB
+  console.log("pageBase=", pageBase); // DB
 
   // 🚨 Bloquear números SOLO cuando vienen de la SPA (clicks internos)
   if (!skipPushState && !isNaN(Number(page))) {
@@ -96,7 +99,7 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
       break;
     case "dashboard":
     case "settings":
-    case "game":
+    case "playing":
     case "setReady1": {
       requestAnimationFrame(async () => {
         const userResponse = await getCurrentUser();
@@ -127,8 +130,10 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
             });
             break;
 
-          case "game":
-            startGame();
+          case "playing":
+            initGame3D();
+            renderButtons();
+            //startGame();
             break;
 
           case "setReady1":

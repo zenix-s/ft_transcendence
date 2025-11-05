@@ -30,6 +30,10 @@
     "vite-tsconfig-paths": "^5.1.4"
   },
   "dependencies": {
+    "@babylonjs/core": "^8.33.4",
+    "@babylonjs/gui": "^8.33.4",
+    "@babylonjs/loaders": "^8.33.4",
+    "@babylonjs/materials": "^8.33.4",
     "@tailwindcss/vite": "^4.1.11",
     "chart.js": "^4.5.0",
     "chartjs-plugin-datalabels": "^2.2.0",

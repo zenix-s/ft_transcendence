@@ -34,7 +34,12 @@ export default class CreateSinglePlayerGameCommand
     }
 
     validate(request?: ICreateSinglePlayerGameRequest | undefined): Result<void> {
-        if (!request) return Result.success(undefined);
+        if (!request) return Result.error(ApplicationError.InvalidRequest);
+
+        // Validar que userId esté presente
+        if (!request.userId || typeof request.userId !== 'number') {
+            return Result.error(ApplicationError.UnauthorizedAccess);
+        }
 
         if (request.winnerScore !== undefined) {
             if (
@@ -73,19 +78,23 @@ export default class CreateSinglePlayerGameCommand
         request?: ICreateSinglePlayerGameRequest | undefined
     ): Promise<Result<ICreateSinglePlayerGameResponse>> {
         try {
-            if (!request) return Result.error(ApplicationError.BadRequest);
+            // Validar que request y userId existan
+            if (!request || !request.userId) {
+                return Result.error(ApplicationError.UnauthorizedAccess);
+            }
 
-            const userId = request.userId || null;
-            if (userId === null) return Result.error(ApplicationError.UserNotFound);
+            const userId = request.userId;
+
+            // Validar que el usuario existe
             const userResult = await this.fastify.UserRepository.getUser({
                 id: userId,
             });
             if (!userResult.isSuccess || !userResult.value)
                 return Result.error(ApplicationError.UserNotFound);
 
-            const winnerScore = request?.winnerScore || 5;
-            const maxGameTime = request?.maxGameTime || 120;
-            const aiDifficulty = request?.aiDifficulty || 0.95;
+            const winnerScore = request.winnerScore || 5;
+            const maxGameTime = request.maxGameTime || 120;
+            const aiDifficulty = request.aiDifficulty || 0.95;
 
             const gameType = await this.gameTypeRepository.findByName({
                 name: CONSTANTES_APP.MATCH_TYPE.SINGLE_PLAYER_PONG.NAME,
@@ -96,7 +105,7 @@ export default class CreateSinglePlayerGameCommand
                 return Result.error(ApplicationError.SinglePlayerGameTypeNotFound);
             }
 
-            const playerIds = request?.userId ? [request.userId, 1] : [1];
+            const playerIds = [userId, 1];
 
             const match = new Match(gameType.id, playerIds);
 

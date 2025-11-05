@@ -140,6 +140,7 @@ export const translations: Record<Language, Record<string, string>> = {
     DeletionError: "Error deleting friend. Please try again later",
     NoFriendsOnline: "There are no friends online right now.",
     NoFriendsOffline: "There are no friends offline right now.",
+    InviteToGame: "Invite",
     /* WebSocket */
     InitializingSocialWs: "Initializing Social WebSocket from main.ts",
     ConnectingToWs: "Connecting to WebSocket...",
@@ -300,6 +301,7 @@ export const translations: Record<Language, Record<string, string>> = {
     DeletionError: "Error eliminando amigo. Por favor, inténtalo más tarde",
     NoFriendsOnline: "No hay amigos conectados ahora mismo.",
     NoFriendsOffline: "No hay amigos desconectados ahora mismo.",
+    InviteToGame: "Invitar",
     /* WebSocket */
     InitializingSocialWs: "Inicializando WebSocket Social desde main.ts",
     ConnectingToWs: "Conectando a WebSocket...",
@@ -460,6 +462,7 @@ export const translations: Record<Language, Record<string, string>> = {
     DeletionError: "Erreur lors de la suppression de l'ami. Veuillez réessayer plus tard.",
     NoFriendsOnline: "Il n'y a aucun ami en ligne en ce moment.",
     NoFriendsOffline: "Il n'y a aucun ami hors ligne pour le moment.",
+    InviteToGame: "Inviter",
     /* WebSocket */
     InitializingSocialWs: "Initialisation de WebSocket Social à partir de main.ts",
     ConnectingToWs: "Connexion au WebSocket...",

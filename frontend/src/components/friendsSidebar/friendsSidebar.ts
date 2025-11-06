@@ -167,3 +167,31 @@ export async function inviteMultiplayer(username: string | undefined, gameId: nu
 		return false;
   }
 }
+
+export async function acceptInvitation(gameId: number) {
+  try {
+    const response = await fetch(apiUrl(`/game-invitation/accept-invitation`), {
+      method: "POST",
+      body: JSON.stringify({ gameId: gameId }),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("access_token") || ""}`,
+      },
+    });
+
+    const data = await response.json();
+
+		if (!response.ok) {
+			const errorcode = data.error || "UserNotFound";
+			showToast(t(errorcode), "error");
+			return false;
+		}
+
+		showToast(t("InvitationAcceptedSuccessfully"));
+		return true;
+
+  } catch {
+    showToast(t("NetworkOrServerError"), "error");
+		return false;
+  }
+}

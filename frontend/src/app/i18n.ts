@@ -147,6 +147,7 @@ export const translations: Record<Language, Record<string, string>> = {
     NoFriendsOffline: "There are no friends offline right now.",
     InviteToGame: "Invite",
     InvitationSentSuccessfully: "Invitation sent successfully",
+    InvitationAcceptedSuccessfully: "Invitation accepted successfully",
     /* WebSocket */
     InitializingSocialWs: "Initializing Social WebSocket from main.ts",
     ConnectingToWs: "Connecting to WebSocket...",
@@ -314,6 +315,7 @@ export const translations: Record<Language, Record<string, string>> = {
     NoFriendsOffline: "No hay amigos desconectados ahora mismo.",
     InviteToGame: "Invitar",
     InvitationSentSuccessfully: "Invitación enviada correctamente",
+    InvitationAcceptedSuccessfully: "Invitación aceptada con éxito",
     /* WebSocket */
     InitializingSocialWs: "Inicializando WebSocket Social desde main.ts",
     ConnectingToWs: "Conectando a WebSocket...",
@@ -481,6 +483,7 @@ export const translations: Record<Language, Record<string, string>> = {
     NoFriendsOffline: "Il n'y a aucun ami hors ligne pour le moment.",
     InviteToGame: "Inviter",
     InvitationSentSuccessfully: "Invitation envoyée avec succès",
+    InvitationAcceptedSuccessfully: "Invitation acceptée avec succès",
     /* WebSocket */
     InitializingSocialWs: "Initialisation de WebSocket Social à partir de main.ts",
     ConnectingToWs: "Connexion au WebSocket...",

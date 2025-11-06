@@ -1,5 +1,6 @@
 import { getWsUrl } from "@/api";
 import { t } from "@/app/i18n";
+import { acceptInvitation } from "@/components/friendsSidebar/friendsSidebar";
 import { modal } from "@/components/modal";
 import { showToast } from "@/components/toast";
 import type { Friend } from "@/types/friend"
@@ -27,6 +28,7 @@ interface GameInvitationResponse {
     fromUsername: string;
     fromUserAvatar: string | null;
     gameId: number;
+    gameTypeName: string;
     message: string;
 }
 
@@ -131,11 +133,12 @@ export class SocialWebSocketClient {
       case "gameInvitation": {
         const msg = message as GameInvitationResponse;
         console.log(`${msg.fromUsername} con id ${msg.fromUserId} te ha invitado a jugar a PONG con el número de partida ${msg.gameId} y el mensaje: ${msg.message}`);
-        const confirmed = await modal("gameInvitation", undefined, undefined, msg.fromUsername);
+        const confirmed = await modal("gameInvitation", undefined, undefined, msg.fromUsername, msg.gameTypeName);
         if (confirmed)
         {
           // Definir que pasa si se ACEPTA la invitación
           console.log("Has aceptado la invitación");
+          acceptInvitation(msg.gameId);
         }
         // Definir que pasa si RECHAZA la invitación
         break;

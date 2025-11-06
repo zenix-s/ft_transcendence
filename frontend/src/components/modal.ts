@@ -2,7 +2,7 @@ import { t } from "@/app/i18n";
 import Swal from 'sweetalert2';
 import type { SweetAlertIcon } from 'sweetalert2';
 
-export function modal(type: "logout" | "gameFinished" | "gameInvitation" = "logout", player1Score?: number, player2Score?: number, winner?: string): Promise<boolean> {
+export function modal(type: "logout" | "gameFinished" | "gameInvitation" = "logout", player1Score?: number, player2Score?: number, winner?: string, gameName?: string): Promise<boolean> {
   return new Promise((resolve) => {
     const isDark = !document.documentElement.classList.contains("dark");
 
@@ -47,7 +47,8 @@ export function modal(type: "logout" | "gameFinished" | "gameInvitation" = "logo
     else if (type === "gameInvitation") {
       title = t("modalGameInvitationTitle");
       titleText = t("modalGameInvitationTitleText");
-      text = `${winner} ${t("modalGameInvitationText")} PONG`;
+      const nameOfGame = gameName ? gameName : "Pong 🕹️";
+      text = `${winner} ${t("modalGameInvitationText")} ${nameOfGame}`;
       confirmButtonText = `<i class="fa fa-thumbs-up"></i> ${t("modalGameInvitationConfirmButtonText")}`;
       showCancelButton = true;
       cancelButtonText = `<i class="fa fa-thumbs-down"></i> ${t("modalGameInvitationCancelButtonText")}`;

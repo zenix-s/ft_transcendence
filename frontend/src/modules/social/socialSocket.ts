@@ -147,6 +147,12 @@ export class SocialWebSocketClient {
         break;
       }
 
+      case "friendProfileUpdate": {
+        console.log("Friend profile update detected");
+        this.requestFriendsList();
+        break;
+      }
+
       case "friendConnectionStatus": {
         const msg = message as FriendConnectionStatusMessage;
         const friend = this.friends.find(f => f.id === msg.friendId);

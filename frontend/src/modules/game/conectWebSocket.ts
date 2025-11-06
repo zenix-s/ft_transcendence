@@ -1,15 +1,11 @@
 import { showToast } from "@/components/toast";
-//import { actualizeValues } from "./game"
 import type { Ball, Player, Score } from "./gameData";
 import { t } from "@/app/i18n";
 import { navigateTo } from "@/app/navigation";
-import { fetchGameAlreadyFinished } from "./getData";
-import { modal } from "@/components/modal";
 import { getWsUrl } from "@/api";
 import { renderValues } from "./playing";
 import type { Engine, Scene } from "@babylonjs/core";
-
-//import { fetchGameId, fetchSinglePlayerGameId, toJoinGame, fetchGameState } from "./getData.js";
+import { endGameAuthAndErrors } from "./authAndErrors";
 
 interface message {
 	action: number,
@@ -17,29 +13,12 @@ interface message {
 	token: string | null
 }
 
-// export function setAsReady(gameId: number)
-// {
-// 	const token = localStorage.getItem("access_token");
-// 	let obj: message = {
-// 		action: 4,
-// 		gameId: gameId,
-// 		token: token
-// 	};
-// 	socket.send(JSON.stringify(obj));
-// }
-
-
 export function conectWebSocket(gameId: number, player1: Player, player2: Player, scores: Score, ball: Ball, engine:Engine, scene:Scene)
 {
 	const token = localStorage.getItem("access_token");
-	// const socket = new WebSocket("wss://localhost:3000/game/pong");
-	const ws = getWsUrl("/game/pong");
-	console.log("ws=", ws, "token=", token);
-	const socket = new WebSocket(ws);
-	let pingInterval: ReturnType<typeof setInterval> | undefined;
+	const socket = new WebSocket(getWsUrl("/game/pong"));
 	let up = 0;
 	let down = 0;
-	let	finBool = 0;
 	
 	socket.addEventListener("open", () => {
 		console.log("conectado websockket");
@@ -51,13 +30,6 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 		socket.send(JSON.stringify(obj));
 		obj.action = 1;
 		engine.runRenderLoop(() => {
-			const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
-			if (!canvas)
-			{
-				console.warn("no canvas");
-				return ;
-			}
-
 			obj.action = 1;
 			 socket.send(JSON.stringify(obj));
 	
@@ -86,69 +58,16 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 
 			if (data.state.isRunning == false && data.state.arePlayersReady == true)
 			{
-				clearInterval(pingInterval);
-				pingInterval = undefined;
+				engine.stopRenderLoop();
 				showToast(t("noActiveGame"), "error");
 				console.warn(t("noActiveGame"));
 				navigateTo("dashboard");
 			}
 		}
 		else if (data.type == "error") {
-			if (data.error == "GameAlreadyFinished")
-			{
-				clearInterval(pingInterval);
-				pingInterval = undefined;
-				if (finBool == 0 && document.getElementById("gameCanvas") as HTMLCanvasElement)
-				{
-					const finished = await fetchGameAlreadyFinished(gameId);
-					if (!finished)
-					{
-						showToast(t("GameError"));
-						console.warn(t("GameError"));
-						navigateTo("dashboard", false, true);
-					}
-					const score1 = finished.match.players[0].score;
-					const score2 = finished.match.players[1].score;
-					renderValues(50, player1, 50, player2, score1, score2, scores, 50, 50, ball);
-					console.log("game = ", JSON.stringify(finished));
-					const playerL = finished.match.players[0].userId;
-					const playerR = finished.match.players[1].userId;
-					let winner = 1;
-					if (finished.match.players[1].isWinner == true)
-						winner = 2;
-					console.log("1=", playerL, " 2=", playerR, " 1=", score1, " 2=", score2, " winner=", winner);
-					navigateTo("dashboard", false, true);
-					await modal("gameFinished", finished.match.players[0], finished.match.players[1], "patata");
-				}	
-				finBool = 1;
-				return ;
-			}
-			if (data.error == "GameNotFound")
-				return ;
-			if (data.error == "noActiveGame")
-			{
-				showToast(t("noActiveGame"), "error");
-				console.warn(t("noActiveGame"));
-			}
-			if (data.error == "UnauthorizedAccess")
-			{
-				const obj : message = {
-				action: 0,
-				gameId:gameId,
-				token: token
-				};
-				socket.send(JSON.stringify(obj));
-				obj.action = 1;
-				socket.send(JSON.stringify(obj));
-				obj.action = 4;
-				socket.send(JSON.stringify(obj));
-			}
-			else {
-				clearInterval(pingInterval);
-				pingInterval = undefined;
-				console.warn(t("GameError"));
-				navigateTo("dashboard", false, true);
-			}
+			if (data.error == "GameAlreadyFinished" || (data.error != "UnauthorizedAccess" && data.error != "GameNotFound"))
+				engine.stopRenderLoop();
+			endGameAuthAndErrors(data.error, gameId, socket, player1, player2, scores, ball);
 		}
 		return ;
 	});
@@ -212,31 +131,8 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 
 export async function socketAndRender(player1: Player, player2: Player, scores: Score, ball: Ball, engine : Engine, scene : Scene)
 {
-	// const gameId = await fetchGameId();
-	// if (!gameId)
-	// {
-	// 	console.log("No game ID");
-	// 	return ;
-	// }
-	// console.log("si gameId=", gameId);
-
-	// const gameJoin = await toJoinGame(gameSiglePlayerId);
-	// if (!gameJoin)
-	// {
-	// 	console.log("No join game");
-	// 	return ;
-	// }
-	// console.log("si gameJoin=", gameJoin);
-
-	// const gameState = await fetchGameState(gameSiglePlayerId);
-	// if (!gameState)
-	// {
-	// 	console.log("no gameState");
-	// 	return ;
-	// }
-	// console.log("si gameState");
-
 	const params = new URLSearchParams(window.location.search);
+
 	const id = params.get("id");
 	if (!id)
 	{

@@ -1,9 +1,10 @@
 import { t } from "@/app/i18n";
 import { navigateTo } from "@/app/navigation";
 import { showToast } from "@/components/toast";
-import { Engine, Scene, ArcRotateCamera, HemisphericLight, MeshBuilder, Vector3, Mesh, StandardMaterial, Color3 } from "@babylonjs/core";
+import { Engine, Scene, HemisphericLight, Vector3 } from "@babylonjs/core";
 import type { Ball, Player, Score } from "./gameData";
 import { socketAndRender } from "./conectWebSocket";
+import { createBall, createCamera, createPlayerLeft, createPlayerRight, createScores, createTable } from "./createGameObjs";
 
 export function renderValues(posPlayerL:number, playerL:Player, posPlayerR:number, playerR:Player,
 	pointsL:number, pointsR:number, scores:Score, ballX:number, ballY:number, ball:Ball)
@@ -59,95 +60,26 @@ export function initGame3D() {
 	const scene = new Scene(engine);
 
 	// Cámara
-	//3D const camera = new ArcRotateCamera("camera", Math.PI / 2 + Math.PI, Math.PI / 4, 12, Vector3.Zero(), scene);
-	const camera = new ArcRotateCamera("camera", Math.PI / 2 + Math.PI, 0 , 12, Vector3.Zero(), scene);
-	camera.attachControl(canvas, true);
-
-	//girar con el ratón
-	camera.inputs.removeByType("ArcRotateCameraPointersInput");
-	//girar con el teclado
-	camera.inputs.removeByType("ArcRotateCameraKeyboardMoveInput");
-	// zoom (rueda del ratón sigue funcionando)
-	camera.lowerRadiusLimit = 10.5;
-	//camera.upperRadiusLimit = 15;
-
-
-
+	createCamera(multiPlayer, scene, canvas);
 
 	// Luz
 	const light = new HemisphericLight("light", new Vector3(0, 1, 0), scene);
 	light.intensity = 1.2;
 
 	// Mesa
-	const table : Mesh = MeshBuilder.CreateBox("table", { width: 8.8, depth: 8, height: 0.2 }, scene);
-	table.position.y = 0.1;
-	const tableMat = new StandardMaterial("tableMat", scene);
-	tableMat.emissiveColor = new Color3(0.7, 0.7, 0.7); // Gris claro visible (RGB 0-1)
-	tableMat.disableLighting = true;      // No le afectan luces
-
-	table.material = tableMat;
+	createTable(scene);
 
 	// JUGADORES
-	const paddle1 : Mesh = MeshBuilder.CreateBox("paddle1", { width: 0.2, height: 0.3, depth: 1.6 }, scene);
-	paddle1.position.set(-3.8, 0.25, 0);
-	const paddle1Mat = new StandardMaterial("paddle1Mat", scene);
-	paddle1Mat.diffuseColor = new Color3(0, 0, 1);  // Blue
-	paddle1.material = paddle1Mat;
-
-	const paddle2 : Mesh = MeshBuilder.CreateBox("paddle2", { width: 0.2, height: 0.3, depth: 1.6 }, scene);
-	paddle2.position.set(3.8, 0.25, 0);
-	const paddle2Mat = new StandardMaterial("paddle2Mat", scene);
-	paddle2Mat.diffuseColor = new Color3(1, 0, 0);  // Red
-	paddle2.material = paddle2Mat;
-
-	const playerLeft : Player = {
-		paddle : paddle1,
-		height : 32,
-		width : 4,
-		speed : 1,
-		topPercentage : -3.15,
-		bottomPercentage : 3.15
-	};
-	const	playerRight : Player = {
-		paddle : paddle2,
-		height : 32,
-		width : 4,
-		speed : 1,
-		topPercentage : -3.15,
-		bottomPercentage : 3.15
-	};
-	console.log("playerL", playerLeft);
-	console.log("playerR", playerRight);
+	const playerLeft = createPlayerLeft(scene);
+	const playerRight = createPlayerRight(scene);
 
 	//SCORE
-	const left = document.getElementById("scoreLeft");
-	const right = document.getElementById("scoreRight");
-	if (!left || !right)
-	{
-		showToast(t("ScoresNotFound"), "error");
-		console.warn(t("ScoresNotFound"));
-		navigateTo("dashboard", false, true);
+	const scores = createScores();
+	if (!scores)
 		return ;
-	}
-	const scores : Score = {
-		scoreLeft : left,
-		pointsLeft : 0,
-		scoreRight : right,
-		pointsRight : 0,
-		maxScore : 5
-	};
-	console.log("Scores=", scores);
 
 	// PELOTA
-	const ball_html : Mesh = MeshBuilder.CreateSphere("ball", { diameter: 0.3 , segments : 32 }, scene);
-	const ball : Ball = {
-		ball : ball_html,
-		posX : 50,
-		posY : 0.15,
-		speed : 1,
-	}
-	ball.ball.position.y = 0.3;
-	console.log("Ball=", ball);
+	const ball = createBall(scene);
 
 	socketAndRender(playerLeft, playerRight, scores, ball, engine, scene);
 		
@@ -155,10 +87,9 @@ export function initGame3D() {
 		const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
 		if (!canvas)
 		{
-			console.warn("no canvas");
+			console.warn(t("CanvasNotFound"));
 			return ;
 		}
-		console.log("adios");
 		engine.resize();
 	});
 }

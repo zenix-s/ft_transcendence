@@ -1,6 +1,6 @@
 import { apiUrl } from "@/api";
 
-export function fetchGameId(winnerScore:number) {
+export function fetchGameId() {
   // return fetch("https://localhost:3000/game/pong/create", {
   return fetch(apiUrl("/game/pong/create"), {
     method: "POST",
@@ -10,7 +10,7 @@ export function fetchGameId(winnerScore:number) {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      winnerScore: winnerScore,
+      winnerScore: 5,
       maxGameTime: 120
     })
   })

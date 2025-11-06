@@ -42,6 +42,7 @@ export interface ISocialWebSocketService {
         fromUserAvatar,
         toUserId,
         gameId,
+        gameTypeName,
         message,
     }: {
         fromUserId: number;
@@ -49,6 +50,7 @@ export interface ISocialWebSocketService {
         fromUserAvatar: string | null;
         toUserId: number;
         gameId: number;
+        gameTypeName: string;
         message: string;
     }): Promise<Result<void>>;
 

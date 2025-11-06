@@ -110,6 +110,7 @@ export default class SendGameInvitationCommand
                 fromUserAvatar: sender.avatar || null,
                 toUserId: targetUser.id,
                 gameId,
+                gameTypeName: gameTypeResult.name,
                 message: message || `${sender.username} te ha invitado a jugar!`,
             });
 

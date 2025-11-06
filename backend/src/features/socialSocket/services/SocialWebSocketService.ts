@@ -155,6 +155,7 @@ export class SocialWebSocketService implements ISocialWebSocketService {
         fromUserAvatar,
         toUserId,
         gameId,
+        gameTypeName,
         message,
     }: {
         fromUserId: number;
@@ -162,6 +163,7 @@ export class SocialWebSocketService implements ISocialWebSocketService {
         fromUserAvatar: string | null;
         toUserId: number;
         gameId: number;
+        gameTypeName: string;
         message: string;
     }): Promise<Result<void>> {
         try {
@@ -178,6 +180,7 @@ export class SocialWebSocketService implements ISocialWebSocketService {
                 fromUsername,
                 fromUserAvatar,
                 gameId,
+                gameTypeName,
                 message,
             };
 

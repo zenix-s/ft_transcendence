@@ -17,6 +17,9 @@ function getStatusCodeForError(error: string): number {
         case ApplicationError.BadRequest:
         case ApplicationError.InvalidRequest:
         case ApplicationError.InvalidCredentials:
+        case ApplicationError.InvalidWinnerScore:
+        case ApplicationError.InvalidMaxGameTime:
+        case ApplicationError.InvalidAiDifficulty:
             return 400;
         case ApplicationError.InvalidToken:
         case ApplicationError.PlayerNotAuthorized:

@@ -1,8 +1,8 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
 import dbPlugin from '@shared/infrastructure/db/db';
-import MediatorHandlerPlugin from '@shared/utils/MediatorHandlerPlugin';
 import ErrorhandlerPlugin from '@shared/utils/ErrorHandlerPlugin';
+import AppErrorHandlerPlugin from '@shared/mediators/AppErrorHandler';
 import { fastifyWebsocket } from '@fastify/websocket';
 import PongGameHttpRoutes from '@features/pong-http/http/pong.http';
 import GameInvitationHttpRoutes from '@features/game-invitation/http/game-invitation.http';
@@ -23,6 +23,7 @@ import Repositories from '@shared/infrastructure/repositories';
 import { ApplicationError } from '@shared/Errors';
 import path from 'path';
 import FriendShipController from '@features/friendship/Friendship.presentation';
+import MediatorHandlerPlugin from '@shared/mediators/MediatorHandlerPlugin';
 
 async function App(fastify: FastifyInstance) {
     fastify.register(fastifyJWT, {
@@ -35,6 +36,7 @@ async function App(fastify: FastifyInstance) {
     fastify.register(dbPlugin);
     fastify.register(MediatorHandlerPlugin);
     fastify.register(ErrorhandlerPlugin);
+    fastify.register(AppErrorHandlerPlugin);
     fastify.register(Repositories);
     fastify.register(SocialWebSocketServicePlugin);
     fastify.register(PongGameManagerPlugin);
@@ -57,21 +59,6 @@ async function App(fastify: FastifyInstance) {
             const result = fastify.handleError({ code: ApplicationError.InvalidToken, error: err });
             reply.status(401).send({ error: result.error });
         }
-    });
-
-    fastify.setErrorHandler((error: Error, req: FastifyRequest, res: FastifyReply) => {
-        fastify.log.error(error);
-
-        if (error.message.includes('Database')) {
-            res.status(503).send({
-                error: ApplicationError.DatabaseServiceUnavailable,
-            });
-            return;
-        }
-
-        res.status(500).send({
-            error: ApplicationError.InternalServerError,
-        });
     });
 
     fastify.register(fastifySwagger, {

@@ -47,7 +47,7 @@ export function modal(type: "logout" | "gameFinished" | "gameInvitation" = "logo
     else if (type === "gameInvitation") {
       title = t("modalGameInvitationTitle");
       titleText = t("modalGameInvitationTitleText");
-      const nameOfGame = gameName ? gameName : "Pong 🕹️";
+      const nameOfGame = gameName ? gameName : "";
       text = `${winner} ${t("modalGameInvitationText")} ${nameOfGame}`;
       confirmButtonText = `<i class="fa fa-thumbs-up"></i> ${t("modalGameInvitationConfirmButtonText")}`;
       showCancelButton = true;

@@ -125,7 +125,7 @@ export async function initFriendsSidebar() {
     const target = event.target as HTMLElement;
     if (target.classList.contains("invite-btn")) {
       const username = target.dataset.name;
-      const gameId = await fetchGameId(5); // Create game PONG --> Y si hay otro juego?
+      const gameId = await fetchGameId(); // Create game PONG --> Y si hay otro juego?
       // Hay que enviar la invitación y poder elegir el juego
       inviteMultiplayer(username, gameId);
       //showToast("Invitando a: " + username, "success");
@@ -155,7 +155,10 @@ export async function inviteMultiplayer(username: string | undefined, gameId: nu
 
 		if (!response.ok) {
 			const errorcode = data.error || "UserNotFound";
-			showToast(t(errorcode), "error");
+      if (errorcode === "InvalidRequestData")
+			  showToast(t("AlreadyInvitationInProgress"), "error");
+      else
+			  showToast(t(errorcode), "error");
 			return false;
 		}
 
@@ -168,7 +171,7 @@ export async function inviteMultiplayer(username: string | undefined, gameId: nu
   }
 }
 
-export async function acceptInvitation(gameId: number) {
+export async function acceptInvitation(gameId: number): Promise<boolean> {
   try {
     const response = await fetch(apiUrl(`/game-invitation/accept-invitation`), {
       method: "POST",

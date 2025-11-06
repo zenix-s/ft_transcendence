@@ -1,5 +1,6 @@
 import { getWsUrl } from "@/api";
 import { t } from "@/app/i18n";
+import { navigateTo } from "@/app/navigation";
 import { acceptInvitation } from "@/components/friendsSidebar/friendsSidebar";
 import { modal } from "@/components/modal";
 import { showToast } from "@/components/toast";
@@ -138,7 +139,9 @@ export class SocialWebSocketClient {
         {
           // Definir que pasa si se ACEPTA la invitación
           console.log("Has aceptado la invitación");
-          acceptInvitation(msg.gameId);
+          const response = await acceptInvitation(msg.gameId);
+          if (response)
+            navigateTo(`playing?id=${msg.gameId}&mutiPlayer`)
         }
         // Definir que pasa si RECHAZA la invitación
         break;

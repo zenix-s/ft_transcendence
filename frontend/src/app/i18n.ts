@@ -148,6 +148,7 @@ export const translations: Record<Language, Record<string, string>> = {
     InviteToGame: "Invite",
     InvitationSentSuccessfully: "Invitation sent successfully",
     InvitationAcceptedSuccessfully: "Invitation accepted successfully",
+    AlreadyInvitationInProgress: "You already have an invitation in progress",
     /* WebSocket */
     InitializingSocialWs: "Initializing Social WebSocket from main.ts",
     ConnectingToWs: "Connecting to WebSocket...",
@@ -316,6 +317,7 @@ export const translations: Record<Language, Record<string, string>> = {
     InviteToGame: "Invitar",
     InvitationSentSuccessfully: "Invitación enviada correctamente",
     InvitationAcceptedSuccessfully: "Invitación aceptada con éxito",
+    AlreadyInvitationInProgress: "Ya tienes una invitación en curso",
     /* WebSocket */
     InitializingSocialWs: "Inicializando WebSocket Social desde main.ts",
     ConnectingToWs: "Conectando a WebSocket...",
@@ -484,6 +486,7 @@ export const translations: Record<Language, Record<string, string>> = {
     InviteToGame: "Inviter",
     InvitationSentSuccessfully: "Invitation envoyée avec succès",
     InvitationAcceptedSuccessfully: "Invitation acceptée avec succès",
+    AlreadyInvitationInProgress: "Une invitation est déjà en cours de traitement.",
     /* WebSocket */
     InitializingSocialWs: "Initialisation de WebSocket Social à partir de main.ts",
     ConnectingToWs: "Connexion au WebSocket...",

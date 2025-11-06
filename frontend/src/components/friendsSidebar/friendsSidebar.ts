@@ -5,6 +5,7 @@ import { getReadySocialSocket } from "@/modules/social/socketUtils";
 import { renderAvatar } from "../renderAvatar";
 import { showToast } from "../toast";
 import { fetchGameId } from "@/modules/game/getData";
+import { apiUrl } from "@/api";
 
 export async function initFriendsSidebar() {
   const container = document.getElementById("friends-sidebar-container");
@@ -118,25 +119,51 @@ export async function initFriendsSidebar() {
   });
 
   // 🔹 Invitar a jugar
-  /* document.addEventListener("click", (event) => {
-    const target = event.target as HTMLElement;
-    if (target.classList.contains("invite-btn")) {
-      const name = target.dataset.name!;
-      alert(`Invitación enviada a ${name}`);
-    }
-  }); */
-
   const inviteBtn = document.getElementById("online-friends") as HTMLElement;
-  inviteBtn?.addEventListener("click", (event) => {
+  inviteBtn?.addEventListener("click", async (event) => {
     event.preventDefault();
     const target = event.target as HTMLElement;
     if (target.classList.contains("invite-btn")) {
       const username = target.dataset.name;
-      fetchGameId(5); // Create game PONG --> Y si hay otro juego?
+      const gameId = await fetchGameId(5); // Create game PONG --> Y si hay otro juego?
       // Hay que enviar la invitación y poder elegir el juego
-      showToast("Invitando a: " + username, "success");
+      inviteMultiplayer(username, gameId);
+      //showToast("Invitando a: " + username, "success");
     }
   });
 
   updateTexts();
+}
+
+// Function to invite a friend to play multiplayer game
+export async function inviteMultiplayer(username: string | undefined, gameId: number, message: string = "te invita a jugar a Pong") {
+  try {
+    const response = await fetch(apiUrl(`/game-invitation/send-invitation`), {
+      method: "POST",
+      body: JSON.stringify({
+        username: username,
+        gameId: gameId,
+        message: message
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("access_token") || ""}`,
+      },
+    });
+
+    const data = await response.json();
+
+		if (!response.ok) {
+			const errorcode = data.error || "UserNotFound";
+			showToast(t(errorcode), "error");
+			return false;
+		}
+
+		showToast(t("InvitationSentSuccessfully"));
+		return true;
+
+  } catch {
+    showToast(t("NetworkOrServerError"), "error");
+		return false;
+  }
 }

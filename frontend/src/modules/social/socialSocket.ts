@@ -1,5 +1,6 @@
 import { getWsUrl } from "@/api";
 import { t } from "@/app/i18n";
+import { modal } from "@/components/modal";
 import { showToast } from "@/components/toast";
 import type { Friend } from "@/types/friend"
 
@@ -18,6 +19,15 @@ interface FriendConnectionStatusMessage {
   friendId: number;
   username: string;
   isConnected: boolean;
+}
+
+interface GameInvitationResponse {
+    type: 'gameInvitation';
+    fromUserId: number;
+    fromUsername: string;
+    fromUserAvatar: string | null;
+    gameId: number;
+    message: string;
 }
 
 export class SocialWebSocketClient {
@@ -95,7 +105,7 @@ export class SocialWebSocketClient {
 
   private disconnectTimers: Map<number, NodeJS.Timeout> = new Map();
 
-  private handleMessage(message: unknown) {
+  private async handleMessage(message: unknown) {
     // Detectar tipo
     const type = (message as { type?: unknown})?.type;
 
@@ -115,6 +125,19 @@ export class SocialWebSocketClient {
         console.log(`👥 ${t("FriendListReceived")}`, this.friends);
         if (this.onFriendsUpdateCallback)
           this.onFriendsUpdateCallback([...this.friends]);
+        break;
+      }
+
+      case "gameInvitation": {
+        const msg = message as GameInvitationResponse;
+        console.log(`${msg.fromUsername} con id ${msg.fromUserId} te ha invitado a jugar a PONG con el número de partida ${msg.gameId} y el mensaje: ${msg.message}`);
+        const confirmed = await modal("gameInvitation", undefined, undefined, msg.fromUsername);
+        if (confirmed)
+        {
+          // Definir que pasa si se ACEPTA la invitación
+          console.log("Has aceptado la invitación");
+        }
+        // Definir que pasa si RECHAZA la invitación
         break;
       }
 

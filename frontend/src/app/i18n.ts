@@ -124,6 +124,11 @@ export const translations: Record<Language, Record<string, string>> = {
     modalLogoutIsConfirmedTitle: "Come back soon!",
     modalLogoutIsConfirmedText: "We are going to miss you 😭",
     modalLogoutIsConfirmedConfirmButtonText: "Accept",
+    modalGameInvitationTitle: "Game invitation",
+    modalGameInvitationTitleText: "Invitation to play",
+    modalGameInvitationText: "has invited you to play",
+    modalGameInvitationConfirmButtonText: "Accept",
+    modalGameInvitationCancelButtonText: "Decline",
     /* Friends */
     friends: "Friends",
     friendName: "Friend's name...",
@@ -141,6 +146,7 @@ export const translations: Record<Language, Record<string, string>> = {
     NoFriendsOnline: "There are no friends online right now.",
     NoFriendsOffline: "There are no friends offline right now.",
     InviteToGame: "Invite",
+    InvitationSentSuccessfully: "Invitation sent successfully",
     /* WebSocket */
     InitializingSocialWs: "Initializing Social WebSocket from main.ts",
     ConnectingToWs: "Connecting to WebSocket...",
@@ -285,6 +291,11 @@ export const translations: Record<Language, Record<string, string>> = {
     modalLogoutIsConfirmedTitle: "¡Vuelve pronto!",
     modalLogoutIsConfirmedText: "Te vamos a echar de menos 😭",
     modalLogoutIsConfirmedConfirmButtonText: "Aceptar",
+    modalGameInvitationTitle: "Invitación al juego",
+    modalGameInvitationTitleText: "Invitación a jugar",
+    modalGameInvitationText: "te ha invitado a jugar",
+    modalGameInvitationConfirmButtonText: "Aceptar",
+    modalGameInvitationCancelButtonText: "Rechazar",
     /* Friends */
     friends: "Amigos",
     friendName: "Nombre del amigo...",
@@ -302,6 +313,7 @@ export const translations: Record<Language, Record<string, string>> = {
     NoFriendsOnline: "No hay amigos conectados ahora mismo.",
     NoFriendsOffline: "No hay amigos desconectados ahora mismo.",
     InviteToGame: "Invitar",
+    InvitationSentSuccessfully: "Invitación enviada correctamente",
     /* WebSocket */
     InitializingSocialWs: "Inicializando WebSocket Social desde main.ts",
     ConnectingToWs: "Conectando a WebSocket...",
@@ -446,6 +458,11 @@ export const translations: Record<Language, Record<string, string>> = {
     modalLogoutIsConfirmedTitle: "Revenez vite!",
     modalLogoutIsConfirmedText: "Vous allez nous manquer 😭",
     modalLogoutIsConfirmedConfirmButtonText: "Accepter",
+    modalGameInvitationTitle: "Invitation au jeu",
+    modalGameInvitationTitleText: "Invitation à jouer",
+    modalGameInvitationText: "vous a invité à jouer",
+    modalGameInvitationConfirmButtonText: "Accepter",
+    modalGameInvitationCancelButtonText: "Déclin",
     /* Friends */
     friends: "Amis",
     friendName: "Nom de l'ami...",
@@ -463,6 +480,7 @@ export const translations: Record<Language, Record<string, string>> = {
     NoFriendsOnline: "Il n'y a aucun ami en ligne en ce moment.",
     NoFriendsOffline: "Il n'y a aucun ami hors ligne pour le moment.",
     InviteToGame: "Inviter",
+    InvitationSentSuccessfully: "Invitation envoyée avec succès",
     /* WebSocket */
     InitializingSocialWs: "Initialisation de WebSocket Social à partir de main.ts",
     ConnectingToWs: "Connexion au WebSocket...",

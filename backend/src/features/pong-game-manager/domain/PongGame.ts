@@ -75,6 +75,7 @@ export class PongGame {
     private maxGameTime?: number;
     private isPlayer2AI: boolean;
     private aiDifficulty: number;
+    private isCancelled: boolean;
 
     constructor(winnerScore = 5, maxGameTime = 120, isPlayer2AI = false, aiDifficulty = 0.95) {
         this.isRunning = false;
@@ -90,6 +91,7 @@ export class PongGame {
         this.maxGameTime = maxGameTime;
         this.isPlayer2AI = isPlayer2AI;
         this.aiDifficulty = aiDifficulty;
+        this.isCancelled = false;
     }
 
     public addPlayer(playerId: number, userData?: User): boolean {
@@ -286,6 +288,7 @@ export class PongGame {
             isGameOver: this.isGameOver(),
             winner: this.isGameOver() ? this.getWinner() : null,
             isSinglePlayer: this.isPlayer2AI,
+            isCancelled: this.isCancelled,
         };
     }
 
@@ -357,10 +360,90 @@ export class PongGame {
         return {
             winnerScore: this.winnerScore,
             maxGameTime: this.maxGameTime,
+            difficulty: this.aiDifficulty,
         };
     }
 
     public isSinglePlayerMode(): boolean {
         return this.isPlayer2AI;
+    }
+
+    public modifySettings(settings: {
+        winnerScore?: number;
+        maxGameTime?: number;
+        difficulty?: number;
+    }): boolean {
+        // Solo permitir modificación si el juego no ha empezado
+        if (this.isRunning) {
+            return false;
+        }
+
+        if (settings.winnerScore !== undefined && settings.winnerScore > 0) {
+            this.winnerScore = settings.winnerScore;
+        }
+
+        if (settings.maxGameTime !== undefined && settings.maxGameTime > 0) {
+            this.maxGameTime = settings.maxGameTime;
+        }
+
+        if (settings.difficulty !== undefined && settings.difficulty >= 0 && settings.difficulty <= 1) {
+            this.aiDifficulty = settings.difficulty;
+        }
+
+        return true;
+    }
+
+    public removePlayer(playerId: number): boolean {
+        const player = this.getPlayerById(playerId);
+        if (!player) return false;
+
+        // Si el juego ya empezó, no permitir abandonar (debe usar cancelGame)
+        if (this.isRunning) {
+            return false;
+        }
+
+        // Remover el jugador
+        if (this.player1?.getId() === playerId) {
+            this.player1 = undefined;
+        } else if (this.player2?.getId() === playerId) {
+            this.player2 = undefined;
+        }
+
+        // Si no quedan jugadores humanos, cancelar el juego
+        if (!this.player1 && (!this.player2 || this.isPlayer2AI)) {
+            this.isCancelled = true;
+        }
+
+        return true;
+    }
+
+    public cancelGame(playerId: number): boolean {
+        const player = this.getPlayerById(playerId);
+        if (!player) return false;
+
+        if (this.isRunning) {
+            // Si está en curso, dar victoria al oponente
+            if (this.player1?.getId() === playerId && this.player2) {
+                // Player1 abandona, player2 gana
+                for (let i = this.player2.getState().score; i < this.winnerScore; i++) {
+                    this.player2.incrementScore();
+                }
+            } else if (this.player2?.getId() === playerId && this.player1) {
+                // Player2 abandona, player1 gana
+                for (let i = this.player1.getState().score; i < this.winnerScore; i++) {
+                    this.player1.incrementScore();
+                }
+            }
+            this.isRunning = false;
+        } else {
+            // Si no ha empezado, cancelar
+            this.isCancelled = true;
+        }
+
+        return true;
+    }
+
+    public getIsCancelled(): boolean {
+        return this.isCancelled;
     }
 }

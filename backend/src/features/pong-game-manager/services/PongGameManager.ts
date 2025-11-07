@@ -4,7 +4,7 @@ import { PongGame } from '../domain/PongGame';
 import { ActivePongGame } from './ActivePongGame';
 import { ApplicationError } from '@shared/Errors';
 import { IPongGameManager } from './IPongGameManager.interface';
-import { GameState } from '../Pong.types';
+import { GameState, GameSettings } from '../Pong.types';
 
 export class PongGameManager implements IPongGameManager {
     private activeGames = new Map<number, ActivePongGame>();
@@ -151,5 +151,59 @@ export class PongGameManager implements IPongGameManager {
 
     getActiveGameIds(): Result<number[]> {
         return Result.success(Array.from(this.activeGames.keys()));
+    }
+
+    modifyGameSettings(gameId: number, playerId: number, settings: GameSettings): Result<void> {
+        const activeGame = this.activeGames.get(gameId);
+        if (!activeGame) {
+            return Result.error(ApplicationError.GameNotFound);
+        }
+
+        // Verificar que el jugador esté en el juego
+        if (!activeGame.game.hasPlayer(playerId)) {
+            return Result.error(ApplicationError.PlayerNotInGame);
+        }
+
+        // Verificar que el juego no haya empezado
+        if (activeGame.game.isGameRunning()) {
+            return Result.error(ApplicationError.GameAlreadyStarted);
+        }
+
+        // Modificar las configuraciones
+        const success = activeGame.game.modifySettings(settings);
+        if (!success) {
+            return Result.error(ApplicationError.InvalidRequest);
+        }
+
+        activeGame.updateLastActivity();
+        return Result.success(undefined);
+    }
+
+    leaveGame(gameId: number, playerId: number): Result<void> {
+        const activeGame = this.activeGames.get(gameId);
+        if (!activeGame) {
+            return Result.error(ApplicationError.GameNotFound);
+        }
+
+        // Verificar que el jugador esté en el juego
+        if (!activeGame.game.hasPlayer(playerId)) {
+            return Result.error(ApplicationError.PlayerNotInGame);
+        }
+
+        // Llamar a cancelGame (maneja tanto partidas en curso como no iniciadas)
+        const success = activeGame.game.cancelGame(playerId);
+        if (!success) {
+            return Result.error(ApplicationError.InvalidRequest);
+        }
+
+        // Si el juego fue cancelado (no había empezado), eliminarlo de memoria
+        if (activeGame.game.getIsCancelled()) {
+            activeGame.stop();
+            this.activeGames.delete(gameId);
+        }
+        // Si estaba en curso, el juego terminará normalmente con ganador
+
+        activeGame.updateLastActivity();
+        return Result.success(undefined);
     }
 }

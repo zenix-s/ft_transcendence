@@ -1,6 +1,6 @@
 import { Result } from '@shared/abstractions/Result';
 import { PongGame } from '../domain/PongGame';
-import { GameState } from '../Pong.types';
+import { GameState, GameSettings } from '../Pong.types';
 
 export interface IPongGameManager {
     /**
@@ -57,4 +57,14 @@ export interface IPongGameManager {
      * Obtiene los IDs de todos los juegos activos
      */
     getActiveGameIds(): Result<number[]>;
+
+    /**
+     * Modifica las configuraciones del juego antes de empezar
+     */
+    modifyGameSettings(gameId: number, playerId: number, settings: GameSettings): Result<void>;
+
+    /**
+     * Permite a un jugador abandonar el juego
+     */
+    leaveGame(gameId: number, playerId: number): Result<void>;
 }

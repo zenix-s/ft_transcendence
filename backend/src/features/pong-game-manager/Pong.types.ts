@@ -4,6 +4,8 @@ export enum Actions {
     MOVE_UP,
     MOVE_DOWN,
     SET_READY,
+    MODIFY_SETTINGS,
+    LEAVE_GAME,
 }
 
 export const PossibleActions: Actions[] = [
@@ -12,6 +14,8 @@ export const PossibleActions: Actions[] = [
     Actions.MOVE_UP,
     Actions.MOVE_DOWN,
     Actions.SET_READY,
+    Actions.MODIFY_SETTINGS,
+    Actions.LEAVE_GAME,
 ];
 
 export interface PlayerState {
@@ -30,6 +34,7 @@ export interface BallState {
 export interface GameRules {
     winnerScore: number;
     maxGameTime: number | undefined;
+    difficulty?: number;
 }
 
 export interface GameState {
@@ -43,4 +48,11 @@ export interface GameState {
     isGameOver: boolean;
     winner: string | null;
     isSinglePlayer: boolean;
+    isCancelled?: boolean;
+}
+
+export interface GameSettings {
+    winnerScore?: number;
+    maxGameTime?: number;
+    difficulty?: number;
 }

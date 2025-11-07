@@ -118,6 +118,11 @@ export enum ApplicationError {
      */
     CannotJoinSinglePlayerGame = 'CannotJoinSinglePlayerGame',
 
+    /**
+     * Juego Ya Iniciado - El juego ya ha comenzado y no se pueden modificar las configuraciones
+     */
+    GameAlreadyStarted = 'GameAlreadyStarted',
+
     // Errores de Validación de Juego
     /**
      * Puntuación de Ganador Inválida - La puntuación ganadora debe estar entre 1 y 100

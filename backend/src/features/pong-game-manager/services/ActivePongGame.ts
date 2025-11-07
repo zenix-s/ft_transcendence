@@ -43,6 +43,17 @@ export class ActivePongGame {
 
     private processTick(): void {
         try {
+            // Verificar si el juego fue cancelado
+            if (this.game.getIsCancelled()) {
+                if (!this.isEnding) {
+                    this.isEnding = true;
+                    this.cancelMatch();
+                }
+                this.stop();
+                this.onGameEnd(this.gameId);
+                return;
+            }
+
             // Solo eliminar el juego si está terminado, no si simplemente no está corriendo
             if (this.game.isGameOver()) {
                 if (!this.isEnding) {
@@ -99,6 +110,26 @@ export class ActivePongGame {
             }
         } catch (error) {
             this.fastify.log.error(error, `Error cancelling match ${this.matchId} due to timeout`);
+        }
+    }
+
+    private async cancelMatch(): Promise<void> {
+        try {
+            const match = await this.fastify.MatchRepository.findById({ id: this.matchId });
+
+            if (!match) {
+                this.fastify.log.error(`Match with ID ${this.matchId} not found for cancellation`);
+                return;
+            }
+
+            match.cancel();
+
+            const updatedMatch = await this.fastify.MatchRepository.update({ match });
+            if (!updatedMatch) {
+                this.fastify.log.error(`Failed to update match ${this.matchId} status to cancelled`);
+            }
+        } catch (error) {
+            this.fastify.log.error(error, `Error cancelling match ${this.matchId}`);
         }
     }
 

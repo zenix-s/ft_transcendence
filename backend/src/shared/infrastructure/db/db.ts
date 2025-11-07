@@ -155,6 +155,12 @@ export default fp(
         fastify.addHook('onClose', async () => {
             // Set all users as disconnected on server shutdown
             await connection.execute('UPDATE users SET is_connected = 0');
+            // Todas las partidas en curso o pendientes se pasan a canceladas
+            await connection.execute(`
+                UPDATE matches
+                SET status = '${CONSTANTES_APP.MATCH.STATUS.CANCELLED}'
+                WHERE status IN ('${CONSTANTES_APP.MATCH.STATUS.PENDING}', '${CONSTANTES_APP.MATCH.STATUS.IN_PROGRESS}')
+            `);
 
             await connection.disconnect();
         });

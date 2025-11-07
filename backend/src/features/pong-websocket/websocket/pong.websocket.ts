@@ -100,6 +100,30 @@ export default async function pongWebSocketRoutes(fastify: FastifyInstance) {
                             break;
                         }
 
+                        case Actions.MODIFY_SETTINGS: {
+                            const settings = (data as WebSocketMessage).settings;
+                            if (!settings) {
+                                webSocketService.sendError(socket, ApplicationError.InvalidRequest);
+                                break;
+                            }
+                            const response = await webSocketService.handleModifySettings(
+                                currentGameId,
+                                currentUserId,
+                                settings
+                            );
+                            webSocketService.sendMessage(socket, response);
+                            break;
+                        }
+
+                        case Actions.LEAVE_GAME: {
+                            const response = await webSocketService.handleLeaveGame(
+                                currentGameId,
+                                currentUserId
+                            );
+                            webSocketService.sendMessage(socket, response);
+                            break;
+                        }
+
                         default:
                             webSocketService.sendError(socket, ApplicationError.ActionNotAllowed);
                     }

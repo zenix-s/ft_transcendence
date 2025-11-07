@@ -9,7 +9,11 @@ export interface WebSocketMessage {
     action: Actions;
     gameId?: number;
     token?: string;
-    direction?: 'up' | 'down';
+    settings?: {
+        winnerScore?: number;
+        maxGameTime?: number;
+        difficulty?: number;
+    };
 }
 
 export interface WebSocketResponse {
@@ -154,6 +158,58 @@ export class PongWebSocketService implements IPongService {
             type: 'authSuccess',
             userId,
         });
+    }
+
+    async handleModifySettings(
+        gameId: number | null,
+        playerId: number | null,
+        settings: { winnerScore?: number; maxGameTime?: number; difficulty?: number }
+    ): Promise<WebSocketResponse> {
+        if (!gameId || !playerId) {
+            return {
+                type: 'error',
+                error: ApplicationError.GameNotFound,
+            };
+        }
+
+        const modifyResult = this.fastify.PongGameManager.modifyGameSettings(gameId, playerId, settings);
+        if (!modifyResult.isSuccess) {
+            return {
+                type: 'error',
+                error: modifyResult.error,
+            };
+        }
+
+        return {
+            type: 'settingsModified',
+            gameId,
+            settings,
+            message: 'Game settings updated successfully',
+        };
+    }
+
+    async handleLeaveGame(gameId: number | null, playerId: number | null): Promise<WebSocketResponse> {
+        if (!gameId || !playerId) {
+            return {
+                type: 'error',
+                error: ApplicationError.GameNotFound,
+            };
+        }
+
+        const leaveResult = await this.fastify.PongGameManager.leaveGame(gameId, playerId);
+        if (!leaveResult.isSuccess) {
+            return {
+                type: 'error',
+                error: leaveResult.error,
+            };
+        }
+
+        return {
+            type: 'playerLeft',
+            gameId,
+            playerId,
+            message: 'Player left the game',
+        };
     }
 
     validateMessage(data: unknown): data is WebSocketMessage {

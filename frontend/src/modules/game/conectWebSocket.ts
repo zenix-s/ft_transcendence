@@ -31,7 +31,7 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 		socket.send(JSON.stringify(obj));
 		obj.action = 1;
 		//if (ready == 1)
-		//{
+		// {
 			engine.runRenderLoop(() => {
 				obj.action = 1;
 				socket.send(JSON.stringify(obj));

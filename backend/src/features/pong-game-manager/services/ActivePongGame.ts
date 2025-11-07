@@ -4,7 +4,6 @@ import { PongGame } from '../domain/PongGame';
 export class ActivePongGame {
     private loop?: NodeJS.Timeout;
     private isEnding = false;
-    private lastUpdate = Date.now();
     private gameStartTime = Date.now();
     private readonly GAME_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutos timeout
 
@@ -35,10 +34,6 @@ export class ActivePongGame {
 
     isActive(): boolean {
         return this.loop !== undefined;
-    }
-
-    updateLastActivity(): void {
-        this.lastUpdate = Date.now();
     }
 
     private processTick(): void {
@@ -77,7 +72,6 @@ export class ActivePongGame {
             }
 
             this.game.update();
-            this.lastUpdate = Date.now();
 
             // Verificar si el juego terminó después de la actualización
             if (this.game.isGameOver() && !this.isEnding) {

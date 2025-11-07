@@ -52,7 +52,6 @@ export class PongGameManager implements IPongGameManager {
             return Result.error(ApplicationError.PlayerNotInGame);
         }
 
-        activeGame.updateLastActivity();
         return Result.success(undefined);
     }
 
@@ -67,7 +66,6 @@ export class PongGameManager implements IPongGameManager {
             return Result.error(ApplicationError.PlayerNotInGame);
         }
 
-        activeGame.updateLastActivity();
         const gameStarted = activeGame.game.isGameRunning();
         return Result.success({ gameStarted });
     }
@@ -89,7 +87,6 @@ export class PongGameManager implements IPongGameManager {
             return Result.error(ApplicationError.GameFull);
         }
 
-        activeGame.updateLastActivity();
         return Result.success(undefined);
     }
 
@@ -175,7 +172,6 @@ export class PongGameManager implements IPongGameManager {
             return Result.error(ApplicationError.InvalidRequest);
         }
 
-        activeGame.updateLastActivity();
         return Result.success(undefined);
     }
 
@@ -203,7 +199,6 @@ export class PongGameManager implements IPongGameManager {
         }
         // Si estaba en curso, el juego terminará normalmente con ganador
 
-        activeGame.updateLastActivity();
         return Result.success(undefined);
     }
 }

@@ -9,7 +9,6 @@ export interface WebSocketMessage {
     action: Actions;
     gameId?: number;
     token?: string;
-    direction?: 'up' | 'down';
     settings?: {
         winnerScore?: number;
         maxGameTime?: number;

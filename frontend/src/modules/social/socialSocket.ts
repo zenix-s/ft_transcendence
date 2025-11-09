@@ -141,7 +141,7 @@ export class SocialWebSocketClient {
           console.log("Has aceptado la invitación");
           const response = await acceptInvitation(msg.gameId);
           if (response)
-            navigateTo(`playing?id=${msg.gameId}&mutiPlayer`)
+            navigateTo(`playing?id=${msg.gameId}&mutiPlayer`); // Enviar a la partida
         }
         // Definir que pasa si RECHAZA la invitación
         break;

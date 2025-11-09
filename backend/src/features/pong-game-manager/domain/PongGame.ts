@@ -65,6 +65,10 @@ export class PongPlayer {
     public getUsername(): string {
         return this.userData?.username || `Player ${this.playerId}`;
     }
+
+    public resetPosition(): void {
+        this.state.position = 50;
+    }
 }
 
 interface BallState {
@@ -188,6 +192,7 @@ export class PongGame {
 
     private resumeAfterGoal(): void {
         this.resetBall();
+        this.resetPlayerPositions();
         this.gameStatus = GAME_STATUS.PLAYING;
         this.lastUpdate = Date.now();
     }
@@ -346,6 +351,15 @@ export class PongGame {
             x: Math.random() > 0.5 ? 1 : -1,
             y: (Math.random() - 0.5) * 2,
         };
+    }
+
+    private resetPlayerPositions(): void {
+        if (this.player1) {
+            this.player1.resetPosition();
+        }
+        if (this.player2) {
+            this.player2.resetPosition();
+        }
     }
 
     public movePlayer(playerId: number, direction: 'up' | 'down'): boolean {

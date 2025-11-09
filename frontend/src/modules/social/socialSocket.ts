@@ -134,7 +134,10 @@ export class SocialWebSocketClient {
       case "gameInvitation": {
         const msg = message as GameInvitationResponse;
         console.log(`${msg.fromUsername} con id ${msg.fromUserId} te ha invitado a jugar a PONG con el número de partida ${msg.gameId} y el mensaje: ${msg.message}`);
-        const confirmed = await modal("gameInvitation", undefined, undefined, msg.fromUsername, msg.gameTypeName);
+        const confirmed = await modal({
+          type: "gameInvitation",
+          winner: msg.fromUsername,
+          gameName: msg.gameTypeName});
         if (confirmed)
         {
           // Definir que pasa si se ACEPTA la invitación

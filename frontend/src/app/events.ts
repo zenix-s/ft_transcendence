@@ -15,7 +15,7 @@ export function setupEventListeners() {
     // 🔹 1. Caso especial: LOGOUT
     if (target.dataset.page === "logout") {
       event.preventDefault(); // Frena navegación automática
-      const confirmed = await modal("logout");
+      const confirmed = await modal({type: "logout"});
       if (confirmed)
       {
         localStorage.removeItem("userId");

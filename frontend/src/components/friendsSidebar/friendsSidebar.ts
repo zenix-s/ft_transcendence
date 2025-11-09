@@ -6,6 +6,7 @@ import { renderAvatar } from "../renderAvatar";
 import { showToast } from "../toast";
 import { fetchGameId } from "@/modules/game/getData";
 import { apiUrl } from "@/api";
+import { navigateTo } from "@/app/navigation";
 
 export async function initFriendsSidebar() {
   const container = document.getElementById("friends-sidebar-container");
@@ -128,6 +129,7 @@ export async function initFriendsSidebar() {
       const gameId = await fetchGameId(); // Create game PONG --> Y si hay otro juego?
       // Hay que enviar la invitación y poder elegir el juego
       inviteMultiplayer(username, gameId);
+      navigateTo(`playing?id=${gameId}&mutiPlayer`); // Temporal para pruebas?
       //showToast("Invitando a: " + username, "success");
     }
   });

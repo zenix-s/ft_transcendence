@@ -38,7 +38,7 @@ export class ActivePongGame {
 
     private processTick(): void {
         try {
-            // Verificar si el juego fue cancelado
+            // Paso 1: Verificar si el juego ha sido cancelado
             if (this.game.getIsCancelled()) {
                 if (!this.isEnding) {
                     this.isEnding = true;
@@ -49,7 +49,7 @@ export class ActivePongGame {
                 return;
             }
 
-            // Solo eliminar el juego si está terminado, no si simplemente no está corriendo
+            // Paso 2: Verificar si el juego ha terminado
             if (this.game.isGameOver()) {
                 if (!this.isEnding) {
                     this.isEnding = true;
@@ -60,20 +60,21 @@ export class ActivePongGame {
                 return;
             }
 
-            // Si el juego no está corriendo pero no está terminado, verificar timeout
+            // Paso 3: Actualizar el juego
+            this.game.update();
+
+            // Paso 4: Verificar timeout si el juego no ha comenzado
             if (!this.game.isGameRunning()) {
                 // Si el juego ha estado esperando por más del timeout, cancelarlo y actualizar match
                 if (Date.now() - this.gameStartTime > this.GAME_TIMEOUT_MS) {
                     this.cancelMatchDueToTimeout();
                     this.stop();
                     this.onGameEnd(this.gameId);
+                    return;
                 }
-                return;
             }
 
-            this.game.update();
-
-            // Verificar si el juego terminó después de la actualización
+            // Paso 5: Verificar nuevamente si el juego ha terminado después de la actualización
             if (this.game.isGameOver() && !this.isEnding) {
                 this.isEnding = true;
                 this.saveMatchHistory();

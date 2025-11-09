@@ -1,5 +1,13 @@
 import { CONSTANTES_APP } from '@shared/constants/ApplicationConstants';
+import {
+    GAME_STATUS,
+    GameStatus,
+    COUNTDOWN_TYPES,
+    COUNTDOWN_CONFIG,
+    GAME_STATUS_UTILS,
+} from '@shared/constants/GameConstants';
 import { User } from '@shared/domain/entity/User.entity';
+import { CountdownManager } from '../services/CountdownManager';
 
 interface PlayerState {
     position: number;
@@ -65,7 +73,8 @@ interface BallState {
 }
 
 export class PongGame {
-    private isRunning: boolean;
+    private gameStatus: GameStatus;
+    private countdownManager: CountdownManager;
     private player1?: PongPlayer;
     private player2?: PongPlayer;
     private ball: BallState;
@@ -78,7 +87,8 @@ export class PongGame {
     private isCancelled: boolean;
 
     constructor(winnerScore = 5, maxGameTime = 120, isPlayer2AI = false, aiDifficulty = 0.95) {
-        this.isRunning = false;
+        this.gameStatus = GAME_STATUS.WAITING_FOR_PLAYERS;
+        this.countdownManager = new CountdownManager();
         this.player1 = undefined;
         this.player2 = undefined;
         this.ball = {
@@ -105,9 +115,11 @@ export class PongGame {
                 });
                 this.player2.setReady(true);
             }
+            this.updateGameStatus();
             return true;
         } else if (!this.player2 && !this.isPlayer2AI) {
             this.player2 = new PongPlayer(playerId, userData);
+            this.updateGameStatus();
             return true;
         }
         return false;
@@ -118,9 +130,15 @@ export class PongGame {
         if (!player) return false;
 
         player.setReady(ready);
+        this.updateGameStatus();
 
-        if (this.arePlayersReady() && !this.isRunning) {
-            this.start();
+        // Si ambos están listos y no hay countdown activo, iniciar countdown de inicio
+        if (
+            this.arePlayersReady() &&
+            this.gameStatus === GAME_STATUS.WAITING_FOR_READY &&
+            !this.countdownManager.hasActiveCountdown()
+        ) {
+            this.startGameCountdown();
         }
 
         return true;
@@ -137,26 +155,71 @@ export class PongGame {
         return this.player1?.isReady() === true && this.player2?.isReady() === true;
     }
 
-    public start(): boolean {
-        if (!this.canStart() || this.isRunning || !this.arePlayersReady()) {
-            return false;
+    private startGameCountdown(): void {
+        this.gameStatus = GAME_STATUS.START_COUNTDOWN;
+
+        this.countdownManager.startCountdown(COUNTDOWN_TYPES.START, {
+            duration: COUNTDOWN_CONFIG.START_GAME_DURATION,
+            onComplete: () => {
+                this.startGame();
+            },
+        });
+    }
+
+    private startGoalCountdown(): void {
+        this.gameStatus = GAME_STATUS.GOAL_COUNTDOWN;
+
+        this.countdownManager.startCountdown(COUNTDOWN_TYPES.GOAL, {
+            duration: COUNTDOWN_CONFIG.GOAL_RESUME_DURATION,
+            onComplete: () => {
+                this.resumeAfterGoal();
+            },
+        });
+    }
+
+    private startGame(): void {
+        if (!this.canStart()) {
+            return;
         }
 
-        this.isRunning = true;
+        this.gameStatus = GAME_STATUS.PLAYING;
         this.lastUpdate = Date.now();
-        return true;
+    }
+
+    private resumeAfterGoal(): void {
+        this.resetBall();
+        this.gameStatus = GAME_STATUS.PLAYING;
+        this.lastUpdate = Date.now();
     }
 
     public stop(): void {
-        this.isRunning = false;
+        this.gameStatus = GAME_STATUS.GAME_OVER;
+        this.countdownManager.cancelAllCountdowns();
     }
 
     public update(): void {
-        if (!this.isRunning) return;
-
         const now = Date.now();
         const deltaTime = (now - this.lastUpdate) / 1000;
         this.lastUpdate = now;
+
+        // Siempre actualizar countdowns
+        this.countdownManager.update(deltaTime);
+
+        // Solo actualizar lógica del juego si está en estado PLAYING
+        if (this.gameStatus !== GAME_STATUS.PLAYING) {
+            // No hacer nada más si hay un countdown activo o el juego terminó
+            if (
+                GAME_STATUS_UTILS.isCountdownState(this.gameStatus) ||
+                GAME_STATUS_UTILS.isEndedState(this.gameStatus)
+            ) {
+                return;
+            }
+            // Solo actualizar estado si está en estado de espera
+            if (GAME_STATUS_UTILS.isWaitingState(this.gameStatus)) {
+                this.updateGameStatus();
+            }
+            return;
+        }
 
         if (this.isPlayer2AI && this.player2) {
             this.updateAI();
@@ -166,6 +229,42 @@ export class PongGame {
         this.checkCollisions();
         this.gameTimer += deltaTime;
         this.checkWinConditions();
+    }
+
+    private onGoalScored(scorer: PongPlayer | undefined): void {
+        if (!scorer) return;
+
+        scorer.incrementScore();
+        this.gameStatus = GAME_STATUS.GOAL_SCORED;
+
+        // Verificar si el juego terminó
+        if (this.checkWinConditions()) {
+            return; // El juego terminó
+        }
+
+        // Si el juego continúa, iniciar countdown para reanudar
+        this.startGoalCountdown();
+    }
+
+    private updateGameStatus(): void {
+        // No cambiar estado si está en countdown o jugando
+        if (
+            GAME_STATUS_UTILS.isCountdownState(this.gameStatus) ||
+            this.gameStatus === GAME_STATUS.PLAYING ||
+            this.gameStatus === GAME_STATUS.GOAL_SCORED
+        ) {
+            return;
+        }
+
+        if (this.isCancelled) {
+            this.gameStatus = GAME_STATUS.CANCELLED;
+        } else if (this.isGameOver()) {
+            this.gameStatus = GAME_STATUS.GAME_OVER;
+        } else if (this.getPlayerCount() < 2) {
+            this.gameStatus = GAME_STATUS.WAITING_FOR_PLAYERS;
+        } else if (!this.arePlayersReady()) {
+            this.gameStatus = GAME_STATUS.WAITING_FOR_READY;
+        }
     }
 
     private updateAI(): void {
@@ -200,6 +299,11 @@ export class PongGame {
     }
 
     private updateBall(deltaTime: number): void {
+        // Solo mover la pelota si no hay countdown activo
+        if (this.countdownManager.hasActiveCountdown()) {
+            return;
+        }
+
         this.ball.position.x += this.ball.velocity.x * deltaTime * 60;
         this.ball.position.y += this.ball.velocity.y * deltaTime * 60;
 
@@ -209,11 +313,9 @@ export class PongGame {
         }
 
         if (this.ball.position.x <= 0) {
-            this.player2?.incrementScore();
-            this.resetBall();
+            this.onGoalScored(this.player2);
         } else if (this.ball.position.x >= 100) {
-            this.player1?.incrementScore();
-            this.resetBall();
+            this.onGoalScored(this.player1);
         }
     }
 
@@ -265,8 +367,17 @@ export class PongGame {
     }
 
     public getGameState() {
+        // Solo actualizar estado si no estamos en countdown o jugando
+        if (
+            !GAME_STATUS_UTILS.isCountdownState(this.gameStatus) &&
+            this.gameStatus !== GAME_STATUS.PLAYING &&
+            this.gameStatus !== GAME_STATUS.GOAL_SCORED
+        ) {
+            this.updateGameStatus();
+        }
+
         return {
-            isRunning: this.isRunning,
+            gameStatus: this.gameStatus,
             gameTimer: this.gameTimer,
             player1: this.player1
                 ? {
@@ -289,11 +400,12 @@ export class PongGame {
             winner: this.isGameOver() ? this.getWinner() : null,
             isSinglePlayer: this.isPlayer2AI,
             isCancelled: this.isCancelled,
+            countdownInfo: this.countdownManager.getActiveCountdown(),
         };
     }
 
     public isGameRunning(): boolean {
-        return this.isRunning;
+        return this.gameStatus === GAME_STATUS.PLAYING;
     }
 
     public getPlayerCount(): number {
@@ -307,21 +419,23 @@ export class PongGame {
         return this.player1?.getId() === playerId || this.player2?.getId() === playerId;
     }
 
-    private checkWinConditions(): void {
-        if (!this.player1 || !this.player2) return;
+    private checkWinConditions(): boolean {
+        if (!this.player1 || !this.player2) return false;
 
         const player1State = this.player1.getState();
         const player2State = this.player2.getState();
 
         if (player1State.score >= this.winnerScore || player2State.score >= this.winnerScore) {
             this.stop();
-            return;
+            return true;
         }
 
         if (this.maxGameTime && this.gameTimer >= this.maxGameTime) {
             this.stop();
-            return;
+            return true;
         }
+
+        return false;
     }
 
     public getWinner(): string | null {
@@ -374,7 +488,7 @@ export class PongGame {
         difficulty?: number;
     }): boolean {
         // Solo permitir modificación si el juego no ha empezado
-        if (this.isRunning) {
+        if (this.gameStatus === GAME_STATUS.PLAYING) {
             return false;
         }
 
@@ -398,7 +512,7 @@ export class PongGame {
         if (!player) return false;
 
         // Si el juego ya empezó, no permitir abandonar (debe usar cancelGame)
-        if (this.isRunning) {
+        if (this.gameStatus === GAME_STATUS.PLAYING) {
             return false;
         }
 
@@ -421,7 +535,7 @@ export class PongGame {
         const player = this.getPlayerById(playerId);
         if (!player) return false;
 
-        if (this.isRunning) {
+        if (this.gameStatus === GAME_STATUS.PLAYING) {
             // Si está en curso, dar victoria al oponente
             if (this.player1?.getId() === playerId && this.player2) {
                 // Player1 abandona, player2 gana
@@ -434,7 +548,7 @@ export class PongGame {
                     this.player1.incrementScore();
                 }
             }
-            this.isRunning = false;
+            this.gameStatus = GAME_STATUS.GAME_OVER;
         } else {
             // Si no ha empezado, cancelar
             this.isCancelled = true;

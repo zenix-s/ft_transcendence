@@ -2,8 +2,19 @@ import { t } from "@/app/i18n";
 import Swal from 'sweetalert2';
 import type { SweetAlertIcon } from 'sweetalert2';
 
-export function modal(type: "logout" | "gameFinished" | "gameInvitation" = "logout", player1Score?: number, player2Score?: number, winner?: string, gameName?: string): Promise<boolean> {
-  return new Promise((resolve) => {
+export function modal({
+  type = "logout",
+  player1Score,
+  player2Score,
+  winner,
+  gameName,
+}: {
+  type?: "logout" | "gameFinished" | "gameInvitation",
+  player1Score?: number,
+  player2Score?: number,
+  winner?: string,
+  gameName?: string
+} = {}): Promise<boolean> {  return new Promise((resolve) => {
     const isDark = !document.documentElement.classList.contains("dark");
 
     /* GENERAL AND DEFAULT OPTIONS*/

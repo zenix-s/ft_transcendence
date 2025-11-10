@@ -87,6 +87,7 @@ export class PongGameManager implements IPongGameManager {
             return Result.error(ApplicationError.GameFull);
         }
 
+        // Si es un juego single player, iniciar el match cuando se une el jugador humano
         if (activeGame.game.isSinglePlayerMode()) {
             try {
                 const match = await this.fastify.MatchRepository.findById({ id: activeGame.matchId });

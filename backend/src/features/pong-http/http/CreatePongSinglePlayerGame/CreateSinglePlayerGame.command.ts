@@ -36,7 +36,7 @@ export default class CreateSinglePlayerGameCommand
     validate(request?: ICreateSinglePlayerGameRequest | undefined): Result<void> {
         if (!request) return Result.error(ApplicationError.InvalidRequest);
 
-        // Validar que userId esté presente
+        // Paso 1: Validar que userId esté presente
         if (!request.userId || typeof request.userId !== 'number') {
             return Result.error(ApplicationError.UnauthorizedAccess);
         }
@@ -78,21 +78,21 @@ export default class CreateSinglePlayerGameCommand
         request?: ICreateSinglePlayerGameRequest | undefined
     ): Promise<Result<ICreateSinglePlayerGameResponse>> {
         try {
-            // Validar que request y userId existan
+            // Paso 1: Validar que request y userId existan
             if (!request || !request.userId) {
                 return Result.error(ApplicationError.UnauthorizedAccess);
             }
 
             const userId = request.userId;
 
-            // Validar que el usuario existe
+            // Paso 2: Validar que el usuario existe
             const userResult = await this.fastify.UserRepository.getUser({
                 id: userId,
             });
             if (!userResult.isSuccess || !userResult.value)
                 return Result.error(ApplicationError.UserNotFound);
 
-            // Verificar si el usuario tiene partidas activas (pending o in_progress)
+            // Paso 3: Verificar si el usuario tiene partidas activas (pending o in_progress)
             const activeMatches = await this.matchRepository.findUserMatches({
                 userId: userId,
                 status: [CONSTANTES_APP.MATCH.STATUS.PENDING, CONSTANTES_APP.MATCH.STATUS.IN_PROGRESS],
@@ -123,11 +123,20 @@ export default class CreateSinglePlayerGameCommand
 
             const game = new PongGame(winnerScore, maxGameTime, true, aiDifficulty);
 
-            game.addPlayer(userResult.value.id, userResult.value);
-
             const matchId = createdMatch.id as number;
 
             const gameResult = await this.fastify.PongGameManager.createGame(matchId, matchId, game);
+
+            // Paso 4: Agregar el jugador a través del PongGameManager para aplicar todas las protecciones
+            const addPlayerResult = await this.fastify.PongGameManager.addPlayerToGame(matchId, userId);
+            if (!addPlayerResult.isSuccess) {
+                try {
+                    await this.matchRepository.delete({ id: matchId });
+                } catch (deleteError) {
+                    this.fastify.log.error(deleteError, 'Failed to delete match after add player failure');
+                }
+                return Result.error(addPlayerResult.error || ApplicationError.GameCreationError);
+            }
 
             if (!gameResult.isSuccess) {
                 try {

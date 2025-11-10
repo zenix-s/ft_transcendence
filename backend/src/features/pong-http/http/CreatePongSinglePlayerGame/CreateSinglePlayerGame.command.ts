@@ -125,14 +125,6 @@ export default class CreateSinglePlayerGameCommand
 
             game.addPlayer(userResult.value.id, userResult.value);
 
-            // En modo un jugador, marcar el jugador como listo e iniciar el juego
-            game.setPlayerReady(userResult.value.id, true);
-
-            const started = createdMatch.start();
-            if (started) {
-                await this.matchRepository.update({ match: createdMatch });
-            }
-
             const matchId = createdMatch.id as number;
 
             const gameResult = await this.fastify.PongGameManager.createGame(matchId, matchId, game);

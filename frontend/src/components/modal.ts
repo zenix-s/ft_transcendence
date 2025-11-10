@@ -62,8 +62,13 @@ export function modal({
       title = t("SetReady");
       titleText = t("isReady");
       confirmButtonText = t("Ready");
+      text = t("ClickReady");
+      icon_msg = "question";
+      showCancelButton = true;
+      cancelButtonText = t("Cancel");
+      allowOutsideClick = false;
+      allowEscapeKey = false;
     }
-
     else if (type === "gameInvitation") {
       title = t("modalGameInvitationTitle");
       titleText = t("modalGameInvitationTitleText");

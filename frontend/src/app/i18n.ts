@@ -120,6 +120,11 @@ export const translations: Record<Language, Record<string, string>> = {
     Unknown: "Unknown",
     FinalScore: "Final Score",
     Return: "Return",
+    SetReady: "Set as ready",
+    isReady: "Are you ready?",
+    Ready: "Ready",
+    ClickReady: "Click Ready to start",
+    Cancel: "Cancel",
     /* Modal */
     modalLogoutTitle: "Log out",
     modalLogoutTitleText: "Are you sure you want to log out?",
@@ -296,7 +301,9 @@ export const translations: Record<Language, Record<string, string>> = {
     Return: "Volver",
     SetReady: "Ponte en listo",
     isReady: "¿Estás listo?",
-    Ready: "LISTO",
+    Ready: "Listo",
+    ClickReady: "Dale a Listo para empezar",
+    Cancel: "Cancelar",
     /* Modal */
     modalLogoutTitle: "Cerrar sesión",
     modalLogoutTitleText: "¿Seguro que quieres cerrar sesión?",
@@ -473,7 +480,9 @@ export const translations: Record<Language, Record<string, string>> = {
     Return: "Retour",
     SetReady: "Prêt à l'emploi",
     isReady: "Es-tu prêt?",
-    Ready: "PRÊT",
+    Ready: "Prêt",
+    ClickReady: "Cliquez sur Prêt à démarrer",
+    Cancel: "Annuler",
     /* Modal */
     modalLogoutTitle: "Se déconnecter",
     modalLogoutTitleText: "Êtes-vous sûr de vouloir vous déconnecter?",

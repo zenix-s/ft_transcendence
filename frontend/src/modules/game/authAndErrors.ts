@@ -29,28 +29,27 @@ interface message {
 async function authorization(gameId: number, socket:WebSocket)
 {
 	const token = localStorage.getItem("access_token");
-	const userConfirmed = await modal({
-			type: "gameFinished"});
-
-	// If user canceled, stop everything
-	if (!userConfirmed)
-	{
-		console.log("User canceled");
-		navigateTo("dashboard", false, true);
-		return;
-	}
 	const obj : message = {
 		action: 0,
 		gameId:gameId,
 		token: token
-		};
-		socket.send(JSON.stringify(obj));
-		// METER AQUI LA CUENTA ATRÁS
-		//await startCountdown(3); // wait 3 seconds before continuing
-		obj.action = 1;
-		socket.send(JSON.stringify(obj));
-		obj.action = 4;
-		socket.send(JSON.stringify(obj));
+	};
+	socket.send(JSON.stringify(obj));
+	obj.action = 1;
+
+	const userConfirmed = await modal({type: "setReady"});
+	// If user canceled, stop everything
+	if (!userConfirmed)
+	{
+		//engine.stopRenderLoop();
+		console.log("User canceled");
+		navigateTo("dashboard", false, true);
+		return;
+	}
+
+	socket.send(JSON.stringify(obj));
+	obj.action = 4;
+	socket.send(JSON.stringify(obj));
 }
 
 async function endGame(finBool:number, gameId:number,
@@ -104,7 +103,7 @@ export async function endGameAuthAndErrors(data: string, gameId:number, socket:W
 	}
 	if (data == "UnauthorizedAccess")
 	{
-		authorization(gameId, socket);
+		await authorization(gameId, socket);
 	}
 	else {
 		console.warn(t("GameError"));

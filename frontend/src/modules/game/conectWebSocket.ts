@@ -30,9 +30,9 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 		};
 		socket.send(JSON.stringify(obj));
 		obj.action = 1;
-		//if (ready == 1)
-		// {
-			engine.runRenderLoop(() => {
+		engine.runRenderLoop(() => {
+			if (ready == 1)
+			{
 				obj.action = 1;
 				socket.send(JSON.stringify(obj));
 				
@@ -46,9 +46,9 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 					obj.action = 2;
 					socket.send(JSON.stringify(obj));
 				}
-				scene.render();
-			});
-		//}
+			}
+			scene.render();
+		});
 	})
 
 	socket.addEventListener("message", async (msg) => {
@@ -73,9 +73,9 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 				engine.stopRenderLoop();
 			if (data.error == "UnauthorizedAccess" && ready == 1)
 				return ;
-			else if (data.error == "UnauthorizedAccess" && ready == 0)
+			await endGameAuthAndErrors(data.error, gameId, socket, player1, player2, scores, ball);
+			if (data.error == "UnauthorizedAccess" && ready == 0)
 					ready = 1;
-			endGameAuthAndErrors(data.error, gameId, socket, player1, player2, scores, ball);
 		}
 		return ;
 	});

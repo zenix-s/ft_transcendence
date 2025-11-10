@@ -9,7 +9,7 @@ export function modal({
   winner,
   gameName,
 }: {
-  type?: "logout" | "gameFinished" | "gameInvitation",
+  type?: "logout" | "gameFinished" | "gameInvitation" | "setReady",
   player1Score?: number,
   player2Score?: number,
   winner?: string,
@@ -47,12 +47,21 @@ export function modal({
       const winnerName = winner;
       const scoreText = `${player1Score ?? 0} - ${player2Score ?? 0}`;
 
+      const Winner = t("Winner");
+      const Unknown = t("Unknown");
+      const FinalScore = t("FinalScore");
       // INÉS, tienes que incluir las traducciones de texto en i18n.ts
-      title = "GAME FINISHED";
-      titleText = `🏆 Winner: ${winnerName ?? "Unknown"}`;
-      text = `Final Score: ${scoreText}`;
-      confirmButtonText = "Return";
+      title = t("gameFinished");
+      titleText = `🏆 ${Winner}: ${winnerName ?? Unknown}`;
+      text = `${FinalScore}: ${scoreText}`;
+      confirmButtonText = t("Return");
       icon_msg = undefined;
+    }
+    else if (type === "setReady")
+    {
+      title = t("SetReady");
+      titleText = t("isReady");
+      confirmButtonText = t("Ready");
     }
 
     else if (type === "gameInvitation") {

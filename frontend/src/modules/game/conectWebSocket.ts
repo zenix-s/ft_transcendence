@@ -19,6 +19,7 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 	const socket = new WebSocket(getWsUrl("/game/pong"));
 	let up = 0;
 	let down = 0;
+	let ready = 0;
 	
 	socket.addEventListener("open", () => {
 		console.log("conectado websockket");
@@ -29,22 +30,25 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 		};
 		socket.send(JSON.stringify(obj));
 		obj.action = 1;
-		engine.runRenderLoop(() => {
-			obj.action = 1;
-			 socket.send(JSON.stringify(obj));
-	
-			if (up == 1 && down == 0)
-			{
-				obj.action = 3;
+		//if (ready == 1)
+		//{
+			engine.runRenderLoop(() => {
+				obj.action = 1;
 				socket.send(JSON.stringify(obj));
-			}
-			if (down == 1 && up == 0)
-			{
-				obj.action = 2;
-				socket.send(JSON.stringify(obj));
-			}
-			scene.render();
-		});
+				
+				if (up == 1 && down == 0)
+				{
+					obj.action = 3;
+					socket.send(JSON.stringify(obj));
+				}
+				if (down == 1 && up == 0)
+				{
+					obj.action = 2;
+					socket.send(JSON.stringify(obj));
+				}
+				scene.render();
+			});
+		//}
 	})
 
 	socket.addEventListener("message", async (msg) => {
@@ -67,6 +71,10 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 		else if (data.type == "error") {
 			if (data.error == "GameAlreadyFinished" || (data.error != "UnauthorizedAccess" && data.error != "GameNotFound"))
 				engine.stopRenderLoop();
+			if (data.error == "UnauthorizedAccess" && ready == 1)
+				return ;
+			else if (data.error == "UnauthorizedAccess" && ready == 0)
+					ready = 1;
 			endGameAuthAndErrors(data.error, gameId, socket, player1, player2, scores, ball);
 		}
 		return ;

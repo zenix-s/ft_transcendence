@@ -87,6 +87,23 @@ export class PongGameManager implements IPongGameManager {
             return Result.error(ApplicationError.GameFull);
         }
 
+        if (activeGame.game.isSinglePlayerMode()) {
+            try {
+                const match = await this.fastify.MatchRepository.findById({ id: activeGame.matchId });
+                if (match && match.canStart()) {
+                    const started = match.start();
+                    if (started) {
+                        await this.fastify.MatchRepository.update({ match });
+                    }
+                }
+            } catch (error) {
+                return this.fastify.handleError({
+                    code: ApplicationError.InternalServerError,
+                    error,
+                });
+            }
+        }
+
         return Result.success(undefined);
     }
 

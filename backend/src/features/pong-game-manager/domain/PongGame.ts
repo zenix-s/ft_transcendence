@@ -468,6 +468,10 @@ export class PongGame {
     }
 
     public isGameOver(): boolean {
+        if (this.gameStatus === GAME_STATUS.GAME_OVER) {
+            return true;
+        }
+
         if (!this.player1 || !this.player2) return false;
 
         const player1State = this.player1.getState();

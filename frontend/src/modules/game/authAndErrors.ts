@@ -37,8 +37,8 @@ async function endGame(finBool:number, gameId:number,
 		navigateTo("dashboard", false, true);
 		await modal({
 			type: "gameFinished",
-			player1Score: finished.match.players[0],
-			player2Score: finished.match.players[1],
+			player1Score: finished.match.players[0].score,
+			player2Score: finished.match.players[1].score,
 			winner: "patata"});
 	}
 }

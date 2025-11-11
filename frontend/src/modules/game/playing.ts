@@ -37,7 +37,8 @@ export function initGame3D() {
 	const id = params.get("id");
 	const singlePlayer = params.get("singlePlayer");
 	const multiPlayer = params.get("mutiPlayer");
-	if (!id || !(!singlePlayer && !multiPlayer) || (singlePlayer && multiPlayer))
+	const playerView = params.get("view");
+	if (!id || !playerView || (playerView != "2D" && playerView != "3D") || !(!singlePlayer && !multiPlayer) || (singlePlayer && multiPlayer))
 	{
 		showToast(t("URLNotCorrect"), "error");
 		console.warn(t("URLNotCorrect"));
@@ -60,7 +61,7 @@ export function initGame3D() {
 	const scene = new Scene(engine);
 
 	// Cámara
-	createCamera(multiPlayer, scene, canvas);
+	createCamera(playerView, scene, canvas);
 
 	// Luz
 	const light = new HemisphericLight("light", new Vector3(0, 1, 0), scene);
@@ -70,8 +71,8 @@ export function initGame3D() {
 	createTable(scene);
 
 	// JUGADORES
-	const playerLeft = createPlayerLeft(scene);
-	const playerRight = createPlayerRight(scene);
+	const playerLeft = createPlayerLeft(playerView, scene);
+	const playerRight = createPlayerRight(playerView, scene);
 
 	//SCORE
 	const scores = createScores();
@@ -79,7 +80,7 @@ export function initGame3D() {
 		return ;
 
 	// PELOTA
-	const ball = createBall(scene);
+	const ball = createBall(playerView, scene);
 
 	// CUENTA ATRÁS INICIAL
 	startCountdown(3, "start");

@@ -4,7 +4,7 @@ import { showToast } from "@/components/toast";
 import { t } from "@/app/i18n";
 import { navigateTo } from "@/app/navigation";
 
-export function createBall(scene:Scene)
+export function createBall(playerView: string | null, scene:Scene)
 {
 	const ball_html : Mesh = MeshBuilder.CreateSphere("ball", { diameter: 0.3 , segments : 32 }, scene);
 	const ball : Ball = {
@@ -13,7 +13,16 @@ export function createBall(scene:Scene)
 		posY : 0.15,
 		speed : 1,
 	}
-	ball.ball.position.y = 0.3;
+	if (playerView === "2D")
+	{
+		ball.ball.position.y = 0.2;
+		const mat = new StandardMaterial("ballMat", scene);
+		mat.disableLighting = true;
+		mat.emissiveColor = new Color3(1, 1, 1);
+		ball_html.material = mat;
+	}
+	else
+		ball.ball.position.y = 0.5;
 	console.log("Ball=", ball);
 	return (ball);
 }
@@ -40,12 +49,22 @@ export function createScores()
 	return (scores);
 }
 
-export function createPlayerRight(scene:Scene)
+export function createPlayerRight(playerView: string | null, scene:Scene)
 {
-	const paddle2 : Mesh = MeshBuilder.CreateBox("paddle2", { width: 0.2, height: 0.3, depth: 1.6 }, scene);
-	paddle2.position.set(3.8, 0.25, 0);
+	let paddle2;
+	if (playerView === "2D")
+		paddle2 = MeshBuilder.CreateBox("paddle2", { width: 0.2, height: 0.01, depth: 1.6 }, scene);
+	else
+		paddle2 = MeshBuilder.CreateBox("paddle2", { width: 0.2, height: 0.5, depth: 1.6 }, scene);
+	paddle2.position.set(3.8, 0.2, 0);
 	const paddle2Mat = new StandardMaterial("paddle2Mat", scene);
-	paddle2Mat.diffuseColor = new Color3(1, 0, 0);  // Red
+	if (playerView === "2D")
+	{
+		paddle2Mat.disableLighting = true;
+		paddle2Mat.emissiveColor = new Color3(1, 0, 0);
+	}
+	else
+		paddle2Mat.diffuseColor = new Color3(1, 0, 0);  // Red
 	paddle2.material = paddle2Mat;
 
 	const	playerRight : Player = {
@@ -60,12 +79,22 @@ export function createPlayerRight(scene:Scene)
 	return (playerRight);
 }
 
-export function createPlayerLeft(scene:Scene)
+export function createPlayerLeft(playerView: string | null, scene:Scene)
 {
-	const paddle1 : Mesh = MeshBuilder.CreateBox("paddle1", { width: 0.2, height: 0.3, depth: 1.6 }, scene);
-	paddle1.position.set(-3.8, 0.25, 0);
+	let paddle1 : Mesh;
+	if (playerView === "2D")
+		paddle1 = MeshBuilder.CreateBox("paddle1", { width: 0.2, height: 0.01, depth: 1.6 }, scene);
+	else
+		paddle1 = MeshBuilder.CreateBox("paddle1", { width: 0.2, height: 0.5, depth: 1.6 }, scene);
+	paddle1.position.set(-3.8, 0.2, 0);
 	const paddle1Mat = new StandardMaterial("paddle1Mat", scene);
-	paddle1Mat.diffuseColor = new Color3(0, 0, 1); // Blue
+	if (playerView === "2D")
+	{
+		paddle1Mat.disableLighting = true;
+		paddle1Mat.emissiveColor = new Color3(0, 0, 1); // Blue
+	}
+	else
+		paddle1Mat.diffuseColor = new Color3(0, 0, 1); // Blue
 	paddle1.material = paddle1Mat;
 
 	const playerLeft : Player = {
@@ -90,10 +119,10 @@ export function createTable(scene:Scene)
 	table.material = tableMat;
 }
 
-export function createCamera(multiPlayer:string | null, scene:Scene, canvas:HTMLCanvasElement)
+export function createCamera(playerView: string | null, scene:Scene, canvas:HTMLCanvasElement)
 {
 	let camera;
-	if (multiPlayer)
+	if (playerView === "3D")
 		camera = new ArcRotateCamera("camera", Math.PI / 2 + Math.PI, Math.PI / 4, 12, Vector3.Zero(), scene);
 	else
 	{

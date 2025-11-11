@@ -50,7 +50,6 @@ export function modal({
       const Winner = t("Winner");
       const Unknown = t("Unknown");
       const FinalScore = t("FinalScore");
-      // INÉS, tienes que incluir las traducciones de texto en i18n.ts
       title = t("gameFinished");
       titleText = `🏆 ${Winner}: ${winnerName ?? Unknown}`;
       text = `${FinalScore}: ${scoreText}`;

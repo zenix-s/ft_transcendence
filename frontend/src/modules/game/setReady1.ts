@@ -12,7 +12,8 @@ export function ready1()
 
 		const difficulty = (document.getElementById("difficultyAI") as HTMLSelectElement)?.value;
 		const maxPoints = (document.getElementById("puntosMax") as HTMLSelectElement)?.value;
-		if (!difficulty || !maxPoints)
+		const playerView = (document.getElementById("playerView") as HTMLSelectElement)?.value;
+		if (!difficulty || !maxPoints || !playerView)
 		{
 			showToast(t("DiffAndMax"), "error");
 			console.warn("DiffAndMax");
@@ -28,7 +29,7 @@ export function ready1()
 			return ;
 		}
 		console.log("single player id =", id);
-		navigateTo(`playing?id=${id}&singleplayer`);
+		navigateTo(`playing?id=${id}&singleplayer&view=${playerView}`);
 		//navigateTo(`game?id=${id}&singlePlayer=true&mutiPlayer=false`);
 	});
 }

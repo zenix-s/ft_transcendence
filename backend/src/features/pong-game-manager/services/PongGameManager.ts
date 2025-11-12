@@ -71,41 +71,59 @@ export class PongGameManager implements IPongGameManager {
     }
 
     async addPlayerToGame(gameId: number, playerId: number): Promise<Result<void>> {
-        const activeGame = this.activeGames.get(gameId);
-        if (!activeGame) {
-            return Result.error(ApplicationError.GameNotFound);
-        }
-
-        // Obtener los datos del usuario
-        const userResult = await this.fastify.UserRepository.getUser({ id: playerId });
-        if (!userResult.isSuccess || !userResult.value) {
-            return Result.error(userResult.error || ApplicationError.UserNotFound);
-        }
-
-        const added = activeGame.game.addPlayer(playerId, userResult.value);
-        if (!added) {
-            return Result.error(ApplicationError.GameFull);
-        }
-
-        // Si es un juego single player, iniciar el match cuando se une el jugador humano
-        if (activeGame.game.isSinglePlayerMode() || activeGame.game.canStart()) {
-            try {
-                const match = await this.fastify.MatchRepository.findById({ id: activeGame.matchId });
-                if (match && match.canStart()) {
-                    const started = match.start();
-                    if (started) {
-                        await this.fastify.MatchRepository.update({ match });
-                    }
-                }
-            } catch (error) {
-                return this.fastify.handleError({
-                    code: ApplicationError.InternalServerError,
-                    error,
-                });
+        try {
+            // Paso 1: Validar que el juego existe en memoria
+            const activeGame = this.activeGames.get(gameId);
+            if (!activeGame) {
+                return Result.error(ApplicationError.GameNotFound);
             }
-        }
 
-        return Result.success(undefined);
+            // Paso 2: Obtener los datos del usuario desde la base de datos
+            const userResult = await this.fastify.UserRepository.getUser({ id: playerId });
+            if (!userResult.isSuccess || !userResult.value) {
+                return Result.error(userResult.error || ApplicationError.UserNotFound);
+            }
+
+            // Paso 3: Agregar el jugador al juego en memoria
+            const added = activeGame.game.addPlayer(playerId, userResult.value);
+            if (!added) {
+                return Result.error(ApplicationError.GameFull);
+            }
+
+            // Paso 4: Obtener la entidad Match de la base de datos
+            const match = await this.fastify.MatchRepository.findById({ id: activeGame.matchId });
+            if (!match) {
+                return Result.error(ApplicationError.MatchNotFound);
+            }
+
+            // Paso 5: Agregar el jugador a la entidad Match y guardar en base de datos
+            const playerAddedToMatch = match.addPlayer(playerId);
+            if (playerAddedToMatch) {
+                await this.fastify.MatchRepository.update({ match });
+            }
+
+            // Paso 6: Determinar si el juego puede iniciarse
+            const canGameStart = activeGame.game.canStart(); // Verifica si hay player1 y player2 (incluyendo AI)
+            const isSinglePlayer = activeGame.game.isSinglePlayerMode();
+            const canMatchStart = match.canStart(); // Verifica si status es PENDING y hay jugadores
+
+            // Paso 7: Iniciar el match automáticamente si se cumplen las condiciones
+            if (canGameStart && canMatchStart) {
+                // En single player: se inicia cuando el jugador humano se une (AI ya está listo)
+                // En multiplayer: se inicia cuando ambos jugadores humanos se han unido
+                const started = match.start();
+                if (started) {
+                    await this.fastify.MatchRepository.update({ match });
+                }
+            }
+
+            return Result.success(undefined);
+        } catch (error) {
+            return this.fastify.handleError({
+                code: ApplicationError.InternalServerError,
+                error,
+            });
+        }
     }
 
     getGameState(gameId: number): Result<{ gameId: number; state: GameState }> {

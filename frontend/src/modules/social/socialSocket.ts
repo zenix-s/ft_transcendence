@@ -5,6 +5,7 @@ import { acceptInvitation } from "@/components/friendsSidebar/friendsSidebar";
 import { modal } from "@/components/modal";
 import { showToast } from "@/components/toast";
 import type { Friend } from "@/types/friend"
+import { matchTable, loadMatchHistory } from "@/components/history";
 
 interface AuthSuccessMessage {
   type: "authSuccess";
@@ -153,6 +154,15 @@ export class SocialWebSocketClient {
       case "friendProfileUpdate": {
         console.log("Friend profile update detected");
         this.requestFriendsList();
+
+        // Reload History
+        const perPageSelect = document.querySelector<HTMLSelectElement>(".datatable-selector");
+        if (perPageSelect && matchTable) {
+          const currentPerPage = parseInt(perPageSelect.value, 10);
+          matchTable.destroy();
+          await loadMatchHistory(undefined, currentPerPage);
+        }
+
         break;
       }
 

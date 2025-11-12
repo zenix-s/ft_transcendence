@@ -89,6 +89,7 @@ export class PongGame {
     private isPlayer2AI: boolean;
     private aiDifficulty: number;
     private isCancelled: boolean;
+    private aiTimer: number;
 
     constructor(winnerScore = 5, maxGameTime = 120, isPlayer2AI = false, aiDifficulty = 0.95) {
         this.gameStatus = GAME_STATUS.WAITING_FOR_PLAYERS;
@@ -106,6 +107,7 @@ export class PongGame {
         this.isPlayer2AI = isPlayer2AI;
         this.aiDifficulty = aiDifficulty;
         this.isCancelled = false;
+        this.aiTimer = 0;
     }
 
     public addPlayer(playerId: number, userData?: User): boolean {
@@ -191,8 +193,6 @@ export class PongGame {
     }
 
     private resumeAfterGoal(): void {
-        this.resetBall();
-        this.resetPlayerPositions();
         this.gameStatus = GAME_STATUS.PLAYING;
         this.lastUpdate = Date.now();
     }
@@ -247,6 +247,9 @@ export class PongGame {
             return; // El juego terminó
         }
 
+        this.resetPlayerPositions();
+        this.resetBall();
+
         // Si el juego continúa, iniciar countdown para reanudar
         this.startGoalCountdown();
     }
@@ -275,6 +278,60 @@ export class PongGame {
     private updateAI(): void {
         if (!this.player2 || !this.isPlayer2AI) return;
 
+        if (this.aiTimer == 0) this.aiTimer = Date.now();
+
+        const player2State = this.player2.getState();
+        const ballY = this.ball.position.y;
+        const paddleY = player2State.position;
+
+        const diff = ballY - paddleY;
+        const threshold = 2;
+
+        // If enough time hasn't passed since last AI move, skip
+        // time in ms based on difficulty
+        const now = Date.now();
+        const aiMoveInterval = 95 - Math.min(1, this.aiDifficulty * 3) * 90; // from 10ms (hard) to 100ms (easy)
+        if (now - this.aiTimer < aiMoveInterval) {
+            return;
+        }
+        this.aiTimer = Date.now();
+
+        // El ancho de todo es de 100 para 1 ser 65 la posicion de la pelota
+        // El ancho se decide por la ia
+        const aiReactionZone = 50 + this.aiDifficulty * 30; // from 50 to 100
+        if (this.ball.position.x > aiReactionZone) {
+            // Volver al centro
+            if (Math.abs(paddleY - 50) > threshold) {
+                if (paddleY < 50) {
+                    this.player2.moveDown();
+                } else {
+                    this.player2.moveUp();
+                }
+            }
+            return;
+        }
+
+        if (Math.abs(diff) > threshold) {
+            const moveSpeed = this.aiDifficulty * 10;
+
+            if (diff > 0) {
+                const newPosition = Math.min(100, paddleY + moveSpeed);
+                if (player2State.position < newPosition) {
+                    this.player2.moveDown();
+                }
+            } else {
+                const newPosition = Math.max(0, paddleY - moveSpeed);
+                if (player2State.position > newPosition) {
+                    this.player2.moveUp();
+                }
+            }
+        }
+    }
+
+    // OLD VERSION
+    /* private updateAI(): void {
+        if (!this.player2 || !this.isPlayer2AI) return;
+
         const player2State = this.player2.getState();
         const ballY = this.ball.position.y;
         const paddleY = player2State.position;
@@ -301,7 +358,7 @@ export class PongGame {
                 }
             }
         }
-    }
+    } */
 
     private updateBall(deltaTime: number): void {
         // Solo mover la pelota si no hay countdown activo

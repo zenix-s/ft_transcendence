@@ -276,61 +276,163 @@ export class PongGame {
     }
 
     private updateAI(): void {
+        // Verificar que existe el jugador 2 y que es IA
         if (!this.player2 || !this.isPlayer2AI) return;
 
+        // Obtener posiciones actuales de la pelota y la pala de la IA
         const player2State = this.player2.getState();
         const ballY = this.ball.position.y;
         const paddleY = player2State.position;
 
-        // Optimize for difficulties 0.6+ (ignore very low difficulties)
-        const adjustedDifficulty = Math.max(0.6, this.aiDifficulty); // Clamp to minimum 0.6
-        const difficultyRange = (adjustedDifficulty - 0.6) / 0.4; // Scale 0.6-1.0 to 0-1
-        const difficultySquared = difficultyRange * difficultyRange; // Exponential curve
+        // ===== CONSTANTES DE DIFICULTAD DE LA IA =====
+        // Niveles de dificultad disponibles (0.6 = Fácil, 0.8 = Media, 1.0 = Difícil)
+        // const EASY = 0.6; // Nivel 6
+        const MEDIUM = 0.8; // Nivel 8
+        const HARD = 1.0; // Nivel 10
 
-        // Faster AI timing optimized for 0.6+ difficulties
+        // Velocidad de reacción (milisegundos entre cada movimiento)
+        const SPEED_EASY = 15; // Igual velocidad pero con más fallos
+        const SPEED_MEDIUM = 15; // Igual velocidad pero con algunos fallos
+        const SPEED_HARD = 15; // Velocidad máxima sin fallos
+
+        // Punto de reacción (posición X donde la IA empieza a reaccionar)
+        // Valores más bajos = reacciona antes (más difícil)
+        const REACTION_EASY = 50; // Reacciona tarde (cuando pelota está cerca)
+        const REACTION_MEDIUM = 40; // Reacciona en punto medio
+        const REACTION_HARD = 35; // Reacciona temprano pero no instantáneo
+
+        // Cantidad de error en el objetivo (imprecisión de la IA)
+        const ERROR_EASY = 12; // ±12 unidades de error (muy imprecisa)
+        const ERROR_MEDIUM = 6; // ±6 unidades de error (bastante imprecisa)
+        const ERROR_HARD = 2; // ±2 unidades de error (casi perfecta pero humana)
+
+        // Umbral de precisión (qué tan cerca debe estar para dejar de moverse)
+        const THRESHOLD_EASY = 5; // Mucho menos precisa
+        const THRESHOLD_MEDIUM = 3; // Menos precisa
+        const THRESHOLD_HARD = 1; // Muy precisa
+
+        // ===== SELECCIÓN DE CONFIGURACIÓN SEGÚN DIFICULTAD =====
+        let aiMoveInterval, reactionPoint, errorAmount, threshold;
+
+        if (this.aiDifficulty >= HARD) {
+            // Nivel 10 (Difícil) - IA casi perfecta
+            aiMoveInterval = SPEED_HARD;
+            reactionPoint = REACTION_HARD;
+            errorAmount = ERROR_HARD;
+            threshold = THRESHOLD_HARD;
+        } else if (this.aiDifficulty >= MEDIUM) {
+            // Nivel 8 (Media) - IA competente con pequeños errores
+            aiMoveInterval = SPEED_MEDIUM;
+            reactionPoint = REACTION_MEDIUM;
+            errorAmount = ERROR_MEDIUM;
+            threshold = THRESHOLD_MEDIUM;
+        } else {
+            // Nivel 6 (Fácil) - IA lenta e imprecisa
+            aiMoveInterval = SPEED_EASY;
+            reactionPoint = REACTION_EASY;
+            errorAmount = ERROR_EASY;
+            threshold = THRESHOLD_EASY;
+        }
+
+        // ===== CONTROL DE VELOCIDAD DE REACCIÓN Y FALLOS =====
+        // Limitar la frecuencia con la que la IA puede moverse
         const now = Date.now();
-        const aiMoveInterval = Math.max(15, 35 - difficultySquared * 20); // 35ms (0.6) to 15ms (1.0)
         if (this.aiTimer == 0) this.aiTimer = now;
         if (now - this.aiTimer < aiMoveInterval) {
-            return;
+            return; // No ha pasado suficiente tiempo, salir sin mover
         }
         this.aiTimer = now;
 
-        // If ball is moving away from AI, return to center
+        // ===== FALLOS DE DECISIÓN SEGÚN DIFICULTAD =====
+        // Todas las IA pueden fallar ocasionalmente (humanización)
+        let decisionFailureChance = 0;
+        if (this.aiDifficulty < MEDIUM) {
+            decisionFailureChance = 0.4; // 40% fácil
+        } else if (this.aiDifficulty < HARD) {
+            decisionFailureChance = 0.2; // 20% media
+        } else {
+            decisionFailureChance = 0.05; // 5% difícil (muy ocasional)
+        }
+
+        if (Math.random() < decisionFailureChance) {
+            return; // Fallar en tomar una decisión (quedarse inmóvil)
+        }
+
+        // ===== COMPORTAMIENTO CUANDO LA PELOTA SE ALEJA =====
+        // Si la pelota se mueve hacia la izquierda (alejándose de la IA)
         if (this.ball.velocity.x <= 0) {
-            const centerDiff = 50 - paddleY;
-            if (Math.abs(centerDiff) > 5) {
-                if (centerDiff > 0) {
-                    this.player2.moveDown();
+            // Solo la IA difícil usa la estrategia avanzada de posicionamiento
+            if (this.aiDifficulty >= HARD) {
+                // En lugar de ir al centro absoluto (50), ir a la mitad de la zona actual
+                let targetZone;
+                if (paddleY <= 40) {
+                    // Zona superior: ir a la mitad entre 10 y 40
+                    targetZone = 35;
+                } else if (paddleY >= 60) {
+                    // Zona inferior: ir a la mitad entre 60 y 90
+                    targetZone = 65;
                 } else {
-                    this.player2.moveUp();
+                    // Zona media: ir al centro
+                    targetZone = 50;
+                }
+
+                const zoneDiff = targetZone - paddleY;
+                if (Math.abs(zoneDiff) > 5) {
+                    if (zoneDiff > 0) {
+                        this.player2.moveDown(); // Moverse hacia abajo hacia la zona objetivo
+                    } else {
+                        this.player2.moveUp(); // Moverse hacia arriba hacia la zona objetivo
+                    }
                 }
             }
-            return;
+            // IA fácil y media se quedan donde están (no usan tácticas avanzadas)
+            return; // No seguir procesando si la pelota se aleja
         }
 
-        // AI reacts when ball crosses certain X position - FIXED: lower X = earlier reaction
-        const reactionPoint = 60 - difficultySquared * 30; // X=60 (diff 0.6) to X=30 (diff 1.0)
+        // ===== VERIFICAR SI LA PELOTA ESTÁ EN ZONA DE REACCIÓN =====
+        // Solo reaccionar cuando la pelota cruza el punto de reacción
         if (this.ball.position.x < reactionPoint) {
-            return;
+            return; // Pelota aún no ha llegado al punto de reacción
         }
 
-        // Calculate target position with some error for difficulties below 1.0
+        // ===== CALCULAR POSICIÓN OBJETIVO CON ERROR =====
+        // Calcular dónde debe ir la pala, añadiendo imprecisión según dificultad
         let targetY = ballY;
-        if (adjustedDifficulty < 1.0) {
-            const errorAmount = (1.0 - difficultySquared) * 5; // Up to ±5 error for 0.6, 0 for 1.0
-            targetY += (Math.random() - 0.5) * errorAmount;
+
+        // ===== ESTRATEGIA DE ÁNGULOS (SOLO IA MEDIA Y ALTA) =====
+        // IA media y alta intentan golpear con los extremos de la pala para crear ángulos
+        if (this.aiDifficulty >= MEDIUM) {
+            const useAngleStrategy =
+                this.aiDifficulty >= HARD
+                    ? Math.random() < 0.7 // IA difícil: 70% del tiempo usa ángulos
+                    : Math.random() < 0.2; // IA media: solo 20% del tiempo usa ángulos
+
+            if (useAngleStrategy) {
+                // Decidir si golpear con parte superior o inferior de la pala
+                const useTopOfPaddle = Math.random() < 0.5;
+                const angleOffset = useTopOfPaddle ? -5 : 5; // ±5 unidades para golpear con extremos
+                targetY += angleOffset;
+
+                // Asegurar que el objetivo esté dentro de los límites de la pala
+                targetY = Math.max(10, Math.min(90, targetY));
+            }
         }
 
-        // Move towards target with difficulty-based precision
-        const diff = targetY - paddleY;
-        const threshold = Math.max(1, 2.5 - difficultySquared * 1.5); // 2.5 (diff 0.6) to 1 (diff 1.0)
+        // Añadir error aleatorio después de la estrategia de ángulos
+        if (errorAmount > 0) {
+            targetY += (Math.random() - 0.5) * errorAmount; // Añadir error aleatorio
+        }
 
+        // ===== MOVER LA PALA HACIA EL OBJETIVO =====
+        // Calcular diferencia entre posición actual y objetivo
+        const diff = targetY - paddleY;
+
+        // Solo moverse si la diferencia es mayor que el umbral de precisión
         if (Math.abs(diff) > threshold) {
             if (diff > 0 && paddleY < 90) {
-                this.player2.moveDown();
+                this.player2.moveDown(); // Mover hacia abajo
             } else if (diff < 0 && paddleY > 10) {
-                this.player2.moveUp();
+                this.player2.moveUp(); // Mover hacia arriba
             }
         }
     }
@@ -346,9 +448,9 @@ export class PongGame {
             this.ball.velocity.x * this.ball.velocity.x + this.ball.velocity.y * this.ball.velocity.y
         );
 
-        if (currentSpeed > 1.4) {
+        if (currentSpeed > 1.8) {
             // Solo aplicar resistencia si hay velocidad alta
-            const airResistance = 0.995; // Resistencia más notable para velocidades altas
+            const airResistance = 0.9975; // Resistencia moderada para velocidades altas
             this.ball.velocity.x *= airResistance;
             this.ball.velocity.y *= airResistance;
         }
@@ -380,11 +482,11 @@ export class PongGame {
                 // Calcular qué parte de la pala tocó la pelota (-1 superior, 0 centro, 1 inferior)
                 const contactPoint = (this.ball.position.y - player1State.position) / 10;
 
-                // Aumentar velocidad más notablemente en cada golpe (máximo 2.0x)
+                // Aumentar velocidad moderadamente en cada golpe (máximo 2.2x)
                 const currentSpeed = Math.sqrt(
                     this.ball.velocity.x * this.ball.velocity.x + this.ball.velocity.y * this.ball.velocity.y
                 );
-                const speedMultiplier = Math.min(2.0, currentSpeed * 1.08);
+                const speedMultiplier = Math.min(2.2, currentSpeed * 1.06);
 
                 // Aplicar ángulo basado en el punto de contacto
                 const maxAngleModifier = 0.4;
@@ -405,11 +507,11 @@ export class PongGame {
                 // Calcular qué parte de la pala tocó la pelota (-1 superior, 0 centro, 1 inferior)
                 const contactPoint = (this.ball.position.y - player2State.position) / 10;
 
-                // Aumentar velocidad más notablemente en cada golpe (máximo 2.0x)
+                // Aumentar velocidad moderadamente en cada golpe (máximo 2.2x)
                 const currentSpeed = Math.sqrt(
                     this.ball.velocity.x * this.ball.velocity.x + this.ball.velocity.y * this.ball.velocity.y
                 );
-                const speedMultiplier = Math.min(2.0, currentSpeed * 1.08);
+                const speedMultiplier = Math.min(2.2, currentSpeed * 1.06);
 
                 // Aplicar ángulo basado en el punto de contacto
                 const maxAngleModifier = 0.4;

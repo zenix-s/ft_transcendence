@@ -31,13 +31,13 @@ export class PongPlayer {
     }
 
     public moveUp(): void {
-        if (this.state.position > 0) {
+        if (this.state.position > 10) {
             this.state.position -= 1;
         }
     }
 
     public moveDown(): void {
-        if (this.state.position < 100) {
+        if (this.state.position < 90) {
             this.state.position += 1;
         }
     }
@@ -98,7 +98,7 @@ export class PongGame {
         this.player2 = undefined;
         this.ball = {
             position: { x: 50, y: 50 },
-            velocity: { x: 0.7, y: 0.7 },
+            velocity: { x: Math.random() > 0.5 ? 0.8 : -0.8, y: 0 },
         };
         this.lastUpdate = Date.now();
         this.gameTimer = 0;
@@ -278,31 +278,29 @@ export class PongGame {
     private updateAI(): void {
         if (!this.player2 || !this.isPlayer2AI) return;
 
-        if (this.aiTimer == 0) this.aiTimer = Date.now();
-
         const player2State = this.player2.getState();
         const ballY = this.ball.position.y;
         const paddleY = player2State.position;
 
-        const diff = ballY - paddleY;
-        const threshold = 2;
+        // Optimize for difficulties 0.6+ (ignore very low difficulties)
+        const adjustedDifficulty = Math.max(0.6, this.aiDifficulty); // Clamp to minimum 0.6
+        const difficultyRange = (adjustedDifficulty - 0.6) / 0.4; // Scale 0.6-1.0 to 0-1
+        const difficultySquared = difficultyRange * difficultyRange; // Exponential curve
 
-        // If enough time hasn't passed since last AI move, skip
-        // time in ms based on difficulty
+        // Faster AI timing optimized for 0.6+ difficulties
         const now = Date.now();
-        const aiMoveInterval = 95 - Math.min(1, this.aiDifficulty * 3) * 90; // from 10ms (hard) to 100ms (easy)
+        const aiMoveInterval = Math.max(15, 35 - difficultySquared * 20); // 35ms (0.6) to 15ms (1.0)
+        if (this.aiTimer == 0) this.aiTimer = now;
         if (now - this.aiTimer < aiMoveInterval) {
             return;
         }
-        this.aiTimer = Date.now();
+        this.aiTimer = now;
 
-        // El ancho de todo es de 100 para 1 ser 65 la posicion de la pelota
-        // El ancho se decide por la ia
-        const aiReactionZone = 50 + this.aiDifficulty * 30; // from 50 to 100
-        if (this.ball.position.x > aiReactionZone) {
-            // Volver al centro
-            if (Math.abs(paddleY - 50) > threshold) {
-                if (paddleY < 50) {
+        // If ball is moving away from AI, return to center
+        if (this.ball.velocity.x <= 0) {
+            const centerDiff = 50 - paddleY;
+            if (Math.abs(centerDiff) > 5) {
+                if (centerDiff > 0) {
                     this.player2.moveDown();
                 } else {
                     this.player2.moveUp();
@@ -311,59 +309,48 @@ export class PongGame {
             return;
         }
 
-        if (Math.abs(diff) > threshold) {
-            const moveSpeed = this.aiDifficulty * 10;
+        // AI reacts when ball crosses certain X position - FIXED: lower X = earlier reaction
+        const reactionPoint = 60 - difficultySquared * 30; // X=60 (diff 0.6) to X=30 (diff 1.0)
+        if (this.ball.position.x < reactionPoint) {
+            return;
+        }
 
-            if (diff > 0) {
-                const newPosition = Math.min(100, paddleY + moveSpeed);
-                if (player2State.position < newPosition) {
-                    this.player2.moveDown();
-                }
-            } else {
-                const newPosition = Math.max(0, paddleY - moveSpeed);
-                if (player2State.position > newPosition) {
-                    this.player2.moveUp();
-                }
+        // Calculate target position with some error for difficulties below 1.0
+        let targetY = ballY;
+        if (adjustedDifficulty < 1.0) {
+            const errorAmount = (1.0 - difficultySquared) * 5; // Up to ±5 error for 0.6, 0 for 1.0
+            targetY += (Math.random() - 0.5) * errorAmount;
+        }
+
+        // Move towards target with difficulty-based precision
+        const diff = targetY - paddleY;
+        const threshold = Math.max(1, 2.5 - difficultySquared * 1.5); // 2.5 (diff 0.6) to 1 (diff 1.0)
+
+        if (Math.abs(diff) > threshold) {
+            if (diff > 0 && paddleY < 90) {
+                this.player2.moveDown();
+            } else if (diff < 0 && paddleY > 10) {
+                this.player2.moveUp();
             }
         }
     }
-
-    // OLD VERSION
-    /* private updateAI(): void {
-        if (!this.player2 || !this.isPlayer2AI) return;
-
-        const player2State = this.player2.getState();
-        const ballY = this.ball.position.y;
-        const paddleY = player2State.position;
-
-        const diff = ballY - paddleY;
-        const threshold = 2;
-
-        if (Math.abs(diff) > threshold) {
-            const moveSpeed = this.aiDifficulty;
-
-            if (diff > 0) {
-                const newPosition = Math.min(100, paddleY + moveSpeed);
-                for (let i = 0; i < Math.ceil(moveSpeed); i++) {
-                    if (player2State.position < newPosition) {
-                        this.player2.moveDown();
-                    }
-                }
-            } else {
-                const newPosition = Math.max(0, paddleY - moveSpeed);
-                for (let i = 0; i < Math.ceil(moveSpeed); i++) {
-                    if (player2State.position > newPosition) {
-                        this.player2.moveUp();
-                    }
-                }
-            }
-        }
-    } */
 
     private updateBall(deltaTime: number): void {
         // Solo mover la pelota si no hay countdown activo
         if (this.countdownManager.hasActiveCountdown()) {
             return;
+        }
+
+        // Aplicar resistencia al aire muy sutil para ralentizar la pelota gradualmente
+        const currentSpeed = Math.sqrt(
+            this.ball.velocity.x * this.ball.velocity.x + this.ball.velocity.y * this.ball.velocity.y
+        );
+
+        if (currentSpeed > 1.4) {
+            // Solo aplicar resistencia si hay velocidad alta
+            const airResistance = 0.995; // Resistencia más notable para velocidades altas
+            this.ball.velocity.x *= airResistance;
+            this.ball.velocity.y *= airResistance;
         }
 
         this.ball.position.x += this.ball.velocity.x * deltaTime * 60;
@@ -387,16 +374,52 @@ export class PongGame {
         const player1State = this.player1.getState();
         const player2State = this.player2.getState();
 
+        // Colisión con pala del jugador 1 (izquierda)
         if (this.ball.position.x <= 5 && this.ball.position.x >= 0) {
             if (Math.abs(this.ball.position.y - player1State.position) <= 10) {
-                this.ball.velocity.x = Math.abs(this.ball.velocity.x);
+                // Calcular qué parte de la pala tocó la pelota (-1 superior, 0 centro, 1 inferior)
+                const contactPoint = (this.ball.position.y - player1State.position) / 10;
+
+                // Aumentar velocidad más notablemente en cada golpe (máximo 2.0x)
+                const currentSpeed = Math.sqrt(
+                    this.ball.velocity.x * this.ball.velocity.x + this.ball.velocity.y * this.ball.velocity.y
+                );
+                const speedMultiplier = Math.min(2.0, currentSpeed * 1.08);
+
+                // Aplicar ángulo basado en el punto de contacto
+                const maxAngleModifier = 0.4;
+
+                this.ball.velocity.x = speedMultiplier * Math.cos(contactPoint * 0.3);
+                this.ball.velocity.y = this.ball.velocity.y * 0.8 + contactPoint * maxAngleModifier;
+
+                // Limitar velocidad Y para mantener jugabilidad
+                this.ball.velocity.y = Math.max(-0.6, Math.min(0.6, this.ball.velocity.y));
+
                 this.ball.position.x = 5;
             }
         }
 
+        // Colisión con pala del jugador 2 (derecha)
         if (this.ball.position.x >= 95 && this.ball.position.x <= 100) {
             if (Math.abs(this.ball.position.y - player2State.position) <= 10) {
-                this.ball.velocity.x = -Math.abs(this.ball.velocity.x);
+                // Calcular qué parte de la pala tocó la pelota (-1 superior, 0 centro, 1 inferior)
+                const contactPoint = (this.ball.position.y - player2State.position) / 10;
+
+                // Aumentar velocidad más notablemente en cada golpe (máximo 2.0x)
+                const currentSpeed = Math.sqrt(
+                    this.ball.velocity.x * this.ball.velocity.x + this.ball.velocity.y * this.ball.velocity.y
+                );
+                const speedMultiplier = Math.min(2.0, currentSpeed * 1.08);
+
+                // Aplicar ángulo basado en el punto de contacto
+                const maxAngleModifier = 0.4;
+
+                this.ball.velocity.x = -speedMultiplier * Math.cos(contactPoint * 0.3);
+                this.ball.velocity.y = this.ball.velocity.y * 0.8 + contactPoint * maxAngleModifier;
+
+                // Limitar velocidad Y para mantener jugabilidad
+                this.ball.velocity.y = Math.max(-0.6, Math.min(0.6, this.ball.velocity.y));
+
                 this.ball.position.x = 95;
             }
         }
@@ -405,8 +428,8 @@ export class PongGame {
     private resetBall(): void {
         this.ball.position = { x: 50, y: 50 };
         this.ball.velocity = {
-            x: Math.random() > 0.5 ? 1 : -1,
-            y: (Math.random() - 0.5) * 2,
+            x: Math.random() > 0.5 ? 0.8 : -0.8,
+            y: 0,
         };
     }
 

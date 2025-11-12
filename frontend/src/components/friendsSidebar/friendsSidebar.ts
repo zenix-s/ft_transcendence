@@ -129,7 +129,8 @@ export async function initFriendsSidebar() {
       const gameId = await fetchGameId(); // Create game PONG --> Y si hay otro juego?
       // Hay que enviar la invitación y poder elegir el juego
       inviteMultiplayer(username, gameId);
-      navigateTo(`playing?id=${gameId}&mutiPlayer`); // Temporal para pruebas?
+      const playerView = "3D";
+      navigateTo(`playing?id=${gameId}&mutiPlayer&view=${playerView}`); // Temporal para pruebas?
       //showToast("Invitando a: " + username, "success");
     }
   });

@@ -5,7 +5,7 @@ import { Engine, Scene, HemisphericLight, Vector3 } from "@babylonjs/core";
 import type { Ball, Player, Score } from "./gameData";
 import { socketAndRender } from "./conectWebSocket";
 import { createBall, createCamera, createPlayerLeft, createPlayerRight, createScores, createTable } from "./createGameObjs";
-import { startCountdown } from "@/components/countdown";
+//import { startCountdown } from "@/components/countdown";
 
 export function renderValues(posPlayerL:number, playerL:Player, posPlayerR:number, playerR:Player,
 	pointsL:number, pointsR:number, scores:Score, ballX:number, ballY:number, ball:Ball)
@@ -83,7 +83,7 @@ export function initGame3D() {
 	const ball = createBall(playerView, scene);
 
 	// CUENTA ATRÁS INICIAL
-	startCountdown(3, "start");
+//	startCountdown(3, "start");
 
 	socketAndRender(playerLeft, playerRight, scores, ball, engine, scene);
 		

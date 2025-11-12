@@ -5,6 +5,8 @@ import { navigateTo } from "@/app/navigation";
 import { renderValues } from "./playing";
 import type { Ball, Player, Score } from "./gameData";
 import { modal } from "@/components/modal";
+import type { Engine } from "@babylonjs/core";
+import { startCountdown } from "@/components/countdown";
 
 interface message {
 	action: number,
@@ -12,21 +14,7 @@ interface message {
 	token: string | null
 }
 
-// function startCountdown(seconds: number): Promise<void> {
-// 	return new Promise((resolve) => {
-// 		let counter = seconds;
-// 		const interval = setInterval(() => {
-// 			console.log(`Starting in ${counter}...`);
-// 			counter--;
-// 			if (counter < 0) {
-// 				clearInterval(interval);
-// 				resolve();
-// 			}
-// 		}, 1000);
-// 	});
-// }
-
-async function authorization(gameId: number, socket:WebSocket)
+async function authorization(gameId: number, socket:WebSocket, engine:Engine)
 {
 	const token = localStorage.getItem("access_token");
 	const obj : message = {
@@ -41,15 +29,15 @@ async function authorization(gameId: number, socket:WebSocket)
 	// If user canceled, stop everything
 	if (!userConfirmed)
 	{
-		//engine.stopRenderLoop();
+		engine.stopRenderLoop();
 		console.log("User canceled");
 		navigateTo("dashboard", false, true);
 		return;
 	}
-
 	socket.send(JSON.stringify(obj));
 	obj.action = 4;
 	socket.send(JSON.stringify(obj));
+	startCountdown(3, "start");
 }
 
 async function endGame(finBool:number, gameId:number,
@@ -64,10 +52,10 @@ async function endGame(finBool:number, gameId:number,
 			console.warn(t("GameError"));
 			navigateTo("dashboard", false, true);
 		}
+		console.log("game = ", JSON.stringify(finished));
 		const score1 = finished.match.players[0].score;
 		const score2 = finished.match.players[1].score;
 		renderValues(50, player1, 50, player2, score1, score2, scores, 50, 50, ball);
-		console.log("game = ", JSON.stringify(finished));
 		const playerL = finished.match.players[0].userId;
 		const playerR = finished.match.players[1].userId;
 		let winner = 1;
@@ -84,7 +72,7 @@ async function endGame(finBool:number, gameId:number,
 }
 
 export async function endGameAuthAndErrors(data: string, gameId:number, socket:WebSocket,
-	player1:Player, player2:Player, scores:Score, ball:Ball)
+	player1:Player, player2:Player, scores:Score, ball:Ball, engine:Engine)
 {
 	let finBool = 0;
 
@@ -103,7 +91,7 @@ export async function endGameAuthAndErrors(data: string, gameId:number, socket:W
 	}
 	if (data == "UnauthorizedAccess")
 	{
-		await authorization(gameId, socket);
+		await authorization(gameId, socket, engine);
 	}
 	else {
 		console.warn(t("GameError"));

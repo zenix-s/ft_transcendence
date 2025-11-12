@@ -1,10 +1,8 @@
 import { getWsUrl } from "@/api";
 import { t } from "@/app/i18n";
 import { navigateTo } from "@/app/navigation";
-import { acceptInvitation } from "@/components/friendsSidebar/friendsSidebar";
 import { modal } from "@/components/modal";
 import { showToast } from "@/components/toast";
-import type { Friend } from "@/types/friend"
 
 interface AuthSuccessMessage {
   type: "authSuccess";
@@ -33,39 +31,44 @@ interface GameInvitationResponse {
     message: string;
 }
 
-export class SocialWebSocketClient {
+interface message {
+	action: number,
+	gameId: number,
+	token: string | null
+}
+
+export class GameWebSocket {
   private socket: WebSocket | null = null;
   private token: string;
   private wsUrl: string;
-  private isAuthenticated = false;
-  private friends: Friend[] = [];
+  private ready = false;
+  //private friends: Friend[] = [];
 
   constructor(token: string) {
-    this.wsUrl = getWsUrl("/social/");
+    this.wsUrl = getWsUrl("/game/pong");
     this.token = token;
   }
 
   connect() {
-    console.log("🔌", t("ConnectingToWs"));
+    //console.log("🔌", t("ConnectingToWs"));
+		console.log("conectado websockket");
     this.socket = new WebSocket(this.wsUrl);
 
-    this.socket.onopen = () => {
+    this.socket.addEventListener("open", () => {
       console.log("🟢", t("WsConnected"));
-      this.authenticate();
-    };
+    })
 
-    this.socket.onmessage = (event: MessageEvent<string>) => {
+    this.socket.addEventListener("message", async (msg) => {
       try {
-        const message = JSON.parse(event.data);
-        this.handleMessage(message);
+        const data = JSON.parse(msg.data);
+        this.handleMessage(data);
       } catch (err) {
         console.error(`❌ ${t("ErrorParsingMsg")}`, err);
       }
-    };
+    })
 
     this.socket.onclose = () => {
       console.log("🔴", t("WsClosed"));
-      this.isAuthenticated = false;
     };
 
     this.socket.onerror = (err) => {
@@ -73,7 +76,24 @@ export class SocialWebSocketClient {
     };
   }
 
-  private authenticate() {
+  public async authenticate(gameId:number) {
+    const obj : message = {
+      action : 0,
+      gameId : gameId,
+      token : this.token
+    };
+	  this.socket?.send(JSON.stringify(obj));
+    const userConfirmed = await modal({type: "setReady"});
+    if (!userConfirmed)
+    {
+      console.log("User canceled the modal");
+      navigateTo("dashboard", false, true);
+      return ;
+    }
+    obj.action = 1;
+    this.socket
+
+    this.ready = true;
     const msg = { action: 0, token: this.token };
     this.send(msg);
   }

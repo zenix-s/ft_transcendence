@@ -32,5 +32,5 @@ export function startCountdown(seconds: number, variant: "start" | "point") {
 		div.innerHTML = seconds.toString();
 	}
 
-	}, 1000); // 1 second
+	}, 1001); // 1 second
 }

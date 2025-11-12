@@ -6,6 +6,7 @@ import { getWsUrl } from "@/api";
 import { renderValues } from "./playing";
 import type { Engine, Scene } from "@babylonjs/core";
 import { endGameAuthAndErrors } from "./authAndErrors";
+//import { startCountdown } from "@/components/countdown";
 
 interface message {
 	action: number,
@@ -20,6 +21,7 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 	let up = 0;
 	let down = 0;
 	let ready = 0;
+//	let countdownActive = 0;
 	
 	socket.addEventListener("open", () => {
 		console.log("conectado websockket");
@@ -56,6 +58,15 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 		const data = JSON.parse(msg.data);
 		if (data.type ==  "gameState")
 		{
+			// if (data.state.gameStatus === "goal_countdown")
+			// {
+			// 	if (countdownActive == 0)
+			// 	{
+			// 		countdownActive = 1;
+			// 		//startCountdown(3, "start");
+			// 		countdownActive = 0;
+			// 	}
+			// }
 			renderValues(data.state.player1.position, player1, data.state.player2.position, player2,
 				data.state.player1.score, data.state.player2.score, scores,
 				data.state.ball.position.x, data.state.ball.position.y, ball);
@@ -65,7 +76,7 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 				engine.stopRenderLoop();
 				showToast(t("noActiveGame"), "error");
 				console.warn(t("noActiveGame"));
-				navigateTo("dashboard");
+				navigateTo("dashboard", false, true);
 			}
 		}
 		else if (data.type == "error") {
@@ -73,7 +84,7 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 				engine.stopRenderLoop();
 			if (data.error == "UnauthorizedAccess" && ready == 1)
 				return ;
-			await endGameAuthAndErrors(data.error, gameId, socket, player1, player2, scores, ball);
+			await endGameAuthAndErrors(data.error, gameId, socket, player1, player2, scores, ball, engine);
 			if (data.error == "UnauthorizedAccess" && ready == 0)
 					ready = 1;
 		}

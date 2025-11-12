@@ -20,7 +20,12 @@ export function ready1()
 			navigateTo("dashboard", false, true);
 			return ;
 		}
-		const id = await fetchSinglePlayerGameId(Number(maxPoints), Number(difficulty));
+		let AIdiff = 8;
+		if (difficulty === "low")
+			AIdiff = 6;
+		else if (difficulty === "high")
+			AIdiff = 10;
+		const id = await fetchSinglePlayerGameId(Number(maxPoints), AIdiff);
 		if (!id)
 		{
 			showToast(t("NoGameId"), "error");

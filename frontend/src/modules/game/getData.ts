@@ -1,7 +1,8 @@
 import { apiUrl } from "@/api";
 
-export function fetchGameId() {
+export function fetchGameId(matchPoints: number = 5, gameTime: number = 120, gameMode: string = "2d") {
   // return fetch("https://localhost:3000/game/pong/create", {
+  console.log(gameMode); // Únicamente está aquí para que no de error por no usar la variable hasta que se actualice el endpoint.
   return fetch(apiUrl("/game/pong/create"), {
     method: "POST",
     headers: {
@@ -10,8 +11,8 @@ export function fetchGameId() {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      winnerScore: 5,
-      maxGameTime: 120
+      winnerScore: matchPoints,
+      maxGameTime: gameTime
     })
   })
     .then(response => {

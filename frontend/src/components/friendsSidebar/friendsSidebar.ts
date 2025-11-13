@@ -7,6 +7,8 @@ import { showToast } from "../toast";
 import { fetchGameId } from "@/modules/game/getData";
 import { apiUrl } from "@/api";
 import { navigateTo } from "@/app/navigation";
+import { modal } from "../modal";
+import type { GameOptions } from "@/types/gameOptions";
 
 export async function initFriendsSidebar() {
   const container = document.getElementById("friends-sidebar-container");
@@ -126,11 +128,24 @@ export async function initFriendsSidebar() {
     const target = event.target as HTMLElement;
     if (target.classList.contains("invite-btn")) {
       const username = target.dataset.name;
-      const gameId = await fetchGameId(); // Create game PONG --> Y si hay otro juego?
+      //const gameId = await fetchGameId(); // Create game PONG --> Y si hay otro juego?
       // Hay que enviar la invitación y poder elegir el juego
-      inviteMultiplayer(username, gameId);
-      navigateTo(`playing?id=${gameId}&mutiPlayer`); // Temporal para pruebas?
-      //showToast("Invitando a: " + username, "success");
+      const confirmed: true | false | GameOptions = await modal({type: "gameCreation"});
+      if (confirmed  && typeof confirmed !== "boolean") {
+        // ✅ confirmed es ahora un GameOptions
+        console.log("Opciones seleccionadas:", confirmed);
+
+        // Ejemplo de uso
+        /* showToast(
+          `Puntos: ${confirmed.maxPoints}, Tiempo: ${confirmed.maxTime}, Modo: ${confirmed.gameMode}`,
+          "success"
+        ); */
+
+        const gameId = await fetchGameId(confirmed.maxPoints, confirmed.maxTime, confirmed.gameMode); // Create game PONG --> Y si hay otro juego?
+        inviteMultiplayer(username, gameId);
+        //navigateTo(`playing?id=${gameId}&mutiPlayer`); // Temporal para pruebas?
+        //showToast("Enviada invitación a: " + username, "success");
+      }
     }
   });
 

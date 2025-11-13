@@ -135,11 +135,20 @@ export const translations: Record<Language, Record<string, string>> = {
     modalLogoutIsConfirmedTitle: "Come back soon!",
     modalLogoutIsConfirmedText: "We are going to miss you 😭",
     modalLogoutIsConfirmedConfirmButtonText: "Accept",
+    //////
     modalGameInvitationTitle: "Game invitation",
     modalGameInvitationTitleText: "Invitation to play",
     modalGameInvitationText: "has invited you to play",
     modalGameInvitationConfirmButtonText: "Accept",
     modalGameInvitationCancelButtonText: "Decline",
+    //////
+    modalGameCreationTitle: "Game Creation",
+    modalGameCreationTitleText: "Configure game options",
+    modalGameCreationConfirmButtonText: "Invite",
+    modalGameCreationCancelButtonText: "Cancel",
+    modalGameCreationmaxPoints: "Maximum points: <span id='points-value' class='font-semibold'>5</span>",
+    modalGameCreationMaxTime: "Maximum time: <span id='time-value' class='font-semibold'>120</span> s",
+    modalGameCreationGameMode: "Game mode",
     /* Friends */
     friends: "Friends",
     friendName: "Friend's name...",
@@ -315,11 +324,20 @@ export const translations: Record<Language, Record<string, string>> = {
     modalLogoutIsConfirmedTitle: "¡Vuelve pronto!",
     modalLogoutIsConfirmedText: "Te vamos a echar de menos 😭",
     modalLogoutIsConfirmedConfirmButtonText: "Aceptar",
+    //////
     modalGameInvitationTitle: "Invitación al juego",
     modalGameInvitationTitleText: "Invitación a jugar",
     modalGameInvitationText: "te ha invitado a jugar",
     modalGameInvitationConfirmButtonText: "Aceptar",
     modalGameInvitationCancelButtonText: "Rechazar",
+    //////
+    modalGameCreationTitle: "Creación del juego",
+    modalGameCreationTitleText: "Configurar opciones de juego",
+    modalGameCreationConfirmButtonText: "Invitar",
+    modalGameCreationCancelButtonText: "Cancelar",
+    modalGameCreationmaxPoints: "Puntos máximos: <span id='points-value' class='font-semibold'>5</span>",
+    modalGameCreationMaxTime: "Tiempo máximo: <span id='time-value' class='font-semibold'>120</span> s",
+    modalGameCreationGameMode: "Modo de juego",
     /* Friends */
     friends: "Amigos",
     friendName: "Nombre del amigo...",
@@ -495,11 +513,20 @@ export const translations: Record<Language, Record<string, string>> = {
     modalLogoutIsConfirmedTitle: "Revenez vite!",
     modalLogoutIsConfirmedText: "Vous allez nous manquer 😭",
     modalLogoutIsConfirmedConfirmButtonText: "Accepter",
+    //////
     modalGameInvitationTitle: "Invitation au jeu",
     modalGameInvitationTitleText: "Invitation à jouer",
     modalGameInvitationText: "vous a invité à jouer",
     modalGameInvitationConfirmButtonText: "Accepter",
     modalGameInvitationCancelButtonText: "Déclin",
+    //////
+    modalGameCreationTitle: "Création de jeux",
+    modalGameCreationTitleText: "Définir les options de jeu",
+    modalGameCreationConfirmButtonText: "Inviter",
+    modalGameCreationCancelButtonText: "Annuler",
+    modalGameCreationmaxPoints: "Points maximum: <span id='points-value' class='font-semibold'>5</span>",
+    modalGameCreationMaxTime: "Temps maximum: <span id='time-value' class='font-semibold'>120</span> s",
+    modalGameCreationGameMode: "Mode de jeu",
     /* Friends */
     friends: "Amis",
     friendName: "Nom de l'ami...",

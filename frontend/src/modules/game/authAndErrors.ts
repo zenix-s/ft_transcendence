@@ -14,7 +14,7 @@ interface message {
 	token: string | null
 }
 
-async function authorization(gameId: number, socket:WebSocket, engine:Engine)
+async function authorization(gameId: number, socket:WebSocket | null, engine:Engine)
 {
 	const token = localStorage.getItem("access_token");
 	const obj : message = {
@@ -22,7 +22,7 @@ async function authorization(gameId: number, socket:WebSocket, engine:Engine)
 		gameId:gameId,
 		token: token
 	};
-	socket.send(JSON.stringify(obj));
+	socket?.send(JSON.stringify(obj));
 	obj.action = 1;
 
 	const userConfirmed = await modal({type: "setReady"});
@@ -34,9 +34,9 @@ async function authorization(gameId: number, socket:WebSocket, engine:Engine)
 		navigateTo("dashboard", false, true);
 		return;
 	}
-	socket.send(JSON.stringify(obj));
+	socket?.send(JSON.stringify(obj));
 	obj.action = 4;
-	socket.send(JSON.stringify(obj));
+	socket?.send(JSON.stringify(obj));
 	startCountdown(3, "start");
 }
 
@@ -71,7 +71,7 @@ async function endGame(finBool:number, gameId:number,
 	}
 }
 
-export async function endGameAuthAndErrors(data: string, gameId:number, socket:WebSocket,
+export async function endGameAuthAndErrors(data: string, gameId:number, socket:WebSocket | null,
 	player1:Player, player2:Player, scores:Score, ball:Ball, engine:Engine)
 {
 	let finBool = 0;

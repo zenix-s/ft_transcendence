@@ -1,34 +1,70 @@
 import { getWsUrl } from "@/api";
 import { t } from "@/app/i18n";
 import { navigateTo } from "@/app/navigation";
+import { startCountdown } from "@/components/countdown";
 import { modal } from "@/components/modal";
 import { showToast } from "@/components/toast";
+import { renderValues } from "./playing";
+import type { Ball, Player, Score } from "./gameData";
+import type { Engine, Scene } from "@babylonjs/core";
+import { endGameAuthAndErrors } from "./authAndErrors";
 
-interface AuthSuccessMessage {
-  type: "authSuccess";
-  userId: number;
+interface GameStateMessage {
+	type: "gameState";
+	gameId: number;
+	state: GameState;
 }
 
-interface FriendsListMessage {
-  type: "friendsList";
-  friends: Friend[];
+interface GameState {
+	gameStatus: string;
+	gameTimer: number;
+	player1: PlayerState;
+	player2: PlayerState;
+	ball: BallState;
+	arePlayersReady: boolean;
+	gameRules: GameRules;
+	isGameOver: boolean;
+	winner: Winner | null;
+	isSinglePlayer: boolean;
+	isCancelled: boolean;
+	countdownInfo: CountdownInfo;
 }
 
-interface FriendConnectionStatusMessage {
-  type: "friendConnectionStatus";
-  friendId: number;
-  username: string;
-  isConnected: boolean;
+interface PlayerState {
+	id: string;
+	username: string;
+	position: number;
+	score: number;
+	isReady: boolean;
 }
 
-interface GameInvitationResponse {
-    type: 'gameInvitation';
-    fromUserId: number;
-    fromUsername: string;
-    fromUserAvatar: string | null;
-    gameId: number;
-    gameTypeName: string;
-    message: string;
+interface BallState {
+	position: {
+		x: number;
+		y: number;
+	};
+	velocity: {
+		x: number;
+		y: number;
+	};
+}
+
+interface GameRules {
+	winnerScore: number;
+	maxGameTime: number;
+	difficulty: number;
+}
+
+interface Winner {
+	id: string;
+	username: string;
+	score: number;
+}
+
+interface CountdownInfo {
+	type: string | null;
+	remainingTime: number;
+	isActive: boolean;
 }
 
 interface message {
@@ -37,227 +73,150 @@ interface message {
 	token: string | null
 }
 
+interface ErrorMessage {
+	type: "error";
+	error: string;
+}
+
 export class GameWebSocket {
-  private socket: WebSocket | null = null;
-  private token: string;
-  private wsUrl: string;
-  private ready = false;
+	private socket: WebSocket | null = null;
+	private token: string;
+	private wsUrl: string;
+	private ready = false;
+	private player1: Player;
+	private player2: Player;
+	private	scores: Score;
+	private	ball: Ball;
+	private	engine: Engine;
+	private scene: Scene;
+	private gameId: number;
   //private friends: Friend[] = [];
 
-  constructor(token: string) {
-    this.wsUrl = getWsUrl("/game/pong");
-    this.token = token;
-  }
+	constructor(token: string) {
+		this.wsUrl = getWsUrl("/game/pong");
+		this.token = token;
+	}
 
-  connect() {
-    //console.log("🔌", t("ConnectingToWs"));
+
+	connect() {
+		//console.log("🔌", t("ConnectingToWs"));
 		console.log("conectado websockket");
-    this.socket = new WebSocket(this.wsUrl);
+		this.socket = new WebSocket(this.wsUrl);
 
-    this.socket.addEventListener("open", () => {
-      console.log("🟢", t("WsConnected"));
-    })
+		this.socket.addEventListener("open", () => {
+			console.log("🟢", t("WsConnected"));
+		})
 
-    this.socket.addEventListener("message", async (msg) => {
-      try {
-        const data = JSON.parse(msg.data);
-        this.handleMessage(data);
-      } catch (err) {
-        console.error(`❌ ${t("ErrorParsingMsg")}`, err);
-      }
-    })
+		this.socket.addEventListener("message", async (msg) => {
+			console.log("mensaje recibido=", msg.data);
+			try {
+				const data = JSON.parse(msg.data);
+				this.handleMessage(data);
+			} catch (err) {
+				console.error(`❌ ${t("ErrorParsingMsg")}`, err);
+			}
+		})
 
-    this.socket.onclose = () => {
-      console.log("🔴", t("WsClosed"));
-    };
+		this.socket.onclose = () => {
+			console.log("🔴", t("WsClosed"));
+		};
 
-    this.socket.onerror = (err) => {
-      console.error(`⚠️ ${t("WsError")}`, err);
-    };
-  }
+		this.socket.onerror = (err) => {
+			console.error(`⚠️ ${t("WsError")}`, err);
+		};
+	}
 
-  public async authenticate(gameId:number) {
-    const obj : message = {
-      action : 0,
-      gameId : gameId,
-      token : this.token
-    };
-	  this.socket?.send(JSON.stringify(obj));
-    const userConfirmed = await modal({type: "setReady"});
-    if (!userConfirmed)
-    {
-      console.log("User canceled the modal");
-      navigateTo("dashboard", false, true);
-      return ;
-    }
-    obj.action = 1;
-    this.socket
+	public async authenticate(gameId:number) {
+		const obj : message = {
+			action : 0,
+			gameId : gameId,
+			token : this.token
+		};
+		this.socket?.send(JSON.stringify(obj));
+		obj.action = 1;
+		this.socket?.send(JSON.stringify(obj));
+		if (this.ready == false)
+		{
+			const userConfirmed = await modal({type: "setReady"});
+			if (!userConfirmed)
+			{
+				console.log("User canceled the modal");
+				obj.action = 6;
+				this.socket?.send(JSON.stringify(obj));
+				navigateTo("dashboard", false, true);
+				return ;
+			}
+			obj.action = 4;
+			this.socket?.send(JSON.stringify(obj));
+			this.ready = true;
+			//startCountdown(3, "start");
+		}
+	}
 
-    this.ready = true;
-    const msg = { action: 0, token: this.token };
-    this.send(msg);
-  }
+	private async handleMessage(message: unknown) {
+		// Detectar tipo
+		const type = (message as { type?: unknown})?.type;
+		switch (type) {
+			case "gameState": {
+				const data = message as GameStateMessage;
+				//añadir countdown
+				renderValues(data.state.player1.position, this.player1, data.state.player2.position, this.player2,
+								data.state.player1.score, data.state.player2.score, this.scores,
+								data.state.ball.position.x, data.state.ball.position.y, this.ball);
+				break ;
+			}
+			case "error": {
+				const data = message as ErrorMessage;
+				if (data.error === "GameAlreadyFinished" || (data.error != "UnauthorizedAccess" && data.error != "GameNotFound"))
+					this.engine.stopRenderLoop();
+				await endGameAuthAndErrors(data.error, this.gameId, this.socket, this.player1, this.player2,
+					this.scores, this.ball, this.engine);
+				break;
+			}
+			default:
+				return ;
+		}
+	}
 
-  public requestFriendsList() {
-    if (!this.isAuthenticated) {
-      console.error("❌", t("NotAuthenticated"));
-      return;
-    }
 
-    if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
-      console.warn("⚠️", t("WsNotOpen"));
-      return;
-    }
+	public async	play(){
+		let	up = 0;
+		let	down = 0;
+		const	obj : message = {
+			action : 1,
+			gameId: this.gameId,
+			token: this.token
+		}
+		this.socket?.send(JSON.stringify(obj));
+		this.engine.runRenderLoop(() => {
+			obj.action = 1;
+			this.socket?.send(JSON.stringify(obj));
+			if (up == 1 && down == 0)
+			{
+				obj.action = 3;
+				this.socket?.send(JSON.stringify(obj));
+			}
+			else if (down === 1 && up == 0)
+			{
+				obj.action = 2;
+				this.socket?.send(JSON.stringify(obj));
+			}
+			this.scene.render();
+		})
+		document.addEventListener("keydown", (event) => {
+			const key = event.key;
+			if (key === "ArrowUp" || key === "w")
+				up = 1;
+			if (key === "ArrowDown" || key === "s")
+				down = 1;
+		});
+		document.addEventListener("keyup", (event) => {
+			const key = event.key;
+			if (key === "ArrowUp" || key === "w")
+				up = 0;
+			if (key === "ArrowDown" || key === "s")
+				down = 0;
+		});
+	}
 
-    const msg = { action: 1 };
-    console.log("📋", t("RequestFriends"));
-    this.send(msg);
-  }
-
-  public refreshFriendsList() {
-    this.requestFriendsList();
-  }
-
-  private send(obj: unknown) {
-    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      this.socket.send(JSON.stringify(obj));
-    } else {
-      console.warn("⚠️", t("WsNotReady"));
-    }
-  }
-
-  private disconnectTimers: Map<number, NodeJS.Timeout> = new Map();
-
-  private async handleMessage(message: unknown) {
-    // Detectar tipo
-    const type = (message as { type?: unknown})?.type;
-
-    switch (type) {
-      case "authSuccess": {
-        const msg = message as AuthSuccessMessage;
-        this.isAuthenticated = true;
-        console.log(`✅ ${t("SuccessAuthenticated")}`, msg.userId);
-        // Mejor sólo devolver lista cuando la página lo solicite????
-        setTimeout(() => this.requestFriendsList(), 100);
-        break;
-      }
-
-      case "friendsList": {
-        const msg = message as FriendsListMessage;
-        this.friends = msg.friends;
-        console.log(`👥 ${t("FriendListReceived")}`, this.friends);
-        if (this.onFriendsUpdateCallback)
-          this.onFriendsUpdateCallback([...this.friends]);
-        break;
-      }
-
-      case "gameInvitation": {
-        const msg = message as GameInvitationResponse;
-        console.log(`${msg.fromUsername} con id ${msg.fromUserId} te ha invitado a jugar a PONG con el número de partida ${msg.gameId} y el mensaje: ${msg.message}`);
-        const confirmed = await modal({
-          type: "gameInvitation",
-          winner: msg.fromUsername,
-          gameName: msg.gameTypeName});
-        if (confirmed)
-        {
-          // Definir que pasa si se ACEPTA la invitación
-          console.log("Has aceptado la invitación");
-          const playerView = "3D";
-          const response = await acceptInvitation(msg.gameId);
-          if (response)
-            navigateTo(`playing?id=${msg.gameId}&mutiPlayer&view=${playerView}`); // Enviar a la partida
-        }
-        // Definir que pasa si RECHAZA la invitación
-        break;
-      }
-
-      case "friendProfileUpdate": {
-        console.log("Friend profile update detected");
-        this.requestFriendsList();
-        break;
-      }
-
-      case "friendConnectionStatus": {
-        const msg = message as FriendConnectionStatusMessage;
-        const friend = this.friends.find(f => f.id === msg.friendId);
-
-        if (!friend) return;
-
-        const timeDelay: number = 3000; // 3 seconds
-
-        // ⚡ DESCONEXIÓN
-        if (!msg.isConnected) {
-          // Cancelamos cualquier timer previo
-          const prevTimer = this.disconnectTimers.get(msg.friendId);
-          if (prevTimer) clearTimeout(prevTimer);
-
-          // Programamos desconexión real en 3s
-          const timer = setTimeout(() => {
-            friend.is_connected = false;
-            console.log(`🔄 ${msg.username} ${t("IsNow")} 🔴 ${t("Offline")}`);
-            showToast(`🔄 ${msg.username} ${t("IsNow")} 🔴 ${t("Offline")}`, "success");
-            if (this.onFriendsUpdateCallback) {
-              this.onFriendsUpdateCallback([...this.friends]);
-            }
-            this.disconnectTimers.delete(msg.friendId);
-          }, timeDelay);
-
-          this.disconnectTimers.set(msg.friendId, timer);
-          return; // ignoramos el toast inmediato
-        }
-
-        // ⚡ CONEXIÓN
-        if (msg.isConnected) {
-          // Si había un timer de desconexión pendiente → cancelamos
-          const timer = this.disconnectTimers.get(msg.friendId);
-          if (timer) {
-            clearTimeout(timer);
-            this.disconnectTimers.delete(msg.friendId);
-            // Es recarga → no mostramos nada
-          } else {
-            // Conexión real → mostramos toast inmediatamente
-            friend.is_connected = true;
-            console.log(`🔄 ${msg.username} ${t("IsNow")} 🟢 ${t("Online")}`);
-            showToast(`🔄 ${msg.username} ${t("IsNow")} 🟢 ${t("Online")}`, "success");
-            if (this.onFriendsUpdateCallback) {
-              this.onFriendsUpdateCallback([...this.friends]);
-            }
-          }
-        }
-
-        break;
-      }
-
-      default:
-        console.log(`📨 ${t("MsgReceived")}`, message);
-    }
-  }
-
-  private onFriendsUpdateCallback: ((friends: Friend[]) => void) | null = null;
-
-  public onFriendsUpdate(callback: (friends: Friend[]) => void) {
-    //if (this.onFriendsUpdateCallback) return; // Ignorar si ya hay uno
-    this.onFriendsUpdateCallback = callback;
-    // Para que el sidebar pinte algo inmediatamente al llamar onFriendsUpdate()
-    if (this.friends.length > 0) {
-      callback([...this.friends]);
-    }
-  }
-
-  // Para acceder a la lista cacheada
-  public getFriends() {
-    return [...this.friends];
-  }
-
-  // Para saber si alguien está o no autenticado
-  public getAuthenticated() {
-    return this.isAuthenticated;
-  }
-
-  disconnect() {
-    if (this.socket) {
-      console.log(`👋 ${t("ClosingWs")}`);
-      this.socket.close();
-    }
-  }
 }

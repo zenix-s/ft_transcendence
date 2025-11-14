@@ -146,9 +146,22 @@ document.addEventListener("i18n-updated", async () => {
   // Reload History solo si existe tabla y hay token
   const token = localStorage.getItem("access_token");
   const perPageSelect = document.querySelector<HTMLSelectElement>(".datatable-selector");
+
   if (perPageSelect && matchTable && token) {
+    // 1. Guardar página actual
+    const currentPage = matchTable._currentPage ?? 0;
+
+    // 2 Guardar items por página
     const currentPerPage = parseInt(perPageSelect.value, 10);
+
+    // 3. Destruir tabla
     matchTable.destroy();
+
+    // 4. Volver a cargar historial
     await loadMatchHistory(undefined, currentPerPage);
+
+    // 5. Restaurar página en la que estabas
+    if (currentPage > 0)
+      matchTable.page(currentPage);
   }
 });

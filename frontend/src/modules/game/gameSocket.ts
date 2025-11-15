@@ -81,7 +81,8 @@ export class GameWebSocket {
 	private socket: WebSocket | null = null;
 	private token: string;
 	private wsUrl: string;
-	private start: number;
+//	private start: number;
+	private div: HTMLDivElement | null = null;
 	//private ready = false;
 	private player1: Player | undefined;
 	private player2: Player | undefined;
@@ -95,7 +96,7 @@ export class GameWebSocket {
 		this.wsUrl = getWsUrl("/game/pong");
 		this.token = token;
 		this.gameId = 0;
-		this.start = 0;
+	//	this.start = 0;
 	}
 
 	connect() {
@@ -261,21 +262,35 @@ export class GameWebSocket {
 	}
 
 	private countdown(data: GameStateMessage) {
-		let div;
-		if (data.state.gameStatus === "goal_countdown")
-		{
-			div = document.createElement("div");
-			div.className = "fixed inset-0 flex items-center justify-center pointer-events-none text-white text-9xl";
-			if (this.start === 0)
-				div.classList.add("animate-ping");
-			div.textContent = data.state.countdownInfo.remainingTime.toString();
-			document.body.appendChild(div);
-			div.innerHTML = data.state.countdownInfo.remainingTime.toString();
-			this.start = 1;
+		const info = data.state.countdownInfo;
+
+		// Si estamos en modo cuenta atrás
+		if (data.state.gameStatus === "goal_countdown" && info.isActive) {
+
+			// Crear el div si no existe
+			if (!this.div) {
+				const div_cpy = document.createElement("div");
+
+				div_cpy.className =
+					"fixed inset-0 flex items-center justify-center pointer-events-none text-white text-9xl";
+
+				div_cpy.style.zIndex = "999999";
+
+				document.body.appendChild(div_cpy);
+				this.div = div_cpy;
+		//		this.start = 1;
+			}
+
+			// Actualizar el contenido del div existente
+			this.div.textContent = info.remainingTime.toString();
+			return;
 		}
-		if (this.start === 1) {
-			div?.remove() // Eliminar el elemento del DOM
-			this.start = 0;
+
+		// Si NO estamos en cuenta atrás → borrar el div si existe
+		if (this.div) {
+			this.div.remove();
+			this.div = null;
+		//	this.start = 0;
 		}
 	}
 }

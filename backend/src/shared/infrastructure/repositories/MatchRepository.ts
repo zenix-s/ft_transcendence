@@ -1,4 +1,4 @@
-import { Match } from '@shared/domain/entity/Match.entity';
+import { Match } from '@shared/domain/Entities/Match.entity';
 import { MatchRow, MatchPlayerRow } from '@shared/infrastructure/types/types';
 import { AbstractRepository } from '@shared/infrastructure/db/AbstractRepository';
 import fp from 'fastify-plugin';

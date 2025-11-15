@@ -3,7 +3,7 @@ import { FastifyInstance } from 'fastify/types/instance';
 import fp from 'fastify-plugin';
 import { Result } from '@shared/abstractions/Result';
 import { ApplicationError } from '@shared/Errors';
-import { User } from '@shared/domain/entity/User.entity';
+import { User } from '@shared/domain/Entities/User.entity';
 
 export interface IFriendShipRepository {
     areFriends({ userId1, userId2 }: { userId1: number; userId2: number }): Promise<Result<boolean>>;

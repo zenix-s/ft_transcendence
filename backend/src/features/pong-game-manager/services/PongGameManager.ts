@@ -104,7 +104,6 @@ export class PongGameManager implements IPongGameManager {
 
             // Paso 6: Determinar si el juego puede iniciarse
             const canGameStart = activeGame.game.canStart(); // Verifica si hay player1 y player2 (incluyendo AI)
-            const isSinglePlayer = activeGame.game.isSinglePlayerMode();
             const canMatchStart = match.canStart(); // Verifica si status es PENDING y hay jugadores
 
             // Paso 7: Iniciar el match automáticamente si se cumplen las condiciones

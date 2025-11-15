@@ -1,4 +1,4 @@
-import { MatchStatus } from '@shared/domain/types/game.types';
+import { MatchStatus } from '@shared/domain/Entities/Match.entity';
 
 export interface MatchPlayerRow {
     user_id: number;

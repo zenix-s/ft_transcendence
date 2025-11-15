@@ -1,6 +1,6 @@
 import { Result } from '@shared/abstractions/Result';
 import { AbstractRepository } from '@shared/infrastructure/db/AbstractRepository';
-import { User } from '@shared/domain/entity/User.entity';
+import { User } from '@shared/domain/Entities/User.entity';
 import fp from 'fastify-plugin';
 import { AuthenticationUserRow } from '../types/types';
 import { ApplicationError } from '@shared/Errors';

@@ -1,11 +1,11 @@
-import { MatchStatus } from '../types/game.types';
-
 export interface MatchPlayer {
     userId: number;
     username: string | null;
     score: number;
     isWinner: boolean;
 }
+
+export type MatchStatus = (typeof Match.STATUS)[keyof typeof Match.STATUS];
 
 export class Match {
     private _id?: number;
@@ -16,11 +16,18 @@ export class Match {
     private _createdAt: Date;
     private _players: Map<number, MatchPlayer>;
 
+    public static STATUS: {
+        PENDING: 'pending';
+        IN_PROGRESS: 'in_progress';
+        COMPLETED: 'completed';
+        CANCELLED: 'cancelled';
+    };
+
     constructor(
         gameTypeId: number,
         playerIds: number[] = [],
         id?: number,
-        status: MatchStatus = MatchStatus.PENDING,
+        status: MatchStatus = Match.STATUS.PENDING,
         startedAt?: Date,
         endedAt?: Date,
         createdAt?: Date
@@ -76,7 +83,7 @@ export class Match {
     }
 
     public start(): boolean {
-        if (this._status !== MatchStatus.PENDING) {
+        if (this._status !== Match.STATUS.PENDING) {
             return false;
         }
 
@@ -84,17 +91,17 @@ export class Match {
             return false;
         }
 
-        this._status = MatchStatus.IN_PROGRESS;
+        this._status = Match.STATUS.IN_PROGRESS;
         this._startedAt = new Date();
         return true;
     }
 
     public end(winnerIds: number[], finalScores: Record<number, number>): boolean {
-        if (this._status !== MatchStatus.IN_PROGRESS) {
+        if (this._status !== Match.STATUS.IN_PROGRESS) {
             return false;
         }
 
-        this._status = MatchStatus.COMPLETED;
+        this._status = Match.STATUS.COMPLETED;
         this._endedAt = new Date();
 
         Object.entries(finalScores).forEach(([userId, score]) => {
@@ -110,17 +117,17 @@ export class Match {
     }
 
     public cancel(): boolean {
-        if (this._status === MatchStatus.COMPLETED || this._status === MatchStatus.CANCELLED) {
+        if (this._status === Match.STATUS.COMPLETED || this._status === Match.STATUS.CANCELLED) {
             return false;
         }
 
-        this._status = MatchStatus.CANCELLED;
+        this._status = Match.STATUS.CANCELLED;
         this._endedAt = new Date();
         return true;
     }
 
     public addPlayer(playerId: number): boolean {
-        if (this._status !== MatchStatus.PENDING) {
+        if (this._status !== Match.STATUS.PENDING) {
             return false;
         }
 
@@ -157,19 +164,19 @@ export class Match {
     }
 
     public canStart(): boolean {
-        return this._status === MatchStatus.PENDING && this._players.size > 0;
+        return this._status === Match.STATUS.PENDING && this._players.size > 0;
     }
 
     public isActive(): boolean {
-        return this._status === MatchStatus.IN_PROGRESS;
+        return this._status === Match.STATUS.IN_PROGRESS;
     }
 
     public isCompleted(): boolean {
-        return this._status === MatchStatus.COMPLETED;
+        return this._status === Match.STATUS.COMPLETED;
     }
 
     public isCancelled(): boolean {
-        return this._status === MatchStatus.CANCELLED;
+        return this._status === Match.STATUS.CANCELLED;
     }
 
     public static fromDatabase(data: {

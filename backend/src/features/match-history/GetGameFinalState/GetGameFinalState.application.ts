@@ -3,8 +3,7 @@ import { Result } from '@shared/abstractions/Result';
 import { IQuery } from '@shared/application/abstractions/IQuery.interface';
 import { ApplicationError } from '@shared/Errors';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
-import { Match } from '@shared/domain/entity/Match.entity';
-import { MatchStatus } from '@shared/domain/types/game.types';
+import { Match, MatchStatus } from '@shared/domain/Entities/Match.entity';
 import { CONSTANTES_APP } from '@shared/constants/ApplicationConstants';
 
 export interface IGetGameFinalStateRequest {
@@ -81,7 +80,7 @@ export default class GetGameFinalStateQuery
             }
 
             // Verificar que la partida haya terminado
-            if (match.status !== MatchStatus.COMPLETED && match.status !== MatchStatus.CANCELLED) {
+            if (match.status !== Match.STATUS.COMPLETED && match.status !== Match.STATUS.CANCELLED) {
                 return Result.error(ApplicationError.MatchInProgress);
             }
 
@@ -99,8 +98,8 @@ export default class GetGameFinalStateQuery
 
     private buildFinalState(match: Match): IGetGameFinalStateResponse {
         const players = match.players;
-        const isCompleted = match.status === MatchStatus.COMPLETED;
-        const isCancelled = match.status === MatchStatus.CANCELLED;
+        const isCompleted = match.status === Match.STATUS.COMPLETED;
+        const isCancelled = match.status === Match.STATUS.CANCELLED;
 
         // Calcular duración del juego
         let duration = 0;

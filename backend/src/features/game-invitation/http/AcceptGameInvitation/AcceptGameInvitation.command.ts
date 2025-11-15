@@ -2,9 +2,8 @@ import { FastifyInstance } from 'fastify';
 import { Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { ApplicationError } from '@shared/Errors';
-import { IGameTypeRepository } from '@shared/infrastructure/repositories/GameTypeRepository';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
-import { GAME_TYPES } from '@shared/constants/ApplicationConstants';
+import MatchType from '@shared/domain/ValueObjects/MatchType.value';
 
 export interface IAcceptGameInvitationResponse {
     success: boolean;
@@ -21,11 +20,9 @@ export default class AcceptGameInvitationCommand
     implements ICommand<IAcceptGameInvitationRequest, IAcceptGameInvitationResponse>
 {
     private readonly matchRepository: IMatchRepository;
-    private readonly gameTypeRepository: IGameTypeRepository;
 
     constructor(private readonly fastify: FastifyInstance) {
         this.matchRepository = this.fastify.MatchRepository;
-        this.gameTypeRepository = this.fastify.GameTypeRepository;
     }
 
     validate(request?: IAcceptGameInvitationRequest | undefined): Result<void> {
@@ -61,24 +58,22 @@ export default class AcceptGameInvitationCommand
             }
 
             // 2: Obtener el tipo de juego usando el gameTypeId del match
-            const gameTypeId = match.gameTypeId;
-            const gameTypeResult = await this.gameTypeRepository.findById({ id: gameTypeId });
-            if (!gameTypeResult) {
+            const matchTypeId = match.gameTypeId;
+            const matchType = MatchType.byId(matchTypeId);
+            if (!matchType) {
                 return Result.error(ApplicationError.GameTypeNotFound);
             }
 
-            const gameType = gameTypeResult;
-
             // 3: Validar si el tipo de juego soporta invitaciones
-            if (!gameType.supports_invitations) {
+            if (!matchType.supportsInvitations) {
                 return Result.error(ApplicationError.GameTypeDoesNotSupportInvitations);
             }
 
             // 4: Determinar el tipo de juego y llamar al método específico
             let joinResult: Result<string>;
 
-            switch (gameType.name.toLowerCase()) {
-                case GAME_TYPES.PONG:
+            switch (matchType.name.toLowerCase()) {
+                case MatchType.PONG.name.toLowerCase():
                     joinResult = await this.joinPongGame(userId as number, gameId);
                     break;
 
@@ -92,7 +87,7 @@ export default class AcceptGameInvitationCommand
 
             return Result.success({
                 success: true,
-                gameType: gameType.name,
+                gameType: matchType.name,
                 message: joinResult.value,
             });
         } catch (error) {

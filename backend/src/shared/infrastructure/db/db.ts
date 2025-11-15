@@ -3,6 +3,8 @@ import { FastifyInstance } from 'fastify';
 import { SQLiteConnection } from '@shared/infrastructure/db/SQLiteConnection';
 import { hashPassword } from '@shared/utils/password.utils';
 import { CONSTANTES_APP } from '@shared/constants/ApplicationConstants';
+import MatchType from '@shared/domain/ValueObjects/MatchType.value';
+import { Match } from '@shared/domain/Entities/Match.entity';
 
 export default fp(
     async (fastify: FastifyInstance) => {
@@ -53,20 +55,13 @@ export default fp(
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (game_type_id) REFERENCES game_types(id),
                     CHECK (status IN (
-                        '${CONSTANTES_APP.MATCH.STATUS.PENDING}',
-                        '${CONSTANTES_APP.MATCH.STATUS.IN_PROGRESS}',
-                        '${CONSTANTES_APP.MATCH.STATUS.COMPLETED}',
-                        '${CONSTANTES_APP.MATCH.STATUS.CANCELLED}')
+                        '${Match.STATUS.PENDING}',
+                        '${Match.STATUS.IN_PROGRESS}',
+                        '${Match.STATUS.COMPLETED}',
+                        '${Match.STATUS.CANCELLED}')
                     )
                 )
             `
-            // [
-            //     // STATUS
-            //     CONSTANTES_APP.MATCH.STATUS.PENDING,
-            //     CONSTANTES_APP.MATCH.STATUS.IN_PROGRESS,
-            //     CONSTANTES_APP.MATCH.STATUS.COMPLETED,
-            //     CONSTANTES_APP.MATCH.STATUS.CANCELLED,
-            // ]
         );
 
         await connection.execute(`
@@ -79,6 +74,25 @@ export default fp(
                 FOREIGN KEY (match_id) REFERENCES matches(id) ON DELETE CASCADE,
                 FOREIGN KEY (user_id) REFERENCES users(id),
                 UNIQUE(match_id, user_id)
+            )
+        `);
+
+        await connection.execute(`
+            CREATE TABLE IF NOT EXISTS tournaments (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                game_type_id INTEGER NOT NULL,
+                status TEXT NOT NULL DEFAULT 'upcoming',
+                start_date DATETIME NOT NULL,
+                end_date DATETIME,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (game_type_id) REFERENCES game_types(id),
+                CHECK (status IN (
+                    'upcoming',
+                    'ongoing',
+                    'completed',
+                    'cancelled')
+                )
             )
         `);
 
@@ -116,15 +130,15 @@ export default fp(
             `,
             [
                 // Pong
-                CONSTANTES_APP.MATCH_TYPE.PONG.NAME,
-                CONSTANTES_APP.MATCH_TYPE.PONG.MIN_PLAYERS,
-                CONSTANTES_APP.MATCH_TYPE.PONG.MAX_PLAYERS,
-                CONSTANTES_APP.MATCH_TYPE.PONG.SUPPORTS_INVITATIONS ? 1 : 0,
+                MatchType.PONG.name,
+                MatchType.PONG.minPlayers,
+                MatchType.PONG.maxPlayers,
+                MatchType.PONG.supportsInvitations ? 1 : 0,
                 // Single Player Pong
-                CONSTANTES_APP.MATCH_TYPE.SINGLE_PLAYER_PONG.NAME,
-                CONSTANTES_APP.MATCH_TYPE.SINGLE_PLAYER_PONG.MIN_PLAYERS,
-                CONSTANTES_APP.MATCH_TYPE.SINGLE_PLAYER_PONG.MAX_PLAYERS,
-                CONSTANTES_APP.MATCH_TYPE.SINGLE_PLAYER_PONG.SUPPORTS_INVITATIONS ? 1 : 0,
+                MatchType.SINGLE_PLAYER_PONG.name,
+                MatchType.SINGLE_PLAYER_PONG.minPlayers,
+                MatchType.SINGLE_PLAYER_PONG.maxPlayers,
+                MatchType.SINGLE_PLAYER_PONG.supportsInvitations ? 1 : 0,
             ]
         );
 
@@ -158,8 +172,8 @@ export default fp(
             // Todas las partidas en curso o pendientes se pasan a canceladas
             await connection.execute(`
                 UPDATE matches
-                SET status = '${CONSTANTES_APP.MATCH.STATUS.CANCELLED}'
-                WHERE status IN ('${CONSTANTES_APP.MATCH.STATUS.PENDING}', '${CONSTANTES_APP.MATCH.STATUS.IN_PROGRESS}')
+                SET status = '${Match.STATUS.CANCELLED}'
+                WHERE status IN ('${Match.STATUS.PENDING}', '${Match.STATUS.IN_PROGRESS}')
             `);
 
             await connection.disconnect();

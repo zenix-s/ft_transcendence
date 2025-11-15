@@ -1,7 +1,7 @@
 import { Result } from '@shared/abstractions/Result';
 import { IQuery } from '@shared/application/abstractions/IQuery.interface';
 import { FastifyInstance } from 'fastify';
-import { User } from '@shared/domain/entity/User.entity';
+import { User } from '@shared/domain/Entities/User.entity';
 import { ApplicationError } from '@shared/Errors';
 
 export interface IGetCurrentUserRequest {

@@ -2,12 +2,10 @@ import { FastifyInstance } from 'fastify';
 import { Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { PongGame } from '../../../pong-game-manager/domain/PongGame';
-
-import { Match } from '@shared/domain/entity/Match.entity';
+import { Match } from '@shared/domain/Entities/Match.entity';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
-import { IGameTypeRepository } from '@shared/infrastructure/repositories/GameTypeRepository';
 import { ApplicationError } from '@shared/Errors';
-import { CONSTANTES_APP } from '@shared/constants/ApplicationConstants';
+import MatchType from '@shared/domain/ValueObjects/MatchType.value';
 
 export interface ICreateGameResponse {
     message: string;
@@ -22,11 +20,9 @@ export interface ICreateGameRequest {
 
 export default class CreateGameCommand implements ICommand<ICreateGameRequest, ICreateGameResponse> {
     private readonly matchRepository: IMatchRepository;
-    private readonly gameTypeRepository: IGameTypeRepository;
 
     constructor(private readonly fastify: FastifyInstance) {
         this.matchRepository = this.fastify.MatchRepository;
-        this.gameTypeRepository = this.fastify.GameTypeRepository;
     }
 
     validate(request?: ICreateGameRequest | undefined): Result<void> {
@@ -81,19 +77,14 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
             // Verificar si el usuario tiene partidas activas (pending o in_progress)
             const activeMatches = await this.matchRepository.findUserMatches({
                 userId: userId,
-                status: [CONSTANTES_APP.MATCH.STATUS.PENDING, CONSTANTES_APP.MATCH.STATUS.IN_PROGRESS],
+                status: [Match.STATUS.PENDING, Match.STATUS.IN_PROGRESS],
             });
 
             if (activeMatches.length > 0) {
                 return Result.error(ApplicationError.PlayerHasActiveMatch);
             }
 
-            const gameType = await this.gameTypeRepository.findByName({
-                name: CONSTANTES_APP.MATCH_TYPE.PONG.NAME,
-            });
-            if (!gameType) {
-                return Result.error(ApplicationError.GameTypeNotFound);
-            }
+            const gameType = MatchType.PONG;
 
             const playerIds = [userId];
             const match = new Match(gameType.id, playerIds);
@@ -118,7 +109,7 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
             if (!addPlayerResult.isSuccess) {
                 // Si falla al agregar el jugador, eliminar el juego y el match
                 try {
-                    await this.fastify.PongGameManager.deleteGame(matchId);
+                    this.fastify.PongGameManager.deleteGame(matchId);
                     await this.matchRepository.delete({ id: matchId });
                 } catch (deleteError) {
                     this.fastify.log.error(deleteError, 'Failed to clean up after player addition failure');

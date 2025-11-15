@@ -58,7 +58,7 @@ export default class AcceptGameInvitationCommand
             }
 
             // 2: Obtener el tipo de juego usando el gameTypeId del match
-            const matchTypeId = match.gameTypeId;
+            const matchTypeId = match.matchTypeId;
             const matchType = MatchType.byId(matchTypeId);
             if (!matchType) {
                 return Result.error(ApplicationError.GameTypeNotFound);

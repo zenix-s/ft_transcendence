@@ -11,6 +11,7 @@ import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepos
 import { IUserRepository } from '@shared/infrastructure/repositories/UserRepository';
 import { IFriendShipRepository } from '@shared/infrastructure/repositories/FriendShipRepository';
 import { ISocialWebSocketService } from '@features/socialSocket/services/ISocialWebSocketService.interface';
+import { ITournamentRepository } from '@shared/infrastructure/repositories/TournamentRepository';
 
 declare module 'fastify' {
     interface FastifyInstance {
@@ -54,6 +55,7 @@ declare module 'fastify' {
         MatchRepository: IMatchRepository;
         UserRepository: IUserRepository;
         FriendShipRepository: IFriendShipRepository;
+        TournamentRepository: ITournamentRepository;
 
         // Services
         SocialWebSocketService: ISocialWebSocketService;

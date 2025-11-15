@@ -35,7 +35,7 @@ export default fp(
         `);
 
         await connection.execute(`
-            CREATE TABLE IF NOT EXISTS game_types (
+            CREATE TABLE IF NOT EXISTS match_types (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT UNIQUE NOT NULL,
                 min_players INTEGER NOT NULL DEFAULT 2,
@@ -48,12 +48,12 @@ export default fp(
             `
                 CREATE TABLE IF NOT EXISTS matches (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    game_type_id INTEGER NOT NULL,
+                    match_type_id INTEGER NOT NULL,
                     status TEXT NOT NULL DEFAULT 'pending',
                     started_at DATETIME,
                     ended_at DATETIME,
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (game_type_id) REFERENCES game_types(id),
+                    FOREIGN KEY (match_type_id) REFERENCES match_types(id),
                     CHECK (status IN (
                         '${Match.STATUS.PENDING}',
                         '${Match.STATUS.IN_PROGRESS}',
@@ -81,12 +81,12 @@ export default fp(
             CREATE TABLE IF NOT EXISTS tournaments (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
-                game_type_id INTEGER NOT NULL,
+                match_type_id INTEGER NOT NULL,
                 status TEXT NOT NULL DEFAULT 'upcoming',
                 start_date DATETIME NOT NULL,
                 end_date DATETIME,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (game_type_id) REFERENCES game_types(id),
+                FOREIGN KEY (match_type_id) REFERENCES match_types(id),
                 CHECK (status IN (
                     'upcoming',
                     'ongoing',
@@ -96,7 +96,7 @@ export default fp(
             )
         `);
 
-        await connection.execute(`CREATE INDEX IF NOT EXISTS idx_matches_game_type ON matches(game_type_id)`);
+        await connection.execute(`CREATE INDEX IF NOT EXISTS idx_matches_game_type ON matches(match_type_id)`);
         await connection.execute(`CREATE INDEX IF NOT EXISTS idx_matches_status ON matches(status)`);
         await connection.execute(
             `CREATE INDEX IF NOT EXISTS idx_match_players_match ON match_players(match_id)`
@@ -123,7 +123,7 @@ export default fp(
 
         await connection.execute(
             `
-                INSERT OR IGNORE INTO game_types (name, min_players, max_players, supports_invitations)
+                INSERT OR IGNORE INTO match_types (name, min_players, max_players, supports_invitations)
                 VALUES
                     (?,?,?,?),
                     (?,?,?,?)

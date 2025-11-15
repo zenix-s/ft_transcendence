@@ -9,7 +9,7 @@ export type MatchStatus = (typeof Match.STATUS)[keyof typeof Match.STATUS];
 
 export class Match {
     private _id?: number;
-    private _gameTypeId: number;
+    private _matchTypeId: number;
     private _status: MatchStatus;
     private _startedAt?: Date;
     private _endedAt?: Date;
@@ -24,7 +24,7 @@ export class Match {
     };
 
     constructor(
-        gameTypeId: number,
+        matchTypeId: number,
         playerIds: number[] = [],
         id?: number,
         status: MatchStatus = Match.STATUS.PENDING,
@@ -33,7 +33,7 @@ export class Match {
         createdAt?: Date
     ) {
         this._id = id;
-        this._gameTypeId = gameTypeId;
+        this._matchTypeId = matchTypeId;
         this._status = status;
         this._startedAt = startedAt;
         this._endedAt = endedAt;
@@ -54,8 +54,8 @@ export class Match {
         return this._id;
     }
 
-    public get gameTypeId(): number {
-        return this._gameTypeId;
+    public get matchTypeId(): number {
+        return this._matchTypeId;
     }
 
     public get status(): MatchStatus {
@@ -181,7 +181,7 @@ export class Match {
 
     public static fromDatabase(data: {
         id: number;
-        game_type_id: number;
+        match_type_id: number;
         status: MatchStatus;
         started_at?: string | Date;
         ended_at?: string | Date;
@@ -194,7 +194,7 @@ export class Match {
         }[];
     }): Match {
         const match = new Match(
-            data.game_type_id,
+            data.match_type_id,
             [],
             data.id,
             data.status,
@@ -219,7 +219,7 @@ export class Match {
 
     public toDatabase(): {
         id?: number;
-        game_type_id: number;
+        match_type_id: number;
         status: MatchStatus;
         started_at?: Date | null;
         ended_at?: Date | null;
@@ -227,7 +227,7 @@ export class Match {
     } {
         return {
             id: this._id,
-            game_type_id: this._gameTypeId,
+            match_type_id: this._matchTypeId,
             status: this._status,
             started_at: this._startedAt || null,
             ended_at: this._endedAt || null,
@@ -244,7 +244,7 @@ export class Match {
     public toJSON(): object {
         return {
             id: this._id,
-            gameTypeId: this._gameTypeId,
+            gameTypeId: this._matchTypeId,
             status: this._status,
             startedAt: this._startedAt,
             endedAt: this._endedAt,

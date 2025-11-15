@@ -5,7 +5,8 @@ import { navigateTo } from "@/app/navigation";
 import { getWsUrl } from "@/api";
 import { renderValues } from "./playing";
 import type { Engine, Scene } from "@babylonjs/core";
-import { endGameAuthAndErrors } from "./authAndErrors";
+import { endGameAndErrors } from "./authAndErrors";
+//import { endGameAuthAndErrors } from "./authAndErrors";
 //import { startCountdown } from "@/components/countdown";
 
 interface message {
@@ -84,7 +85,7 @@ export function conectWebSocket(gameId: number, player1: Player, player2: Player
 				engine.stopRenderLoop();
 			if (data.error == "UnauthorizedAccess" && ready == 1)
 				return ;
-			await endGameAuthAndErrors(data.error, gameId, socket, player1, player2, scores, ball, engine);
+			await endGameAndErrors(data.error, gameId, player1, player2, scores, ball);
 			if (data.error == "UnauthorizedAccess" && ready == 0)
 					ready = 1;
 		}

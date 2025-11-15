@@ -61,7 +61,7 @@ export function modal({
       title = t("SetReady");
       titleText = t("isReady");
       confirmButtonText = t("Ready");
-      text = t("ClickReady");
+      text = `${t("ClickReady")}<br><br><b></b>`;
       icon_msg = "question";
       showCancelButton = true;
       cancelButtonText = t("Cancel");
@@ -81,10 +81,12 @@ export function modal({
       allowEscapeKey = false;
     }
 
+    let timerInterval: ReturnType<typeof setInterval> | null = null;
+
     Swal.fire({
       title,
       titleText,
-      text,
+      html: text,
       color: color_modal,
       icon: icon_msg,
       iconColor,
@@ -98,6 +100,8 @@ export function modal({
       allowOutsideClick: allowOutsideClick,
       allowEscapeKey: allowEscapeKey,
       animation,
+      timer: type === "setReady" ? 30000 : undefined,
+      timerProgressBar: type === "setReady",
       customClass: {
         actions: "gap-10",
         confirmButton:
@@ -105,6 +109,18 @@ export function modal({
         cancelButton:
           "px-4 py-2 rounded-lg font-medium bg-rose-600 hover:bg-rose-800 text-primary ml-2 dark:bg-rose-600 dark:hover:bg-rose-800 dark:text-primary transition-all duration-300",
       },
+      didOpen: () => {
+        if (type === "setReady") {
+          const timerEl = Swal.getHtmlContainer()?.querySelector("b");
+
+          timerInterval = setInterval(() => {
+            if (timerEl) timerEl.textContent = Math.ceil(Swal.getTimerLeft()! / 1000) + "s";
+          }, 200);
+        }
+      },
+      willClose: () => {
+        if (timerInterval) clearInterval(timerInterval);
+    }
     }).then((result) => {
       if (result.isConfirmed) {
         if (type === "logout")

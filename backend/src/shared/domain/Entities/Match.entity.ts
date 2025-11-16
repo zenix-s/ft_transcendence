@@ -16,11 +16,11 @@ export class Match {
     private _createdAt: Date;
     private _players: Map<number, MatchPlayer>;
 
-    public static STATUS: {
-        PENDING: 'pending';
-        IN_PROGRESS: 'in_progress';
-        COMPLETED: 'completed';
-        CANCELLED: 'cancelled';
+    public static STATUS = {
+        PENDING: 'pending' as const,
+        IN_PROGRESS: 'in_progress' as const,
+        COMPLETED: 'completed' as const,
+        CANCELLED: 'cancelled' as const,
     };
 
     constructor(

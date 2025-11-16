@@ -83,8 +83,6 @@ export default fp(
                 name TEXT NOT NULL,
                 match_type_id INTEGER NOT NULL,
                 status TEXT NOT NULL DEFAULT 'upcoming',
-                start_date DATETIME NOT NULL,
-                end_date DATETIME,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (match_type_id) REFERENCES match_types(id),
                 CHECK (status IN (
@@ -96,7 +94,9 @@ export default fp(
             )
         `);
 
-        await connection.execute(`CREATE INDEX IF NOT EXISTS idx_matches_game_type ON matches(match_type_id)`);
+        await connection.execute(
+            `CREATE INDEX IF NOT EXISTS idx_matches_game_type ON matches(match_type_id)`
+        );
         await connection.execute(`CREATE INDEX IF NOT EXISTS idx_matches_status ON matches(status)`);
         await connection.execute(
             `CREATE INDEX IF NOT EXISTS idx_match_players_match ON match_players(match_id)`

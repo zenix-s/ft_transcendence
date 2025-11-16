@@ -5,7 +5,5 @@ export interface TournamentDbModel {
     name: string;
     match_type_id: number;
     status: TournamentStatus;
-    start_date: Date;
-    end_date?: Date;
     created_at: Date;
 }

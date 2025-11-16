@@ -188,4 +188,6 @@ export enum ApplicationError {
     GameTypeNotSupported = 'GameTypeNotSupported',
     CannotAddSelfAsFriend = 'CannotAddSelfAsFriend',
     CannotRemoveSelfAsFriend = 'CannotRemoveSelfAsFriend',
+
+    TournamentCreationError = 'TournamentCreationError',
 }

@@ -5,23 +5,6 @@ export default class MatchType {
     private readonly _maxPlayers: number;
     private readonly _supportsInvitations: boolean;
 
-    private static MATCH_TYPE: {
-        PONG: {
-            ID: 1;
-            NAME: 'pong';
-            MIN_PLAYERS: 2;
-            MAX_PLAYERS: 2;
-            SUPPORTS_INVITATIONS: true;
-        };
-        SINGLE_PLAYER_PONG: {
-            ID: 2;
-            NAME: 'single_player_pong';
-            MIN_PLAYERS: 1;
-            MAX_PLAYERS: 1;
-            SUPPORTS_INVITATIONS: false;
-        };
-    };
-
     private constructor(
         id: number,
         name: string,
@@ -36,21 +19,43 @@ export default class MatchType {
         this._supportsInvitations = supportsInvitations;
     }
 
-    public static SINGLE_PLAYER_PONG = new MatchType(
-        MatchType.MATCH_TYPE.SINGLE_PLAYER_PONG.ID,
-        MatchType.MATCH_TYPE.SINGLE_PLAYER_PONG.NAME,
-        MatchType.MATCH_TYPE.SINGLE_PLAYER_PONG.MIN_PLAYERS,
-        MatchType.MATCH_TYPE.SINGLE_PLAYER_PONG.MAX_PLAYERS,
-        MatchType.MATCH_TYPE.SINGLE_PLAYER_PONG.SUPPORTS_INVITATIONS
+    // Definir las constantes primero como objetos simples
+    private static readonly MATCH_TYPE_CONFIGS = {
+        PONG: {
+            ID: 1,
+            NAME: 'pong' as const,
+            MIN_PLAYERS: 2,
+            MAX_PLAYERS: 2,
+            SUPPORTS_INVITATIONS: true,
+        },
+        SINGLE_PLAYER_PONG: {
+            ID: 2,
+            NAME: 'single_player_pong' as const,
+            MIN_PLAYERS: 1,
+            MAX_PLAYERS: 1,
+            SUPPORTS_INVITATIONS: false,
+        },
+    };
+
+    // Ahora crear las instancias usando las constantes ya definidas
+    public static readonly PONG = new MatchType(
+        MatchType.MATCH_TYPE_CONFIGS.PONG.ID,
+        MatchType.MATCH_TYPE_CONFIGS.PONG.NAME,
+        MatchType.MATCH_TYPE_CONFIGS.PONG.MIN_PLAYERS,
+        MatchType.MATCH_TYPE_CONFIGS.PONG.MAX_PLAYERS,
+        MatchType.MATCH_TYPE_CONFIGS.PONG.SUPPORTS_INVITATIONS
     );
 
-    public static PONG = new MatchType(
-        MatchType.MATCH_TYPE.PONG.ID,
-        MatchType.MATCH_TYPE.PONG.NAME,
-        MatchType.MATCH_TYPE.PONG.MIN_PLAYERS,
-        MatchType.MATCH_TYPE.PONG.MAX_PLAYERS,
-        MatchType.MATCH_TYPE.PONG.SUPPORTS_INVITATIONS
+    public static readonly SINGLE_PLAYER_PONG = new MatchType(
+        MatchType.MATCH_TYPE_CONFIGS.SINGLE_PLAYER_PONG.ID,
+        MatchType.MATCH_TYPE_CONFIGS.SINGLE_PLAYER_PONG.NAME,
+        MatchType.MATCH_TYPE_CONFIGS.SINGLE_PLAYER_PONG.MIN_PLAYERS,
+        MatchType.MATCH_TYPE_CONFIGS.SINGLE_PLAYER_PONG.MAX_PLAYERS,
+        MatchType.MATCH_TYPE_CONFIGS.SINGLE_PLAYER_PONG.SUPPORTS_INVITATIONS
     );
+
+    // Propiedad pública para mantener compatibilidad con el código existente
+    public static readonly MATCH_TYPE = MatchType.MATCH_TYPE_CONFIGS;
 
     public get id(): number {
         return this._id;
@@ -74,9 +79,9 @@ export default class MatchType {
 
     public static byName(name: string): MatchType | null {
         switch (name) {
-            case MatchType.MATCH_TYPE.SINGLE_PLAYER_PONG.NAME:
+            case MatchType.MATCH_TYPE_CONFIGS.SINGLE_PLAYER_PONG.NAME:
                 return MatchType.SINGLE_PLAYER_PONG;
-            case MatchType.MATCH_TYPE.PONG.NAME:
+            case MatchType.MATCH_TYPE_CONFIGS.PONG.NAME:
                 return MatchType.PONG;
             default:
                 return null;
@@ -85,12 +90,16 @@ export default class MatchType {
 
     public static byId(id: number): MatchType | null {
         switch (id) {
-            case MatchType.MATCH_TYPE.SINGLE_PLAYER_PONG.ID:
+            case MatchType.MATCH_TYPE_CONFIGS.SINGLE_PLAYER_PONG.ID:
                 return MatchType.SINGLE_PLAYER_PONG;
-            case MatchType.MATCH_TYPE.PONG.ID:
+            case MatchType.MATCH_TYPE_CONFIGS.PONG.ID:
                 return MatchType.PONG;
             default:
                 return null;
         }
+    }
+
+    public static getAllTypes(): MatchType[] {
+        return [MatchType.PONG, MatchType.SINGLE_PLAYER_PONG];
     }
 }

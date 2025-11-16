@@ -17,8 +17,6 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
             // name TEXT NOT NULL,
             // match_type_id INTEGER NOT NULL,
             // status TEXT NOT NULL DEFAULT 'upcoming',
-            // start_date DATETIME NOT NULL,
-            // end_date DATETIME,
             // created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             // FOREIGN KEY (match_type_id) REFERENCES match_types(id),
             // CHECK (status IN (
@@ -34,18 +32,14 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
                         name,
                         match_type_id,
                         status,
-                        start_date,
-                        end_date,
                         created_at
                     ) VALUES
-                    (?, ?, ?, ?, ?, ?)
+                    (?, ?, ?, ?)
                 `,
                 [
                     tournament.name,
                     tournament.matchTypeId,
                     tournament.status,
-                    tournament.startDate.toISOString(),
-                    tournament.endDate ? tournament.endDate.toISOString() : null,
                     tournament.createdAt.toISOString(),
                 ]
             );

@@ -13,19 +13,6 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
         await this.run('BEGIN TRANSACTION');
 
         try {
-            // id INTEGER PRIMARY KEY AUTOINCREMENT,
-            // name TEXT NOT NULL,
-            // match_type_id INTEGER NOT NULL,
-            // status TEXT NOT NULL DEFAULT 'upcoming',
-            // created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            // FOREIGN KEY (match_type_id) REFERENCES match_types(id),
-            // CHECK (status IN (
-            //     'upcoming',
-            //     'ongoing',
-            //     'completed',
-            //     'cancelled')
-            // )
-
             const createResult = await this.run(
                 `
                     INSERT INTO tournaments (

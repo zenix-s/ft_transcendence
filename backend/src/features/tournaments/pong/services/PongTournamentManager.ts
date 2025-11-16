@@ -20,7 +20,7 @@ export class PongTournamentManager implements IPongTournamentManager {
             return Result.success(tournamentInitializeResult.value);
         } catch (error) {
             return this.fastify.handleError({
-                code: 'InternalServerError',
+                code: ApplicationError.TournamentCreationError,
                 error,
             });
         }

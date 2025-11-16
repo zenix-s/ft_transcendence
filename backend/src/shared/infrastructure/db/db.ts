@@ -126,6 +126,7 @@ export default fp(
                 INSERT OR IGNORE INTO match_types (name, min_players, max_players, supports_invitations)
                 VALUES
                     (?,?,?,?),
+                    (?,?,?,?),
                     (?,?,?,?)
             `,
             [
@@ -139,6 +140,11 @@ export default fp(
                 MatchType.SINGLE_PLAYER_PONG.minPlayers,
                 MatchType.SINGLE_PLAYER_PONG.maxPlayers,
                 MatchType.SINGLE_PLAYER_PONG.supportsInvitations ? 1 : 0,
+                // Tournament pong
+                MatchType.TOURNAMENT_PONG.name,
+                MatchType.TOURNAMENT_PONG.minPlayers,
+                MatchType.TOURNAMENT_PONG.maxPlayers,
+                MatchType.TOURNAMENT_PONG.supportsInvitations ? 1 : 0,
             ]
         );
 

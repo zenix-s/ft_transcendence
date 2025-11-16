@@ -15,7 +15,7 @@ export class ActivePongTournament {
         const createResult = await this.fastify.TournamentRepository.createTournament({
             tournament: Tournament.create({
                 name: name,
-                matchTypeId: MatchType.PONG.id, // Esto debe añadirse PongTournament
+                matchTypeId: MatchType.TOURNAMENT_PONG.id,
                 createdAt: new Date(),
             }),
         });

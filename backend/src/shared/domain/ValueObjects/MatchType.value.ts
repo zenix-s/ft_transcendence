@@ -35,6 +35,13 @@ export default class MatchType {
             MAX_PLAYERS: 1,
             SUPPORTS_INVITATIONS: false,
         },
+        TOURNAMENT_PONG: {
+            ID: 3,
+            NAME: 'tournament_pong' as const,
+            MIN_PLAYERS: 2,
+            MAX_PLAYERS: 2,
+            SUPPORTS_INVITATIONS: true,
+        },
     };
 
     // Ahora crear las instancias usando las constantes ya definidas
@@ -52,6 +59,14 @@ export default class MatchType {
         MatchType.MATCH_TYPE_CONFIGS.SINGLE_PLAYER_PONG.MIN_PLAYERS,
         MatchType.MATCH_TYPE_CONFIGS.SINGLE_PLAYER_PONG.MAX_PLAYERS,
         MatchType.MATCH_TYPE_CONFIGS.SINGLE_PLAYER_PONG.SUPPORTS_INVITATIONS
+    );
+
+    public static readonly TOURNAMENT_PONG = new MatchType(
+        MatchType.MATCH_TYPE_CONFIGS.TOURNAMENT_PONG.ID,
+        MatchType.MATCH_TYPE_CONFIGS.TOURNAMENT_PONG.NAME,
+        MatchType.MATCH_TYPE_CONFIGS.TOURNAMENT_PONG.MIN_PLAYERS,
+        MatchType.MATCH_TYPE_CONFIGS.TOURNAMENT_PONG.MAX_PLAYERS,
+        MatchType.MATCH_TYPE_CONFIGS.TOURNAMENT_PONG.SUPPORTS_INVITATIONS
     );
 
     // Propiedad pública para mantener compatibilidad con el código existente

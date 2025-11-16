@@ -5,6 +5,8 @@ import { ActivePongTournament } from './ActivePongTournament';
 import { ApplicationError } from '@shared/Errors';
 
 export class PongTournamentManager implements IPongTournamentManager {
+    private tournaments = new Map<number, ActivePongTournament>();
+
     constructor(private readonly fastify: FastifyInstance) {}
 
     async createTournamnet({ name }: { name: string }): Promise<Result<number>> {
@@ -16,6 +18,8 @@ export class PongTournamentManager implements IPongTournamentManager {
                     tournamentInitializeResult.error || ApplicationError.TournamentCreationError
                 );
             }
+
+            this.tournaments.set(tournamentInitializeResult.value, activePongTournament);
 
             return Result.success(tournamentInitializeResult.value);
         } catch (error) {

@@ -29,4 +29,31 @@ export class PongTournamentManager implements IPongTournamentManager {
             });
         }
     }
+
+    async addParticipant({
+        tournamentId,
+        userId,
+    }: {
+        tournamentId: number;
+        userId: number;
+    }): Promise<Result<void>> {
+        try {
+            const activeTournament = this.tournaments.get(tournamentId);
+            if (!activeTournament) {
+                return Result.error(ApplicationError.TournamentNotFound);
+            }
+
+            const addParticipantResult = await activeTournament.addParticipant({ userId });
+            if (!addParticipantResult.isSuccess) {
+                return Result.error(addParticipantResult.error || ApplicationError.ParticipantAdditionError);
+            }
+
+            return Result.success(undefined);
+        } catch (error) {
+            return this.fastify.handleError({
+                code: ApplicationError.ParticipantAdditionError,
+                error,
+            });
+        }
+    }
 }

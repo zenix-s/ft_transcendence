@@ -94,6 +94,25 @@ export default fp(
             )
         `);
 
+        await connection.execute(`
+            CREATE TABLE IF NOT EXISTS tournament_participants (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                tournament_id INTEGER NOT NULL,
+                user_id INTEGER NOT NULL,
+                status TEXT NOT NULL DEFAULT 'registered',
+                score INTEGER DEFAULT 0,
+                FOREIGN KEY (tournament_id) REFERENCES tournaments(id) ON DELETE CASCADE,
+                FOREIGN KEY (user_id) REFERENCES users(id),
+                UNIQUE(tournament_id, user_id),
+                CHECK (status IN (
+                    'registered',
+                    'active',
+                    'eliminated',
+                    'winner')
+                )
+            )
+        `);
+
         await connection.execute(
             `CREATE INDEX IF NOT EXISTS idx_matches_game_type ON matches(match_type_id)`
         );
@@ -103,6 +122,12 @@ export default fp(
         );
         await connection.execute(
             `CREATE INDEX IF NOT EXISTS idx_match_players_user ON match_players(user_id)`
+        );
+        await connection.execute(
+            `CREATE INDEX IF NOT EXISTS idx_tournament_participants_tournament ON tournament_participants(tournament_id)`
+        );
+        await connection.execute(
+            `CREATE INDEX IF NOT EXISTS idx_tournament_participants_user ON tournament_participants(user_id)`
         );
 
         const hashedPasswordAI = await hashPassword('AI_SYSTEM_USER_NO_LOGIN');

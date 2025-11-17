@@ -81,7 +81,7 @@ export class GameWebSocket {
 	private socket: WebSocket | null = null;
 	private token: string;
 	private wsUrl: string;
-//	private start: number;
+	private start: number;
 	private div: HTMLDivElement | null = null;
 	//private ready = false;
 	private player1: Player | undefined;
@@ -96,7 +96,8 @@ export class GameWebSocket {
 		this.wsUrl = getWsUrl("/game/pong");
 		this.token = token;
 		this.gameId = 0;
-	//	this.start = 0;
+		this.div = null;
+		this.start = 0;
 	}
 
 	connect() {
@@ -170,7 +171,6 @@ export class GameWebSocket {
 		switch (type) {
 			case "gameState": {
 				const data = message as GameStateMessage;
-				//añadir countdown
 				this.countdown(data);
 				renderValues(data.state.player1.position, this.player1, data.state.player2.position, this.player2,
 								data.state.player1.score, data.state.player2.score, this.scores,
@@ -242,7 +242,7 @@ export class GameWebSocket {
 		});
 	}
 
-	public invitationAceppted()
+	public invitationAcepted()
 	{
 		showToast(t("invitationAcceppted"), "success");
 	}
@@ -262,35 +262,31 @@ export class GameWebSocket {
 	}
 
 	private countdown(data: GameStateMessage) {
-		const info = data.state.countdownInfo;
 
-		// Si estamos en modo cuenta atrás
-		if (data.state.gameStatus === "goal_countdown" && info.isActive) {
-
-			// Crear el div si no existe
+		if (data.state.countdownInfo.isActive === true)
+		{
 			if (!this.div) {
 				const div_cpy = document.createElement("div");
 
 				div_cpy.className =
-					"fixed inset-0 flex items-center justify-center pointer-events-none text-white text-9xl";
+					"fixed inset-0 flex items-center justify-center pointer-events-none text-white font-extrabold drop-shadow-[0_0_25px_rgba(0,0,0,0.9)] text-9xl";
 
 				div_cpy.style.zIndex = "999999";
-
+				if (this.start === 0)
+					div_cpy.classList.add("animate-ping");
+				this.start = 1;
 				document.body.appendChild(div_cpy);
 				this.div = div_cpy;
-		//		this.start = 1;
+				div_cpy.style.animationIterationCount = "3";
 			}
-
-			// Actualizar el contenido del div existente
-			this.div.textContent = info.remainingTime.toString();
+			this.div.textContent = data.state.countdownInfo.remainingTime.toString();
 			return;
 		}
 
-		// Si NO estamos en cuenta atrás → borrar el div si existe
 		if (this.div) {
 			this.div.remove();
 			this.div = null;
-		//	this.start = 0;
+			this.start = 0;
 		}
 	}
 }

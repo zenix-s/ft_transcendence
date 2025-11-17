@@ -92,12 +92,14 @@ export async function modal({
       allowEscapeKey = true;
     }
 
+    let timerInterval: ReturnType<typeof setInterval> | null = null;
+
     /* MAIN LOGIC */
     if (type !== "gameCreation") {
       const result = await Swal.fire({
         title,
         titleText,
-        text,
+        html: text,
         color: color_modal,
         icon: icon_msg,
         iconColor,
@@ -111,12 +113,27 @@ export async function modal({
         allowOutsideClick: allowOutsideClick,
         allowEscapeKey: allowEscapeKey,
         animation,
+        timer: type === "setReady" ? 30000 : undefined,
+        timerProgressBar: type === "setReady",
         customClass: {
           actions: "gap-10",
           confirmButton:
             "px-4 py-2 rounded-lg font-medium bg-cyan-300 hover:bg-cyan-500 text-gray-800 ml-2 dark:bg-cyan-700 dark:hover:bg-cyan-900 dark:text-gray-100 transition-all duration-300",
           cancelButton:
             "px-4 py-2 rounded-lg font-medium bg-rose-600 hover:bg-rose-800 text-primary ml-2 dark:bg-rose-600 dark:hover:bg-rose-800 dark:text-primary transition-all duration-300",
+        },
+        didOpen: () => {
+          if (type === "setReady") {
+            const timerEl = Swal.getHtmlContainer()?.querySelector("b");
+
+            timerInterval = setInterval(() => {
+              if (timerEl) timerEl.textContent = Math.ceil(Swal.getTimerLeft()! / 1000) + "s";
+            }, 200);
+          }
+        },
+        willClose: () => {
+          if (timerInterval)
+            clearInterval(timerInterval);
         },
       });
       if (result.isConfirmed) {

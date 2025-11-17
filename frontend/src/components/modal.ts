@@ -62,7 +62,7 @@ export async function modal({
       title = t("SetReady");
       titleText = t("isReady");
       confirmButtonText = t("Ready");
-      text = t("ClickReady");
+      text = `${t("ClickReady")}<br><br><b></b>`;
       icon_msg = "question";
       showCancelButton = true;
       cancelButtonText = t("Cancel");

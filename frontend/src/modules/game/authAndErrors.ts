@@ -6,52 +6,6 @@ import { renderValues } from "./playing";
 import type { Ball, Player, Score } from "./gameData";
 import { modal } from "@/components/modal";
 
-interface message {
-	action: number,
-	gameId: number,
-	token: string | null
-}
-
-// function startCountdown(seconds: number): Promise<void> {
-// 	return new Promise((resolve) => {
-// 		let counter = seconds;
-// 		const interval = setInterval(() => {
-// 			console.log(`Starting in ${counter}...`);
-// 			counter--;
-// 			if (counter < 0) {
-// 				clearInterval(interval);
-// 				resolve();
-// 			}
-// 		}, 1000);
-// 	});
-// }
-
-async function authorization(gameId: number, socket:WebSocket)
-{
-	const token = localStorage.getItem("access_token");
-	const obj : message = {
-		action: 0,
-		gameId:gameId,
-		token: token
-	};
-	socket.send(JSON.stringify(obj));
-	obj.action = 1;
-
-	const userConfirmed = await modal({type: "setReady"});
-	// If user canceled, stop everything
-	if (!userConfirmed)
-	{
-		//engine.stopRenderLoop();
-		console.log("User canceled");
-		navigateTo("dashboard", false, true);
-		return;
-	}
-
-	socket.send(JSON.stringify(obj));
-	obj.action = 4;
-	socket.send(JSON.stringify(obj));
-}
-
 async function endGame(finBool:number, gameId:number,
 	player1:Player, player2:Player, scores:Score, ball:Ball)
 {
@@ -64,10 +18,10 @@ async function endGame(finBool:number, gameId:number,
 			console.warn(t("GameError"));
 			navigateTo("dashboard", false, true);
 		}
+		console.log("game = ", JSON.stringify(finished));
 		const score1 = finished.match.players[0].score;
 		const score2 = finished.match.players[1].score;
 		renderValues(50, player1, 50, player2, score1, score2, scores, 50, 50, ball);
-		console.log("game = ", JSON.stringify(finished));
 		const playerL = finished.match.players[0].userId;
 		const playerR = finished.match.players[1].userId;
 		let winner = 1;
@@ -83,10 +37,13 @@ async function endGame(finBool:number, gameId:number,
 	}
 }
 
-export async function endGameAuthAndErrors(data: string, gameId:number, socket:WebSocket,
-	player1:Player, player2:Player, scores:Score, ball:Ball)
+export async function endGameAndErrors(data: string, gameId:number,
+	player1:Player | undefined, player2:Player |  undefined, scores:Score | undefined,
+	ball:Ball | undefined)
 {
 	let finBool = 0;
+	if (!ball || !player1 || !player2 || !scores)
+		return;
 
 	if (data == "GameAlreadyFinished")
 	{
@@ -100,10 +57,6 @@ export async function endGameAuthAndErrors(data: string, gameId:number, socket:W
 	{
 		showToast(t("noActiveGame"), "error");
 		console.warn(t("noActiveGame"));
-	}
-	if (data == "UnauthorizedAccess")
-	{
-		await authorization(gameId, socket);
 	}
 	else {
 		console.warn(t("GameError"));

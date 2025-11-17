@@ -20,7 +20,12 @@ export function ready1()
 			navigateTo("dashboard", false, true);
 			return ;
 		}
-		const id = await fetchSinglePlayerGameId(Number(maxPoints), Number(difficulty));
+		let AIdiff = 8;
+		if (difficulty === "low")
+			AIdiff = 6;
+		else if (difficulty === "high")
+			AIdiff = 10;
+		const id = await fetchSinglePlayerGameId(Number(maxPoints), AIdiff);
 		if (!id)
 		{
 			showToast(t("NoGameId"), "error");
@@ -30,6 +35,5 @@ export function ready1()
 		}
 		console.log("single player id =", id);
 		navigateTo(`playing?id=${id}&singleplayer&view=${playerView}`);
-		//navigateTo(`game?id=${id}&singlePlayer=true&mutiPlayer=false`);
 	});
 }

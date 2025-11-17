@@ -3,13 +3,14 @@ import { navigateTo } from "@/app/navigation";
 import { showToast } from "@/components/toast";
 import { Engine, Scene, HemisphericLight, Vector3 } from "@babylonjs/core";
 import type { Ball, Player, Score } from "./gameData";
-import { socketAndRender } from "./conectWebSocket";
 import { createBall, createCamera, createPlayerLeft, createPlayerRight, createScores, createTable } from "./createGameObjs";
-import { startCountdown } from "@/components/countdown";
+import { createGameSocket, getGameSocket } from "./gameSocket";
 
-export function renderValues(posPlayerL:number, playerL:Player, posPlayerR:number, playerR:Player,
-	pointsL:number, pointsR:number, scores:Score, ballX:number, ballY:number, ball:Ball)
+export function renderValues(posPlayerL:number, playerL:Player | undefined, posPlayerR:number, playerR:Player | undefined,
+	pointsL:number, pointsR:number, scores:Score | undefined, ballX:number, ballY:number, ball:Ball | undefined)
 {
+	if (!ball || !playerL || !playerR || !scores)
+		return;
 	ball.ball.position.x = (ballX / 100) * 8 - 4;
 	ball.ball.position.z = (ballY / 100) * 7.8 - 3.9;
 
@@ -54,8 +55,6 @@ export function initGame3D() {
 		return ;
 	}
 
-	console.log(canvas);
-
 	// Motor y escena
 	const engine = new Engine(canvas, true);
 	const scene = new Scene(engine);
@@ -82,10 +81,25 @@ export function initGame3D() {
 	// PELOTA
 	const ball = createBall(playerView, scene);
 
-	// CUENTA ATRÁS INICIAL
-	startCountdown(3, "start");
 
-	socketAndRender(playerLeft, playerRight, scores, ball, engine, scene);
+
+	const token = localStorage.getItem("access_token");
+	const ws = createGameSocket(token);
+	
+	
+	
+	
+	const socket = getGameSocket();
+	if (!socket)
+	{
+		showToast("Internal error", "error");
+		console.warn("Internal error");
+		navigateTo("dashboard", false, true);
+		return ;
+	}
+	ws.authenticate(Number(id));
+	socket.initializeGame(Number(id), playerLeft, playerRight, scores, ball, engine, scene);
+	socket.play();
 		
 	window.addEventListener("resize", () => {
 		const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;

@@ -91,6 +91,10 @@ export class GameWebSocket {
 	private	engine: Engine | undefined;
 	private scene: Scene | undefined;
 	private gameId: number;
+	private moveUp?: ((event: KeyboardEvent) => void);
+	private moveDown?: ((event: KeyboardEvent) => void);
+	private up: number;
+	private down: number;
 
 	constructor(token: string) {
 		this.wsUrl = getWsUrl("/game/pong");
@@ -98,11 +102,12 @@ export class GameWebSocket {
 		this.gameId = 0;
 		this.div = null;
 		this.start = 0;
+		this.up = 0;
+		this.down = 0;
 	}
 
 	connect() {
-		//console.log("🔌", t("ConnectingToWs"));
-		console.log("conectado websockket");
+		console.log("conectado websocket");
 		this.socket = new WebSocket(this.wsUrl);
 
 		this.socket.addEventListener("open", () => {
@@ -163,6 +168,24 @@ export class GameWebSocket {
 		this.socket?.send(JSON.stringify(obj));
 		//this.ready = true;
 //		}
+		this.moveUp = (event: KeyboardEvent) => {
+			const key = event.key;
+			if (key === "ArrowUp" || key === "w")
+				this.down = 1;
+			if (key === "ArrowDown" || key === "s")
+				this.up = 1;
+			console.log("tecla1");
+		}
+		this.moveDown = (event: KeyboardEvent) => {
+			const key = event.key;
+			if (key === "ArrowUp" || key === "w")
+				this.down = 0;
+			if (key === "ArrowDown" || key === "s")
+				this.up = 0;
+			console.log("tecla2");
+		}
+		document.addEventListener("keyup", this.moveDown);
+		document.addEventListener("keydown", this.moveUp);
 	}
 
 	private async handleMessage(message: unknown) {
@@ -180,7 +203,11 @@ export class GameWebSocket {
 			case "error": {
 				const data = message as ErrorMessage;
 				if (data.error === "GameAlreadyFinished" || (data.error != "UnauthorizedAccess" && data.error != "GameNotFound"))
+				{
+					document.removeEventListener("keydown", this.moveUp!);
+    				document.removeEventListener("keyup", this.moveDown!);
 					this.engine?.stopRenderLoop();
+				}
 				await endGameAndErrors(data.error, this.gameId, this.player1, this.player2,
 					this.scores, this.ball);
 				break;
@@ -203,8 +230,6 @@ export class GameWebSocket {
 
 	public async	play(){
 		await this.waitForOpen();
-		let	up = 0;
-		let	down = 0;
 		const	obj : message = {
 			action : 1,
 			gameId: this.gameId,
@@ -214,32 +239,18 @@ export class GameWebSocket {
 		this.engine?.runRenderLoop(() => {
 			obj.action = 1;
 			this.socket?.send(JSON.stringify(obj));
-			if (up == 1 && down == 0)
-			{
-				obj.action = 3;
-				this.socket?.send(JSON.stringify(obj));
-			}
-			else if (down === 1 && up == 0)
+			if (this.up == 1 && this.down == 0)
 			{
 				obj.action = 2;
 				this.socket?.send(JSON.stringify(obj));
 			}
+			else if (this.down === 1 && this.up == 0)
+			{
+				obj.action = 3;
+				this.socket?.send(JSON.stringify(obj));
+			}
 			this.scene?.render();
 		})
-		document.addEventListener("keydown", (event) => {
-			const key = event.key;
-			if (key === "ArrowUp" || key === "w")
-				up = 1;
-			if (key === "ArrowDown" || key === "s")
-				down = 1;
-		});
-		document.addEventListener("keyup", (event) => {
-			const key = event.key;
-			if (key === "ArrowUp" || key === "w")
-				up = 0;
-			if (key === "ArrowDown" || key === "s")
-				down = 0;
-		});
 	}
 
 	public invitationAcepted()

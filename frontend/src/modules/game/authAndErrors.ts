@@ -5,43 +5,6 @@ import { navigateTo } from "@/app/navigation";
 import { renderValues } from "./playing";
 import type { Ball, Player, Score } from "./gameData";
 import { modal } from "@/components/modal";
-//import type { Engine } from "@babylonjs/core";
-//import { startCountdown } from "@/components/countdown";
-
-// interface message {
-// 	action: number,
-// 	gameId: number,
-// 	token: string | null
-// }
-
-// async function authorization(gameId: number, socket:WebSocket | null, engine:Engine)
-// {
-// 	const token = localStorage.getItem("access_token");
-// 	const obj : message = {
-// 		action: 0,
-// 		gameId:gameId,
-// 		token: token
-// 	};
-// 	socket?.send(JSON.stringify(obj));
-// 	obj.action = 1;
-
-// 	const userConfirmed = await modal({type: "setReady"});
-// 	// If user canceled, stop everything
-// 	if (!userConfirmed)
-// 	{
-// 		console.log("User canceled the modal");
-// 		obj.action = 6;
-// 		socket?.send(JSON.stringify(obj));
-// 		engine.stopRenderLoop();
-// 		console.log("User canceled");
-// 		navigateTo("dashboard", false, true);
-// 		return;
-// 	}
-// 	socket?.send(JSON.stringify(obj));
-// 	obj.action = 4;
-// 	socket?.send(JSON.stringify(obj));
-// 	startCountdown(3, "start");
-// }
 
 async function endGame(finBool:number, gameId:number,
 	player1:Player, player2:Player, scores:Score, ball:Ball)

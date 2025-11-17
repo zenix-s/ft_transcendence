@@ -143,7 +143,6 @@ export class SocialWebSocketClient {
         {
           // Definir que pasa si se ACEPTA la invitación
           console.log("Has aceptado la invitación");
-          const playerView = "3D";
           const response = await acceptInvitation(msg.gameId);
           const playerView = "3D";
           if (response)

@@ -3,10 +3,11 @@ import { t } from "@/app/i18n";
 import { navigateTo } from "@/app/navigation";
 import { modal } from "@/components/modal";
 import { showToast } from "@/components/toast";
-import { renderValues } from "./playing";
+import { renderValues } from "./game";
 import type { Ball, Player, Score } from "./gameData";
 import type { Engine, Scene } from "@babylonjs/core";
 import { endGameAndErrors } from "./authAndErrors";
+import { Actions } from "@/types/gameOptions"
 
 export interface GameStateMessage {
 	type: "gameState";
@@ -146,12 +147,12 @@ export class GameWebSocket {
 	public async authenticate(gameId:number) {
 		await this.waitForOpen();
 		const obj : message = {
-			action : 0,
+			action : Actions.AUTH,
 			gameId : gameId,
 			token : this.token
 		};
 		this.socket?.send(JSON.stringify(obj));
-		obj.action = 1;
+		obj.action = Actions.REQUEST_STATE;
 		this.socket?.send(JSON.stringify(obj));
 //		if (this.ready == false)
 //		{
@@ -159,12 +160,12 @@ export class GameWebSocket {
 		if (!userConfirmed)
 		{
 			console.log("User canceled the modal");
-			obj.action = 6;
+			obj.action = Actions.LEAVE_GAME;
 			this.socket?.send(JSON.stringify(obj));
 			navigateTo("dashboard", false, true);
 			return ;
 		}
-		obj.action = 4;
+		obj.action = Actions.SET_READY;
 		this.socket?.send(JSON.stringify(obj));
 		//this.ready = true;
 //		}
@@ -231,22 +232,22 @@ export class GameWebSocket {
 	public async	play(){
 		await this.waitForOpen();
 		const	obj : message = {
-			action : 1,
+			action : Actions.REQUEST_STATE,
 			gameId: this.gameId,
 			token: this.token
 		}
 		this.socket?.send(JSON.stringify(obj));
 		this.engine?.runRenderLoop(() => {
-			obj.action = 1;
+			obj.action = Actions.REQUEST_STATE;
 			this.socket?.send(JSON.stringify(obj));
 			if (this.up == 1 && this.down == 0)
 			{
-				obj.action = 2;
+				obj.action = Actions.MOVE_UP;
 				this.socket?.send(JSON.stringify(obj));
 			}
 			else if (this.down === 1 && this.up == 0)
 			{
-				obj.action = 3;
+				obj.action = Actions.MOVE_DOWN;
 				this.socket?.send(JSON.stringify(obj));
 			}
 			this.scene?.render();
@@ -261,12 +262,12 @@ export class GameWebSocket {
 	public invitationRejected(gameId:number)
 	{
 		const obj : message = {
-			action : 0,
+			action : Actions.AUTH,
 			gameId : gameId,
 			token : this.token
 		};
 		showToast(t("invitationRejected"), "error");
-		obj.action = 6;
+		obj.action = Actions.LEAVE_GAME;
 		this.socket?.send(JSON.stringify(obj));
 		navigateTo("dashboard", false, true);
 		return ;

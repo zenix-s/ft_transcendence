@@ -2,6 +2,7 @@ import { navigateTo } from "@/app/navigation";
 import { fetchSinglePlayerGameId } from "./getData";
 import { showToast } from "@/components/toast.js";
 import { t } from "@/app/i18n";
+import { GameDifficulty } from "@/types/gameOptions"
 
 export function ready1()
 {
@@ -20,11 +21,11 @@ export function ready1()
 			navigateTo("dashboard", false, true);
 			return ;
 		}
-		let AIdiff = 8;
-		if (difficulty === "low")
-			AIdiff = 6;
-		else if (difficulty === "high")
-			AIdiff = 10;
+		let AIdiff = GameDifficulty.NORMAL;
+		if (difficulty === "easy")
+			AIdiff = GameDifficulty.EASY;
+		else if (difficulty === "hard")
+			AIdiff = GameDifficulty.HARD;
 		const id = await fetchSinglePlayerGameId(Number(maxPoints), AIdiff);
 		if (!id)
 		{

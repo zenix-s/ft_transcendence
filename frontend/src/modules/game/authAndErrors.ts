@@ -2,7 +2,7 @@ import { showToast } from "@/components/toast";
 import { fetchGameAlreadyFinished } from "./getData";
 import { t } from "@/app/i18n";
 import { navigateTo } from "@/app/navigation";
-import { renderValues } from "./playing";
+import { renderValues } from "./game";
 import type { Ball, Player, Score } from "./gameData";
 import { modal } from "@/components/modal";
 

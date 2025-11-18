@@ -16,7 +16,7 @@
   }
 
   .center-screen {
-    @apply flex flex-col min-w-screen min-h-[100dvh] items-center justify-center;
+    @apply flex flex-col min-w-screen min-h-dvh items-center justify-center;
   }
   /* Estilos para la paginación de Simple-Datatables */
   .datatable-pagination ul {

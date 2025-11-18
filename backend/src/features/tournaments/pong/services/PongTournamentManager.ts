@@ -3,6 +3,7 @@ import { IPongTournamentManager } from './IPongTournamentManager';
 import { FastifyInstance } from 'fastify';
 import { ActivePongTournament } from './ActivePongTournament';
 import { ApplicationError } from '@shared/Errors';
+import { Tournament } from '@shared/domain/Entities/Tournament.entity';
 
 export class PongTournamentManager implements IPongTournamentManager {
     private tournaments = new Map<number, ActivePongTournament>();
@@ -52,6 +53,30 @@ export class PongTournamentManager implements IPongTournamentManager {
         } catch (error) {
             return this.fastify.handleError({
                 code: ApplicationError.ParticipantAdditionError,
+                error,
+            });
+        }
+    }
+
+    async getActiveTournaments(params: { limit?: number; offset?: number }): Promise<Result<Tournament[]>> {
+        try {
+            // Buscar torneos activos (upcoming y ongoing) usando el repository
+            const activeTournamentsResult = await this.fastify.TournamentRepository.findTournaments({
+                status: [Tournament.STATUS.UPCOMING, Tournament.STATUS.ONGOING],
+                limit: params.limit,
+                offset: params.offset,
+            });
+
+            if (!activeTournamentsResult.isSuccess) {
+                return Result.error(
+                    activeTournamentsResult.error || ApplicationError.DatabaseServiceUnavailable
+                );
+            }
+
+            return Result.success(activeTournamentsResult.value || []);
+        } catch (error) {
+            return this.fastify.handleError({
+                code: ApplicationError.DatabaseServiceUnavailable,
                 error,
             });
         }

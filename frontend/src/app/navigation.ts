@@ -12,7 +12,7 @@ import { initFriendsSidebar } from "@/components/friendsSidebar/friendsSidebar"
 import { getCurrentUser } from "@/modules/users";
 import { ready1 } from "@/modules/game/setReady1";
 import { t } from "@/app/i18n"
-import { initGame3D } from "@/modules/game/playing";
+import { initGame3D } from "@/modules/game/game";
 
 // Llamada                            Efecto
 // navigateTo("home")                 Carga "home" y añade al historial

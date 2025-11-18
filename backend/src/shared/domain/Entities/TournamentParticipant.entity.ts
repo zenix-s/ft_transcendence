@@ -4,6 +4,7 @@ export class TournamentParticipant {
     private _id?: number;
     private _tournamentId: number;
     private _userId: number;
+    private _username?: string;
     private _status: TournamentParticipantStatus;
     private _score: number;
 
@@ -18,18 +19,21 @@ export class TournamentParticipant {
         id,
         tournamentId,
         userId,
+        username,
         status = TournamentParticipant.STATUS.REGISTERED,
         score = 0,
     }: {
         id?: number;
         tournamentId: number;
         userId: number;
+        username?: string;
         status?: TournamentParticipantStatus;
         score?: number;
     }) {
         this._id = id;
         this._tournamentId = tournamentId;
         this._userId = userId;
+        this._username = username;
         this._status = status;
         this._score = score;
     }
@@ -46,6 +50,10 @@ export class TournamentParticipant {
         return this._userId;
     }
 
+    public get username(): string | undefined {
+        return this._username;
+    }
+
     public get status(): TournamentParticipantStatus {
         return this._status;
     }
@@ -58,12 +66,14 @@ export class TournamentParticipant {
         id,
         tournamentId,
         userId,
+        username,
         status,
         score,
     }: {
         id?: number;
         tournamentId: number;
         userId: number;
+        username?: string;
         status?: TournamentParticipantStatus;
         score?: number;
     }): TournamentParticipant {
@@ -71,6 +81,7 @@ export class TournamentParticipant {
             id,
             tournamentId,
             userId,
+            username,
             status,
             score,
         });
@@ -136,6 +147,7 @@ export class TournamentParticipant {
         id: number;
         tournament_id: number;
         user_id: number;
+        username?: string;
         status: TournamentParticipantStatus;
         score: number;
     }): TournamentParticipant {
@@ -143,6 +155,7 @@ export class TournamentParticipant {
             id: data.id,
             tournamentId: data.tournament_id,
             userId: data.user_id,
+            username: data.username,
             status: data.status,
             score: data.score,
         });
@@ -175,6 +188,7 @@ export class TournamentParticipant {
             id: this._id,
             tournamentId: this._tournamentId,
             userId: this._userId,
+            username: this._username,
             status: this._status,
             score: this._score,
         };

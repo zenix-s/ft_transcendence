@@ -8,6 +8,7 @@ export class Tournament {
     private _matchTypeId: number;
     private _status: TournamentStatus;
     private _participants: Map<number, TournamentParticipant>;
+    private _participantCountOverride?: number;
 
     private _createdAt: Date;
 
@@ -24,12 +25,14 @@ export class Tournament {
         id,
         status = Tournament.STATUS.UPCOMING,
         createdAt,
+        participantCountOverride,
     }: {
         name: string;
         matchTypeId: number;
         id?: number;
         status?: TournamentStatus;
         createdAt?: Date;
+        participantCountOverride?: number;
     }) {
         this._id = id;
         this._name = name;
@@ -37,6 +40,7 @@ export class Tournament {
         this._status = status;
         this._createdAt = createdAt || new Date();
         this._participants = new Map();
+        this._participantCountOverride = participantCountOverride;
     }
 
     public get id(): number | undefined {
@@ -68,7 +72,9 @@ export class Tournament {
     }
 
     public get participantCount(): number {
-        return this._participants.size;
+        return this._participantCountOverride !== undefined
+            ? this._participantCountOverride
+            : this._participants.size;
     }
 
     public static create({
@@ -77,12 +83,14 @@ export class Tournament {
         id,
         status,
         createdAt,
+        participantCountOverride,
     }: {
         name: string;
         matchTypeId: number;
         id?: number;
         status?: TournamentStatus;
         createdAt?: Date;
+        participantCountOverride?: number;
     }): Tournament {
         return new Tournament({
             name,
@@ -90,6 +98,7 @@ export class Tournament {
             id,
             status,
             createdAt,
+            participantCountOverride,
         });
     }
 
@@ -190,6 +199,7 @@ export class Tournament {
         status: TournamentStatus;
         created_at: string | Date;
         participants?: TournamentParticipant[];
+        participantCountOverride?: number;
     }): Tournament {
         const tournament = new Tournament({
             id: data.id,
@@ -197,6 +207,7 @@ export class Tournament {
             matchTypeId: data.match_type_id,
             status: data.status,
             createdAt: new Date(data.created_at),
+            participantCountOverride: data.participantCountOverride,
         });
 
         // Añadir participantes si existen

@@ -81,4 +81,49 @@ export class PongTournamentManager implements IPongTournamentManager {
             });
         }
     }
+
+    async getActiveTournamentsBasic(params: {
+        limit?: number;
+        offset?: number;
+    }): Promise<Result<Tournament[]>> {
+        try {
+            // Buscar torneos activos (upcoming y ongoing) usando el repository básico
+            const activeTournamentsResult = await this.fastify.TournamentRepository.findTournamentsBasic({
+                status: [Tournament.STATUS.UPCOMING, Tournament.STATUS.ONGOING],
+                limit: params.limit,
+                offset: params.offset,
+            });
+
+            if (!activeTournamentsResult.isSuccess) {
+                return Result.error(
+                    activeTournamentsResult.error || ApplicationError.DatabaseServiceUnavailable
+                );
+            }
+
+            return Result.success(activeTournamentsResult.value || []);
+        } catch (error) {
+            return this.fastify.handleError({
+                code: ApplicationError.DatabaseServiceUnavailable,
+                error,
+            });
+        }
+    }
+
+    async getTournamentById({ id }: { id: number }): Promise<Result<Tournament | null>> {
+        try {
+            // Buscar tournament por ID usando el repository
+            const tournamentResult = await this.fastify.TournamentRepository.findById({ id });
+
+            if (!tournamentResult.isSuccess) {
+                return Result.error(tournamentResult.error || ApplicationError.DatabaseServiceUnavailable);
+            }
+
+            return Result.success(tournamentResult.value || null);
+        } catch (error) {
+            return this.fastify.handleError({
+                code: ApplicationError.DatabaseServiceUnavailable,
+                error,
+            });
+        }
+    }
 }

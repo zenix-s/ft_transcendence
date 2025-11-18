@@ -14,6 +14,11 @@ export interface ITournamentRepository {
         offset?: number;
         status?: TournamentStatus[];
     }): Promise<Result<Tournament[]>>;
+    findTournamentsBasic(params: {
+        limit?: number;
+        offset?: number;
+        status?: TournamentStatus[];
+    }): Promise<Result<Tournament[]>>;
     findById({ id }: { id: number }): Promise<Result<Tournament | null>>;
     update({ tournament }: { tournament: Tournament }): Promise<Result<Tournament>>;
 }
@@ -93,20 +98,28 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
 
             const tournaments: Tournament[] = [];
             for (const row of result) {
-                // Buscar participantes del torneo
-                const participants = await this.findMany<TournamentParticipantDbModel>(
+                // Buscar participantes del torneo con username
+                const participants = await this.findMany<TournamentParticipantDbModel & { username: string }>(
                     `
                         SELECT
-                            *
+                            tp.*,
+                            u.username
                         FROM
-                            tournament_participants
+                            tournament_participants tp
+                        JOIN
+                            users u ON tp.user_id = u.id
                         WHERE
-                            tournament_id = ?
+                            tp.tournament_id = ?
                     `,
                     [row.id]
                 );
 
-                const tournamentParticipants = participants.map((p) => TournamentParticipant.fromDatabase(p));
+                const tournamentParticipants = participants.map((p) =>
+                    TournamentParticipant.fromDatabase({
+                        ...p,
+                        username: p.username,
+                    })
+                );
 
                 tournaments.push(
                     Tournament.fromDatabase({
@@ -115,6 +128,65 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
                     })
                 );
             }
+
+            return Result.success(tournaments);
+        } catch {
+            return Result.error(ApplicationError.DatabaseServiceUnavailable);
+        }
+    }
+
+    async findTournamentsBasic({
+        limit = 100,
+        offset = 0,
+        status = [],
+    }: {
+        limit?: number;
+        offset?: number;
+        status?: TournamentStatus[];
+    } = {}): Promise<Result<Tournament[]>> {
+        try {
+            let statusCondition = '';
+            let params: (TournamentStatus | number)[] = [];
+
+            if (status.length > 0) {
+                const statusPlaceholders = status.map(() => '?').join(', ');
+                statusCondition = `WHERE t.status IN (${statusPlaceholders})`;
+                params = [...status];
+            }
+
+            params.push(limit, offset);
+
+            // Query optimizada que solo cuenta participantes sin cargarlos
+            const result = await this.findMany<TournamentDbModel & { participant_count: number }>(
+                `
+                    SELECT
+                        t.*,
+                        COALESCE(COUNT(tp.id), 0) as participant_count
+                    FROM
+                        tournaments t
+                    LEFT JOIN
+                        tournament_participants tp ON t.id = tp.tournament_id
+                    ${statusCondition}
+                    GROUP BY
+                        t.id
+                    ORDER BY
+                        t.created_at DESC
+                    LIMIT ? OFFSET ?
+                `,
+                params
+            );
+
+            const tournaments: Tournament[] = result.map((row) => {
+                return Tournament.fromDatabase({
+                    id: row.id,
+                    name: row.name,
+                    match_type_id: row.match_type_id,
+                    status: row.status,
+                    created_at: row.created_at,
+                    participants: [], // No cargamos participantes para el listado básico
+                    participantCountOverride: row.participant_count,
+                });
+            });
 
             return Result.success(tournaments);
         } catch {
@@ -138,20 +210,28 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
 
             if (!result) return Result.success(null);
 
-            // Buscar participantes del torneo
-            const participants = await this.findMany<TournamentParticipantDbModel>(
+            // Buscar participantes del torneo con username
+            const participants = await this.findMany<TournamentParticipantDbModel & { username: string }>(
                 `
                     SELECT
-                        *
+                        tp.*,
+                        u.username
                     FROM
-                        tournament_participants
+                        tournament_participants tp
+                    JOIN
+                        users u ON tp.user_id = u.id
                     WHERE
-                        tournament_id = ?
+                        tp.tournament_id = ?
                 `,
                 [id]
             );
 
-            const tournamentParticipants = participants.map((p) => TournamentParticipant.fromDatabase(p));
+            const tournamentParticipants = participants.map((p) =>
+                TournamentParticipant.fromDatabase({
+                    ...p,
+                    username: p.username,
+                })
+            );
 
             const tournament = Tournament.fromDatabase({
                 ...result,

@@ -49,19 +49,16 @@ export default async function GetActivePongTournamentsRoute(fastify: FastifyInst
                                         matchTypeId: { type: 'number' },
                                         status: { type: 'string' },
                                         createdAt: { type: 'string', format: 'date-time' },
-                                        participants: {
-                                            type: 'array',
-                                            items: {
-                                                type: 'object',
-                                                properties: {
-                                                    userId: { type: 'number' },
-                                                    status: { type: 'string' },
-                                                    score: { type: 'number' },
-                                                },
-                                            },
-                                        },
                                         participantCount: { type: 'number' },
                                     },
+                                    required: [
+                                        'id',
+                                        'name',
+                                        'matchTypeId',
+                                        'status',
+                                        'createdAt',
+                                        'participantCount',
+                                    ],
                                 },
                             },
                             total: { type: 'number' },

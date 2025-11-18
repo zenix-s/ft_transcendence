@@ -21,6 +21,10 @@ export interface TournamentDetailResponse {
     createdAt: string;
     participants: TournamentParticipantResponse[];
     participantCount: number;
+    matchSettings: {
+        maxScore: number;
+        maxGameTime: number;
+    };
 }
 
 export interface IGetPongTournamentDetailRequest {
@@ -72,6 +76,7 @@ export class GetPongTournamentDetailCommand
                 this.participantToResponse(participant)
             ),
             participantCount: tournament.participantCount,
+            matchSettings: tournament.matchSettings.toObject(),
         };
     }
 

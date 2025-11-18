@@ -11,6 +11,10 @@ export interface TournamentBasicResponse {
     status: string;
     createdAt: string;
     participantCount: number;
+    matchSettings: {
+        maxScore: number;
+        maxGameTime: number;
+    };
 }
 
 export interface IGetActivePongTournamentsRequest {
@@ -56,6 +60,7 @@ export class GetActivePongTournamentsCommand
             status: tournament.status,
             createdAt: tournament.createdAt.toISOString(),
             participantCount: tournament.participantCount,
+            matchSettings: tournament.matchSettings.toObject(),
         };
     }
 

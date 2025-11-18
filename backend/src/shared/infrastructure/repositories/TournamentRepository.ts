@@ -35,14 +35,16 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
                         name,
                         match_type_id,
                         status,
+                        match_settings,
                         created_at
                     ) VALUES
-                    (?, ?, ?, ?)
+                    (?, ?, ?, ?, ?)
                 `,
                 [
                     tournament.name,
                     tournament.matchTypeId,
                     tournament.status,
+                    tournament.matchSettings.toJSON(),
                     tournament.createdAt.toISOString(),
                 ]
             );
@@ -281,11 +283,18 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
                     SET
                         name = ?,
                         match_type_id = ?,
-                        status = ?
+                        status = ?,
+                        match_settings = ?
                     WHERE
                         id = ?
                 `,
-                [tournamentData.name, tournamentData.match_type_id, tournamentData.status, tournament.id]
+                [
+                    tournamentData.name,
+                    tournamentData.match_type_id,
+                    tournamentData.status,
+                    tournamentData.match_settings,
+                    tournament.id,
+                ]
             );
 
             if (updateResult.affectedRows <= 0) {

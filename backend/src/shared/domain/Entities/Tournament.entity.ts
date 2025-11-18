@@ -1,4 +1,5 @@
 import { TournamentParticipant } from './TournamentParticipant.entity';
+import { MatchSettings, IMatchSettings } from '../ValueObjects/MatchSettings.value';
 
 export type TournamentStatus = (typeof Tournament.STATUS)[keyof typeof Tournament.STATUS];
 
@@ -9,6 +10,7 @@ export class Tournament {
     private _status: TournamentStatus;
     private _participants: Map<number, TournamentParticipant>;
     private _participantCountOverride?: number;
+    private _matchSettings: MatchSettings;
 
     private _createdAt: Date;
 
@@ -26,6 +28,7 @@ export class Tournament {
         status = Tournament.STATUS.UPCOMING,
         createdAt,
         participantCountOverride,
+        matchSettings,
     }: {
         name: string;
         matchTypeId: number;
@@ -33,6 +36,7 @@ export class Tournament {
         status?: TournamentStatus;
         createdAt?: Date;
         participantCountOverride?: number;
+        matchSettings?: MatchSettings;
     }) {
         this._id = id;
         this._name = name;
@@ -41,6 +45,7 @@ export class Tournament {
         this._createdAt = createdAt || new Date();
         this._participants = new Map();
         this._participantCountOverride = participantCountOverride;
+        this._matchSettings = matchSettings || MatchSettings.default();
     }
 
     public get id(): number | undefined {
@@ -77,6 +82,10 @@ export class Tournament {
             : this._participants.size;
     }
 
+    public get matchSettings(): MatchSettings {
+        return this._matchSettings;
+    }
+
     public static create({
         name,
         matchTypeId,
@@ -84,6 +93,7 @@ export class Tournament {
         status,
         createdAt,
         participantCountOverride,
+        matchSettings,
     }: {
         name: string;
         matchTypeId: number;
@@ -91,7 +101,15 @@ export class Tournament {
         status?: TournamentStatus;
         createdAt?: Date;
         participantCountOverride?: number;
+        matchSettings?: MatchSettings | IMatchSettings;
     }): Tournament {
+        const settings =
+            matchSettings instanceof MatchSettings
+                ? matchSettings
+                : matchSettings
+                  ? MatchSettings.create(matchSettings)
+                  : MatchSettings.default();
+
         return new Tournament({
             name,
             matchTypeId,
@@ -99,6 +117,7 @@ export class Tournament {
             status,
             createdAt,
             participantCountOverride,
+            matchSettings: settings,
         });
     }
 
@@ -198,9 +217,14 @@ export class Tournament {
         match_type_id: number;
         status: TournamentStatus;
         created_at: string | Date;
+        match_settings?: string;
         participants?: TournamentParticipant[];
         participantCountOverride?: number;
     }): Tournament {
+        const matchSettings = data.match_settings
+            ? MatchSettings.fromJSON(data.match_settings)
+            : MatchSettings.default();
+
         const tournament = new Tournament({
             id: data.id,
             name: data.name,
@@ -208,6 +232,7 @@ export class Tournament {
             status: data.status,
             createdAt: new Date(data.created_at),
             participantCountOverride: data.participantCountOverride,
+            matchSettings,
         });
 
         // Añadir participantes si existen
@@ -225,6 +250,7 @@ export class Tournament {
         name: string;
         match_type_id: number;
         status: TournamentStatus;
+        match_settings: string;
         created_at: Date;
     } {
         return {
@@ -232,6 +258,7 @@ export class Tournament {
             name: this._name,
             match_type_id: this._matchTypeId,
             status: this._status,
+            match_settings: this._matchSettings.toJSON(),
             created_at: this._createdAt,
         };
     }
@@ -249,6 +276,7 @@ export class Tournament {
             matchTypeId: this._matchTypeId,
             status: this._status,
             createdAt: this._createdAt,
+            matchSettings: this._matchSettings.toObject(),
             participants: this.participants.map((p) => p.toJSON()),
             participantCount: this.participantCount,
         };

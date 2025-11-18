@@ -50,6 +50,14 @@ export default async function GetActivePongTournamentsRoute(fastify: FastifyInst
                                         status: { type: 'string' },
                                         createdAt: { type: 'string', format: 'date-time' },
                                         participantCount: { type: 'number' },
+                                        matchSettings: {
+                                            type: 'object',
+                                            properties: {
+                                                maxScore: { type: 'number' },
+                                                maxGameTime: { type: 'number' },
+                                            },
+                                            required: ['maxScore', 'maxGameTime'],
+                                        },
                                     },
                                     required: [
                                         'id',
@@ -58,6 +66,7 @@ export default async function GetActivePongTournamentsRoute(fastify: FastifyInst
                                         'status',
                                         'createdAt',
                                         'participantCount',
+                                        'matchSettings',
                                     ],
                                 },
                             },

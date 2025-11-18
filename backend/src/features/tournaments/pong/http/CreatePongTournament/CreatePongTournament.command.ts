@@ -6,6 +6,10 @@ import { FastifyInstance } from 'fastify';
 export interface ICreatePongTournamentRequest {
     userId: number;
     name: string;
+    matchSettings?: {
+        maxScore: number;
+        maxGameTime: number;
+    };
 }
 
 export interface ICreatePongTournamentResponse {
@@ -40,6 +44,7 @@ export class CreatePongTournamentCommand
             const createTournamentResult = await this.fastify.PongTournamentManager.createTournamnet({
                 name: request.name,
                 creatorUserId: request.userId,
+                matchSettings: request.matchSettings,
             });
 
             // Paso 3: Manejar el resultado de la creación del torneo

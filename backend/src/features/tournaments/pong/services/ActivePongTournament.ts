@@ -4,6 +4,7 @@ import { TournamentParticipant } from '@shared/domain/Entities/TournamentPartici
 import MatchType from '@shared/domain/ValueObjects/MatchType.value';
 import { ApplicationError } from '@shared/Errors';
 import { FastifyInstance } from 'fastify';
+import { IMatchSettings } from '@shared/domain/ValueObjects/MatchSettings.value';
 
 export class ActivePongTournament {
     private tournamentId: number | null;
@@ -15,15 +16,18 @@ export class ActivePongTournament {
     async initialize({
         name,
         creatorUserId,
+        matchSettings,
     }: {
         name: string;
         creatorUserId: number;
+        matchSettings?: IMatchSettings;
     }): Promise<Result<number>> {
         // Paso 1: Crear la entidad de torneo
         const tournamentEntity = Tournament.create({
             name: name,
             matchTypeId: MatchType.TOURNAMENT_PONG.id,
             createdAt: new Date(),
+            matchSettings: matchSettings,
         });
 
         // Paso 2: Crear el torneo en la base de datos

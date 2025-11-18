@@ -4,6 +4,10 @@ import { CreatePongTournamentCommand } from './CreatePongTournament.command';
 interface CreatePongTournamentRequest {
     Body: {
         name: string;
+        matchSettings?: {
+            maxScore: number;
+            maxGameTime: number;
+        };
     };
 }
 
@@ -21,6 +25,24 @@ export default async function CreatePongTournamentRoute(fastify: FastifyInstance
                         name: {
                             type: 'string',
                             description: 'Name of the tournament',
+                        },
+                        matchSettings: {
+                            type: 'object',
+                            properties: {
+                                maxScore: {
+                                    type: 'number',
+                                    minimum: 1,
+                                    maximum: 100,
+                                    description: 'Maximum score to win a match',
+                                },
+                                maxGameTime: {
+                                    type: 'number',
+                                    minimum: 30,
+                                    maximum: 600,
+                                    description: 'Maximum game duration in seconds',
+                                },
+                            },
+                            required: ['maxScore', 'maxGameTime'],
                         },
                     },
                     required: ['name'],
@@ -50,6 +72,7 @@ export default async function CreatePongTournamentRoute(fastify: FastifyInstance
             const requestData = {
                 name: request.body.name,
                 userId: request.user.id,
+                matchSettings: request.body.matchSettings,
             };
 
             return fastify.handleCommand({

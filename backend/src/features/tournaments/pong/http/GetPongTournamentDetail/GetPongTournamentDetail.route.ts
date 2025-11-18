@@ -54,6 +54,14 @@ export default async function GetPongTournamentDetailRoute(fastify: FastifyInsta
                                         },
                                     },
                                     participantCount: { type: 'number' },
+                                    matchSettings: {
+                                        type: 'object',
+                                        properties: {
+                                            maxScore: { type: 'number' },
+                                            maxGameTime: { type: 'number' },
+                                        },
+                                        required: ['maxScore', 'maxGameTime'],
+                                    },
                                 },
                                 required: [
                                     'id',
@@ -63,6 +71,7 @@ export default async function GetPongTournamentDetailRoute(fastify: FastifyInsta
                                     'createdAt',
                                     'participants',
                                     'participantCount',
+                                    'matchSettings',
                                 ],
                             },
                         },

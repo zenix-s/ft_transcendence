@@ -4,6 +4,7 @@ import { FastifyInstance } from 'fastify';
 import { ActivePongTournament } from './ActivePongTournament';
 import { ApplicationError } from '@shared/Errors';
 import { Tournament } from '@shared/domain/Entities/Tournament.entity';
+import { IMatchSettings } from '@shared/domain/ValueObjects/MatchSettings.value';
 
 export class PongTournamentManager implements IPongTournamentManager {
     private tournaments = new Map<number, ActivePongTournament>();
@@ -13,9 +14,11 @@ export class PongTournamentManager implements IPongTournamentManager {
     async createTournamnet({
         name,
         creatorUserId,
+        matchSettings,
     }: {
         name: string;
         creatorUserId: number;
+        matchSettings?: IMatchSettings;
     }): Promise<Result<number>> {
         try {
             // Paso 1: Verificar si el usuario ya es admin de un torneo activo
@@ -36,6 +39,7 @@ export class PongTournamentManager implements IPongTournamentManager {
             const tournamentInitializeResult = await activePongTournament.initialize({
                 name,
                 creatorUserId,
+                matchSettings,
             });
 
             // Paso 3: Manejar el resultado de la inicialización

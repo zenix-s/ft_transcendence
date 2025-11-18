@@ -9,6 +9,7 @@ export interface TournamentParticipantResponse {
     userId: number;
     username: string;
     status: string;
+    role: string;
     score: number;
 }
 
@@ -51,6 +52,7 @@ export class GetPongTournamentDetailCommand
             userId: participant.userId,
             username: participant.username || '',
             status: participant.status,
+            role: participant.role,
             score: participant.score,
         };
     }
@@ -85,10 +87,12 @@ export class GetPongTournamentDetailCommand
                 id: request.id,
             });
 
+            // Paso 3: Manejar el resultado de la consulta
             if (!tournamentResult.isSuccess) {
                 return Result.error(tournamentResult.error || ApplicationError.TournamentNotFound);
             }
 
+            // Paso 4: Transformar entidad de dominio a interfaz de respuesta
             const tournament = tournamentResult.value;
             const tournamentResponse = tournament ? this.tournamentToDetailResponse(tournament) : null;
 

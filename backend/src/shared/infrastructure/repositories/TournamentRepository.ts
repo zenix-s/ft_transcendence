@@ -21,6 +21,7 @@ export interface ITournamentRepository {
     }): Promise<Result<Tournament[]>>;
     findById({ id }: { id: number }): Promise<Result<Tournament | null>>;
     update({ tournament }: { tournament: Tournament }): Promise<Result<Tournament>>;
+    isUserAdminOfActiveTournament({ userId }: { userId: number }): Promise<Result<boolean>>;
 }
 
 class TournamentRepository extends AbstractRepository implements ITournamentRepository {
@@ -102,7 +103,12 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
                 const participants = await this.findMany<TournamentParticipantDbModel & { username: string }>(
                     `
                         SELECT
-                            tp.*,
+                            tp.id,
+                            tp.tournament_id,
+                            tp.user_id,
+                            tp.status,
+                            tp.role,
+                            tp.score,
                             u.username
                         FROM
                             tournament_participants tp
@@ -116,7 +122,12 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
 
                 const tournamentParticipants = participants.map((p) =>
                     TournamentParticipant.fromDatabase({
-                        ...p,
+                        id: p.id,
+                        tournament_id: p.tournament_id,
+                        user_id: p.user_id,
+                        status: p.status,
+                        role: p.role,
+                        score: p.score,
                         username: p.username,
                     })
                 );
@@ -214,7 +225,12 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
             const participants = await this.findMany<TournamentParticipantDbModel & { username: string }>(
                 `
                     SELECT
-                        tp.*,
+                        tp.id,
+                        tp.tournament_id,
+                        tp.user_id,
+                        tp.status,
+                        tp.role,
+                        tp.score,
                         u.username
                     FROM
                         tournament_participants tp
@@ -228,7 +244,12 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
 
             const tournamentParticipants = participants.map((p) =>
                 TournamentParticipant.fromDatabase({
-                    ...p,
+                    id: p.id,
+                    tournament_id: p.tournament_id,
+                    user_id: p.user_id,
+                    status: p.status,
+                    role: p.role,
+                    score: p.score,
                     username: p.username,
                 })
             );
@@ -290,13 +311,15 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
                             tournament_id,
                             user_id,
                             status,
+                            role,
                             score
-                        ) VALUES (?, ?, ?, ?)
+                        ) VALUES (?, ?, ?, ?, ?)
                     `,
                     [
                         participantData.tournament_id,
                         participantData.user_id,
                         participantData.status,
+                        participantData.role,
                         participantData.score,
                     ]
                 );
@@ -307,6 +330,27 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
         } catch {
             await this.run('ROLLBACK');
             return Result.error(ApplicationError.UpdateError);
+        }
+    }
+
+    async isUserAdminOfActiveTournament({ userId }: { userId: number }): Promise<Result<boolean>> {
+        try {
+            const result = await this.findOne<{ count: number }>(
+                `
+                    SELECT COUNT(*) as count
+                    FROM tournaments t
+                    INNER JOIN tournament_participants tp ON t.id = tp.tournament_id
+                    WHERE tp.user_id = ?
+                    AND tp.role IN ('${TournamentParticipant.ROLE.ADMIN}', '${TournamentParticipant.ROLE.ADMIN_PARTICIPANT}')
+                    AND t.status IN ('${Tournament.STATUS.UPCOMING}', '${Tournament.STATUS.ONGOING}')
+                `,
+                [userId]
+            );
+
+            const isAdmin = (result?.count || 0) > 0;
+            return Result.success(isAdmin);
+        } catch {
+            return Result.error(ApplicationError.DatabaseServiceUnavailable);
         }
     }
 }

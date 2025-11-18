@@ -196,4 +196,5 @@ export enum ApplicationError {
     ParticipantAlreadyExists = 'ParticipantAlreadyExists',
     TournamentNotAvailable = 'TournamentNotAvailable',
     TournamentNotInitialized = 'TournamentNotInitialized',
+    UserAlreadyAdminOfActiveTournament = 'UserAlreadyAdminOfActiveTournament',
 }

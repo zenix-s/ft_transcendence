@@ -10,16 +10,42 @@ export class PongTournamentManager implements IPongTournamentManager {
 
     constructor(private readonly fastify: FastifyInstance) {}
 
-    async createTournamnet({ name }: { name: string }): Promise<Result<number>> {
+    async createTournamnet({
+        name,
+        creatorUserId,
+    }: {
+        name: string;
+        creatorUserId: number;
+    }): Promise<Result<number>> {
         try {
+            // Paso 1: Verificar si el usuario ya es admin de un torneo activo
+            const isAdminResult = await this.fastify.TournamentRepository.isUserAdminOfActiveTournament({
+                userId: creatorUserId,
+            });
+
+            if (!isAdminResult.isSuccess) {
+                return Result.error(isAdminResult.error || ApplicationError.DatabaseServiceUnavailable);
+            }
+
+            if (isAdminResult.value) {
+                return Result.error(ApplicationError.UserAlreadyAdminOfActiveTournament);
+            }
+
+            // Paso 2: Crear nueva instancia de torneo activo
             const activePongTournament = new ActivePongTournament(this.fastify);
-            const tournamentInitializeResult = await activePongTournament.initialize({ name });
+            const tournamentInitializeResult = await activePongTournament.initialize({
+                name,
+                creatorUserId,
+            });
+
+            // Paso 3: Manejar el resultado de la inicialización
             if (!tournamentInitializeResult.isSuccess || !tournamentInitializeResult.value) {
                 return Result.error(
                     tournamentInitializeResult.error || ApplicationError.TournamentCreationError
                 );
             }
 
+            // Paso 4: Registrar el torneo en el manager
             this.tournaments.set(tournamentInitializeResult.value, activePongTournament);
 
             return Result.success(tournamentInitializeResult.value);
@@ -39,12 +65,16 @@ export class PongTournamentManager implements IPongTournamentManager {
         userId: number;
     }): Promise<Result<void>> {
         try {
+            // Paso 1: Buscar el torneo activo
             const activeTournament = this.tournaments.get(tournamentId);
             if (!activeTournament) {
                 return Result.error(ApplicationError.TournamentNotFound);
             }
 
+            // Paso 2: Añadir participante al torneo
             const addParticipantResult = await activeTournament.addParticipant({ userId });
+
+            // Paso 3: Manejar el resultado de la adición
             if (!addParticipantResult.isSuccess) {
                 return Result.error(addParticipantResult.error || ApplicationError.ParticipantAdditionError);
             }
@@ -60,13 +90,14 @@ export class PongTournamentManager implements IPongTournamentManager {
 
     async getActiveTournaments(params: { limit?: number; offset?: number }): Promise<Result<Tournament[]>> {
         try {
-            // Buscar torneos activos (upcoming y ongoing) usando el repository
+            // Paso 1: Buscar torneos activos usando el repository
             const activeTournamentsResult = await this.fastify.TournamentRepository.findTournaments({
                 status: [Tournament.STATUS.UPCOMING, Tournament.STATUS.ONGOING],
                 limit: params.limit,
                 offset: params.offset,
             });
 
+            // Paso 2: Manejar el resultado de la consulta
             if (!activeTournamentsResult.isSuccess) {
                 return Result.error(
                     activeTournamentsResult.error || ApplicationError.DatabaseServiceUnavailable
@@ -87,13 +118,14 @@ export class PongTournamentManager implements IPongTournamentManager {
         offset?: number;
     }): Promise<Result<Tournament[]>> {
         try {
-            // Buscar torneos activos (upcoming y ongoing) usando el repository básico
+            // Paso 1: Buscar torneos activos usando el repository básico
             const activeTournamentsResult = await this.fastify.TournamentRepository.findTournamentsBasic({
                 status: [Tournament.STATUS.UPCOMING, Tournament.STATUS.ONGOING],
                 limit: params.limit,
                 offset: params.offset,
             });
 
+            // Paso 2: Manejar el resultado de la consulta
             if (!activeTournamentsResult.isSuccess) {
                 return Result.error(
                     activeTournamentsResult.error || ApplicationError.DatabaseServiceUnavailable
@@ -111,14 +143,36 @@ export class PongTournamentManager implements IPongTournamentManager {
 
     async getTournamentById({ id }: { id: number }): Promise<Result<Tournament | null>> {
         try {
-            // Buscar tournament por ID usando el repository
+            // Paso 1: Buscar tournament por ID usando el repository
             const tournamentResult = await this.fastify.TournamentRepository.findById({ id });
 
+            // Paso 2: Manejar el resultado de la consulta
             if (!tournamentResult.isSuccess) {
                 return Result.error(tournamentResult.error || ApplicationError.DatabaseServiceUnavailable);
             }
 
             return Result.success(tournamentResult.value || null);
+        } catch (error) {
+            return this.fastify.handleError({
+                code: ApplicationError.DatabaseServiceUnavailable,
+                error,
+            });
+        }
+    }
+
+    async isUserAdminOfActiveTournament({ userId }: { userId: number }): Promise<Result<boolean>> {
+        try {
+            // Paso 1: Verificar si el usuario es admin de un torneo activo
+            const isAdminResult = await this.fastify.TournamentRepository.isUserAdminOfActiveTournament({
+                userId,
+            });
+
+            // Paso 2: Manejar el resultado de la verificación
+            if (!isAdminResult.isSuccess) {
+                return Result.error(isAdminResult.error || ApplicationError.DatabaseServiceUnavailable);
+            }
+
+            return Result.success(isAdminResult.value || false);
         } catch (error) {
             return this.fastify.handleError({
                 code: ApplicationError.DatabaseServiceUnavailable,

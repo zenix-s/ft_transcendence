@@ -2,9 +2,16 @@ import { Result } from '@shared/abstractions/Result';
 import { Tournament } from '@shared/domain/Entities/Tournament.entity';
 
 export interface IPongTournamentManager {
-    createTournamnet({ name }: { name: string }): Promise<Result<number>>;
+    createTournamnet({
+        name,
+        creatorUserId,
+    }: {
+        name: string;
+        creatorUserId: number;
+    }): Promise<Result<number>>;
     addParticipant({ tournamentId, userId }: { tournamentId: number; userId: number }): Promise<Result<void>>;
     getActiveTournaments(params: { limit?: number; offset?: number }): Promise<Result<Tournament[]>>;
     getActiveTournamentsBasic(params: { limit?: number; offset?: number }): Promise<Result<Tournament[]>>;
     getTournamentById({ id }: { id: number }): Promise<Result<Tournament | null>>;
+    isUserAdminOfActiveTournament({ userId }: { userId: number }): Promise<Result<boolean>>;
 }

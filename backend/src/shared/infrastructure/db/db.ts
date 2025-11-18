@@ -5,6 +5,8 @@ import { hashPassword } from '@shared/utils/password.utils';
 import { CONSTANTES_APP } from '@shared/constants/ApplicationConstants';
 import MatchType from '@shared/domain/ValueObjects/MatchType.value';
 import { Match } from '@shared/domain/Entities/Match.entity';
+import { Tournament } from '@shared/domain/Entities/Tournament.entity';
+import { TournamentParticipant } from '@shared/domain/Entities/TournamentParticipant.entity';
 
 export default fp(
     async (fastify: FastifyInstance) => {
@@ -82,14 +84,14 @@ export default fp(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
                 match_type_id INTEGER NOT NULL,
-                status TEXT NOT NULL DEFAULT 'upcoming',
+                status TEXT NOT NULL DEFAULT '${Tournament.STATUS.UPCOMING}',
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (match_type_id) REFERENCES match_types(id),
                 CHECK (status IN (
-                    'upcoming',
-                    'ongoing',
-                    'completed',
-                    'cancelled')
+                    '${Tournament.STATUS.UPCOMING}',
+                    '${Tournament.STATUS.ONGOING}',
+                    '${Tournament.STATUS.COMPLETED}',
+                    '${Tournament.STATUS.CANCELLED}')
                 )
             )
         `);
@@ -99,16 +101,22 @@ export default fp(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 tournament_id INTEGER NOT NULL,
                 user_id INTEGER NOT NULL,
-                status TEXT NOT NULL DEFAULT 'registered',
+                status TEXT NOT NULL DEFAULT '${TournamentParticipant.STATUS.REGISTERED}',
+                role TEXT NOT NULL DEFAULT '${TournamentParticipant.ROLE.PARTICIPANT}',
                 score INTEGER DEFAULT 0,
                 FOREIGN KEY (tournament_id) REFERENCES tournaments(id) ON DELETE CASCADE,
                 FOREIGN KEY (user_id) REFERENCES users(id),
                 UNIQUE(tournament_id, user_id),
                 CHECK (status IN (
-                    'registered',
-                    'active',
-                    'eliminated',
-                    'winner')
+                    '${TournamentParticipant.STATUS.REGISTERED}',
+                    '${TournamentParticipant.STATUS.ACTIVE}',
+                    '${TournamentParticipant.STATUS.ELIMINATED}',
+                    '${TournamentParticipant.STATUS.WINNER}')
+                ),
+                CHECK (role IN (
+                    '${TournamentParticipant.ROLE.PARTICIPANT}',
+                    '${TournamentParticipant.ROLE.ADMIN}',
+                    '${TournamentParticipant.ROLE.ADMIN_PARTICIPANT}')
                 )
             )
         `);
@@ -205,6 +213,13 @@ export default fp(
                 UPDATE matches
                 SET status = '${Match.STATUS.CANCELLED}'
                 WHERE status IN ('${Match.STATUS.PENDING}', '${Match.STATUS.IN_PROGRESS}')
+            `);
+
+            // Cancelar todos los torneos activos
+            await connection.execute(`
+                UPDATE tournaments
+                SET status = '${Tournament.STATUS.CANCELLED}'
+                WHERE status IN ('${Tournament.STATUS.UPCOMING}', '${Tournament.STATUS.ONGOING}')
             `);
 
             await connection.disconnect();

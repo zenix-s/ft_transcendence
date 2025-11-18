@@ -39,6 +39,7 @@ export class CreatePongTournamentCommand
             // Paso 2: Crear el torneo usando el PongTournamentManager
             const createTournamentResult = await this.fastify.PongTournamentManager.createTournamnet({
                 name: request.name,
+                creatorUserId: request.userId,
             });
 
             // Paso 3: Manejar el resultado de la creación del torneo

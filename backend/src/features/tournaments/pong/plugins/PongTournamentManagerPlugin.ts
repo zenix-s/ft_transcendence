@@ -12,10 +12,10 @@ declare module 'fastify' {
 const PongTournamentManagerPlugin: FastifyPluginAsync<FastifyPluginOptions> = async (
     fastify: FastifyInstance
 ) => {
-    // Crear instancia singleton de PongGameManager
+    // Paso 1: Crear instancia singleton de PongTournamentManager
     const pongTournamentManager = new PongTournamentManager(fastify);
 
-    // Decorar la instancia de Fastify con el servicio
+    // Paso 2: Decorar la instancia de Fastify con el servicio
     fastify.decorate('PongTournamentManager', pongTournamentManager);
 };
 

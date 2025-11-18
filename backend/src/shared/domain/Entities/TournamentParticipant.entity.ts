@@ -1,4 +1,5 @@
 export type TournamentParticipantStatus = 'registered' | 'active' | 'eliminated' | 'winner';
+export type TournamentParticipantRole = 'participant' | 'admin' | 'admin-participant';
 
 export class TournamentParticipant {
     private _id?: number;
@@ -6,6 +7,7 @@ export class TournamentParticipant {
     private _userId: number;
     private _username?: string;
     private _status: TournamentParticipantStatus;
+    private _role: TournamentParticipantRole;
     private _score: number;
 
     public static STATUS = {
@@ -15,12 +17,19 @@ export class TournamentParticipant {
         WINNER: 'winner' as const,
     };
 
+    public static ROLE = {
+        PARTICIPANT: 'participant' as const,
+        ADMIN: 'admin' as const,
+        ADMIN_PARTICIPANT: 'admin-participant' as const,
+    };
+
     constructor({
         id,
         tournamentId,
         userId,
         username,
         status = TournamentParticipant.STATUS.REGISTERED,
+        role = TournamentParticipant.ROLE.PARTICIPANT,
         score = 0,
     }: {
         id?: number;
@@ -28,6 +37,7 @@ export class TournamentParticipant {
         userId: number;
         username?: string;
         status?: TournamentParticipantStatus;
+        role?: TournamentParticipantRole;
         score?: number;
     }) {
         this._id = id;
@@ -35,6 +45,7 @@ export class TournamentParticipant {
         this._userId = userId;
         this._username = username;
         this._status = status;
+        this._role = role;
         this._score = score;
     }
 
@@ -58,6 +69,10 @@ export class TournamentParticipant {
         return this._status;
     }
 
+    public get role(): TournamentParticipantRole {
+        return this._role;
+    }
+
     public get score(): number {
         return this._score;
     }
@@ -68,6 +83,7 @@ export class TournamentParticipant {
         userId,
         username,
         status,
+        role,
         score,
     }: {
         id?: number;
@@ -75,6 +91,7 @@ export class TournamentParticipant {
         userId: number;
         username?: string;
         status?: TournamentParticipantStatus;
+        role?: TournamentParticipantRole;
         score?: number;
     }): TournamentParticipant {
         return new TournamentParticipant({
@@ -83,6 +100,7 @@ export class TournamentParticipant {
             userId,
             username,
             status,
+            role,
             score,
         });
     }
@@ -143,12 +161,28 @@ export class TournamentParticipant {
         return this._status === TournamentParticipant.STATUS.WINNER;
     }
 
+    public isAdmin(): boolean {
+        return (
+            this._role === TournamentParticipant.ROLE.ADMIN ||
+            this._role === TournamentParticipant.ROLE.ADMIN_PARTICIPANT
+        );
+    }
+
+    public isParticipantOnly(): boolean {
+        return this._role === TournamentParticipant.ROLE.PARTICIPANT;
+    }
+
+    public isAdminParticipant(): boolean {
+        return this._role === TournamentParticipant.ROLE.ADMIN_PARTICIPANT;
+    }
+
     public static fromDatabase(data: {
         id: number;
         tournament_id: number;
         user_id: number;
         username?: string;
         status: TournamentParticipantStatus;
+        role: TournamentParticipantRole;
         score: number;
     }): TournamentParticipant {
         return TournamentParticipant.create({
@@ -157,6 +191,7 @@ export class TournamentParticipant {
             userId: data.user_id,
             username: data.username,
             status: data.status,
+            role: data.role,
             score: data.score,
         });
     }
@@ -166,6 +201,7 @@ export class TournamentParticipant {
         tournament_id: number;
         user_id: number;
         status: TournamentParticipantStatus;
+        role: TournamentParticipantRole;
         score: number;
     } {
         return {
@@ -173,6 +209,7 @@ export class TournamentParticipant {
             tournament_id: this._tournamentId,
             user_id: this._userId,
             status: this._status,
+            role: this._role,
             score: this._score,
         };
     }
@@ -190,6 +227,7 @@ export class TournamentParticipant {
             userId: this._userId,
             username: this._username,
             status: this._status,
+            role: this._role,
             score: this._score,
         };
     }

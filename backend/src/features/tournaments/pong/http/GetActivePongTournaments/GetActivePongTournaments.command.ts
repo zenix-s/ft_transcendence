@@ -63,21 +63,24 @@ export class GetActivePongTournamentsCommand
         request?: IGetActivePongTournamentsRequest | undefined
     ): Promise<Result<IGetActivePongTournamentsResponse>> {
         try {
+            // Paso 1: Preparar parámetros de consulta
             const params = {
                 limit: request?.limit || 10,
                 offset: request?.offset || 0,
             };
 
-            // Obtener torneos activos usando el PongTournamentManager (versión básica)
+            // Paso 2: Obtener torneos activos usando el PongTournamentManager (versión básica)
             const activeTournamentsResult =
                 await this.fastify.PongTournamentManager.getActiveTournamentsBasic(params);
 
+            // Paso 3: Manejar el resultado de la consulta
             if (!activeTournamentsResult.isSuccess) {
                 return Result.error(
                     activeTournamentsResult.error || ApplicationError.DatabaseServiceUnavailable
                 );
             }
 
+            // Paso 4: Transformar entidades de dominio a interfaces de respuesta
             const tournaments = activeTournamentsResult.value || [];
             const tournamentResponses = tournaments.map((tournament) =>
                 this.tournamentToBasicResponse(tournament)

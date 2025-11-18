@@ -188,4 +188,13 @@ export enum ApplicationError {
     GameTypeNotSupported = 'GameTypeNotSupported',
     CannotAddSelfAsFriend = 'CannotAddSelfAsFriend',
     CannotRemoveSelfAsFriend = 'CannotRemoveSelfAsFriend',
+
+    TournamentCreationError = 'TournamentCreationError',
+    TournamentNotFound = 'TournamentNotFound',
+    TournamentUpdateError = 'TournamentUpdateError',
+    ParticipantAdditionError = 'ParticipantAdditionError',
+    ParticipantAlreadyExists = 'ParticipantAlreadyExists',
+    TournamentNotAvailable = 'TournamentNotAvailable',
+    TournamentNotInitialized = 'TournamentNotInitialized',
+    UserAlreadyAdminOfActiveTournament = 'UserAlreadyAdminOfActiveTournament',
 }

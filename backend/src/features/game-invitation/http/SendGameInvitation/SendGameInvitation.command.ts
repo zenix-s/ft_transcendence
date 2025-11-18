@@ -3,8 +3,8 @@ import { Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { ApplicationError } from '@shared/Errors';
 import { ISocialWebSocketService } from '@features/socialSocket/services/ISocialWebSocketService.interface';
-import { IGameTypeRepository } from '@shared/infrastructure/repositories/GameTypeRepository';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
+import MatchType from '@shared/domain/ValueObjects/MatchType.value';
 
 export interface ISendGameInvitationResponse {
     success: boolean;
@@ -22,12 +22,10 @@ export default class SendGameInvitationCommand
 {
     private readonly socialWebSocketService: ISocialWebSocketService;
     private readonly matchRepository: IMatchRepository;
-    private readonly gameTypeRepository: IGameTypeRepository;
 
     constructor(private readonly fastify: FastifyInstance) {
         this.socialWebSocketService = this.fastify.SocialWebSocketService;
         this.matchRepository = this.fastify.MatchRepository;
-        this.gameTypeRepository = this.fastify.GameTypeRepository;
     }
 
     validate(request?: ISendGameInvitationRequest | undefined): Result<void> {
@@ -71,14 +69,14 @@ export default class SendGameInvitationCommand
             }
 
             // 2: Obtener el tipo de juego usando el gameTypeId del match
-            const gameTypeId = match.gameTypeId;
-            const gameTypeResult = await this.gameTypeRepository.findById({ id: gameTypeId });
-            if (!gameTypeResult) {
+            const gameTypeId = match.matchTypeId;
+            const matchType = MatchType.byId(gameTypeId);
+            if (!matchType) {
                 return Result.error(ApplicationError.GameTypeNotFound);
             }
 
             // 3: Validar si el tipo de juego soporta invitaciones
-            if (!gameTypeResult.supports_invitations) {
+            if (matchType.supportsInvitations) {
                 return Result.error(ApplicationError.GameTypeDoesNotSupportInvitations);
             }
 
@@ -110,7 +108,7 @@ export default class SendGameInvitationCommand
                 fromUserAvatar: sender.avatar || null,
                 toUserId: targetUser.id,
                 gameId,
-                gameTypeName: gameTypeResult.name,
+                gameTypeName: matchType.name,
                 message: message || `${sender.username} te ha invitado a jugar!`,
             });
 

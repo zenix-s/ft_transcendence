@@ -1,4 +1,4 @@
-import { Match } from '@shared/domain/entity/Match.entity';
+import { Match } from '@shared/domain/Entities/Match.entity';
 import { MatchRow, MatchPlayerRow } from '@shared/infrastructure/types/types';
 import { AbstractRepository } from '@shared/infrastructure/db/AbstractRepository';
 import fp from 'fastify-plugin';
@@ -137,7 +137,7 @@ class MatchRepository extends AbstractRepository implements IMatchRepository {
         try {
             const matchData = match.toDatabase();
             const params = [
-                matchData.game_type_id,
+                matchData.match_type_id,
                 matchData.status,
                 matchData.started_at ? matchData.started_at.toISOString() : null,
                 matchData.ended_at ? matchData.ended_at.toISOString() : null,
@@ -145,7 +145,7 @@ class MatchRepository extends AbstractRepository implements IMatchRepository {
             ];
 
             const matchResult = await this.run(
-                'INSERT INTO matches (game_type_id, status, started_at, ended_at, created_at) VALUES (?, ?, ?, ?, ?)',
+                'INSERT INTO matches (match_type_id, status, started_at, ended_at, created_at) VALUES (?, ?, ?, ?, ?)',
                 params
             );
 
@@ -177,9 +177,9 @@ class MatchRepository extends AbstractRepository implements IMatchRepository {
             const matchData = match.toDatabase();
 
             await this.run(
-                'UPDATE matches SET game_type_id = ?, status = ?, started_at = ?, ended_at = ? WHERE id = ?',
+                'UPDATE matches SET match_type_id = ?, status = ?, started_at = ?, ended_at = ? WHERE id = ?',
                 [
-                    matchData.game_type_id,
+                    matchData.match_type_id,
                     matchData.status,
                     matchData.started_at ? matchData.started_at.toISOString() : null,
                     matchData.ended_at ? matchData.ended_at.toISOString() : null,
@@ -211,7 +211,7 @@ class MatchRepository extends AbstractRepository implements IMatchRepository {
 
     async getMatchCount({ gameTypeId }: { gameTypeId?: number } = {}): Promise<number> {
         const query = gameTypeId
-            ? 'SELECT COUNT(*) as count FROM matches WHERE game_type_id = ?'
+            ? 'SELECT COUNT(*) as count FROM matches WHERE match_type_id = ?'
             : 'SELECT COUNT(*) as count FROM matches';
         const params = gameTypeId ? [gameTypeId] : [];
 

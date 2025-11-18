@@ -3,11 +3,10 @@ import { Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { PongGame } from '../../../pong-game-manager/domain/PongGame';
 
-import { Match } from '@shared/domain/entity/Match.entity';
+import { Match } from '@shared/domain/Entities/Match.entity';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
-import { IGameTypeRepository } from '@shared/infrastructure/repositories/GameTypeRepository';
 import { ApplicationError } from '@shared/Errors';
-import { CONSTANTES_APP } from '@shared/constants/ApplicationConstants';
+import MatchType from '@shared/domain/ValueObjects/MatchType.value';
 
 export interface ICreateSinglePlayerGameResponse {
     message: string;
@@ -26,11 +25,9 @@ export default class CreateSinglePlayerGameCommand
     implements ICommand<ICreateSinglePlayerGameRequest, ICreateSinglePlayerGameResponse>
 {
     private readonly matchRepository: IMatchRepository;
-    private readonly gameTypeRepository: IGameTypeRepository;
 
     constructor(private readonly fastify: FastifyInstance) {
         this.matchRepository = this.fastify.MatchRepository;
-        this.gameTypeRepository = this.fastify.GameTypeRepository;
     }
 
     validate(request?: ICreateSinglePlayerGameRequest | undefined): Result<void> {
@@ -95,7 +92,7 @@ export default class CreateSinglePlayerGameCommand
             // Paso 3: Verificar si el usuario tiene partidas activas (pending o in_progress)
             const activeMatches = await this.matchRepository.findUserMatches({
                 userId: userId,
-                status: [CONSTANTES_APP.MATCH.STATUS.PENDING, CONSTANTES_APP.MATCH.STATUS.IN_PROGRESS],
+                status: [Match.STATUS.PENDING, Match.STATUS.IN_PROGRESS],
             });
 
             if (activeMatches.length > 0) {
@@ -106,14 +103,7 @@ export default class CreateSinglePlayerGameCommand
             const maxGameTime = request.maxGameTime || 120;
             const aiDifficulty = request.aiDifficulty || 0.95;
 
-            const gameType = await this.gameTypeRepository.findByName({
-                name: CONSTANTES_APP.MATCH_TYPE.SINGLE_PLAYER_PONG.NAME,
-            });
-
-            if (!gameType) {
-                this.fastify.log.error('Single player game type not found');
-                return Result.error(ApplicationError.SinglePlayerGameTypeNotFound);
-            }
+            const gameType = MatchType.SINGLE_PLAYER_PONG;
 
             const playerIds = [userId, 1];
 
@@ -150,7 +140,7 @@ export default class CreateSinglePlayerGameCommand
             return Result.success({
                 message: `Single player game created successfully with ID: ${matchId}`,
                 gameId: matchId,
-                mode: CONSTANTES_APP.MATCH_TYPE.SINGLE_PLAYER_PONG.NAME,
+                mode: gameType.name,
             });
         } catch (error) {
             return this.fastify.handleError<ICreateSinglePlayerGameResponse>({

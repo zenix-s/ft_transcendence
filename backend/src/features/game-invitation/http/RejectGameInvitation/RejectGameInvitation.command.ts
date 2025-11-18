@@ -3,8 +3,8 @@ import { Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { ApplicationError } from '@shared/Errors';
 import { ISocialWebSocketService } from '@features/socialSocket/services/ISocialWebSocketService.interface';
-import { IGameTypeRepository } from '@shared/infrastructure/repositories/GameTypeRepository';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
+import MatchType from '@shared/domain/ValueObjects/MatchType.value';
 
 export interface IRejectGameInvitationResponse {
     success: boolean;
@@ -21,12 +21,10 @@ export default class RejectGameInvitationCommand
 {
     private readonly socialWebSocketService: ISocialWebSocketService;
     private readonly matchRepository: IMatchRepository;
-    private readonly gameTypeRepository: IGameTypeRepository;
 
     constructor(private readonly fastify: FastifyInstance) {
         this.socialWebSocketService = this.fastify.SocialWebSocketService;
         this.matchRepository = this.fastify.MatchRepository;
-        this.gameTypeRepository = this.fastify.GameTypeRepository;
     }
 
     validate(request?: IRejectGameInvitationRequest | undefined): Result<void> {
@@ -62,16 +60,14 @@ export default class RejectGameInvitationCommand
             }
 
             // 2: Obtener el tipo de juego usando el gameTypeId del match
-            const gameTypeId = match.gameTypeId;
-            const gameTypeResult = await this.gameTypeRepository.findById({ id: gameTypeId });
-            if (!gameTypeResult) {
+            const matchTypeId = match.matchTypeId;
+            const matchType = MatchType.byId(matchTypeId);
+            if (!matchType) {
                 return Result.error(ApplicationError.GameTypeNotFound);
             }
 
-            const gameType = gameTypeResult;
-
             // 3: Validar si el tipo de juego soporta invitaciones
-            if (!gameType.supports_invitations) {
+            if (!matchType.supportsInvitations) {
                 return Result.error(ApplicationError.GameTypeDoesNotSupportInvitations);
             }
 
@@ -105,8 +101,8 @@ export default class RejectGameInvitationCommand
                 fromUserAvatar: user.avatar || null,
                 toUserId: gameCreator.id,
                 gameId,
-                gameTypeName: gameType.name,
-                message: `${user.username} ha rechazado tu invitación al juego ${gameType.name}`,
+                gameTypeName: matchType.name,
+                message: `${user.username} ha rechazado tu invitación al juego ${matchType.name}`,
             });
 
             if (!rejectionResult.isSuccess) {

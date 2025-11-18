@@ -24,6 +24,8 @@ import { ApplicationError } from '@shared/Errors';
 import path from 'path';
 import FriendShipController from '@features/friendship/Friendship.presentation';
 import MediatorHandlerPlugin from '@shared/mediators/MediatorHandlerPlugin';
+import PongTournamentsHttpRoutes from '@features/tournaments/pong/http/pong-tournaments.http';
+import PongTournamentManagerPlugin from '@features/tournaments/pong/plugins/PongTournamentManagerPlugin';
 
 async function App(fastify: FastifyInstance) {
     fastify.register(fastifyJWT, {
@@ -40,6 +42,7 @@ async function App(fastify: FastifyInstance) {
     fastify.register(Repositories);
     fastify.register(SocialWebSocketServicePlugin);
     fastify.register(PongGameManagerPlugin);
+    fastify.register(PongTournamentManagerPlugin);
 
     fastify.register(fastifyMultipart, {
         limits: {
@@ -92,6 +95,7 @@ async function App(fastify: FastifyInstance) {
         fastify.register(matchHistoryPresentation, { prefix: '/match-history' });
         fastify.register(userManagerRoutes, { prefix: '/user-manager' });
         fastify.register(FriendShipController, { prefix: '/friendship' });
+        fastify.register(PongTournamentsHttpRoutes, { prefix: '/tournaments/pong' });
     });
 }
 

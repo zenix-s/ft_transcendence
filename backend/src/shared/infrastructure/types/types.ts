@@ -1,4 +1,4 @@
-import { MatchStatus } from '@shared/domain/types/game.types';
+import { MatchStatus } from '@shared/domain/Entities/Match.entity';
 
 export interface MatchPlayerRow {
     user_id: number;
@@ -9,7 +9,7 @@ export interface MatchPlayerRow {
 
 export interface MatchRow {
     id: number;
-    game_type_id: number;
+    match_type_id: number;
     status: MatchStatus;
     started_at?: string | null;
     ended_at?: string | null;

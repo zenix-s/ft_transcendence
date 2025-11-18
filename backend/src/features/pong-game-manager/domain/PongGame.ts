@@ -6,7 +6,7 @@ import {
     COUNTDOWN_CONFIG,
     GAME_STATUS_UTILS,
 } from '@shared/constants/GameConstants';
-import { User } from '@shared/domain/entity/User.entity';
+import { User } from '@shared/domain/Entities/User.entity';
 import { CountdownManager } from '../services/CountdownManager';
 
 interface PlayerState {

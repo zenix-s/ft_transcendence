@@ -13,6 +13,7 @@ import { getCurrentUser } from "@/modules/users";
 import { ready1 } from "@/modules/game/setReady1";
 import { t } from "@/app/i18n"
 import { initGame3D } from "@/modules/game/game";
+import { updateSliders } from "@/components/updateSliders";
 
 // Llamada                            Efecto
 // navigateTo("home")                 Carga "home" y añade al historial
@@ -100,7 +101,8 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
     case "dashboard":
     case "settings":
     case "playing":
-    case "setReady1": {
+    case "setReady1":
+    case "tournament": {
       requestAnimationFrame(async () => {
         const userResponse = await getCurrentUser();
         if (!userResponse || !localStorage.getItem("access_token"))
@@ -139,6 +141,11 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
           case "setReady1":
             renderButtons();
             ready1();
+            break;
+
+          case "tournament":
+            renderButtons();
+            updateSliders();
             break;
         }
       });

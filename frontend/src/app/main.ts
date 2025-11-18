@@ -34,6 +34,7 @@ navigateTo(initialPage, true);
 // 🌐 Inicializar WebSocket Social si hay token
 import { createSocialSocket, getSocialSocket } from "@/modules/social/socketInstance";
 import { SocialWebSocketClient } from "@/modules/social/socialSocket";
+import { updateSliders } from "@/components/updateSliders";
 
 async function initSocialSocket(): Promise<SocialWebSocketClient | null> {
   const token = localStorage.getItem("access_token");
@@ -164,4 +165,6 @@ document.addEventListener("i18n-updated", async () => {
     if (currentPage > 0)
       matchTable.page(currentPage);
   }
+
+  updateSliders();
 });

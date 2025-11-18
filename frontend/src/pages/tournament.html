@@ -1,0 +1,101 @@
+<div class="scanlines"></div>
+
+<!-- Bloque centrado sin ocupar toda la pantalla -->
+<div class="center-screen justify-center py-10 gap-20">
+  <div class="flex justify-center items-center gap-5 md:gap-16 sm:gap-7">
+    <div
+      data-i18n="tournament"
+      class="relative text-center text-4xl sm:text-6xl md:text-8xl font-mono tracking-tight animate-[glitch_1s_linear_infinite] text-secondary dark:text-primary text-shadow-blue capitalize">
+    </div>
+  </div>
+  
+  <!-- Options container -->
+  <!-- <div class="flex flex-col justify-center items-center gap-10">
+    <div class="flex flex-row items-center gap-4">
+      <label for="puntosMax" data-i18n="maxPoints" class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono"></label>
+      <select id="puntosMax" name="puntosMax"
+        class="md:text-2xl sm:text-xl font-bold border-2 border-gray-300 rounded-md px-1 sm:px-2 md:px-3 py-1 sm:py-2 md:py-3 text-secondary dark:text-primary bg-primary dark:bg-secondary focus:outline-none focus:ring-3 focus:ring-gray-500 focus:border-gray-500">
+        <option class="text-xl md:text-2xl sm:text-2xl" value="3">3</option>
+        <option class="text-xl md:text-2xl sm:text-2xl" value="5" selected>5</option>
+        <option class="text-xl md:text-2xl sm:text-2xl" value="10">10</option>
+        <option class="text-xl md:text-2xl sm:text-2xl" value="15">15</option>
+      </select>
+    </div>
+    <div class="flex flex-row items-center gap-4">
+      <label for="playerView" data-i18n="playerView" class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono"></label>
+      <select id="playerView" name="playerView"
+        class="md:text-2xl sm:text-xl font-bold border-2 border-gray-300 rounded-md px-1 sm:px-2 md:px-3 py-1 sm:py-2 md:py-3 text-secondary dark:text-primary bg-primary dark:bg-secondary focus:outline-none focus:ring-3 focus:ring-gray-500 focus:border-gray-500">
+        <option class="text-xl md:text-2xl sm:text-2xl" value="2D" selected>2D</option>
+        <option class="text-xl md:text-2xl sm:text-2xl" value="3D">3D</option>
+      </select>
+    </div>
+    <div class="flex items-center gap-4">
+      <label for="difficultyAI" data-i18n="difficultyAI" class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono"></label>
+      <select id="difficultyAI" name="difficultyAI"
+        class="md:text-2xl sm:text-xl font-bold border-2 border-gray-300 rounded-md px-1 sm:px-2 md:px-3 py-1 sm:py-2 md:py-3 text-secondary dark:text-primary bg-primary dark:bg-secondary focus:outline-none focus:ring-3 focus:ring-gray-500 focus:border-gray-500">
+        <option class="text-xl md:text-2xl sm:text-2xl" data-i18n="easy" value="easy"></option>
+        <option class="text-xl md:text-2xl sm:text-2xl" data-i18n="normal" value="normal" selected></option>
+        <option class="text-xl md:text-2xl sm:text-2xl" data-i18n="hard" value="hard"></option>
+      </select>
+    </div>
+  </div> -->
+
+  <div class="flex flex-col gap-16 text-left w-full max-w-3xl">
+    <!-- Puntos máximos -->
+    <div class="flex flex-col gap-2">
+      <label for="points-range" class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono" role="tooltip" data-i18n="modalGameCreationmaxPoints">
+        Points: <span id="points-value" class="font-semibold">5</span>
+      </label>
+      <input
+        id="points-range"
+        type="range"
+        class="swal2-range accent-cyan-400"
+        min="3" max="15" value="5" step="1"
+      >
+    </div>
+
+    <!-- Tiempo máximo -->
+    <div class="flex flex-col gap-2">
+      <label for="time-range" class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono" role="tooltip" data-i18n="modalGameCreationMaxTime">
+        Time: <span id="time-value" class="font-semibold">120</span> s
+      </label>
+      <input
+        id="time-range"
+        type="range"
+        class="swal2-range accent-cyan-400"
+        min="30" max="300" value="120" step="30"
+      >
+    </div>
+
+    <!-- Modo de juego -->
+    <div class="flex flex-col gap-4">
+      <p class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono" data-i18n="modalGameCreationGameMode">Mode:</p>
+      <div class="flex justify-center gap-10">
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input
+            type="radio"
+            id="mode-2D"
+            name="mode-radio"
+            value="2D"
+            class="swal2-radio accent-cyan-400"
+            checked
+          >
+          <span class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono" data-i18n="2D">2D</span>
+        </label>
+
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input
+            type="radio"
+            id="mode-3D"
+            name="mode-radio"
+            value="3D"
+            class="swal2-radio accent-cyan-400"
+          >
+          <span class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono" data-i18n="3D">3D</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="uppercase" data-button="createTournament"></div>
+</div>

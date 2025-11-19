@@ -24,6 +24,7 @@ export interface TournamentDetailResponse {
     matchSettings: {
         maxScore: number;
         maxGameTime: number;
+        visualStyle: string;
     };
 }
 

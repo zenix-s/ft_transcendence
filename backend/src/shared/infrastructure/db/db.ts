@@ -85,7 +85,7 @@ export default fp(
                 name TEXT NOT NULL,
                 match_type_id INTEGER NOT NULL,
                 status TEXT NOT NULL DEFAULT '${Tournament.STATUS.UPCOMING}',
-                match_settings TEXT NOT NULL DEFAULT '{"maxScore": 11, "maxGameTime": 600}',
+                match_settings TEXT NOT NULL DEFAULT '{"maxScore": 11, "maxGameTime": 600, "visualStyle": "2d"}',
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (match_type_id) REFERENCES match_types(id),
                 CHECK (status IN (

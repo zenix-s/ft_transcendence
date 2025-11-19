@@ -9,6 +9,7 @@ export interface ICreatePongTournamentRequest {
     matchSettings?: {
         maxScore: number;
         maxGameTime: number;
+        visualStyle: '2d' | '3d';
     };
 }
 

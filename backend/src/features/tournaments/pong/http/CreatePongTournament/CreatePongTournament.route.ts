@@ -7,6 +7,7 @@ interface CreatePongTournamentRequest {
         matchSettings?: {
             maxScore: number;
             maxGameTime: number;
+            visualStyle: '2d' | '3d';
         };
     };
 }
@@ -41,8 +42,13 @@ export default async function CreatePongTournamentRoute(fastify: FastifyInstance
                                     maximum: 600,
                                     description: 'Maximum game duration in seconds',
                                 },
+                                visualStyle: {
+                                    type: 'string',
+                                    enum: ['2d', '3d'],
+                                    description: 'Visual style for the game',
+                                },
                             },
-                            required: ['maxScore', 'maxGameTime'],
+                            required: ['maxScore', 'maxGameTime', 'visualStyle'],
                         },
                     },
                     required: ['name'],

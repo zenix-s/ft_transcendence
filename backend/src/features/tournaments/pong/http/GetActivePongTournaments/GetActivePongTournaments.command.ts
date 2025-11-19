@@ -14,6 +14,7 @@ export interface TournamentBasicResponse {
     matchSettings: {
         maxScore: number;
         maxGameTime: number;
+        visualStyle: string;
     };
 }
 

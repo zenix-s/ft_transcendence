@@ -59,8 +59,9 @@ export default async function GetPongTournamentDetailRoute(fastify: FastifyInsta
                                         properties: {
                                             maxScore: { type: 'number' },
                                             maxGameTime: { type: 'number' },
+                                            visualStyle: { type: 'string', enum: ['2d', '3d'] },
                                         },
-                                        required: ['maxScore', 'maxGameTime'],
+                                        required: ['maxScore', 'maxGameTime', 'visualStyle'],
                                     },
                                 },
                                 required: [

@@ -5,50 +5,45 @@
   <div class="flex justify-center items-center gap-5 md:gap-16 sm:gap-7">
     <div
       data-i18n="tournament"
-      class="relative text-center text-4xl sm:text-6xl md:text-8xl font-mono tracking-tight animate-[glitch_1s_linear_infinite] text-secondary dark:text-primary text-shadow-blue capitalize">
+      class="relative text-center text-6xl md:text-8xl font-mono tracking-tight animate-[glitch_1s_linear_infinite] text-secondary dark:text-primary text-shadow-blue capitalize">
     </div>
   </div>
   
-  <!-- Options container -->
-  <!-- <div class="flex flex-col justify-center items-center gap-10">
-    <div class="flex flex-row items-center gap-4">
-      <label for="puntosMax" data-i18n="maxPoints" class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono"></label>
-      <select id="puntosMax" name="puntosMax"
-        class="md:text-2xl sm:text-xl font-bold border-2 border-gray-300 rounded-md px-1 sm:px-2 md:px-3 py-1 sm:py-2 md:py-3 text-secondary dark:text-primary bg-primary dark:bg-secondary focus:outline-none focus:ring-3 focus:ring-gray-500 focus:border-gray-500">
-        <option class="text-xl md:text-2xl sm:text-2xl" value="3">3</option>
-        <option class="text-xl md:text-2xl sm:text-2xl" value="5" selected>5</option>
-        <option class="text-xl md:text-2xl sm:text-2xl" value="10">10</option>
-        <option class="text-xl md:text-2xl sm:text-2xl" value="15">15</option>
-      </select>
+  <form id="tournamentForm" class="flex flex-col gap-16 text-left w-full max-w-3xl px-4">
+    <!-- Nombre del torneo -->
+    <div class="flex flex-col gap-2 relative overflow-visible">
+      <label for="name-input" class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono after:content-[':']" role="tooltip" data-i18n="tournamentName">
+      </label>
+      <input
+        id="tournament-name"
+        name="tournament-name"
+        data-i18n="tournamentName"
+        placeholder="tournamentName"
+        type="text"
+        maxlength="40"
+        data-tooltip-target="tooltip-tournament"
+        class="border-2 border-secondary dark:border-cyan-400 rounded-md p-2 focus:outline-none hover:border-cyan-400 focus:border-cyan-400 active:border-cyan-400 hover:dark:border-primary focus:dark:border-primary active:dark:border-primary"
+      />
+      <span id="tournament-name-counter" class="absolute right-2 top-12 sm:top-14 md:top-17 text-md text-secondary dark:text-primary">0/40</span>
+      <div
+        data-tooltip="tooltip-tournament"
+        role="tooltip"
+        class="z-50 absolute left-0 bottom-1/2 -translate-y-2 sm:-translate-y-0 px-3 py-2 text-sm text-primary dark:text-secondary bg-secondary dark:bg-primary border border-primary dark:border-secondary rounded-lg shadow-lg opacity-0 scale-95 transition-all duration-200 pointer-events-none w-full whitespace-pre-line"
+        data-i18n="toolTipTournamentName"
+      >
+        El torneo debe tener al menos 3 caracteres.
+        <div class="absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2"></div>
+      </div>
     </div>
-    <div class="flex flex-row items-center gap-4">
-      <label for="playerView" data-i18n="playerView" class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono"></label>
-      <select id="playerView" name="playerView"
-        class="md:text-2xl sm:text-xl font-bold border-2 border-gray-300 rounded-md px-1 sm:px-2 md:px-3 py-1 sm:py-2 md:py-3 text-secondary dark:text-primary bg-primary dark:bg-secondary focus:outline-none focus:ring-3 focus:ring-gray-500 focus:border-gray-500">
-        <option class="text-xl md:text-2xl sm:text-2xl" value="2D" selected>2D</option>
-        <option class="text-xl md:text-2xl sm:text-2xl" value="3D">3D</option>
-      </select>
-    </div>
-    <div class="flex items-center gap-4">
-      <label for="difficultyAI" data-i18n="difficultyAI" class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono"></label>
-      <select id="difficultyAI" name="difficultyAI"
-        class="md:text-2xl sm:text-xl font-bold border-2 border-gray-300 rounded-md px-1 sm:px-2 md:px-3 py-1 sm:py-2 md:py-3 text-secondary dark:text-primary bg-primary dark:bg-secondary focus:outline-none focus:ring-3 focus:ring-gray-500 focus:border-gray-500">
-        <option class="text-xl md:text-2xl sm:text-2xl" data-i18n="easy" value="easy"></option>
-        <option class="text-xl md:text-2xl sm:text-2xl" data-i18n="normal" value="normal" selected></option>
-        <option class="text-xl md:text-2xl sm:text-2xl" data-i18n="hard" value="hard"></option>
-      </select>
-    </div>
-  </div> -->
 
-  <div class="flex flex-col gap-16 text-left w-full max-w-3xl">
     <!-- Puntos máximos -->
     <div class="flex flex-col gap-2">
       <label for="points-range" class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono" role="tooltip" data-i18n="modalGameCreationmaxPoints">
-        Points: <span id="points-value" class="font-semibold">5</span>
       </label>
       <input
         id="points-range"
         type="range"
+        name="points-range"
         class="swal2-range accent-cyan-400"
         min="3" max="15" value="5" step="1"
       >
@@ -57,11 +52,11 @@
     <!-- Tiempo máximo -->
     <div class="flex flex-col gap-2">
       <label for="time-range" class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono" role="tooltip" data-i18n="modalGameCreationMaxTime">
-        Time: <span id="time-value" class="font-semibold">120</span> s
       </label>
       <input
         id="time-range"
         type="range"
+        name="time-range"
         class="swal2-range accent-cyan-400"
         min="30" max="300" value="120" step="30"
       >
@@ -95,7 +90,14 @@
         </label>
       </div>
     </div>
-  </div>
 
-  <div class="uppercase" data-button="createTournament"></div>
+    <button
+      class="uppercase"
+      data-button="createTournament"
+      title="createTournament"
+      class="w-full relative bg-transparent text-secondary dark:text-primary border border-secondary dark:border-primary px-6 py-2 font-mono text-xl cursor-pointer transition-all duration-700 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[0px_0_0_red,-0px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] mt-2"
+      data-i18n="createTournament">
+    </button>
+  </form>
+
 </div>

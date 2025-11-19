@@ -9,6 +9,7 @@ import type { GetCurrentUserResponse } from "@/types/user";
 import { createSocialSocket } from "@/modules/social/socketInstance";
 import { apiUrl } from "@/api";
 import { applySavedColors, migrateLegacyColorsToUser } from "@/components/colorPicker";
+import { countInputLenght } from "@/components/inputCounter";
 
 //export let wsClient: SocialWebSocketClient | null = null;
 
@@ -20,7 +21,8 @@ export function setupRegisterForm() {
     if (!registerForm) return;
 
     // Char counter
-    countUsernameLenght(registerForm);
+    const usernameInput = registerForm.querySelector<HTMLInputElement>('input[name="username"]');
+    countInputLenght(usernameInput);
 
     registerForm.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -115,16 +117,6 @@ export function setupRegisterForm() {
       }
     });
   }, 100); // Espera breve para asegurar que el HTML está en el DOM
-}
-
-export function countUsernameLenght(registerForm: HTMLFormElement) {
-  const usernameInput = registerForm.querySelector<HTMLInputElement>('input[name="username"]');
-  const counter = document.getElementById("username-counter");
-  if (usernameInput && counter) {
-    usernameInput.addEventListener("input", () => {
-      counter.textContent = `${usernameInput.value.length}/20`;
-    });
-  }
 }
 
 /* LOG-IN */

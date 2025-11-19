@@ -43,9 +43,6 @@ export const translations: Record<Language, Record<string, string>> = {
     playBot: "play against a bot",
     multiplayer: "multiplayer",
     playOthers: "play with others",
-    tournament: "tournament",
-    configTournament: "Create and configure a tournament",
-    createTournament: "Create tournament",
     invalidUsername: "Invalid username:\n  - It must be between 3 and 20 characters long.\n  - It can only contain letters, numbers, hyphens, and underscores.",
     invalidEmail: "Invalid email:\n  - Correct format: user@domain.TLD",
     invalidPassword: "Incorrect password:\n  - Minimum 8 characters.\n  - At least one uppercase letter.\n  - At least one lowercase letter.\n  - At least one digit.",
@@ -198,6 +195,16 @@ export const translations: Record<Language, Record<string, string>> = {
     /* Color Picker */
     ColorPickerNotFound: "ColorPicker: Elements not found in the DOM.",
     ColorPickerInitialized: "ColorPicker initialized successfully.",
+    /* Tournament */
+    tournament: "tournament",
+    configTournament: "Create and configure a tournament",
+    createTournament: "Create tournament",
+    tournamentName: "Tournament name",
+    invalidTournamentName: "Invalid tournament name:\n  - It must be between 3 and 40 characters long.\n  - It can only contain letters, numbers, hyphens, and underscores.",
+    toolTipTournamentName: "- It must be between 3 and 40 characters long.\n  - It can only contain letters, numbers, hyphens, and underscores.<div class='absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2'></div>",
+    TournamentCreatedSuccessfully: "Tournament created successfully",
+    ErrorCreatingTournament: "Error creating the tournament",
+    UserAlreadyAdminOfActiveTournament: "You cannot create a tournament because you have an active tournament",
   },
   es: {
     start: "Comenzar",
@@ -240,9 +247,6 @@ export const translations: Record<Language, Record<string, string>> = {
     playBot: "jugar contra un bot",
     multiplayer: "multijugador",
     playOthers: "jugar con otros/as",
-    tournament: "torneo",
-    configTournament: "Crea y configura un torneo",
-    createTournament: "Crear un torneo",
     invalidUsername: "Nombre de usuario inválido:\n  - Debe tener entre 3 y 20 caracteres.\n  - Solo puede contener letras, números, guiones y guiones bajos.",
     invalidEmail: "Correo electrónico inválido:\n  - Formato correcto: usuario@dominio.TLD",
     invalidPassword: "Contraseña incorrecta:\n  - Mínimo 8 caracteres.\n  - Al menos una letra mayúscula.\n  - Al menos una letra minúscula.\n  - Al menos un dígito.",
@@ -395,6 +399,16 @@ export const translations: Record<Language, Record<string, string>> = {
     /* Color Picker */
     ColorPickerNotFound: "ColorPicker: elementos no encontrados en el DOM.",
     ColorPickerInitialized: "ColorPicker inicializado correctamente.",
+    /* Tournament */
+    tournament: "torneo",
+    configTournament: "Crea y configura un torneo",
+    createTournament: "Crear un torneo",
+    tournamentName: "Nombre del torneo",
+    invalidTournamentName: "Nombre del torneo inválido:\n  - Debe tener entre 3 y 40 caracteres.\n  - Solo puede contener letras, números, guiones y guiones bajos.",
+    toolTipTournamentName: "- Debe tener entre 3 y 40 caracteres.\n  - Solo puede contener letras, números, guiones y guiones bajos.<div class='absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2'></div>",
+    TournamentCreatedSuccessfully: "Torneo creado correctamente",
+    ErrorCreatingTournament: "Error al crear el torneo",
+    UserAlreadyAdminOfActiveTournament: "No puedes crear un torneo porque ya tienes un torneo activo",
   },
   fr: {
     start: "Démarrer",
@@ -437,9 +451,6 @@ export const translations: Record<Language, Record<string, string>> = {
     playBot: "jouer contre un bot",
     multiplayer: "multijoueur",
     playOthers: "jouer avec les autres",
-    tournament: "tournoi",
-    configTournament: "Créer et configurer un tournoi",
-    createTournament: "Créer un tournoi",
     invalidUsername: "Nom d'utilisateur invalide:\n  - Il doit contenir entre 3 et 20 caractères.\n  - Il peut uniquement contenir des lettres, des chiffres, des tirets et des tirets bas.",
     invalidEmail: "Email invalide:\n  - Format correct : utilisateur@domaine.TLD",
     invalidPassword: "Mot de passe incorrect:\n  - Minimum 8 caractères.\n  - Au moins une lettre majuscule.\n  - Au moins une lettre minuscule.\n  - Au moins un chiffre.",
@@ -592,6 +603,16 @@ export const translations: Record<Language, Record<string, string>> = {
     /* Color Picker */
     ColorPickerNotFound: "ColorPicker: elementos no encontrados en el DOM.",
     ColorPickerInitialized: "ColorPicker initialisé avec succès.",
+    /* Tournament */
+    tournament: "tournoi",
+    configTournament: "Créer et configurer un tournoi",
+    createTournament: "Créer un tournoi",
+    tournamentName: "Nom du tournoi:",
+    invalidTournamentName: "Nom du tournoi invalide:\n  - Il doit contenir entre 3 et 40 caractères.\n  - Il peut uniquement contenir des lettres, des chiffres, des tirets et des tirets bas.",
+    toolTipTournamentName: "- Il doit contenir entre 3 et 40 caractères.\n  - Il peut uniquement contenir des lettres, des chiffres, des tirets et des tirets bas.<div class='absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2'></div>",
+    TournamentCreatedSuccessfully: "Tournoi créé avec succès",
+    ErrorCreatingTournament: "Erreur lors de la création du tournoi",
+    UserAlreadyAdminOfActiveTournament: "Vous ne pouvez pas créer une tornade parce que vous avez une tornade active",
   },
 };
 

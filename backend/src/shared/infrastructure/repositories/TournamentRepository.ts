@@ -25,6 +25,29 @@ export interface ITournamentRepository {
 }
 
 class TournamentRepository extends AbstractRepository implements ITournamentRepository {
+    /**
+     * Mapea un modelo de base de datos a una entidad Tournament
+     * @param dbModel - Modelo de base de datos del torneo
+     * @param participants - Lista opcional de participantes
+     * @param participantCountOverride - Conteo opcional de participantes
+     * @returns Tournament entity
+     */
+    private mapFromDatabase(
+        dbModel: TournamentDbModel,
+        participants: TournamentParticipant[] = [],
+        participantCountOverride?: number
+    ): Tournament {
+        return Tournament.fromDatabase({
+            id: dbModel.id,
+            name: dbModel.name,
+            match_type_id: dbModel.match_type_id,
+            status: dbModel.status,
+            created_at: dbModel.created_at,
+            match_settings: dbModel.match_settings,
+            participants,
+            participantCountOverride,
+        });
+    }
     async createTournament({ tournament }: { tournament: Tournament }): Promise<Result<number>> {
         await this.run('BEGIN TRANSACTION');
 
@@ -134,12 +157,7 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
                     })
                 );
 
-                tournaments.push(
-                    Tournament.fromDatabase({
-                        ...row,
-                        participants: tournamentParticipants,
-                    })
-                );
+                tournaments.push(this.mapFromDatabase(row, tournamentParticipants));
             }
 
             return Result.success(tournaments);
@@ -190,15 +208,7 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
             );
 
             const tournaments: Tournament[] = result.map((row) => {
-                return Tournament.fromDatabase({
-                    id: row.id,
-                    name: row.name,
-                    match_type_id: row.match_type_id,
-                    status: row.status,
-                    created_at: row.created_at,
-                    participants: [], // No cargamos participantes para el listado básico
-                    participantCountOverride: row.participant_count,
-                });
+                return this.mapFromDatabase(row, [], row.participant_count);
             });
 
             return Result.success(tournaments);
@@ -256,10 +266,7 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
                 })
             );
 
-            const tournament = Tournament.fromDatabase({
-                ...result,
-                participants: tournamentParticipants,
-            });
+            const tournament = this.mapFromDatabase(result, tournamentParticipants);
 
             return Result.success(tournament);
         } catch {

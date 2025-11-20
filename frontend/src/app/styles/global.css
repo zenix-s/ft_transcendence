@@ -115,6 +115,27 @@
     transform: rotateZ(90deg);
   }
 
+  /* Tournament table */
+  /* Filas pares */
+  /* #tournamentsTable tbody tr:nth-child(even) {
+    @apply bg-secondary;
+  } */
+
+  /* Filas impares */
+  /* #tournamentsTable tbody tr:nth-child(odd) {
+    @apply bg-gray-900 ;
+  } */
+
+  /* Modo oscuro: Filas pares */
+  /* .dark #tournamentsTable tbody tr:nth-child(even) {
+    @apply bg-secondary;
+  } */
+
+  /* Modo oscuro: Filas impares */
+  /* .dark #tournamentsTable tbody tr:nth-child(odd) {
+    @apply bg-gray-900;
+  } */
+
   /* === TABLE -> CARDS EN MOBILE === */
   @media (max-width: 640px) {
     /* Convertimos tabla en bloques */

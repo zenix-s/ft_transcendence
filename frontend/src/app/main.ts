@@ -11,6 +11,8 @@ import { applySavedColors } from "@/components/colorPicker";
 import { GlitchButton } from "@/components/GlitchButton";
 import { loadChart } from "@/components/graph";
 import { matchTable, loadMatchHistory } from "@/components/history";
+import { tournamentTable, loadTournamentsHistory } from "@/components/tournamentsHistory";
+import { updateSliders } from "@/components/updateSliders";
 
 // i18n
 //import { setLanguage, t, currentLang } from "./i18n";
@@ -34,7 +36,7 @@ navigateTo(initialPage, true);
 // 🌐 Inicializar WebSocket Social si hay token
 import { createSocialSocket, getSocialSocket } from "@/modules/social/socketInstance";
 import { SocialWebSocketClient } from "@/modules/social/socialSocket";
-import { updateSliders } from "@/components/updateSliders";
+
 
 async function initSocialSocket(): Promise<SocialWebSocketClient | null> {
   const token = localStorage.getItem("access_token");
@@ -144,16 +146,30 @@ document.addEventListener("i18n-updated", async () => {
   const ctx = document.getElementById("donutChart") as HTMLCanvasElement | null;
   if (ctx) { loadChart(); }
 
-  // Reload History solo si existe tabla y hay token
   const token = localStorage.getItem("access_token");
-  const perPageSelect = document.querySelector<HTMLSelectElement>(".datatable-selector");
 
-  if (perPageSelect && matchTable && token) {
+  // Reload Game History solo si existe tabla y hay token
+  reloadGameHistory(token);
+
+  // Reload Tournaments History solo si existe tabla y hay token
+  reloadTournamentsHistory(token);
+
+    updateSliders();
+});
+
+export async function reloadGameHistory(token: string | null) {
+  if (matchTable && token) {
+    const matchTableEl = matchTable.dom;
+    const matchHeader = matchTableEl.parentElement?.querySelector<HTMLDivElement>(".datatable-header");
+    const matchPerPageSelect = matchHeader?.querySelector<HTMLSelectElement>("select.datatable-selector");
+
     // 1. Guardar página actual
     const currentPage = matchTable._currentPage ?? 0;
 
     // 2 Guardar items por página
-    const currentPerPage = parseInt(perPageSelect.value, 10);
+    const currentPerPage = matchPerPageSelect
+    ? parseInt(matchPerPageSelect.value, 10)
+    : matchTable.options.perPage; // usa el valor actual de la tabla
 
     // 3. Destruir tabla
     matchTable.destroy();
@@ -165,6 +181,30 @@ document.addEventListener("i18n-updated", async () => {
     if (currentPage > 0)
       matchTable.page(currentPage);
   }
+}
 
-  updateSliders();
-});
+export async function reloadTournamentsHistory(token: string | null) {
+  if (tournamentTable && token) {
+    const tableEl = tournamentTable.dom;
+    const headerDiv = tableEl.parentElement?.querySelector<HTMLDivElement>(".datatable-header");
+    const tournamentPerPageSelect = headerDiv?.querySelector<HTMLSelectElement>("select.datatable-selector");
+
+    // 1. Guardar página actual
+    const currentPage = matchTable._currentPage ?? 0;
+
+    // 2 Guardar items por página
+    const currentPerPage = tournamentPerPageSelect
+    ? parseInt(tournamentPerPageSelect.value, 10)
+    : tournamentTable.options.perPage; // usa el valor actual de la tabla
+
+    // 3. Destruir tabla
+    tournamentTable.destroy();
+
+    // 4. Volver a cargar historial
+    await loadTournamentsHistory(undefined, currentPerPage);
+
+    // 5. Restaurar página en la que estabas
+    if (currentPage > 0)
+      tournamentTable.page(currentPage);
+  }
+}

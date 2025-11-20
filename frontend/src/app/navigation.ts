@@ -15,6 +15,7 @@ import { t } from "@/app/i18n"
 import { initGame3D } from "@/modules/game/game";
 import { updateSliders } from "@/components/updateSliders";
 import { tournament } from "@/modules/tournament/tournament";
+import { loadTournamentsHistory } from "@/components/tournamentsHistory";
 
 // Llamada                            Efecto
 // navigateTo("home")                 Carga "home" y añade al historial
@@ -119,6 +120,7 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
               loadDashboard(user),
               loadChart(user),
               loadMatchHistory(user),
+              loadTournamentsHistory(user),
             ]);
             renderButtons();
             requestAnimationFrame(async () => {

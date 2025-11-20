@@ -205,6 +205,17 @@ export const translations: Record<Language, Record<string, string>> = {
     TournamentCreatedSuccessfully: "Tournament created successfully",
     ErrorCreatingTournament: "Error creating the tournament",
     UserAlreadyAdminOfActiveTournament: "You cannot create a tournament because you have an active tournament",
+    TournamentCreationError: "Error creating tournament. Please try again later.",
+    ErrorJoiningTournament: "Error joining tournament",
+    JoinedTournamentSuccessfully: "You joined the tournament successfully",
+    ////// Tournaments History
+    tournaments: "Tournaments",
+    name: "Name",
+    points: "Points",
+    time: "Time",
+    registered: "Registered",
+    participation: "Participation",
+    noTournaments: "There are no registered tournaments",
   },
   es: {
     start: "Comenzar",
@@ -409,6 +420,17 @@ export const translations: Record<Language, Record<string, string>> = {
     TournamentCreatedSuccessfully: "Torneo creado correctamente",
     ErrorCreatingTournament: "Error al crear el torneo",
     UserAlreadyAdminOfActiveTournament: "No puedes crear un torneo porque ya tienes un torneo activo",
+    TournamentCreationError: "Error al crear el torneo. Por favor, inténtalo más tarde.",
+    ErrorJoiningTournament: "Error al unirse al torneo",
+    JoinedTournamentSuccessfully: "Te uniste al torneo con éxito",
+    ////// Tournaments History
+    tournaments: "Torneos",
+    name: "Nombre",
+    points: "Puntos",
+    time: "Tiempo",
+    registered: "Inscritos",
+    participation: "Participación",
+    noTournaments: "No hay torneos registrados",
   },
   fr: {
     start: "Démarrer",
@@ -613,6 +635,17 @@ export const translations: Record<Language, Record<string, string>> = {
     TournamentCreatedSuccessfully: "Tournoi créé avec succès",
     ErrorCreatingTournament: "Erreur lors de la création du tournoi",
     UserAlreadyAdminOfActiveTournament: "Vous ne pouvez pas créer une tornade parce que vous avez une tornade active",
+    TournamentCreationError: "Erreur lors de la création du tournoi. Veuillez réessayer plus tard.",
+    ErrorJoiningTournament: "Erreur lors de la participation au tournoi",
+    JoinedTournamentSuccessfully: "Vous avez rejoint le tournoi avec succès",
+    ////// Tournaments History
+    tournaments: "Tournois",
+    name: "Nom",
+    points: "Points",
+    time: "Temps",
+    registered: "Inscrits",
+    participation: "Participation",
+    noTournaments: "Il n'y a aucun tournoi enregistré",
   },
 };
 

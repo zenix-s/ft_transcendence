@@ -66,8 +66,45 @@
       <canvas id="donutChart" class="max-w-sm"></canvas>
     </div>
 
+    <!-- Tournaments list -->
+    <div class="w-full max-w-5xl mx-auto p-6">
+      <h2 data-i18n="tournaments" class="text-2xl font-bold mb-4 text-gray-800 dark:text-cyan">
+        Torneos
+      </h2>
+      <div class="rounded-lg shadow">
+        <table
+          id="tournamentsTable"
+          class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm"
+        >
+          <thead class="bg-gray-100 dark:bg-gray-800">
+            <tr>
+              <th data-i18n="name" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                Name
+              </th>
+              <th data-i18n="game" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                Game
+              </th>
+              <th data-i18n="points" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                Points
+              </th>
+              <th data-i18n="time" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                Time
+              </th>
+              <th data-i18n="registered" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                Registered
+              </th>
+              <th data-i18n="participation" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                Participation
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- History -->
-    
     <div class="w-full max-w-5xl mx-auto p-6">
       <h2 data-i18n="gameHistory" class="text-2xl font-bold mb-4 text-gray-800 dark:text-cyan">
         Historial de Partidas

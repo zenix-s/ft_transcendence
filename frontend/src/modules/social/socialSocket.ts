@@ -5,7 +5,7 @@ import { acceptInvitation } from "@/components/friendsSidebar/friendsSidebar";
 import { modal } from "@/components/modal";
 import { showToast } from "@/components/toast";
 import type { Friend } from "@/types/friend"
-import { matchTable, loadMatchHistory } from "@/components/history";
+import { reloadGameHistory } from "@/app/main";
 
 interface AuthSuccessMessage {
   type: "authSuccess";
@@ -157,24 +157,7 @@ export class SocialWebSocketClient {
         this.requestFriendsList();
 
         // Reload History
-        const perPageSelect = document.querySelector<HTMLSelectElement>(".datatable-selector");
-        if (perPageSelect && matchTable) {
-          // 1. Guardar página actual
-          const currentPage = matchTable._currentPage ?? 0;
-
-          // 2 Guardar items por página
-          const currentPerPage = parseInt(perPageSelect.value, 10);
-
-          // 3. Destruir tabla
-          matchTable.destroy();
-
-          // 4. Volver a cargar historial
-          await loadMatchHistory(undefined, currentPerPage);
-
-          // 5. Restaurar página en la que estabas
-          if (currentPage > 0)
-            matchTable.page(currentPage);
-        }
+        reloadGameHistory(this.token);
 
         break;
       }

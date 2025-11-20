@@ -215,6 +215,7 @@ export const translations: Record<Language, Record<string, string>> = {
     time: "Time",
     registered: "Registered",
     participation: "Participation",
+    noTournaments: "There are no registered tournaments",
   },
   es: {
     start: "Comenzar",
@@ -429,6 +430,7 @@ export const translations: Record<Language, Record<string, string>> = {
     time: "Tiempo",
     registered: "Inscritos",
     participation: "Participación",
+    noTournaments: "No hay torneos registrados",
   },
   fr: {
     start: "Démarrer",
@@ -643,6 +645,7 @@ export const translations: Record<Language, Record<string, string>> = {
     time: "Temps",
     registered: "Inscrits",
     participation: "Participation",
+    noTournaments: "Il n'y a aucun tournoi enregistré",
   },
 };
 

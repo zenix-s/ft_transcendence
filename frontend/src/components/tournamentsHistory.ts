@@ -94,7 +94,7 @@ export async function loadTournamentsHistory(user?: User, perPage: number = 5) {
         placeholder: t("search"),
         //perPage: "{select} por página",
         perPage: t("perPage"),
-        noRows: t("noGames"),
+        noRows: t("noTournaments"),
         //info: "Mostrando {start} a {end} de {rows} partidas",
         //info: "t('showing')" + " {start} " + "t('to')" + " {end} " + "t('of')" + " {rows} " + "t('games')",
         //info: `t('showing')` + {start} + "t('to')" + " {end} " + "t('of')" + " {rows} " + t('games')`,
@@ -103,15 +103,12 @@ export async function loadTournamentsHistory(user?: User, perPage: number = 5) {
       }
     });
 
-    // 4. Guardar select generado por simple-datatables
-    const tournamentPerPageSelect = tournamentTable.querySelector<HTMLSelectElement>(".datatable-selector");
-
-    // 5. Ajustar enlaces de paginación (AHORA que existen)
+    // 4. Ajustar enlaces de paginación (AHORA que existen)
     document.querySelectorAll(".datatable-pagination a").forEach(link => {
       link.setAttribute("href", "#");
     });
 
-    // 6. Traducir las celdas recién insertadas
+    // 5. Traducir las celdas recién insertadas
     updateTexts();
 
   } catch (error) {

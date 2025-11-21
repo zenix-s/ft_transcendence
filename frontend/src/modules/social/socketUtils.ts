@@ -5,6 +5,8 @@ import type { SocialWebSocketClient } from "./socialSocket";
  * The function `getReadySocialSocket` returns a promise that resolves with a SocialWebSocketClient
  * after ensuring it is authenticated within a specified time interval.
  * @returns A Promise that resolves to a SocialWebSocketClient object.
+ * 
+ * Espera a que el WebSocket Social esté autenticado antes de devolverlo.
  */
 export async function getReadySocialSocket(): Promise<SocialWebSocketClient | null> {
   return new Promise((resolve, reject) => {
@@ -17,12 +19,12 @@ export async function getReadySocialSocket(): Promise<SocialWebSocketClient | nu
           resolve(ws);
         }
       }
-    }, 50);
+    }, 100); // 0.1s
 
     // Timeout por si algo falla
     setTimeout(() => {
       clearInterval(checkInterval);
       reject(new Error("WebSocket no listo"));
-    }, 5000);
+    }, 15000); // 15s
   });
 }

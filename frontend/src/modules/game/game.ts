@@ -17,15 +17,6 @@ export function renderValues(posPlayerL:number, playerL:Player | undefined, posP
 	playerL.paddle.position.z = (posPlayerL / 100) * 8 - 4;
 	playerR.paddle.position.z = (posPlayerR / 100) * 8 - 4;
 
-	if (playerL.paddle.position.z < playerL.topPercentage)
-		playerL.paddle.position.z = playerL.topPercentage;
-	else if (playerL.paddle.position.z > playerL.bottomPercentage)
-		playerL.paddle.position.z = playerL.bottomPercentage;
-	if (playerR.paddle.position.z < playerR.topPercentage)
-		playerR.paddle.position.z = playerR.topPercentage;
-	else if (playerR.paddle.position.z > playerR.bottomPercentage)
-		playerR.paddle.position.z = playerR.bottomPercentage;
-
 	scores.pointsLeft = pointsL;
 	scores.pointsRight = pointsR;
 	scores.scoreLeft.textContent = scores.pointsLeft.toString();

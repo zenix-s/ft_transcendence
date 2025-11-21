@@ -90,5 +90,3 @@ export function fetchGameAlreadyFinished(gameId:number)
       return null;
     });
 }
-
-//guardar esto:   "userId": "182ed9a4-d773-46e7-a303-b7f3a48ad13a",

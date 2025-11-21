@@ -74,14 +74,14 @@ export function initGame3D() {
 
 
 
-	const token = localStorage.getItem("access_token");
-	const ws = createGameSocket(token);
+	// const token = localStorage.getItem("access_token");
+	// const ws = createGameSocket(token);
 	
 	
 	
 	
-	const socket = getGameSocket();
-	if (!socket)
+	const ws = getGameSocket();
+	if (!ws)
 	{
 		showToast("Internal error", "error");
 		console.warn("Internal error");
@@ -89,8 +89,9 @@ export function initGame3D() {
 		return ;
 	}
 	ws.authenticate(Number(id));
-	socket.initializeGame(Number(id), playerLeft, playerRight, scores, ball, engine, scene);
-	socket.play();
+	ws.setEvents();
+	ws.initializeGame(Number(id), playerLeft, playerRight, scores, ball, engine, scene);
+	ws.play();
 		
 	window.addEventListener("resize", () => {
 		const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;

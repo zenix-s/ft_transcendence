@@ -84,7 +84,7 @@ export class GameWebSocket {
 	private wsUrl: string;
 	private start: number;
 	private div: HTMLDivElement | null = null;
-	//private ready = false;
+	private ready: boolean;
 	private player1: Player | undefined;
 	private player2: Player | undefined;
 	private	scores: Score | undefined;
@@ -105,14 +105,14 @@ export class GameWebSocket {
 		this.start = 0;
 		this.up = 0;
 		this.down = 0;
+		this.ready = false;
 	}
 
 	connect() {
-		console.log("conectado websocket");
 		this.socket = new WebSocket(this.wsUrl);
 
 		this.socket.addEventListener("open", () => {
-			console.log("🟢", t("WsConnected"));
+			console.log("🟢", t("game"), ": ", t("WsConnected"));
 		})
 
 		this.socket.addEventListener("message", async (msg) => {
@@ -121,16 +121,16 @@ export class GameWebSocket {
 				const data = JSON.parse(msg.data);
 				this.handleMessage(data);
 			} catch (err) {
-				console.error(`❌ ${t("ErrorParsingMsg")}`, err);
+				console.error(`❌ ${t("game")}: ${t("ErrorParsingMsg")}`, err);
 			}
 		})
 
 		this.socket.onclose = () => {
-			console.log("🔴", t("WsClosed"));
+			console.log("🔴", t("game"), ": ", t("WsClosed"));
 		};
 
 		this.socket.onerror = (err) => {
-			console.error(`⚠️ ${t("WsError")}`, err);
+			console.error(`⚠️ ${t("game")}: ${t("WsError")}`, err);
 		};
 	}
 
@@ -144,6 +144,17 @@ export class GameWebSocket {
 		});
 	}
 
+	public async checkSocket()
+	{
+		await this.waitForOpen();
+		if (!this.socket)
+		{
+			console.log("cramos el wss");
+			this.socket = new WebSocket(this.wsUrl);
+		}
+		console.log("wss ya creadooo");
+	}
+
 	public async authenticate(gameId:number) {
 		await this.waitForOpen();
 		const obj : message = {
@@ -154,28 +165,34 @@ export class GameWebSocket {
 		this.socket?.send(JSON.stringify(obj));
 		obj.action = Actions.REQUEST_STATE;
 		this.socket?.send(JSON.stringify(obj));
+		console.log("ready = ", this.ready);
 //		if (this.ready == false)
 //		{
-		const userConfirmed = await modal({type: "setReady"});
-		if (!userConfirmed)
-		{
-			console.log("User canceled the modal");
-			obj.action = Actions.LEAVE_GAME;
+			const userConfirmed = await modal({type: "setReady"});
+			if (!userConfirmed)
+			{
+				console.log("User canceled the modal");
+				obj.action = Actions.LEAVE_GAME;
+				this.socket?.send(JSON.stringify(obj));
+				navigateTo("dashboard", false, true);
+				return ;
+			}
+			obj.action = Actions.SET_READY;
 			this.socket?.send(JSON.stringify(obj));
-			navigateTo("dashboard", false, true);
-			return ;
-		}
-		obj.action = Actions.SET_READY;
-		this.socket?.send(JSON.stringify(obj));
-		//this.ready = true;
+			this.ready = true;
 //		}
+		console.log("ready = ", this.ready);
+	}
+
+	public async setEvents()
+	{
+		await this.waitForOpen();
 		this.moveUp = (event: KeyboardEvent) => {
 			const key = event.key;
 			if (key === "ArrowUp" || key === "w")
 				this.down = 1;
 			if (key === "ArrowDown" || key === "s")
 				this.up = 1;
-			console.log("tecla1");
 		}
 		this.moveDown = (event: KeyboardEvent) => {
 			const key = event.key;
@@ -183,7 +200,6 @@ export class GameWebSocket {
 				this.down = 0;
 			if (key === "ArrowDown" || key === "s")
 				this.up = 0;
-			console.log("tecla2");
 		}
 		document.addEventListener("keyup", this.moveDown);
 		document.addEventListener("keydown", this.moveUp);
@@ -207,6 +223,8 @@ export class GameWebSocket {
 				{
 					document.removeEventListener("keydown", this.moveUp!);
     				document.removeEventListener("keyup", this.moveDown!);
+					this.moveUp = undefined;
+					this.moveDown = undefined;
 					this.engine?.stopRenderLoop();
 				}
 				await endGameAndErrors(data.error, this.gameId, this.player1, this.player2,
@@ -301,6 +319,18 @@ export class GameWebSocket {
 			this.start = 0;
 		}
 	}
+
+	public destroy() {
+		console.log("holiwis");
+		// if (this.socket)
+		// {
+		//     console.log(`${t("game")}: ${t("ClosingWs")}`);
+      	// 	this.socket.close();
+		// 	this.socket = null;
+		// }
+		// console.log(`${t("game")}: INSTANCE DELETED`);
+		// instance = null;
+	}
 }
 
 let instance: GameWebSocket | null = null;
@@ -311,6 +341,7 @@ export function createGameSocket(token: string| null): GameWebSocket {
 	instance = new GameWebSocket(token);
 	instance.connect();
   }
+  instance.checkSocket();
   return instance;
 }
 

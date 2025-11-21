@@ -5,15 +5,26 @@ import { navigateTo } from "@/app/navigation";
 import { renderValues } from "./game";
 import type { Ball, Player, Score } from "./gameData";
 import { modal } from "@/components/modal";
+import { getGameSocket } from "./gameSocket";
 
 async function endGame(finBool:number, gameId:number,
 	player1:Player, player2:Player, scores:Score, ball:Ball)
 {
 	if (finBool == 0 && document.getElementById("gameCanvas") as HTMLCanvasElement)
 	{
+		const ws = getGameSocket();
+		if (!ws)
+		{
+			showToast("Internal error no WS", "error");
+			console.warn("Internal error no WS");
+			navigateTo("dashboard", false, true);
+			return ;
+		}
+
 		const finished = await fetchGameAlreadyFinished(gameId);
 		if (!finished)
 		{
+			ws?.destroy();
 			showToast(t("GameError"));
 			console.warn(t("GameError"));
 			navigateTo("dashboard", false, true);
@@ -24,10 +35,8 @@ async function endGame(finBool:number, gameId:number,
 		renderValues(50, player1, 50, player2, score1, score2, scores, 50, 50, ball);
 		const playerL = finished.match.players[0].userId;
 		const playerR = finished.match.players[1].userId;
-		let winner = 1;
-		if (finished.match.players[1].isWinner == true)
-			winner = 2;
-		console.log("1=", playerL, " 2=", playerR, " 1=", score1, " 2=", score2, " winner=", winner);
+		console.log("1=", playerL, " 2=", playerR, " 1=", score1, " 2=", score2, " winner=", finished.match.winner.username);
+		ws?.destroy();
 		navigateTo("dashboard", false, true);
 		await modal({
 			type: "gameFinished",
@@ -59,6 +68,15 @@ export async function endGameAndErrors(data: string, gameId:number,
 		console.warn(t("noActiveGame"));
 	}
 	else {
+		const ws = getGameSocket();
+		if (!ws)
+		{
+			showToast("Internal error no WS", "error");
+			console.warn("Internal error no WS");
+			navigateTo("dashboard", false, true);
+			return ;
+		}
+		ws?.destroy();
 		console.warn(t("GameError"));
 		navigateTo("dashboard", false, true);
 	}

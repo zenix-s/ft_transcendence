@@ -37,16 +37,20 @@ export function initGame3D() {
 		navigateTo("dashboard", false, true);
 		return ;
 	}
-	if (multiPlayer)/* ESTE IF HAY QUE QUITARLO CUANDO FUNCIONEN LAS INVITACIONES */
-	{
-		const token = localStorage.getItem("access_token");
-		createGameSocket(token);
-	}
 	const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
 	if (!canvas)
 	{
 		showToast(t("CanvasNotFound"), "error");
 		console.warn(t("CanvasNotFound"));
+		navigateTo("dashboard", false, true);
+		return ;
+	}
+	const buttonUp = document.getElementById("button-up") as HTMLButtonElement;
+	const buttonDown = document.getElementById("button-down") as HTMLButtonElement;
+	if (!buttonUp || !buttonDown)
+	{
+		showToast(t("ButtonsNotFound"), "error");
+		console.warn(t("ButtonsNotFound"));
 		navigateTo("dashboard", false, true);
 		return ;
 	}
@@ -89,7 +93,7 @@ export function initGame3D() {
 	}
 	ws.authenticate(Number(id));
 	ws.setEvents();
-	ws.initializeGame(Number(id), playerLeft, playerRight, scores, ball, engine, scene);
+	ws.initializeGame(Number(id), playerLeft, playerRight, scores, ball, engine, scene, buttonUp, buttonDown);
 	ws.play();
 		
 	window.addEventListener("resize", () => {

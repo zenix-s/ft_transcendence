@@ -94,6 +94,8 @@ export class GameWebSocket {
 	private gameId: number;
 	private moveUp?: ((event: KeyboardEvent) => void);
 	private moveDown?: ((event: KeyboardEvent) => void);
+	private buttonUp?: ((event: KeyboardEvent) => void);
+	private buttonDown?: ((event: KeyboardEvent) => void);
 	private up: number;
 	private down: number;
 
@@ -201,6 +203,10 @@ export class GameWebSocket {
 		}
 		document.addEventListener("keyup", this.moveDown);
 		document.addEventListener("keydown", this.moveUp);
+		
+		this.buttonUp = document.addEventListener("touchstart", buttonUpPressed);
+		this.buttonUp = document.getElementById("")
+		const buttonDown = document.getElementById("touchend", buttonDownPressed);
 	}
 
 	private async handleMessage(message: unknown) {
@@ -234,7 +240,9 @@ export class GameWebSocket {
 		}
 	}
 
-	public initializeGame(gameId:number, player1: Player, player2: Player, scores: Score, ball: Ball, engine : Engine, scene : Scene)
+	public initializeGame(gameId:number, player1: Player, player2: Player,
+		scores: Score, ball: Ball, engine : Engine, scene : Scene,
+		buttonUp: HTMLButtonElement, buttonDown: HTMLButtonElement)
 	{
 		this.gameId = gameId;
 		this.player1 = player1;
@@ -243,6 +251,8 @@ export class GameWebSocket {
 		this.ball = ball;
 		this.engine = engine;
 		this.scene = scene;
+		this.buttonUp = buttonUp;
+		this.buttonDown = buttonDown;
 	}
 
 	public async	play(){

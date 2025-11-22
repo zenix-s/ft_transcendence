@@ -39,6 +39,7 @@ export default async function GetPongTournamentDetailRoute(fastify: FastifyInsta
                                     matchTypeId: { type: 'number' },
                                     status: { type: 'string' },
                                     createdAt: { type: 'string', format: 'date-time' },
+                                    isRegistered: { type: 'boolean' },
                                     participants: {
                                         type: 'array',
                                         items: {
@@ -107,6 +108,7 @@ export default async function GetPongTournamentDetailRoute(fastify: FastifyInsta
 
             const requestData = {
                 id: request.params.id,
+                userId: request.user.id,
             };
 
             return fastify.handleCommand({

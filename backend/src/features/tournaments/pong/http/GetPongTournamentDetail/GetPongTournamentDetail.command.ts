@@ -2,8 +2,8 @@ import { Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { ApplicationError } from '@shared/Errors';
 import { FastifyInstance } from 'fastify';
-import { Tournament } from '@shared/domain/Entities/Tournament.entity';
 import { TournamentParticipant } from '@shared/domain/Entities/TournamentParticipant.entity';
+import { PongTournamentAggregate } from '../../services/IPongTournamentManager';
 
 export interface TournamentParticipantResponse {
     userId: number;
@@ -19,6 +19,7 @@ export interface TournamentDetailResponse {
     matchTypeId: number;
     status: string;
     createdAt: string;
+    isRegistered: boolean;
     participants: TournamentParticipantResponse[];
     participantCount: number;
     matchSettings: {
@@ -30,6 +31,7 @@ export interface TournamentDetailResponse {
 
 export interface IGetPongTournamentDetailRequest {
     id: number;
+    userId: number;
 }
 
 export interface IGetPongTournamentDetailResponse {
@@ -62,22 +64,23 @@ export class GetPongTournamentDetailCommand
         };
     }
 
-    private tournamentToDetailResponse(tournament: Tournament): TournamentDetailResponse {
-        if (!tournament.id) {
+    private tournamentToDetailResponse(aggregate: PongTournamentAggregate): TournamentDetailResponse {
+        if (!aggregate.tournament.id) {
             throw new Error('Tournament ID is required');
         }
 
         return {
-            id: tournament.id,
-            name: tournament.name,
-            matchTypeId: tournament.matchTypeId,
-            status: tournament.status,
-            createdAt: tournament.createdAt.toISOString(),
-            participants: tournament.participants.map((participant) =>
+            id: aggregate.tournament.id,
+            name: aggregate.tournament.name,
+            matchTypeId: aggregate.tournament.matchTypeId,
+            status: aggregate.tournament.status,
+            createdAt: aggregate.tournament.createdAt.toISOString(),
+            isRegistered: aggregate.isRegistered,
+            participants: aggregate.tournament.participants.map((participant) =>
                 this.participantToResponse(participant)
             ),
-            participantCount: tournament.participantCount,
-            matchSettings: tournament.matchSettings.toObject(),
+            participantCount: aggregate.tournament.participantCount,
+            matchSettings: aggregate.tournament.matchSettings.toObject(),
         };
     }
 
@@ -91,6 +94,7 @@ export class GetPongTournamentDetailCommand
             // Paso 2: Obtener tournament por ID usando el PongTournamentManager
             const tournamentResult = await this.fastify.PongTournamentManager.getTournamentById({
                 id: request.id,
+                userId: request.userId,
             });
 
             // Paso 3: Manejar el resultado de la consulta

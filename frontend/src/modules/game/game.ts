@@ -37,6 +37,11 @@ export function initGame3D() {
 		navigateTo("dashboard", false, true);
 		return ;
 	}
+	if (multiPlayer)/* ESTE IF HAY QUE QUITARLO CUANDO FUNCIONEN LAS INVITACIONES */
+	{
+		const token = localStorage.getItem("access_token");
+		createGameSocket(token);
+	}
 	const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
 	if (!canvas)
 	{

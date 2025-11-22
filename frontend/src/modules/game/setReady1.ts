@@ -3,6 +3,7 @@ import { fetchSinglePlayerGameId } from "./getData";
 import { showToast } from "@/components/toast.js";
 import { t } from "@/app/i18n";
 import { GameDifficulty } from "@/types/gameOptions"
+import { createGameSocket } from "./gameSocket";
 
 export function ready1()
 {
@@ -34,6 +35,9 @@ export function ready1()
 			navigateTo("dashboard", false, true);
 			return ;
 		}
+		const token = localStorage.getItem("access_token");
+		createGameSocket(token);
+
 		console.log("single player id =", id);
 		navigateTo(`playing?id=${id}&singleplayer&view=${playerView}`);
 	});

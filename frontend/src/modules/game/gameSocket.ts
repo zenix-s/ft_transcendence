@@ -322,14 +322,14 @@ export class GameWebSocket {
 
 	public destroy() {
 		console.log("holiwis");
-		// if (this.socket)
-		// {
-		//     console.log(`${t("game")}: ${t("ClosingWs")}`);
-      	// 	this.socket.close();
-		// 	this.socket = null;
-		// }
-		// console.log(`${t("game")}: INSTANCE DELETED`);
-		// instance = null;
+		if (this.socket)
+		{
+		    console.log(`${t("game")}: ${t("ClosingWs")}`);
+      		this.socket.close();
+			this.socket = null;
+		}
+		console.log(`${t("game")}: INSTANCE DELETED`);
+		instance = null;
 	}
 }
 

@@ -48,7 +48,9 @@ export async function modal({
       const winnerName = winner;
       const scoreText = `${player1Score ?? 0} - ${player2Score ?? 0}`;
 
-      const Winner = t("Winner");
+      let Winner = t("Winner");
+      if (Winner === "AI_Player")
+        Winner = t("AI");
       const Unknown = t("Unknown");
       const FinalScore = t("FinalScore");
       title = t("gameFinished");

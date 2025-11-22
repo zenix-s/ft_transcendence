@@ -79,19 +79,13 @@ export function initGame3D() {
 
 
 
-	// const token = localStorage.getItem("access_token");
-	// const ws = createGameSocket(token);
 	
-	
-	
-	
-	const ws = getGameSocket();
+	let ws = getGameSocket();
 	if (!ws)
 	{
-		showToast("Internal error", "error");
-		console.warn("Internal error");
-		navigateTo("dashboard", false, true);
-		return ;
+		const token = localStorage.getItem("access_token");
+		ws = createGameSocket(token);
+		ws.setAuth();
 	}
 	ws.authenticate(Number(id));
 	ws.setEvents();

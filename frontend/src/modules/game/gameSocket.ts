@@ -155,6 +155,10 @@ export class GameWebSocket {
 		console.log("wss ya creadooo");
 	}
 
+	public setAuth() {
+		this.ready = true;
+	}
+
 	public async authenticate(gameId:number) {
 		await this.waitForOpen();
 		const obj : message = {
@@ -166,8 +170,8 @@ export class GameWebSocket {
 		obj.action = Actions.REQUEST_STATE;
 		this.socket?.send(JSON.stringify(obj));
 		console.log("ready = ", this.ready);
-//		if (this.ready == false)
-//		{
+		if (this.ready == false)
+		{
 			const userConfirmed = await modal({type: "setReady"});
 			if (!userConfirmed)
 			{
@@ -180,7 +184,7 @@ export class GameWebSocket {
 			obj.action = Actions.SET_READY;
 			this.socket?.send(JSON.stringify(obj));
 			this.ready = true;
-//		}
+		}
 		console.log("ready = ", this.ready);
 	}
 
@@ -322,14 +326,14 @@ export class GameWebSocket {
 
 	public destroy() {
 		console.log("holiwis");
-		if (this.socket)
-		{
-		    console.log(`${t("game")}: ${t("ClosingWs")}`);
-      		this.socket.close();
-			this.socket = null;
-		}
-		console.log(`${t("game")}: INSTANCE DELETED`);
-		instance = null;
+		// if (this.socket)
+		// {
+		//     console.log(`${t("game")}: ${t("ClosingWs")}`);
+      	// 	this.socket.close();
+		// 	this.socket = null;
+		// }
+		// console.log(`${t("game")}: INSTANCE DELETED`);
+		// instance = null;
 	}
 }
 

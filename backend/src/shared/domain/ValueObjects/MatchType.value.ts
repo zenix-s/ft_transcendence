@@ -98,23 +98,28 @@ export default class MatchType {
                 return MatchType.SINGLE_PLAYER_PONG;
             case MatchType.MATCH_TYPE_CONFIGS.PONG.NAME:
                 return MatchType.PONG;
+            case MatchType.MATCH_TYPE_CONFIGS.TOURNAMENT_PONG.NAME:
+                return MatchType.TOURNAMENT_PONG;
             default:
                 return null;
         }
     }
 
-    public static byId(id: number): MatchType | null {
-        switch (id) {
-            case MatchType.MATCH_TYPE_CONFIGS.SINGLE_PLAYER_PONG.ID:
+    public static byId(id: string | number): MatchType | null {
+        const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
+        if (Number.isNaN(numericId as number)) {
+            return null;
+        }
+
+        switch (numericId) {
+            case MatchType.SINGLE_PLAYER_PONG.id:
                 return MatchType.SINGLE_PLAYER_PONG;
-            case MatchType.MATCH_TYPE_CONFIGS.PONG.ID:
+            case MatchType.PONG.id:
                 return MatchType.PONG;
+            case MatchType.TOURNAMENT_PONG.id:
+                return MatchType.TOURNAMENT_PONG;
             default:
                 return null;
         }
-    }
-
-    public static getAllTypes(): MatchType[] {
-        return [MatchType.PONG, MatchType.SINGLE_PLAYER_PONG];
     }
 }

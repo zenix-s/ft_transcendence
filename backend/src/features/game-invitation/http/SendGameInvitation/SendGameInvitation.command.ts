@@ -76,7 +76,7 @@ export default class SendGameInvitationCommand
             }
 
             // 3: Validar si el tipo de juego soporta invitaciones
-            if (matchType.supportsInvitations) {
+            if (!matchType.supportsInvitations) {
                 return Result.error(ApplicationError.GameTypeDoesNotSupportInvitations);
             }
 

@@ -187,17 +187,26 @@ export class PongTournamentManager implements IPongTournamentManager {
         }
     }
 
-    async getTournamentById({ id }: { id: number }): Promise<Result<Tournament | null>> {
+    async getTournamentById({
+        id,
+        userId,
+    }: {
+        id: number;
+        userId: number;
+    }): Promise<Result<PongTournamentAggregate>> {
         try {
             // Paso 1: Buscar tournament por ID usando el repository
             const tournamentResult = await this.fastify.TournamentRepository.findById({ id });
 
             // Paso 2: Manejar el resultado de la consulta
-            if (!tournamentResult.isSuccess) {
+            if (!tournamentResult.isSuccess || !tournamentResult.value) {
                 return Result.error(tournamentResult.error || ApplicationError.DatabaseServiceUnavailable);
             }
 
-            return Result.success(tournamentResult.value || null);
+            return Result.success({
+                tournament: tournamentResult.value,
+                isRegistered: tournamentResult.value.isUserRegistered(userId),
+            });
         } catch (error) {
             return this.fastify.handleError({
                 code: ApplicationError.DatabaseServiceUnavailable,

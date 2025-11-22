@@ -23,10 +23,12 @@ class MatchPlayerRepository extends AbstractRepository implements IMatchPlayerRe
         const stats = await this.findOne<UserStatsRow>(
             `SELECT
                 COUNT(*) as totalMatches,
-                IFNULL(SUM(CASE WHEN is_winner = 1 THEN 1 ELSE 0 END), 0) as wins,
-                IFNULL(SUM(score), 0) as totalScore
-             FROM match_players
-             WHERE user_id = ?`,
+                IFNULL(SUM(CASE WHEN mp.is_winner = 1 THEN 1 ELSE 0 END), 0) as wins,
+                IFNULL(SUM(mp.score), 0) as totalScore
+             FROM match_players mp
+             JOIN matches m ON mp.match_id = m.id
+             WHERE mp.user_id = ?
+               AND m.status = 'completed'`,
             [userId]
         );
 

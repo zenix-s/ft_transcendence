@@ -2,6 +2,11 @@ import { Result } from '@shared/abstractions/Result';
 import { Tournament } from '@shared/domain/Entities/Tournament.entity';
 import { IMatchSettings } from '@shared/domain/ValueObjects/MatchSettings.value';
 
+export interface PongTournamentAggregate {
+    tournament: Tournament;
+    isRegistered: boolean;
+}
+
 export interface IPongTournamentManager {
     createTournamnet({
         name,
@@ -17,4 +22,13 @@ export interface IPongTournamentManager {
     getActiveTournamentsBasic(params: { limit?: number; offset?: number }): Promise<Result<Tournament[]>>;
     getTournamentById({ id }: { id: number }): Promise<Result<Tournament | null>>;
     isUserAdminOfActiveTournament({ userId }: { userId: number }): Promise<Result<boolean>>;
+    getActiveTournamentsWithIsRegisteredFlag({
+        userId,
+        limit,
+        offset,
+    }: {
+        userId: number;
+        limit?: number;
+        offset?: number;
+    }): Promise<Result<PongTournamentAggregate[]>>;
 }

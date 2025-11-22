@@ -1,5 +1,8 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { GetActivePongTournamentsCommand } from './GetActivePongTournaments.command';
+import {
+    GetActivePongTournamentsCommand,
+    IGetActivePongTournamentsRequest,
+} from './GetActivePongTournaments.command';
 
 interface GetActivePongTournamentsRequest {
     Querystring: {
@@ -50,6 +53,7 @@ export default async function GetActivePongTournamentsRoute(fastify: FastifyInst
                                         status: { type: 'string' },
                                         createdAt: { type: 'string', format: 'date-time' },
                                         participantCount: { type: 'number' },
+                                        isRegistered: { type: 'boolean' },
                                         matchSettings: {
                                             type: 'object',
                                             properties: {
@@ -94,9 +98,10 @@ export default async function GetActivePongTournamentsRoute(fastify: FastifyInst
         async (request: FastifyRequest<GetActivePongTournamentsRequest>, reply: FastifyReply) => {
             const command = new GetActivePongTournamentsCommand(fastify);
 
-            const requestData = {
+            const requestData: IGetActivePongTournamentsRequest = {
                 limit: request.query.limit,
                 offset: request.query.offset,
+                userId: request.user.id,
             };
 
             return fastify.handleCommand({

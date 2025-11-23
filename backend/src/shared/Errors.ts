@@ -77,6 +77,7 @@ export enum ApplicationError {
      * Juego Ya Terminado - El juego ha terminado y no acepta más acciones
      */
     GameAlreadyFinished = 'GameAlreadyFinished',
+    GameCancelled = 'GameCancelled',
 
     /**
      * Tipo de Juego No Encontrado - El tipo de juego especificado no existe

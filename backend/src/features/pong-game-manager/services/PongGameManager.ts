@@ -227,11 +227,11 @@ export class PongGameManager implements IPongGameManager {
             return Result.error(ApplicationError.InvalidRequest);
         }
 
-        // Si el juego fue cancelado (no había empezado), eliminarlo de memoria
-        if (activeGame.game.getIsCancelled()) {
-            activeGame.stop();
-            this.activeGames.delete(gameId);
-        }
+        // // Si el juego fue cancelado (no había empezado), eliminarlo de memoria
+        // if (activeGame.game.getIsCancelled()) {
+        //     activeGame.stop();
+        //     this.activeGames.delete(gameId);
+        // }
         // Si estaba en curso, el juego terminará normalmente con ganador
 
         return Result.success(undefined);

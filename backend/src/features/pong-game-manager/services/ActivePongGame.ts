@@ -12,7 +12,13 @@ export class ActivePongGame {
         public readonly matchId: number,
         public readonly game: PongGame,
         private readonly fastify: FastifyInstance,
-        private readonly onGameEnd: (gameId: number) => void
+        private readonly onGameEnd: (gameId: number) => void,
+        private readonly isTournamentMatch = false,
+        private readonly onTournamentMatchEnd?: (
+            matchId: number,
+            winnerId: number,
+            loserId: number
+        ) => Promise<void>
     ) {}
 
     start(): void {
@@ -166,6 +172,24 @@ export class ActivePongGame {
             const updatedMatch = await this.fastify.MatchRepository.update({ match });
             if (!updatedMatch) {
                 this.fastify.log.error(`Failed to update match ${this.matchId} for game ${this.gameId}`);
+                return;
+            }
+
+            // Si es una partida de torneo, llamar al callback proporcionado
+            if (this.isTournamentMatch && this.onTournamentMatchEnd && winnerIds.length > 0) {
+                const winnerId = winnerIds[0];
+                const loserId = match.playerIds.find((id) => id !== winnerId);
+
+                if (loserId) {
+                    try {
+                        await this.onTournamentMatchEnd(this.matchId, winnerId, loserId);
+                    } catch (error) {
+                        this.fastify.log.error(
+                            error,
+                            `Error calling tournament match end callback for match ${this.matchId}`
+                        );
+                    }
+                }
             }
         } catch (error) {
             this.fastify.log.error(error, `Error saving match history for game ${this.gameId}`);

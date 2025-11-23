@@ -1,11 +1,15 @@
 import { Tournament, TournamentStatus } from '@shared/domain/Entities/Tournament.entity';
 import { TournamentParticipant } from '@shared/domain/Entities/TournamentParticipant.entity';
+import { TournamentRound, ITournamentMatchup } from '@shared/domain/Entities/TournamentRound.entity';
 import { AbstractRepository } from '../db/AbstractRepository';
 import fp from 'fastify-plugin';
 import { Result } from '@shared/abstractions/Result';
 import { ApplicationError } from '@shared/Errors';
 import { TournamentDbModel } from '@shared/infrastructure/db/models/Tournament.dbmodel';
 import { TournamentParticipantDbModel } from '@shared/infrastructure/db/models/TournamentParticipant.dbmodel';
+
+// Añadido para manejar maxMatchesPerPair
+const DEFAULT_MAX_MATCHES_PER_PAIR = 3;
 
 export interface ITournamentRepository {
     createTournament({ tournament }: { tournament: Tournament }): Promise<Result<number>>;
@@ -37,7 +41,7 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
         participants: TournamentParticipant[] = [],
         participantCountOverride?: number
     ): Tournament {
-        return Tournament.fromDatabase({
+        const tournament = Tournament.fromDatabase({
             id: dbModel.id,
             name: dbModel.name,
             match_type_id: dbModel.match_type_id,
@@ -46,7 +50,37 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
             match_settings: dbModel.match_settings,
             participants,
             participantCountOverride,
+            // Nuevo: maxMatchesPerPair desde dbModel, fallback a default si no existe
+            max_matches_per_pair:
+                typeof dbModel.max_matches_per_pair === 'number'
+                    ? dbModel.max_matches_per_pair
+                    : DEFAULT_MAX_MATCHES_PER_PAIR,
         });
+
+        // Restaurar rondas desde JSON
+        if (dbModel.rounds_data) {
+            try {
+                const roundsData = JSON.parse(dbModel.rounds_data);
+                if (Array.isArray(roundsData)) {
+                    roundsData.forEach((roundData: { roundNumber: number; matchups: unknown[] }) => {
+                        const round = new TournamentRound({
+                            roundNumber: roundData.roundNumber,
+                            matchups: roundData.matchups as ITournamentMatchup[],
+                        });
+                        tournament.addRound(round);
+                    });
+                }
+            } catch {
+                // Error silencioso - el torneo continuará sin rondas previas
+            }
+        }
+
+        // Restaurar número de ronda actual
+        if (typeof dbModel.current_round_number === 'number') {
+            tournament.setCurrentRoundNumber(dbModel.current_round_number);
+        }
+
+        return tournament;
     }
     async createTournament({ tournament }: { tournament: Tournament }): Promise<Result<number>> {
         await this.run('BEGIN TRANSACTION');
@@ -59,9 +93,12 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
                         match_type_id,
                         status,
                         match_settings,
-                        created_at
+                        created_at,
+                        max_matches_per_pair,
+                        rounds_data,
+                        current_round_number
                     ) VALUES
-                    (?, ?, ?, ?, ?)
+                    (?, ?, ?, ?, ?, ?, ?, ?)
                 `,
                 [
                     tournament.name,
@@ -69,6 +106,11 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
                     tournament.status,
                     tournament.matchSettings.toJSON(),
                     tournament.createdAt.toISOString(),
+                    typeof tournament.maxMatchesPerPair === 'number'
+                        ? tournament.maxMatchesPerPair
+                        : DEFAULT_MAX_MATCHES_PER_PAIR,
+                    JSON.stringify(tournament.rounds.map((r) => r.toJSON())),
+                    tournament.currentRoundNumber,
                 ]
             );
 
@@ -291,7 +333,9 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
                         name = ?,
                         match_type_id = ?,
                         status = ?,
-                        match_settings = ?
+                        match_settings = ?,
+                        rounds_data = ?,
+                        current_round_number = ?
                     WHERE
                         id = ?
                 `,
@@ -300,6 +344,8 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
                     tournamentData.match_type_id,
                     tournamentData.status,
                     tournamentData.match_settings,
+                    JSON.stringify(tournament.rounds.map((r) => r.toJSON())),
+                    tournament.currentRoundNumber,
                     tournament.id,
                 ]
             );

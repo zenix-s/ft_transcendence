@@ -11,6 +11,8 @@ export interface TournamentParticipantResponse {
     status: string;
     role: string;
     score: number;
+    isCurrentPlayer: boolean;
+    remainingMatches: number;
 }
 
 export interface TournamentDetailResponse {
@@ -22,6 +24,7 @@ export interface TournamentDetailResponse {
     isRegistered: boolean;
     participants: TournamentParticipantResponse[];
     participantCount: number;
+    maxMatchesPerPair: number;
     matchSettings: {
         maxScore: number;
         maxGameTime: number;
@@ -54,20 +57,53 @@ export class GetPongTournamentDetailCommand
         return Result.success(undefined);
     }
 
-    private participantToResponse(participant: TournamentParticipant): TournamentParticipantResponse {
+    private participantToResponse(
+        participant: TournamentParticipant,
+        currentUserId: number,
+        remainingMatches: number
+    ): TournamentParticipantResponse {
         return {
             userId: participant.userId,
             username: participant.username || '',
             status: participant.status,
             role: participant.role,
             score: participant.score,
+            isCurrentPlayer: participant.userId === currentUserId,
+            remainingMatches,
         };
     }
 
-    private tournamentToDetailResponse(aggregate: PongTournamentAggregate): TournamentDetailResponse {
+    private async tournamentToDetailResponse(
+        aggregate: PongTournamentAggregate,
+        currentUserId: number
+    ): Promise<TournamentDetailResponse> {
         if (!aggregate.tournament.id) {
             throw new Error('Tournament ID is required');
         }
+
+        // Obtener el torneo activo para calcular partidas restantes
+        const activeTournament = this.fastify.PongTournamentManager.getActiveTournament(
+            aggregate.tournament.id
+        );
+        const maxMatchesPerPair = aggregate.tournament.maxMatchesPerPair;
+
+        const participantsWithRemainingMatches = aggregate.tournament.participants.map((participant) => {
+            let remainingMatches = maxMatchesPerPair;
+
+            // Si hay torneo activo y el participante no es el usuario actual, calcular partidas restantes
+            if (activeTournament && participant.userId !== currentUserId) {
+                const matchesPlayed = activeTournament.getMatchCountBetween(
+                    currentUserId,
+                    participant.userId
+                );
+                remainingMatches = Math.max(0, maxMatchesPerPair - matchesPlayed);
+            } else if (participant.userId === currentUserId) {
+                // Para el usuario actual, no puede jugar contra sí mismo
+                remainingMatches = 0;
+            }
+
+            return this.participantToResponse(participant, currentUserId, remainingMatches);
+        });
 
         return {
             id: aggregate.tournament.id,
@@ -76,10 +112,9 @@ export class GetPongTournamentDetailCommand
             status: aggregate.tournament.status,
             createdAt: aggregate.tournament.createdAt.toISOString(),
             isRegistered: aggregate.isRegistered,
-            participants: aggregate.tournament.participants.map((participant) =>
-                this.participantToResponse(participant)
-            ),
+            participants: participantsWithRemainingMatches,
             participantCount: aggregate.tournament.participantCount,
+            maxMatchesPerPair,
             matchSettings: aggregate.tournament.matchSettings.toObject(),
         };
     }
@@ -104,7 +139,9 @@ export class GetPongTournamentDetailCommand
 
             // Paso 4: Transformar entidad de dominio a interfaz de respuesta
             const tournament = tournamentResult.value;
-            const tournamentResponse = tournament ? this.tournamentToDetailResponse(tournament) : null;
+            const tournamentResponse = tournament
+                ? await this.tournamentToDetailResponse(tournament, request.userId)
+                : null;
 
             return Result.success({
                 tournament: tournamentResponse,

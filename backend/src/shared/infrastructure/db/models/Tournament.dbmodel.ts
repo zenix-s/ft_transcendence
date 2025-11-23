@@ -7,4 +7,7 @@ export interface TournamentDbModel {
     status: TournamentStatus;
     match_settings: string;
     created_at: string;
+    max_matches_per_pair: number;
+    rounds_data: string;
+    current_round_number: number;
 }

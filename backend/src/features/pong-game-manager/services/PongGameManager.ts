@@ -33,6 +33,41 @@ export class PongGameManager implements IPongGameManager {
         }
     }
 
+    async createTournamentMatch(
+        gameId: number,
+        matchId: number,
+        game: PongGame,
+        onMatchEnd: (matchId: number, winnerId: number, loserId: number) => Promise<void>
+    ): Promise<Result<void>> {
+        try {
+            this.deleteGame(gameId);
+
+            const activeGame = new ActivePongGame(
+                gameId,
+                matchId,
+                game,
+                this.fastify,
+                (id: number) => this.onGameEnd(id),
+                true, // isTournamentMatch
+                // onMatchEnd // onTournamentMatchEnd callback
+                async (mId: number, winnerId: number, loserId: number) => {
+                    await onMatchEnd(mId, winnerId, loserId);
+                    this.onGameEnd(gameId);
+                }
+            );
+
+            activeGame.start();
+            this.activeGames.set(gameId, activeGame);
+
+            return Result.success(undefined);
+        } catch (error) {
+            return this.fastify.handleError({
+                code: ApplicationError.InternalServerError,
+                error,
+            });
+        }
+    }
+
     getGame(gameId: number): Result<PongGame> {
         const activeGame = this.activeGames.get(gameId);
         if (!activeGame) {

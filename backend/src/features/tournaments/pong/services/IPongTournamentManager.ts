@@ -1,6 +1,7 @@
 import { Result } from '@shared/abstractions/Result';
 import { Tournament } from '@shared/domain/Entities/Tournament.entity';
 import { IMatchSettings } from '@shared/domain/ValueObjects/MatchSettings.value';
+import { ActivePongTournament } from './ActivePongTournament';
 
 export interface PongTournamentAggregate {
     tournament: Tournament;
@@ -37,4 +38,12 @@ export interface IPongTournamentManager {
         limit?: number;
         offset?: number;
     }): Promise<Result<PongTournamentAggregate[]>>;
+    startTournament({
+        tournamentId,
+        userId,
+    }: {
+        tournamentId: number;
+        userId: number;
+    }): Promise<Result<void>>;
+    getActiveTournament(tournamentId: number): ActivePongTournament | null;
 }

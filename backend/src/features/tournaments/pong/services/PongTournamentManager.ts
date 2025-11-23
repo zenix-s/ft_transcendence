@@ -7,7 +7,7 @@ import { Tournament } from '@shared/domain/Entities/Tournament.entity';
 import { IMatchSettings } from '@shared/domain/ValueObjects/MatchSettings.value';
 
 export class PongTournamentManager implements IPongTournamentManager {
-    private tournaments = new Map<number, ActivePongTournament>();
+    public tournaments = new Map<number, ActivePongTournament>();
 
     constructor(private readonly fastify: FastifyInstance) {}
 
@@ -234,5 +234,40 @@ export class PongTournamentManager implements IPongTournamentManager {
                 error,
             });
         }
+    }
+
+    async startTournament({
+        tournamentId,
+        userId,
+    }: {
+        tournamentId: number;
+        userId: number;
+    }): Promise<Result<void>> {
+        try {
+            // Paso 1: Obtener el torneo activo
+            const activeTournament = this.tournaments.get(tournamentId);
+            if (!activeTournament) {
+                return Result.error(ApplicationError.TournamentNotFound);
+            }
+
+            // Paso 2: Llamar al método start del ActivePongTournament
+            const startResult = await activeTournament.startTournament({ userId });
+
+            // Paso 3: Manejar el resultado
+            if (!startResult.isSuccess) {
+                return Result.error(startResult.error || ApplicationError.TournamentStartError);
+            }
+
+            return Result.success(undefined);
+        } catch (error) {
+            return this.fastify.handleError({
+                code: ApplicationError.TournamentStartError,
+                error,
+            });
+        }
+    }
+
+    getActiveTournament(tournamentId: number): ActivePongTournament | null {
+        return this.tournaments.get(tournamentId) || null;
     }
 }

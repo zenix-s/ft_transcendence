@@ -55,6 +55,9 @@ export function initGame3D() {
 	const engine = new Engine(canvas, true);
 	const scene = new Scene(engine);
 
+	// Ajustar tamaño del canvas
+	adjustCanvasSize(canvas, engine);
+
 	// Cámara
 	createCamera(playerView, scene, canvas);
 
@@ -78,8 +81,6 @@ export function initGame3D() {
 	const ball = createBall(playerView, scene);
 
 
-
-	
 	let ws = getGameSocket();
 	if (!ws)
 	{
@@ -99,6 +100,24 @@ export function initGame3D() {
 			console.warn(t("CanvasNotFound"));
 			return ;
 		}
-		engine.resize();
+		//engine.resize();
+		adjustCanvasSize(canvas, engine);
 	});
+}
+
+function adjustCanvasSize(canvas: HTMLCanvasElement, engine: Engine) {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    if (width < height) {
+        // Pantalla vertical → el ancho manda
+        canvas.style.width = "100vw";
+        canvas.style.height = `${width * 0.9}px`; // evita barras
+    } else {
+        // Pantalla horizontal → el alto manda
+        canvas.style.height = "100vh";
+        canvas.style.width = `${height * 1.1}px`; // ajusta proporción
+    }
+
+    engine.resize();
 }

@@ -31,7 +31,13 @@ export class TournamentRound {
         return this._isComplete;
     }
 
-    public static create({ roundNumber, playerIds }: { roundNumber: number; playerIds: number[] }): TournamentRound {
+    public static create({
+        roundNumber,
+        playerIds,
+    }: {
+        roundNumber: number;
+        playerIds: number[];
+    }): TournamentRound {
         const matchups: ITournamentMatchup[] = [];
 
         // Dividir jugadores en pares
@@ -49,7 +55,11 @@ export class TournamentRound {
         return new TournamentRound({ roundNumber, matchups });
     }
 
-    public updateMatchupStatus(player1Id: number, status: TournamentMatchupStatus, matchId?: number): boolean {
+    public updateMatchupStatus(
+        player1Id: number,
+        status: TournamentMatchupStatus,
+        matchId?: number
+    ): boolean {
         const matchup = this._matchups.find((m) => m.player1Id === player1Id);
         if (!matchup) {
             return false;
@@ -63,14 +73,14 @@ export class TournamentRound {
         return true;
     }
 
-    public setMatchupWinner(player1Id: number, winnerId: number): boolean {
-        const matchup = this._matchups.find((m) => m.player1Id === player1Id);
-        if (!matchup) {
+    public setMatchupWinner(matchId: number, winnerId: number): boolean {
+        const match = this._matchups.find((m) => m.matchId === matchId);
+        if (!match) {
             return false;
         }
 
-        matchup.winnerId = winnerId;
-        matchup.status = 'completed';
+        match.winnerId = winnerId;
+        match.status = 'completed';
 
         // Verificar si todos los matchups están completados
         this._isComplete = this._matchups.every((m) => m.status === 'completed');
@@ -79,9 +89,7 @@ export class TournamentRound {
     }
 
     public getWinners(): number[] {
-        return this._matchups
-            .filter((m) => m.winnerId !== undefined)
-            .map((m) => m.winnerId as number);
+        return this._matchups.filter((m) => m.winnerId !== undefined).map((m) => m.winnerId as number);
     }
 
     public getPendingMatchups(): ITournamentMatchup[] {

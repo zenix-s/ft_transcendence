@@ -51,7 +51,7 @@ export class PongGameManager implements IPongGameManager {
                 // onMatchEnd // onTournamentMatchEnd callback
                 async (mId: number, winnerId: number, loserId: number) => {
                     await onMatchEnd(mId, winnerId, loserId);
-                    this.onGameEnd(matchId);
+                    this.onGameEnd(mId);
                 }
             );
 

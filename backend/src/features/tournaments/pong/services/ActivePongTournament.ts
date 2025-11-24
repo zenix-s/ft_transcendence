@@ -238,7 +238,7 @@ export class ActivePongTournament {
 
             // Paso 4: Callback para cuando termine la partida
             const onMatchEnd = async (mId: number, winnerId: number, loserId: number) => {
-                await this.handleMatchResult(round.roundNumber, matchup, winnerId, loserId);
+                await this.handleMatchResult(mId, round.roundNumber, matchup, winnerId, loserId);
             };
 
             // Paso 5: Crear el juego de torneo
@@ -284,6 +284,7 @@ export class ActivePongTournament {
     }
 
     private async handleMatchResult(
+        matchId: number,
         roundNumber: number,
         matchup: ITournamentMatchup,
         winnerId: number,
@@ -309,7 +310,9 @@ export class ActivePongTournament {
             }
 
             // Paso 2: Actualizar el matchup con el ganador
-            currentRound.setMatchupWinner(matchup.player1Id, winnerId);
+
+            // currentRound.setMatchupWinner(matchup.player1Id, winnerId);
+            currentRound.setMatchupWinner(matchId, winnerId);
 
             // Paso 3: Eliminar al perdedor
             const loserParticipant = tournament.getParticipant(loserId);

@@ -131,6 +131,7 @@ export const translations: Record<Language, Record<string, string>> = {
     playerView: "Player View",
     invitationAcceppted: "Player has accepted the invitation",
     invitationRejected: "Player has rejected the invitation",
+    ButtonsNotFound: "Buttons not found",
     /* Modal */
     modalLogoutTitle: "Log out",
     modalLogoutTitleText: "Are you sure you want to log out?",
@@ -346,6 +347,7 @@ export const translations: Record<Language, Record<string, string>> = {
     playerView: "Vista del Jugador",
     invitationAcceppted: "El jugador ha aceptado la invitación",
     invitationRejected: "El jugador ha rechazado la invitación",
+    ButtonsNotFound: "Botones no encontrados",
     /* Modal */
     modalLogoutTitle: "Cerrar sesión",
     modalLogoutTitleText: "¿Seguro que quieres cerrar sesión?",
@@ -561,6 +563,7 @@ export const translations: Record<Language, Record<string, string>> = {
     playerView: "Vue du Joueur",
     invitationAcceppted: "Le joueur a accepté l'invitation",
     invitationRejected: "Le joueur a refusé l'invitation",
+    ButtonsNotFound: "Boutons non trouvés",
     /* Modal */
     modalLogoutTitle: "Se déconnecter",
     modalLogoutTitleText: "Êtes-vous sûr de vouloir vous déconnecter?",

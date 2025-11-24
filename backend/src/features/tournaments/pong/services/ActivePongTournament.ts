@@ -228,7 +228,6 @@ export class ActivePongTournament {
             round.updateMatchupStatus(player1Id, 'in_progress', matchId);
 
             // Paso 3: Crear el PongGame
-            const gameId = matchId; // Usar el mismo ID para mantener sincronización
             const matchSettingsObj = tournament.matchSettings.toObject();
             const pongGame = new PongGame(
                 matchSettingsObj.maxScore || 5,
@@ -244,7 +243,6 @@ export class ActivePongTournament {
 
             // Paso 5: Crear el juego de torneo
             const createGameResult = await this.fastify.PongGameManager.createTournamentMatch(
-                gameId,
                 matchId,
                 pongGame,
                 onMatchEnd
@@ -261,7 +259,6 @@ export class ActivePongTournament {
                     this.tournamentId,
                     player1Id,
                     matchId,
-                    gameId,
                     player2Id || null,
                     isAgainstAI,
                     round.roundNumber
@@ -272,7 +269,6 @@ export class ActivePongTournament {
                         this.tournamentId,
                         player2Id,
                         matchId,
-                        gameId,
                         player1Id,
                         false,
                         round.roundNumber

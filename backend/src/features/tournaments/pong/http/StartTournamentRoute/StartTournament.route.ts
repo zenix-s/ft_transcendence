@@ -11,10 +11,10 @@ export default async function StartTournamentRoute(fastify: FastifyInstance) {
     fastify.post<StartTournamentRouteRequest>(
         '/tournaments/:tournamentId/start',
         {
-            preHandler: [fastify.authenticate],
             schema: {
                 description: 'Start a Pong tournament (admin only)',
                 tags: ['Tournament'],
+                security: [{ bearerAuth: [] }],
                 params: {
                     type: 'object',
                     properties: {

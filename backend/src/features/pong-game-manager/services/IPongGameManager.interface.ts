@@ -72,7 +72,6 @@ export interface IPongGameManager {
      * Crea un nuevo juego de torneo con callback personalizado
      */
     createTournamentMatch(
-        gameId: number,
         matchId: number,
         game: PongGame,
         onMatchEnd: (matchId: number, winnerId: number, loserId: number) => Promise<void>

@@ -19,7 +19,6 @@ export interface TournamentWebSocketMessage {
     userId?: number;
     targetUserId?: number;
     matchId?: number;
-    gameId?: number;
     opponentId?: number | null;
     isAgainstAI?: boolean;
     roundNumber?: number;
@@ -161,7 +160,6 @@ export class TournamentWebSocketService {
         tournamentId: number,
         userId: number,
         matchId: number,
-        gameId: number,
         opponentId: number | null,
         isAgainstAI: boolean,
         roundNumber: number
@@ -170,7 +168,6 @@ export class TournamentWebSocketService {
             action: TournamentSocketActions.MATCH_CREATED,
             tournamentId,
             matchId,
-            gameId,
             opponentId,
             isAgainstAI,
             roundNumber,

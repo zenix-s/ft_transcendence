@@ -92,7 +92,6 @@ export function initGame3D() {
 		ws.setAuth();
 	}
 	ws.authenticate(Number(id));
-	ws.setEvents();
 	ws.initializeGame(Number(id), playerLeft, playerRight, scores, ball, engine, scene, buttonUp, buttonDown);
 	ws.play();
 		

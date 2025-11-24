@@ -7,8 +7,8 @@ export interface GameOptions {
 export const Actions = {
     AUTH: 0,
     REQUEST_STATE: 1,
-    MOVE_UP: 2,
-    MOVE_DOWN: 3,
+    MOVE_DOWN: 2,
+    MOVE_UP: 3,
     SET_READY: 4,
     MODIFY_SETTINGS: 5,
     LEAVE_GAME: 6,

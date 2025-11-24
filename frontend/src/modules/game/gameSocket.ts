@@ -92,10 +92,14 @@ export class GameWebSocket {
 	private	engine: Engine | undefined;
 	private scene: Scene | undefined;
 	private gameId: number;
-	private moveUp?: ((event: KeyboardEvent) => void);
-	private moveDown?: ((event: KeyboardEvent) => void);
-	private buttonUp?: ((event: KeyboardEvent) => void);
-	private buttonDown?: ((event: KeyboardEvent) => void);
+	private keyMove?: ((event: KeyboardEvent) => void);
+	private keyStop?: ((event: KeyboardEvent) => void);
+	private buttonUp?: HTMLButtonElement;
+	private buttonUpPressed?: ((event: Event) => void);
+	private buttonUpReleased?: ((event: Event) => void);
+	private buttonDown?: HTMLButtonElement;
+	private buttonDownPressed?: ((event: Event) => void);
+	private buttonDownReleased?: ((event: Event) => void);
 	private up: number;
 	private down: number;
 
@@ -175,6 +179,7 @@ export class GameWebSocket {
 				console.log("User canceled the modal");
 				obj.action = Actions.LEAVE_GAME;
 				this.socket?.send(JSON.stringify(obj));
+				this.destroy();
 				navigateTo("dashboard", false, true);
 				return ;
 			}
@@ -184,29 +189,63 @@ export class GameWebSocket {
 		}
 	}
 
-	public async setEvents()
+	private async setEvents()
 	{
 		await this.waitForOpen();
-		this.moveUp = (event: KeyboardEvent) => {
+		this.keyMove = (event: KeyboardEvent) => {
 			const key = event.key;
 			if (key === "ArrowUp" || key === "w")
-				this.down = 1;
-			if (key === "ArrowDown" || key === "s")
 				this.up = 1;
+			if (key === "ArrowDown" || key === "s")
+				this.down = 1;
 		}
-		this.moveDown = (event: KeyboardEvent) => {
+		this.keyStop = (event: KeyboardEvent) => {
 			const key = event.key;
 			if (key === "ArrowUp" || key === "w")
-				this.down = 0;
-			if (key === "ArrowDown" || key === "s")
 				this.up = 0;
+			if (key === "ArrowDown" || key === "s")
+				this.down = 0;
 		}
-		document.addEventListener("keyup", this.moveDown);
-		document.addEventListener("keydown", this.moveUp);
+		document.addEventListener("keyup", this.keyStop);
+		document.addEventListener("keydown", this.keyMove);
 		
-		this.buttonUp = document.addEventListener("touchstart", buttonUpPressed);
-		this.buttonUp = document.getElementById("")
-		const buttonDown = document.getElementById("touchend", buttonDownPressed);
+		this.buttonUpPressed = (event: Event) => {
+			event.preventDefault();
+			this.up = 1;
+		}
+		this.buttonUpReleased = (event: Event) => {
+			event.preventDefault();
+			this.up = 0;
+		}
+		this.buttonDownPressed = (event: Event) => {
+			event.preventDefault();
+			this.down = 1;
+		}
+		this.buttonDownReleased = (event: Event) => {
+			event.preventDefault();
+			this.down = 0;
+		}
+		this.buttonUp?.addEventListener("touchstart", this.buttonUpPressed);
+		this.buttonUp?.addEventListener("touchend", this.buttonUpReleased);
+		this.buttonDown?.addEventListener("touchstart", this.buttonDownPressed);
+		this.buttonDown?.addEventListener("touchend", this.buttonDownReleased);
+	}
+
+	public async removeEvents()
+	{
+    	document.removeEventListener("keyup", this.keyMove!);
+		document.removeEventListener("keydown", this.keyStop!);
+		this.keyMove = undefined;
+		this.keyStop = undefined;
+
+		this.buttonUp?.removeEventListener("touchstart", this.buttonUpPressed!);
+		this.buttonUp?.removeEventListener("touchend", this.buttonUpReleased!);
+		this.buttonDown?.removeEventListener("touchstart", this.buttonDownPressed!);
+		this.buttonDown?.removeEventListener("touchend", this.buttonDownReleased!);
+		this.buttonUpPressed = undefined;
+		this.buttonUpReleased = undefined;
+		this.buttonDownPressed = undefined;
+		this.buttonDownReleased = undefined;
 	}
 
 	private async handleMessage(message: unknown) {
@@ -225,10 +264,7 @@ export class GameWebSocket {
 				const data = message as ErrorMessage;
 				if (data.error === "GameAlreadyFinished" || (data.error != "UnauthorizedAccess" && data.error != "GameNotFound"))
 				{
-					document.removeEventListener("keydown", this.moveUp!);
-    				document.removeEventListener("keyup", this.moveDown!);
-					this.moveUp = undefined;
-					this.moveDown = undefined;
+					this.removeEvents();
 					this.engine?.stopRenderLoop();
 				}
 				await endGameAndErrors(data.error, this.gameId, this.player1, this.player2,
@@ -253,6 +289,7 @@ export class GameWebSocket {
 		this.scene = scene;
 		this.buttonUp = buttonUp;
 		this.buttonDown = buttonDown;
+		this.setEvents();
 	}
 
 	public async	play(){
@@ -295,6 +332,7 @@ export class GameWebSocket {
 		showToast(t("invitationRejected"), "error");
 		obj.action = Actions.LEAVE_GAME;
 		this.socket?.send(JSON.stringify(obj));
+		this.destroy();
 		navigateTo("dashboard", false, true);
 		return ;
 	}
@@ -329,6 +367,12 @@ export class GameWebSocket {
 	}
 
 	public destroy() {
+		this.removeEvents();
+		if (this.div) {
+			this.div.remove();
+			this.div = null;
+			this.start = 0;
+		}
 		if (this.socket)
 		{
 		    console.log(`${t("game")}: ${t("ClosingWs")}`);

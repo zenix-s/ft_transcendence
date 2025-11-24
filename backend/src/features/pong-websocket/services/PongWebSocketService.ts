@@ -47,11 +47,22 @@ export class PongWebSocketService implements IPongService {
 
         const gameStateResult = this.fastify.PongGameManager.getGameState(gameId);
         if (!gameStateResult.isSuccess) {
+            // Recuperar el estado final del juego desde la base de datos
             const gameHistoryStatus = await this.fastify.MatchRepository.findById({ id: gameId });
+
+            // Verificar si el juego ya ha sido completado
             if (gameHistoryStatus != null && gameHistoryStatus.isCompleted()) {
                 return {
                     type: 'error',
                     error: ApplicationError.GameAlreadyFinished,
+                };
+            }
+
+            // Verificar si el juego ha sido cancelado
+            if (gameHistoryStatus != null && gameHistoryStatus.isCancelled()) {
+                return {
+                    type: 'error',
+                    error: ApplicationError.GameCancelled,
                 };
             }
 

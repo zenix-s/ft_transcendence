@@ -269,6 +269,10 @@ export class Tournament {
         }
     }
 
+    public isUserRegistered(userId: number): boolean {
+        return this._participants.has(userId);
+    }
+
     public toJSON(): object {
         return {
             id: this._id,

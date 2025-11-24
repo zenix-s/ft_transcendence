@@ -2,7 +2,7 @@ import { Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { ApplicationError } from '@shared/Errors';
 import { FastifyInstance } from 'fastify';
-import { Tournament } from '@shared/domain/Entities/Tournament.entity';
+import { PongTournamentAggregate } from '../../services/IPongTournamentManager';
 
 export interface TournamentBasicResponse {
     id: number;
@@ -11,6 +11,7 @@ export interface TournamentBasicResponse {
     status: string;
     createdAt: string;
     participantCount: number;
+    isRegistered: boolean;
     matchSettings: {
         maxScore: number;
         maxGameTime: number;
@@ -21,6 +22,7 @@ export interface TournamentBasicResponse {
 export interface IGetActivePongTournamentsRequest {
     limit?: number;
     offset?: number;
+    userId: number;
 }
 
 export interface IGetActivePongTournamentsResponse {
@@ -49,19 +51,20 @@ export class GetActivePongTournamentsCommand
         return Result.success(undefined);
     }
 
-    private tournamentToBasicResponse(tournament: Tournament): TournamentBasicResponse {
-        if (!tournament.id) {
+    private tournamentToBasicResponse(tournament: PongTournamentAggregate): TournamentBasicResponse {
+        if (!tournament.tournament.id) {
             throw new Error('Tournament ID is required');
         }
 
         return {
-            id: tournament.id,
-            name: tournament.name,
-            matchTypeId: tournament.matchTypeId,
-            status: tournament.status,
-            createdAt: tournament.createdAt.toISOString(),
-            participantCount: tournament.participantCount,
-            matchSettings: tournament.matchSettings.toObject(),
+            id: tournament.tournament.id,
+            name: tournament.tournament.name,
+            matchTypeId: tournament.tournament.matchTypeId,
+            status: tournament.tournament.status,
+            createdAt: tournament.tournament.createdAt.toISOString(),
+            participantCount: tournament.tournament.participantCount,
+            isRegistered: false,
+            matchSettings: tournament.tournament.matchSettings.toObject(),
         };
     }
 
@@ -69,24 +72,26 @@ export class GetActivePongTournamentsCommand
         request?: IGetActivePongTournamentsRequest | undefined
     ): Promise<Result<IGetActivePongTournamentsResponse>> {
         try {
-            // Paso 1: Preparar parámetros de consulta
-            const params = {
-                limit: request?.limit || 10,
-                offset: request?.offset || 0,
-            };
+            if (!request) {
+                return Result.error(ApplicationError.InvalidRequest);
+            }
 
-            // Paso 2: Obtener torneos activos usando el PongTournamentManager (versión básica)
+            // Paso 1: Obtener torneos activos usando el PongTournamentManager
             const activeTournamentsResult =
-                await this.fastify.PongTournamentManager.getActiveTournamentsBasic(params);
+                await this.fastify.PongTournamentManager.getActiveTournamentsWithIsRegisteredFlag({
+                    userId: request.userId,
+                    limit: request.limit,
+                    offset: request.offset,
+                });
 
-            // Paso 3: Manejar el resultado de la consulta
+            // Paso 2: Manejar el resultado de la consulta
             if (!activeTournamentsResult.isSuccess) {
                 return Result.error(
                     activeTournamentsResult.error || ApplicationError.DatabaseServiceUnavailable
                 );
             }
 
-            // Paso 4: Transformar entidades de dominio a interfaces de respuesta
+            // Paso 3: Transformar entidades de dominio a interfaces de respuesta
             const tournaments = activeTournamentsResult.value || [];
             const tournamentResponses = tournaments.map((tournament) =>
                 this.tournamentToBasicResponse(tournament)

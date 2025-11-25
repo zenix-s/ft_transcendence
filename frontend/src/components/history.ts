@@ -57,7 +57,7 @@ export async function loadMatchHistory(user?: User, perPage: number = 5) {
         const opponent = match.players.find(p => p.userId !== currentUser.id)?.username ?? "N/A";
         const score = match.players.map(p => p.score).join(" - ");
         const winner = match.players.find(p => p.isWinner)?.username ?? "-";
-        const game = (match.gameTypeId === 1 || match.gameTypeId === 2) ? "Pong" : t("rps");
+        const game = (match.gameTypeId >= 1 && match.gameTypeId <= 3) ? "Pong" : t("rps");
 
         return `
           <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
@@ -107,4 +107,3 @@ export async function loadMatchHistory(user?: User, perPage: number = 5) {
     console.error(error);
   }
 }
-

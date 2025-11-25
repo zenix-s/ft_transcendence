@@ -217,6 +217,12 @@ export const translations: Record<Language, Record<string, string>> = {
     registered: "Registered",
     participation: "Participation",
     noTournaments: "There are no registered tournaments",
+    leave: "Leave",
+    join: "Join",
+    UnauthorizedAccess: "Unauthorized access",
+    ParticipantAdditionError: "Error adding participant",
+    ParticipantAlreadyExists: "You are already registered for this tournament",
+    refresh: "Refresh",
   },
   es: {
     start: "Comenzar",
@@ -433,6 +439,12 @@ export const translations: Record<Language, Record<string, string>> = {
     registered: "Inscritos",
     participation: "Participación",
     noTournaments: "No hay torneos registrados",
+    leave: "Salir",
+    join: "Unirse",
+    UnauthorizedAccess: "Acceso no autorizado",
+    ParticipantAdditionError: "Error al agregar participante",
+    ParticipantAlreadyExists: "Ya estás inscrito a este torneo",
+    refresh: "Actualizar",
   },
   fr: {
     start: "Démarrer",
@@ -649,6 +661,12 @@ export const translations: Record<Language, Record<string, string>> = {
     registered: "Inscrits",
     participation: "Participation",
     noTournaments: "Il n'y a aucun tournoi enregistré",
+    leave: "Quiter",
+    join: "Rejoindre",
+    UnauthorizedAccess: "Accès non autorisé",
+    ParticipantAdditionError: "Erreur lors de l'ajout du participant",
+    ParticipantAlreadyExists: "Vous êtes déjà inscrit à ce tournoi",
+    refresh: "Rafraîchir",
   },
 };
 

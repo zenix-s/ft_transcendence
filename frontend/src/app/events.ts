@@ -1,6 +1,7 @@
 import { navigateTo } from "@/app/navigation";
 import { applySavedColors } from "@/components/colorPicker";
 import { modal } from "@/components/modal";
+import { refreshTournamentsHistory } from "@/components/tournamentsHistory";
 import { destroySocialSocket } from "@/modules/social/socketInstance";
 
 /**
@@ -58,4 +59,14 @@ export function setupEventListeners() {
       return;
     }
   });
+
+  // Listener para el botón de refresh de torneos
+  document.addEventListener("click", (event) => {
+    const target = event.target as HTMLElement;
+    if (target.id === "refreshTournamentsBtn") {
+      const user = JSON.parse(localStorage.getItem("current_user")!);
+      refreshTournamentsHistory(user);
+    }
+  });
 }
+

@@ -8,6 +8,7 @@ import { apiUrl } from "@/api";
 interface MatchSettings {
   maxScore: number;
   maxGameTime: number;
+  visualStyle: string;
 }
 
 // Cada Torneo
@@ -18,6 +19,7 @@ interface Tournament {
   status: string;
   createdAt: string;
   participantCount: number;
+  isRegistered: boolean;
   matchSettings: MatchSettings;
 }
 
@@ -49,8 +51,6 @@ export async function loadTournamentsHistory(user?: User, perPage: number = 5) {
     console.log(activeTournamentsData); // DB
     //return; // DB
 
-    
-
     // 2. Insertar datos en el tbody
     const tbody = document.querySelector<HTMLTableSectionElement>("#tournamentsTable tbody")!;
     console.log("TORNEOS RECIBIDOS:", activeTournamentsData.tournaments); // DB
@@ -68,7 +68,7 @@ export async function loadTournamentsHistory(user?: User, perPage: number = 5) {
         const points = tournament.matchSettings.maxScore ?? "-";
         const time = tournament.matchSettings.maxGameTime ?? "-";
         const registered = tournament.participantCount;
-        const participation = tournament.participantCount; // Temporalmente
+        //const participation = tournament.participantCount; // Temporalmente
         
 
         return `
@@ -78,7 +78,7 @@ export async function loadTournamentsHistory(user?: User, perPage: number = 5) {
             <td data-label="" data-i18n="points" class="px-4 py-2 text-center font-light whitespace-nowrap">${points}</td>
             <td data-label="" data-i18n="time" class="px-4 py-2 text-center font-light whitespace-nowrap">${time}</td>
             <td data-label="" data-i18n="registered" class="px-4 py-2 text-center font-light whitespace-nowrap">${registered}</td>
-            <td data-label="" data-i18n="participation" class="px-4 py-2 text-center font-light whitespace-nowrap">${participation}</td>
+            <td data-label="" data-i18n="participation" class="px-4 py-2 text-center font-light whitespace-nowrap">${getParticipationButton(tournament.isRegistered, tournament.id)}</td>
           </tr>
         `;
       })
@@ -133,3 +133,35 @@ export async function getActiveTournaments() {
   }
 }
 
+// Bóton de unir o abandonar para la columna participation de la tabla de torneos dependiendo de isRegistered
+export function getParticipationButton(isRegistered: boolean, tournamentId: number): string {
+  console.log(`Tournament ID: ${tournamentId}, isRegistered: ${isRegistered}`); // DB
+  if (isRegistered) {
+    return `<button class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-2 rounded" onclick="leaveTournament(${tournamentId})" data-i18n="leave">Leave</button>`;
+  } else {
+    return `<button class="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-2 rounded" onclick="joinTournament(${tournamentId})" data-i18n="join">Join</button>`;
+  }
+}
+
+// Funciones para unirse o abandonar un torneo (placeholders)
+export async function joinTournament(tournamentId: number) {
+  console.log(`Joining tournament with ID: ${tournamentId}`);
+  // Lógica para unirse al torneo
+}
+
+export async function leaveTournament(tournamentId: number) {
+  console.log(`Leaving tournament with ID: ${tournamentId}`);
+  // Lógica para abandonar el torneo
+}
+export async function refreshTournamentsHistory(user: User, perPage: number = 5) {
+  try {
+    // Destruir la tabla existente si ya fue inicializada
+    if (tournamentTable) {
+      tournamentTable.destroy();
+    }
+    // Recargar la historia de torneos
+    await loadTournamentsHistory(user, perPage);
+  } catch (error) {
+    console.error(error);
+  }
+}

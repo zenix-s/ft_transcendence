@@ -36,7 +36,7 @@ export class PongGameManager implements IPongGameManager {
     async createTournamentMatch(
         matchId: number,
         game: PongGame,
-        onMatchEnd: (matchId: number, winnerId: number, loserId: number) => Promise<void>
+        onMatchEnd: (matchId: number) => Promise<void>
     ): Promise<Result<void>> {
         try {
             this.deleteGame(matchId);
@@ -46,12 +46,9 @@ export class PongGameManager implements IPongGameManager {
                 matchId,
                 game,
                 this.fastify,
-                (id: number) => this.onGameEnd(id),
-                true, // isTournamentMatch
-                // onMatchEnd // onTournamentMatchEnd callback
-                async (mId: number, winnerId: number, loserId: number) => {
-                    await onMatchEnd(mId, winnerId, loserId);
-                    this.onGameEnd(mId);
+                async (id: number) => {
+                    this.onGameEnd(id);
+                    await onMatchEnd(matchId);
                 }
             );
 

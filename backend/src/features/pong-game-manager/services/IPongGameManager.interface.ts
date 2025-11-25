@@ -74,6 +74,6 @@ export interface IPongGameManager {
     createTournamentMatch(
         matchId: number,
         game: PongGame,
-        onMatchEnd: (matchId: number, winnerId: number, loserId: number) => Promise<void>
+        onMatchEnd: (matchId: number) => Promise<void>
     ): Promise<Result<void>>;
 }

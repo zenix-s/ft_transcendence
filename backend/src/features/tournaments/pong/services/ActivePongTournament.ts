@@ -237,8 +237,8 @@ export class ActivePongTournament {
             );
 
             // Paso 4: Callback para cuando termine la partida
-            const onMatchEnd = async (mId: number, winnerId: number, loserId: number) => {
-                await this.handleMatchResult(mId, round.roundNumber, matchup, winnerId, loserId);
+            const onMatchEnd = async (mId: number) => {
+                await this.handleMatchResult(mId, round.roundNumber, matchup);
             };
 
             // Paso 5: Crear el juego de torneo
@@ -286,12 +286,17 @@ export class ActivePongTournament {
     private async handleMatchResult(
         matchId: number,
         roundNumber: number,
-        matchup: ITournamentMatchup,
-        winnerId: number,
-        loserId: number
+        matchup: ITournamentMatchup
     ): Promise<void> {
         try {
-            // Paso 1: Obtener el torneo
+            // Paso 1: Obtener el match de la base de datos para verificar el resultado
+            const match = await this.fastify.MatchRepository.findById({ id: matchId });
+            if (!match) {
+                this.fastify.log.error(`Match with ID ${matchId} not found`);
+                return;
+            }
+
+            // Paso 2: Obtener el torneo
             const tournamentResult = await this.fastify.TournamentRepository.findById({
                 id: this.tournamentId,
             });
@@ -309,31 +314,77 @@ export class ActivePongTournament {
                 return;
             }
 
-            // Paso 2: Actualizar el matchup con el ganador
+            // Paso 3: Determinar ganador y perdedor basado en el estado final del match
+            let winnerId: number | null = null;
+            let loserId: number | null = null;
 
-            // currentRound.setMatchupWinner(matchup.player1Id, winnerId);
-            currentRound.setMatchupWinner(matchId, winnerId);
+            if (match.status === Match.STATUS.COMPLETED) {
+                const players = match.players;
+                const winner = players.find((p) => p.isWinner);
+                const loser = players.find((p) => !p.isWinner);
 
-            // Paso 3: Eliminar al perdedor
-            const loserParticipant = tournament.getParticipant(loserId);
-            if (loserParticipant) {
-                loserParticipant.eliminate();
+                if (winner && loser) {
+                    winnerId = winner.userId;
+                    loserId = loser.userId;
+                }
+            } else if (match.status === Match.STATUS.CANCELLED) {
+                // Para partidas canceladas, verificar si hay un ganador por timeout
+                const players = match.players;
+                if (players.length >= 2) {
+                    const winner = players.find((p) => p.isWinner);
+                    if (winner) {
+                        winnerId = winner.userId;
+                        loserId = players.find((p) => p.userId !== winner.userId)?.userId || null;
+                    }
+                    // Si no hay ganador, ambos jugadores son eliminados (se maneja más abajo)
+                }
+            }
+
+            // Paso 4: Actualizar el matchup con el ganador (si existe)
+            if (winnerId) {
+                currentRound.setMatchupWinner(matchId, winnerId);
+            }
+
+            // Paso 5: Eliminar a los perdedores según el resultado
+            if (match.status === Match.STATUS.COMPLETED && loserId) {
+                // Partida completada normalmente - solo eliminar al perdedor
+                const loserParticipant = tournament.getParticipant(loserId);
+                if (loserParticipant) {
+                    loserParticipant.eliminate();
+                }
+            } else if (match.status === Match.STATUS.CANCELLED) {
+                if (winnerId && loserId) {
+                    // Cancelada con ganador por timeout - solo eliminar al perdedor
+                    const loserParticipant = tournament.getParticipant(loserId);
+                    if (loserParticipant) {
+                        loserParticipant.eliminate();
+                    }
+                } else {
+                    // Cancelada sin ganador - eliminar a ambos jugadores
+                    const players = match.players;
+                    players.forEach((player) => {
+                        const participant = tournament.getParticipant(player.userId);
+                        if (participant) {
+                            participant.eliminate();
+                        }
+                    });
+                }
             }
 
             // Paso 4: Actualizar el torneo
             await this.fastify.TournamentRepository.update({ tournament });
 
-            // Paso 5: Notificar el resultado por websocket
-            if (this.fastify.TournamentWebSocketService?.notifyMatchResult && matchup.matchId) {
+            // Paso 6: Notificar el resultado por websocket
+            if (this.fastify.TournamentWebSocketService?.notifyMatchResult && matchup.matchId && winnerId) {
                 this.fastify.TournamentWebSocketService.notifyMatchResult(
                     this.tournamentId,
                     matchup.matchId,
                     winnerId,
-                    loserId
+                    loserId || 0
                 );
             }
 
-            // Paso 6: Verificar si la ronda ha terminado
+            // Paso 7: Verificar si la ronda ha terminado
             if (currentRound.isComplete) {
                 await this.onRoundComplete(tournament);
             }

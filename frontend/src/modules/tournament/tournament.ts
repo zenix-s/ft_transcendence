@@ -5,6 +5,7 @@ import { navigateTo } from "@/app/navigation";
 import { countInputLenght } from "@/components/inputCounter";
 import { showToast } from "@/components/toast";
 import { updateSliders } from "@/components/updateSliders";
+import { getReadyTournamentSocket } from "./tournamentSocketUtils";
 
 export async function tournament() {
 	renderButtons();
@@ -13,8 +14,11 @@ export async function tournament() {
 	console.log("ID:", tournamentId); // DB
 	if (tournamentId === null)
 		console.warn(t("ErrorCreatingTournament"));
-	else
-		await joinTournament(tournamentId);
+	else {
+		showToast(t("JoinedTournamentSuccessfully"));
+		console.log(`Unido al torneo con id ${tournamentId}`); // DB
+		//await joinTournament(tournamentId); // En principio no es necesario porque ya se une automáticamente
+	}
 }
 
 /* CREATE NEW TOURNAMENT */
@@ -83,7 +87,7 @@ export async function createTournament(): Promise<number> {
 				}
 
 				// Conectar WebSocket ??
-				//createSocialSocket(token);
+				//createTournamentSocket(token);
 
 				showToast(t("TournamentCreatedSuccessfully"));
 				console.log(`Torneo creado con nombre ${tournamentname}, a ${points} puntos, ${time}s y en ${mode}.`); // DB

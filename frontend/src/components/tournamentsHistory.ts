@@ -3,6 +3,7 @@ import { t, updateTexts } from "@/app/i18n";
 import { getCurrentUser } from "@/modules/users";
 import type { User } from "@/types/user";
 import { apiUrl } from "@/api";
+import { showToast } from "./toast";
 
 // Configuración de las partidas dentro de un torneo
 interface MatchSettings {
@@ -40,9 +41,6 @@ export async function loadTournamentsHistory(user?: User, perPage: number = 5) {
       user = userResponse.user;
     }
 
-    // Obtener el jugador actual
-    //const currentUser: User = user;
-
     // 1. Fetch al backend
     const activeTournaments = await getActiveTournaments();
     if (!activeTournaments || !activeTournaments.ok) throw new Error(t("errorLoadingHistory"));
@@ -64,7 +62,7 @@ export async function loadTournamentsHistory(user?: User, perPage: number = 5) {
       .map((tournament, i) => {
         const rowClass = i % 2 === 0 ? "bg-gray-900 text-primary sm:hover:bg-gray-700 transition-all duration-300 ease-in-out" : "text-primary sm:text-secondary dark:text-primary sm:hover:bg-gray-200 dark:sm:hover:bg-gray-800 transition-all duration-300 ease-in-out";
         const name = tournament.name;
-        const game = (tournament.matchTypeId === 3) ? "Pong" : t("rps");
+        const game = (tournament.matchTypeId >= 1 && tournament.matchTypeId <= 3) ? "Pong" : t("rps");
         const points = tournament.matchSettings.maxScore ?? "-";
         const time = tournament.matchSettings.maxGameTime ?? "-";
         const registered = tournament.participantCount;
@@ -103,12 +101,74 @@ export async function loadTournamentsHistory(user?: User, perPage: number = 5) {
       }
     });
 
-    // 4. Ajustar enlaces de paginación (AHORA que existen)
+    // ⏳ Dejamos que DataTable genere sus elementos
+    setTimeout(() => {
+        const top = document.querySelector(".dataTable-top");
+        if (top && !document.getElementById("refreshTournamentsBtn")) {
+            const btn = document.createElement("button");
+            btn.id = "refreshTournamentsBtn";
+            btn.textContent = "Refresh";
+            btn.className =
+                "bg-blue-600 hover:bg-blue-800 text-white font-bold py-1 px-3 rounded ml-3";
+
+            btn.addEventListener("click", () => refreshTournamentsHistory(user!));
+
+            top.appendChild(btn);
+        }
+    }, 50); // 50ms es suficiente
+
+    // 4. Adding an event listener to detect click on join/leave button
+    const table  = document.getElementById("tournamentsTable") as HTMLElement;
+    table?.addEventListener("click", async (event) => {
+      const target = event.target as HTMLElement;
+      
+      // Solo ejecutamos si el clic viene de un botón
+      if (!target.classList.contains("participation-btn"))
+        return;
+      
+      event.preventDefault();
+
+      const tournamentId = target.dataset.tournamentid;
+      const action = target.dataset.i18n;
+
+      console.log("Tournament ID:", tournamentId, "action:", action); // DB
+
+      try {
+        const response = await fetch(apiUrl(`/tournaments/pong/tournaments/${tournamentId}/${action}`), {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("access_token") || ""}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          const errorcode = data.error;
+          if (errorcode === "InvalidRequest")
+            showToast(t("ParticipantAdditionError"), "error");
+          else
+            showToast(t(errorcode), "error");
+          return;
+        }
+
+        showToast(t("InvitationSentSuccessfully"));
+
+        // Recargar tabla
+        refreshTournamentsHistory(user!);
+
+      } catch {
+        showToast(t("NetworkOrServerError"), "error");
+      }
+
+    });
+
+    // 5. Ajustar enlaces de paginación (AHORA que existen)
     document.querySelectorAll(".datatable-pagination a").forEach(link => {
       link.setAttribute("href", "#");
     });
 
-    // 5. Traducir las celdas recién insertadas
+    // 6. Traducir las celdas recién insertadas
     updateTexts();
 
   } catch (error) {
@@ -122,7 +182,7 @@ export async function getActiveTournaments() {
   if (!token) return null;
 
   try {
-    return await fetch(apiUrl(`/tournaments/pong/active`), {
+    return await fetch(apiUrl(`/tournaments/pong/active?limit=50&offset=0`), {
       headers: {
         "Authorization": `Bearer ${token}`,
       },
@@ -137,9 +197,9 @@ export async function getActiveTournaments() {
 export function getParticipationButton(isRegistered: boolean, tournamentId: number): string {
   console.log(`Tournament ID: ${tournamentId}, isRegistered: ${isRegistered}`); // DB
   if (isRegistered) {
-    return `<button class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-2 rounded" onclick="leaveTournament(${tournamentId})" data-i18n="leave">Leave</button>`;
+    return `<button data-tournamentId="${tournamentId}" class="bg-red-600 hover:bg-red-800 text-white font-bold py-1 px-2 rounded transition-all duration-300 ease-in-out participation-btn" data-i18n="leave">Leave</button>`;
   } else {
-    return `<button class="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-2 rounded" onclick="joinTournament(${tournamentId})" data-i18n="join">Join</button>`;
+    return `<button data-tournamentId="${tournamentId}" class="bg-green-600 hover:bg-green-800 text-white font-bold py-1 px-2 rounded transition-all duration-300 ease-in-out participation-btn" data-i18n="join">Join</button>`;
   }
 }
 
@@ -165,3 +225,4 @@ export async function refreshTournamentsHistory(user: User, perPage: number = 5)
     console.error(error);
   }
 }
+

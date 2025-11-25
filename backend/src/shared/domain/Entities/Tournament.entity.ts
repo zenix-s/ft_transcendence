@@ -1,5 +1,6 @@
 import { TournamentParticipant } from './TournamentParticipant.entity';
 import { MatchSettings, IMatchSettings } from '../ValueObjects/MatchSettings.value';
+import { TournamentRound } from './TournamentRound.entity';
 
 export type TournamentStatus = (typeof Tournament.STATUS)[keyof typeof Tournament.STATUS];
 
@@ -11,6 +12,9 @@ export class Tournament {
     private _participants: Map<number, TournamentParticipant>;
     private _participantCountOverride?: number;
     private _matchSettings: MatchSettings;
+    private _maxMatchesPerPair: number;
+    private _rounds: TournamentRound[];
+    private _currentRoundNumber: number;
 
     private _createdAt: Date;
 
@@ -29,6 +33,7 @@ export class Tournament {
         createdAt,
         participantCountOverride,
         matchSettings,
+        maxMatchesPerPair = 3,
     }: {
         name: string;
         matchTypeId: number;
@@ -37,6 +42,7 @@ export class Tournament {
         createdAt?: Date;
         participantCountOverride?: number;
         matchSettings?: MatchSettings;
+        maxMatchesPerPair?: number;
     }) {
         this._id = id;
         this._name = name;
@@ -46,6 +52,9 @@ export class Tournament {
         this._participants = new Map();
         this._participantCountOverride = participantCountOverride;
         this._matchSettings = matchSettings || MatchSettings.default();
+        this._maxMatchesPerPair = maxMatchesPerPair ?? 3;
+        this._rounds = [];
+        this._currentRoundNumber = 0;
     }
 
     public get id(): number | undefined {
@@ -82,8 +91,28 @@ export class Tournament {
             : this._participants.size;
     }
 
+    public get maxMatchesPerPair(): number {
+        return this._maxMatchesPerPair;
+    }
+
+    public setMaxMatchesPerPair(value: number): void {
+        this._maxMatchesPerPair = value;
+    }
+
     public get matchSettings(): MatchSettings {
         return this._matchSettings;
+    }
+
+    public get rounds(): TournamentRound[] {
+        return this._rounds;
+    }
+
+    public get currentRoundNumber(): number {
+        return this._currentRoundNumber;
+    }
+
+    public getCurrentRound(): TournamentRound | undefined {
+        return this._rounds.find((r) => r.roundNumber === this._currentRoundNumber);
     }
 
     public static create({
@@ -94,6 +123,7 @@ export class Tournament {
         createdAt,
         participantCountOverride,
         matchSettings,
+        maxMatchesPerPair,
     }: {
         name: string;
         matchTypeId: number;
@@ -102,6 +132,7 @@ export class Tournament {
         createdAt?: Date;
         participantCountOverride?: number;
         matchSettings?: MatchSettings | IMatchSettings;
+        maxMatchesPerPair?: number;
     }): Tournament {
         const settings =
             matchSettings instanceof MatchSettings
@@ -118,6 +149,7 @@ export class Tournament {
             createdAt,
             participantCountOverride,
             matchSettings: settings,
+            maxMatchesPerPair: typeof maxMatchesPerPair === 'number' ? maxMatchesPerPair : 3,
         });
     }
 
@@ -220,6 +252,7 @@ export class Tournament {
         match_settings?: string;
         participants?: TournamentParticipant[];
         participantCountOverride?: number;
+        max_matches_per_pair?: number;
     }): Tournament {
         const matchSettings = data.match_settings
             ? MatchSettings.fromJSON(data.match_settings)
@@ -232,10 +265,10 @@ export class Tournament {
             status: data.status,
             createdAt: new Date(data.created_at),
             participantCountOverride: data.participantCountOverride,
-            matchSettings,
+            matchSettings: matchSettings,
+            maxMatchesPerPair: typeof data.max_matches_per_pair === 'number' ? data.max_matches_per_pair : 3,
         });
 
-        // Añadir participantes si existen
         if (data.participants) {
             data.participants.forEach((participant) => {
                 tournament._participants.set(participant.userId, participant);
@@ -252,6 +285,7 @@ export class Tournament {
         status: TournamentStatus;
         match_settings: string;
         created_at: Date;
+        max_matches_per_pair: number;
     } {
         return {
             id: this._id,
@@ -260,6 +294,7 @@ export class Tournament {
             status: this._status,
             match_settings: this._matchSettings.toJSON(),
             created_at: this._createdAt,
+            max_matches_per_pair: this._maxMatchesPerPair,
         };
     }
 
@@ -273,6 +308,43 @@ export class Tournament {
         return this._participants.has(userId);
     }
 
+    public createNextRound(): TournamentRound | null {
+        if (this._status !== Tournament.STATUS.ONGOING) {
+            return null;
+        }
+
+        const activeParticipants = this.getActiveParticipants();
+        const playerIds = activeParticipants.map((p) => p.userId);
+
+        if (playerIds.length === 0) {
+            return null;
+        }
+
+        // Si solo queda 1 jugador, es el ganador
+        if (playerIds.length === 1) {
+            return null;
+        }
+
+        const nextRoundNumber = this._currentRoundNumber + 1;
+        const round = TournamentRound.create({
+            roundNumber: nextRoundNumber,
+            playerIds,
+        });
+
+        this._rounds.push(round);
+        this._currentRoundNumber = nextRoundNumber;
+
+        return round;
+    }
+
+    public addRound(round: TournamentRound): void {
+        this._rounds.push(round);
+    }
+
+    public setCurrentRoundNumber(roundNumber: number): void {
+        this._currentRoundNumber = roundNumber;
+    }
+
     public toJSON(): object {
         return {
             id: this._id,
@@ -283,6 +355,8 @@ export class Tournament {
             matchSettings: this._matchSettings.toObject(),
             participants: this.participants.map((p) => p.toJSON()),
             participantCount: this.participantCount,
+            rounds: this._rounds.map((r) => r.toJSON()),
+            currentRoundNumber: this._currentRoundNumber,
         };
     }
 }

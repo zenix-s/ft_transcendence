@@ -53,6 +53,13 @@ export class CreatePongTournamentCommand
                 return Result.error(createTournamentResult.error || ApplicationError.TournamentCreationError);
             }
 
+            // Paso 4: Notificar que el estado del torneo se ha actualizado
+            if (this.fastify.TournamentWebSocketService?.notifyTournamentStateUpdated) {
+                this.fastify.TournamentWebSocketService.notifyTournamentStateUpdated(
+                    createTournamentResult.value
+                );
+            }
+
             return Result.success({
                 success: true,
                 tournamentId: createTournamentResult.value,

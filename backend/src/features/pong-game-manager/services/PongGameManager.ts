@@ -33,6 +33,37 @@ export class PongGameManager implements IPongGameManager {
         }
     }
 
+    async createTournamentMatch(
+        matchId: number,
+        game: PongGame,
+        onMatchEnd: (matchId: number) => Promise<void>
+    ): Promise<Result<void>> {
+        try {
+            this.deleteGame(matchId);
+
+            const activeGame = new ActivePongGame(
+                matchId,
+                matchId,
+                game,
+                this.fastify,
+                async (id: number) => {
+                    this.onGameEnd(id);
+                    await onMatchEnd(matchId);
+                }
+            );
+
+            activeGame.start();
+            this.activeGames.set(matchId, activeGame);
+
+            return Result.success(undefined);
+        } catch (error) {
+            return this.fastify.handleError({
+                code: ApplicationError.InternalServerError,
+                error,
+            });
+        }
+    }
+
     getGame(gameId: number): Result<PongGame> {
         const activeGame = this.activeGames.get(gameId);
         if (!activeGame) {

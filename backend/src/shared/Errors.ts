@@ -198,4 +198,9 @@ export enum ApplicationError {
     TournamentNotAvailable = 'TournamentNotAvailable',
     TournamentNotInitialized = 'TournamentNotInitialized',
     UserAlreadyAdminOfActiveTournament = 'UserAlreadyAdminOfActiveTournament',
+    TournamentStartError = 'TournamentStartError',
+    TournamentCompletionError = 'TournamentCompletionError',
+    ParticipantNotFound = 'ParticipantNotFound',
+    ParticipantNotActive = 'ParticipantNotActive',
+    MatchLimitReached = 'MatchLimitReached',
 }

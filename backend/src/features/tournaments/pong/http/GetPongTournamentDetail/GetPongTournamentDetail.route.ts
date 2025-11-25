@@ -12,7 +12,8 @@ export default async function GetPongTournamentDetailRoute(fastify: FastifyInsta
         '/:id',
         {
             schema: {
-                description: 'Get detailed information of a specific Pong tournament',
+                description:
+                    'Get detailed information of a specific Pong tournament including bracket and rounds',
                 tags: ['Tournament'],
                 security: [{ bearerAuth: [] }],
                 params: {
@@ -37,7 +38,10 @@ export default async function GetPongTournamentDetailRoute(fastify: FastifyInsta
                                     id: { type: 'number' },
                                     name: { type: 'string' },
                                     matchTypeId: { type: 'number' },
-                                    status: { type: 'string' },
+                                    status: {
+                                        type: 'string',
+                                        enum: ['upcoming', 'ongoing', 'completed', 'cancelled'],
+                                    },
                                     createdAt: { type: 'string', format: 'date-time' },
                                     isRegistered: { type: 'boolean' },
                                     participants: {
@@ -47,11 +51,25 @@ export default async function GetPongTournamentDetailRoute(fastify: FastifyInsta
                                             properties: {
                                                 userId: { type: 'number' },
                                                 username: { type: 'string' },
-                                                status: { type: 'string' },
-                                                role: { type: 'string' },
+                                                status: {
+                                                    type: 'string',
+                                                    enum: ['registered', 'active', 'eliminated', 'winner'],
+                                                },
+                                                role: {
+                                                    type: 'string',
+                                                    enum: ['participant', 'admin', 'admin-participant'],
+                                                },
                                                 score: { type: 'number' },
+                                                isCurrentPlayer: { type: 'boolean' },
                                             },
-                                            required: ['userId', 'username', 'status', 'role', 'score'],
+                                            required: [
+                                                'userId',
+                                                'username',
+                                                'status',
+                                                'role',
+                                                'score',
+                                                'isCurrentPlayer',
+                                            ],
                                         },
                                     },
                                     participantCount: { type: 'number' },
@@ -64,6 +82,73 @@ export default async function GetPongTournamentDetailRoute(fastify: FastifyInsta
                                         },
                                         required: ['maxScore', 'maxGameTime', 'visualStyle'],
                                     },
+                                    bracket: {
+                                        type: 'object',
+                                        properties: {
+                                            rounds: {
+                                                type: 'array',
+                                                items: {
+                                                    type: 'object',
+                                                    properties: {
+                                                        roundNumber: { type: 'number' },
+                                                        isComplete: { type: 'boolean' },
+                                                        matchups: {
+                                                            type: 'array',
+                                                            items: {
+                                                                type: 'object',
+                                                                properties: {
+                                                                    player1Id: { type: 'number' },
+                                                                    player1Username: { type: 'string' },
+                                                                    player2Id: {
+                                                                        type: ['number', 'null'],
+                                                                        description:
+                                                                            'null when playing against AI',
+                                                                    },
+                                                                    player2Username: {
+                                                                        type: ['string', 'null'],
+                                                                        description:
+                                                                            'null when playing against AI',
+                                                                    },
+                                                                    isAgainstAI: { type: 'boolean' },
+                                                                    winnerId: { type: ['number', 'null'] },
+                                                                    winnerUsername: {
+                                                                        type: ['string', 'null'],
+                                                                    },
+                                                                    matchId: { type: ['number', 'null'] },
+                                                                    status: {
+                                                                        type: 'string',
+                                                                        enum: [
+                                                                            'pending',
+                                                                            'in_progress',
+                                                                            'completed',
+                                                                        ],
+                                                                    },
+                                                                },
+                                                                required: [
+                                                                    'player1Id',
+                                                                    'player1Username',
+                                                                    'isAgainstAI',
+                                                                    'status',
+                                                                ],
+                                                            },
+                                                        },
+                                                    },
+                                                    required: ['roundNumber', 'isComplete', 'matchups'],
+                                                },
+                                            },
+                                            currentRoundNumber: { type: 'number' },
+                                            totalRounds: { type: ['number', 'null'] },
+                                            winner: {
+                                                type: ['object', 'null'],
+                                                properties: {
+                                                    userId: { type: 'number' },
+                                                    username: { type: 'string' },
+                                                },
+                                                required: ['userId', 'username'],
+                                            },
+                                        },
+                                        required: ['rounds', 'currentRoundNumber'],
+                                    },
                                 },
                                 required: [
                                     'id',
@@ -71,9 +156,11 @@ export default async function GetPongTournamentDetailRoute(fastify: FastifyInsta
                                     'matchTypeId',
                                     'status',
                                     'createdAt',
+                                    'isRegistered',
                                     'participants',
                                     'participantCount',
                                     'matchSettings',
+                                    'bracket',
                                 ],
                             },
                         },

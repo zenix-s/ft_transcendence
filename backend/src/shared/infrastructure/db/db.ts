@@ -86,6 +86,9 @@ export default fp(
                 match_type_id INTEGER NOT NULL,
                 status TEXT NOT NULL DEFAULT '${Tournament.STATUS.UPCOMING}',
                 match_settings TEXT NOT NULL DEFAULT '{"maxScore": 11, "maxGameTime": 600, "visualStyle": "2d"}',
+                max_matches_per_pair INTEGER NOT NULL DEFAULT 3,
+                rounds_data TEXT DEFAULT '[]',
+                current_round_number INTEGER DEFAULT 0,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (match_type_id) REFERENCES match_types(id),
                 CHECK (status IN (

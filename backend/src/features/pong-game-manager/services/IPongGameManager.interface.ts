@@ -67,4 +67,13 @@ export interface IPongGameManager {
      * Permite a un jugador abandonar el juego
      */
     leaveGame(gameId: number, playerId: number): Result<void>;
+
+    /**
+     * Crea un nuevo juego de torneo con callback personalizado
+     */
+    createTournamentMatch(
+        matchId: number,
+        game: PongGame,
+        onMatchEnd: (matchId: number) => Promise<void>
+    ): Promise<Result<void>>;
 }

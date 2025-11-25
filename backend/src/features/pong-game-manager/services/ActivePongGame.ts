@@ -97,14 +97,47 @@ export class ActivePongGame {
                 return;
             }
 
-            match.cancel();
+            // Verificar el estado isReady de los jugadores para determinar ganador
+            const gameState = this.game.getGameState();
+            const player1Ready = gameState.player1?.isReady || false;
+            const player2Ready = gameState.player2?.isReady || false;
+
+            const winnerIds: number[] = [];
+            const finalScores: Record<number, number> = {};
+
+            // Si solo un jugador está listo, ese jugador gana
+            if (player1Ready && !player2Ready && gameState.player1) {
+                winnerIds.push(Number(gameState.player1.id));
+                finalScores[Number(gameState.player1.id)] = this.game.getGameRules().winnerScore;
+                finalScores[Number(gameState.player2?.id || 0)] = 0;
+            } else if (!player1Ready && player2Ready && gameState.player2) {
+                winnerIds.push(Number(gameState.player2.id));
+                finalScores[Number(gameState.player2.id)] = this.game.getGameRules().winnerScore;
+                finalScores[Number(gameState.player1?.id || 0)] = 0;
+            } else {
+                // Si ninguno está listo o ambos están listos, cancelar sin ganador
+                finalScores[Number(gameState.player1?.id || 0)] = 0;
+                finalScores[Number(gameState.player2?.id || 0)] = 0;
+            }
+
+            if (winnerIds.length > 0) {
+                // Hay un ganador por timeout - marcar como completado
+                const matchEnded = match.end(winnerIds, finalScores);
+                if (!matchEnded) {
+                    this.fastify.log.error(`Failed to end match ${this.matchId} with timeout winner`);
+                    match.cancel();
+                }
+            } else {
+                // No hay ganador - cancelar match
+                match.cancel();
+            }
 
             const updatedMatch = await this.fastify.MatchRepository.update({ match });
             if (!updatedMatch) {
-                this.fastify.log.error(`Failed to update match ${this.matchId} status to cancelled`);
+                this.fastify.log.error(`Failed to update match ${this.matchId} status after timeout`);
             }
         } catch (error) {
-            this.fastify.log.error(error, `Error cancelling match ${this.matchId} due to timeout`);
+            this.fastify.log.error(error, `Error handling match ${this.matchId} timeout`);
         }
     }
 
@@ -166,6 +199,7 @@ export class ActivePongGame {
             const updatedMatch = await this.fastify.MatchRepository.update({ match });
             if (!updatedMatch) {
                 this.fastify.log.error(`Failed to update match ${this.matchId} for game ${this.gameId}`);
+                return;
             }
         } catch (error) {
             this.fastify.log.error(error, `Error saving match history for game ${this.gameId}`);

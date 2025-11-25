@@ -16,6 +16,7 @@ import { initGame3D } from "@/modules/game/game";
 import { updateSliders } from "@/components/updateSliders";
 import { tournament } from "@/modules/tournament/tournament";
 import { loadTournamentsHistory } from "@/components/tournamentsHistory";
+import { getGameSocket } from "@/modules/game/gameSocket";
 
 // Llamada                            Efecto
 // navigateTo("home")                 Carga "home" y añade al historial
@@ -40,6 +41,13 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
   if (page === "login" && localStorage.getItem("access_token")) {
     navigateTo("dashboard", false, true);
     return;
+  }
+
+  if (pageBase != "playing")
+  {
+    const ws = getGameSocket();
+    if (ws)
+      ws.destroy();
   }
 
   // Redirección automática si el usuario no tiene token y entra a páginas prohibidas sin token
@@ -138,7 +146,6 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
           case "playing":
             initGame3D();
             renderButtons();
-            //startGame();
             break;
 
           case "setReady1":

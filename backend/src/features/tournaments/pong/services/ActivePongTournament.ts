@@ -233,7 +233,8 @@ export class ActivePongTournament {
                 matchSettingsObj.maxScore || 5,
                 matchSettingsObj.maxGameTime || 120,
                 isAgainstAI,
-                isAgainstAI ? 0.95 : 0.95 // Dificultad máxima para AI
+                isAgainstAI ? 0.95 : 0.95, // Dificultad máxima para AI
+                tournament.matchSettings.visualStyle
             );
 
             // Paso 4: Callback para cuando termine la partida

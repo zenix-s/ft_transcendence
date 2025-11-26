@@ -103,6 +103,36 @@ export function createTable(scene:Scene)
 	tableMat.emissiveColor = new Color3(0.5, 0.5, 0.5);
 	tableMat.disableLighting = true;
 	table.material = tableMat;
+
+	const borders = new StandardMaterial("lineMat");
+	borders.disableLighting = true;
+	borders.emissiveColor = new Color3(1, 1, 1);
+	const thickness = 0.08;
+	
+	// BORDE SUPERIOR
+	const top = MeshBuilder.CreateBox("lineTop", { width: 8.8, depth: thickness, height: 0.21 }, scene);
+	top.position.set(0, 0.105, 4 - thickness / 2);
+	top.material = borders;
+
+	// BORDE INFERIOR
+	const bottom = MeshBuilder.CreateBox("lineBottom", { width: 8.8, depth: thickness, height: 0.21 }, scene);
+	bottom.position.set(0, 0.105, -4 + thickness / 2);
+	bottom.material = borders;
+
+	// BORDE IZQUIERDO
+	const left = MeshBuilder.CreateBox("lineLeft", { width: thickness, depth: 8, height: 0.21 }, scene);
+	left.position.set(-4.4 + thickness / 2, 0.105, 0);
+	left.material = borders;
+
+	// BORDE DERECHO
+	const right = MeshBuilder.CreateBox("lineRight", { width: thickness, depth: 8, height: 0.21 }, scene);
+	right.position.set(4.4 - thickness / 2, 0.105, 0);
+	right.material = borders;
+
+	// LÍNEA DEL CENTRO
+	const midline = MeshBuilder.CreateBox("midline", { width: 0.1, depth: 8, height: 0.21 }, scene);
+	midline.position.set(0, 0.105, 0);
+	midline.material = borders;
 }
 
 export function createCamera(playerView: string | null, scene:Scene, canvas:HTMLCanvasElement)

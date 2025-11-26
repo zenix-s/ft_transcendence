@@ -109,7 +109,7 @@ export function createCamera(playerView: string | null, scene:Scene, canvas:HTML
 {
 	let camera;
 	if (playerView === "3D")
-		camera = new ArcRotateCamera("camera", Math.PI / 2 + Math.PI, Math.PI / 4, 12, Vector3.Zero(), scene);
+		camera = new ArcRotateCamera("camera", Math.PI / 2 + Math.PI, Math.PI / 6, 12, Vector3.Zero(), scene);
 	else
 		camera = new ArcRotateCamera("camera", Math.PI / 2 + Math.PI, 0 , 12, Vector3.Zero(), scene);
 
@@ -120,5 +120,5 @@ export function createCamera(playerView: string | null, scene:Scene, canvas:HTML
 	//girar con el teclado
 	camera.inputs.removeByType("ArcRotateCameraKeyboardMoveInput");
 	// zoom (rueda del ratón sigue funcionando)
-	camera.lowerRadiusLimit = 10.5;
+	camera.lowerRadiusLimit = 6;
 }

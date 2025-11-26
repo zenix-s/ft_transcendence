@@ -12,7 +12,7 @@ export function renderValues(posPlayerL:number, playerL:Player | undefined, posP
 	if (!ball || !playerL || !playerR || !scores)
 		return;
 	ball.ball.position.x = (ballX / 100) * 8 - 4;
-	ball.ball.position.z = (ballY / 100) * 7.8 - 3.9;
+	ball.ball.position.z = (ballY / 100) * 8 - 4;
 
 	playerL.paddle.position.z = (posPlayerL / 100) * 8 - 4;
 	playerR.paddle.position.z = (posPlayerR / 100) * 8 - 4;

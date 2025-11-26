@@ -63,7 +63,7 @@ export class GetActivePongTournamentsCommand
             status: tournament.tournament.status,
             createdAt: tournament.tournament.createdAt.toISOString(),
             participantCount: tournament.tournament.participantCount,
-            isRegistered: false,
+            isRegistered: tournament.isRegistered,
             matchSettings: tournament.tournament.matchSettings.toObject(),
         };
     }

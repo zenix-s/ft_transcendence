@@ -31,7 +31,7 @@ export function fetchGameId(matchPoints: number = 5, gameTime: number = 120, gam
     });
 }
 
-export function fetchSinglePlayerGameId(winnerScore: number, aiDifficulty: number) {
+export function fetchSinglePlayerGameId(winnerScore: number, aiDifficulty: number, maxTime: Number) {
   // return fetch("https://localhost:3000/game/pong/create-singleplayer", {
   console.log("get id=", apiUrl("/game/pong/create-singleplayer"));
   return fetch(apiUrl("/game/pong/create-singleplayer"), {
@@ -43,7 +43,7 @@ export function fetchSinglePlayerGameId(winnerScore: number, aiDifficulty: numbe
     },
     body: JSON.stringify({
       winnerScore: winnerScore,
-      maxGameTime: 120,
+      maxGameTime: maxTime,
       aiDifficulty: aiDifficulty / 10
     })
   })

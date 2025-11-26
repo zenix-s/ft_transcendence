@@ -32,15 +32,8 @@ interface TournamentsResponse {
 
 export let tournamentTable: DataTable; // Variable global o de módulo
 
-export async function loadTournamentsHistory(user?: User, perPage: number = 5) {
+export async function loadTournamentsHistory(perPage:number = 5) {
   try {
-    // Si no recibo un user se lo solicito a getCurrentUser()
-    if (!user) {
-      const userResponse = await getCurrentUser();
-      if (!userResponse) return;
-      user = userResponse.user;
-    }
-
     // 1. Fetch al backend
     const activeTournaments = await getActiveTournaments();
     if (!activeTournaments || !activeTournaments.ok) throw new Error(t("errorLoadingHistory"));
@@ -111,7 +104,7 @@ export async function loadTournamentsHistory(user?: User, perPage: number = 5) {
             btn.className =
                 "bg-blue-600 hover:bg-blue-800 text-white font-bold py-1 px-3 rounded ml-3";
 
-            btn.addEventListener("click", () => refreshTournamentsHistory(user!));
+            btn.addEventListener("click", () => refreshTournamentsHistory());
 
             top.appendChild(btn);
         }
@@ -155,7 +148,7 @@ export async function loadTournamentsHistory(user?: User, perPage: number = 5) {
         showToast(t("InvitationSentSuccessfully"));
 
         // Recargar tabla
-        refreshTournamentsHistory(user!);
+        refreshTournamentsHistory();
 
       } catch {
         showToast(t("NetworkOrServerError"), "error");
@@ -213,14 +206,18 @@ export async function leaveTournament(tournamentId: number) {
   console.log(`Leaving tournament with ID: ${tournamentId}`);
   // Lógica para abandonar el torneo
 }
-export async function refreshTournamentsHistory(user: User, perPage: number = 5) {
+export async function refreshTournamentsHistory(perPage: number = 5) {
   try {
     // Destruir la tabla existente si ya fue inicializada
     if (tournamentTable) {
       tournamentTable.destroy();
     }
+    else {
+      console.warn("tournamentTable no estaba inicializada al refrescar."); // DB
+      return;
+    }
     // Recargar la historia de torneos
-    await loadTournamentsHistory(user, perPage);
+    await loadTournamentsHistory(perPage);
   } catch (error) {
     console.error(error);
   }

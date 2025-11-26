@@ -64,8 +64,7 @@ export function setupEventListeners() {
   document.addEventListener("click", (event) => {
     const target = event.target as HTMLElement;
     if (target.id === "refreshTournamentsBtn") {
-      const user = JSON.parse(localStorage.getItem("current_user")!);
-      refreshTournamentsHistory(user);
+      refreshTournamentsHistory();
     }
   });
 }

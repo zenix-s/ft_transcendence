@@ -128,7 +128,7 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
               loadDashboard(user),
               loadChart(user),
               loadMatchHistory(user),
-              loadTournamentsHistory(user),
+              loadTournamentsHistory(),
             ]);
             renderButtons();
             requestAnimationFrame(async () => {

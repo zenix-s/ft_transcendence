@@ -8,6 +8,7 @@ import type { Ball, Player, Score } from "./gameData";
 import type { Engine, Scene } from "@babylonjs/core";
 import { endGameAndErrors } from "./authAndErrors";
 import { Actions } from "@/types/gameOptions"
+import { getCurrentUser } from "../users";
 
 export interface GameStateMessage {
 	type: "gameState";
@@ -163,6 +164,7 @@ export class GameWebSocket {
 
 	public async authenticate(gameId:number) {
 		await this.waitForOpen();
+		this.gameId = gameId;
 		const obj : message = {
 			action : Actions.AUTH,
 			gameId : gameId,
@@ -171,24 +173,8 @@ export class GameWebSocket {
 		this.socket?.send(JSON.stringify(obj));
 		obj.action = Actions.REQUEST_STATE;
 		this.socket?.send(JSON.stringify(obj));
-		if (this.ready == false)
-		{
-			const userConfirmed = await modal({type: "setReady"});
-			if (!userConfirmed)
-			{
-				console.log("User canceled the modal");
-				obj.action = Actions.LEAVE_GAME;
-				this.socket?.send(JSON.stringify(obj));
-				this.destroy();
-				navigateTo("dashboard", false, true);
-				return ;
-			}
-			obj.action = Actions.SET_READY;
-			this.socket?.send(JSON.stringify(obj));
-			this.ready = true;
-		}
 	}
-
+	
 	private async setEvents()
 	{
 		await this.waitForOpen();
@@ -233,11 +219,11 @@ export class GameWebSocket {
 
 	public async removeEvents()
 	{
-    	document.removeEventListener("keyup", this.keyMove!);
+		document.removeEventListener("keyup", this.keyMove!);
 		document.removeEventListener("keydown", this.keyStop!);
 		this.keyMove = undefined;
 		this.keyStop = undefined;
-
+		
 		this.buttonUp?.removeEventListener("touchstart", this.buttonUpPressed!);
 		this.buttonUp?.removeEventListener("touchend", this.buttonUpReleased!);
 		this.buttonDown?.removeEventListener("touchstart", this.buttonDownPressed!);
@@ -247,13 +233,50 @@ export class GameWebSocket {
 		this.buttonDownPressed = undefined;
 		this.buttonDownReleased = undefined;
 	}
-
+	
 	private async handleMessage(message: unknown) {
+		await this.waitForOpen();
 		// Detectar tipo
 		const type = (message as { type?: unknown})?.type;
 		switch (type) {
 			case "gameState": {
 				const data = message as GameStateMessage;
+				if (data.state.gameStatus === "waiting_for_ready")
+				{
+					if (this.ready == false)
+					{
+						this.ready = true;
+						const obj : message = {
+							action : Actions.AUTH,
+							gameId : this.gameId,
+							token : this.token
+						};
+						const userResponse = await getCurrentUser();
+						if (!userResponse || !localStorage.getItem("access_token"))
+						{
+							console.warn(t("UserNotFound"));
+							return;
+						}
+						const user = userResponse.user.id;
+						let color = "blue";
+						if (user === Number(data.state.player2?.id))
+							color = "red";
+						console.log("color=", color);
+						const userConfirmed = await modal({type: "setReady", playerColor: color});
+						if (!userConfirmed)
+						{
+							console.log("User canceled the modal");
+							obj.action = Actions.LEAVE_GAME;
+							this.socket?.send(JSON.stringify(obj));
+							this.destroy();
+							navigateTo("dashboard", false, true);
+							return ;
+						}
+						obj.action = Actions.SET_READY;
+						this.socket?.send(JSON.stringify(obj));
+					}
+					break ;
+				}
 				this.countdown(data);
 				renderValues(data.state.player1.position, this.player1, data.state.player2.position, this.player2,
 								data.state.player1.score, data.state.player2.score, this.scores,

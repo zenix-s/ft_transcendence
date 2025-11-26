@@ -8,12 +8,14 @@ export async function modal({
   player1Score,
   player2Score,
   winner,
+  playerColor,
   gameName,
 }: {
   type?: "logout" | "gameFinished" | "gameInvitation" | "setReady" | "gameCreation",
   player1Score?: number,
   player2Score?: number,
   winner?: string,
+  playerColor?: string,
   gameName?: string
 } = {}): Promise<boolean | GameOptions> {
     const isDark = !document.documentElement.classList.contains("dark");
@@ -62,7 +64,10 @@ export async function modal({
     else if (type === "setReady")
     {
       title = t("SetReady");
-      titleText = t("isReady");
+      let GameInfo = t("GameInfoBlue");
+      if (playerColor === "red")
+        GameInfo = t("GameInfoRed");
+      titleText = `${t("isReady")}\n\n${GameInfo}\n${t("GameMove")}`;
       confirmButtonText = t("Ready");
       text = `${t("ClickReady")}<br><br><b></b>`;
       icon_msg = "question";

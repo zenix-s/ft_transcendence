@@ -120,5 +120,5 @@ export function createCamera(playerView: string | null, scene:Scene, canvas:HTML
 	//girar con el teclado
 	camera.inputs.removeByType("ArcRotateCameraKeyboardMoveInput");
 	// zoom (rueda del ratón sigue funcionando)
-	camera.lowerRadiusLimit = 6;
+	camera.lowerRadiusLimit = 13;
 }

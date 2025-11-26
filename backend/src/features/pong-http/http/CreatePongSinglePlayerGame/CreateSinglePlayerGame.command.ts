@@ -7,6 +7,7 @@ import { Match } from '@shared/domain/Entities/Match.entity';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
 import { ApplicationError } from '@shared/Errors';
 import MatchType from '@shared/domain/ValueObjects/MatchType.value';
+import { VisualStyle } from '@shared/domain/ValueObjects/MatchSettings.value';
 
 export interface ICreateSinglePlayerGameResponse {
     message: string;
@@ -18,6 +19,7 @@ export interface ICreateSinglePlayerGameRequest {
     winnerScore?: number;
     maxGameTime?: number;
     aiDifficulty?: number;
+    visualStyle?: VisualStyle;
     userId?: number;
 }
 
@@ -102,6 +104,7 @@ export default class CreateSinglePlayerGameCommand
             const winnerScore = request.winnerScore || 5;
             const maxGameTime = request.maxGameTime || 120;
             const aiDifficulty = request.aiDifficulty || 0.95;
+            const visualStyle = request.visualStyle || '2d';
 
             const gameType = MatchType.SINGLE_PLAYER_PONG;
 
@@ -111,7 +114,7 @@ export default class CreateSinglePlayerGameCommand
 
             const createdMatch = await this.matchRepository.create({ match });
 
-            const game = new PongGame(winnerScore, maxGameTime, true, aiDifficulty);
+            const game = new PongGame(winnerScore, maxGameTime, true, aiDifficulty, visualStyle);
 
             const matchId = createdMatch.id as number;
 

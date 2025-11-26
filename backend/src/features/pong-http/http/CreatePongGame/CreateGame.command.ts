@@ -6,6 +6,7 @@ import { Match } from '@shared/domain/Entities/Match.entity';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
 import { ApplicationError } from '@shared/Errors';
 import MatchType from '@shared/domain/ValueObjects/MatchType.value';
+import { VisualStyle } from '@shared/domain/ValueObjects/MatchSettings.value';
 
 export interface ICreateGameResponse {
     message: string;
@@ -15,6 +16,7 @@ export interface ICreateGameResponse {
 export interface ICreateGameRequest {
     winnerScore?: number;
     maxGameTime?: number;
+    visualStyle?: VisualStyle;
     userId?: number;
 }
 
@@ -65,6 +67,7 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
 
             const winnerScore = request.winnerScore || 5;
             const maxGameTime = request.maxGameTime || 120;
+            const visualStyle = request.visualStyle || '2d';
             const userId = request.userId;
 
             // Validar que el usuario existe
@@ -92,7 +95,7 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
             const createdMatch = await this.matchRepository.create({ match });
             const matchId = createdMatch.id as number;
 
-            const game = new PongGame(winnerScore, maxGameTime);
+            const game = new PongGame(winnerScore, maxGameTime, false, 0.95, visualStyle);
             const gameResult = await this.fastify.PongGameManager.createGame(matchId, matchId, game);
 
             if (!gameResult.isSuccess) {

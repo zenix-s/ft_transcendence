@@ -8,6 +8,7 @@ interface CreateSinglePlayerGameRequest {
         winnerScore?: number;
         maxGameTime?: number;
         aiDifficulty?: number;
+        visualStyle?: string;
     };
 }
 
@@ -43,6 +44,12 @@ export default function CreatePongSinglePlayerGameRoute(fastify: FastifyInstance
                             minimum: 0,
                             maximum: 1,
                         },
+                        visualStyle: {
+                            type: 'string',
+                            description: 'Visual style of the game',
+                            enum: ['2d', '3d'],
+                            default: '2d',
+                        },
                     },
                 },
                 response: {
@@ -72,6 +79,7 @@ export default function CreatePongSinglePlayerGameRoute(fastify: FastifyInstance
                 winnerScore: req.body?.winnerScore,
                 maxGameTime: req.body?.maxGameTime,
                 aiDifficulty: req.body?.aiDifficulty,
+                visualStyle: req.body?.visualStyle,
                 userId: userId,
             };
 

@@ -7,6 +7,7 @@ interface CreateGameRequest {
     Body: {
         winnerScore?: number;
         maxGameTime?: number;
+        visualStyle?: string;
     };
 }
 
@@ -35,6 +36,12 @@ export default async function CreateGameRoute(fastify: FastifyInstance) {
                             minimum: 30,
                             maximum: 3600,
                         },
+                        visualStyle: {
+                            type: 'string',
+                            description: 'Visual style of the game',
+                            enum: ['2d', '3d'],
+                            default: '2d',
+                        },
                     },
                 },
                 response: {
@@ -62,6 +69,7 @@ export default async function CreateGameRoute(fastify: FastifyInstance) {
             const request = {
                 winnerScore: req.body?.winnerScore,
                 maxGameTime: req.body?.maxGameTime,
+                visualStyle: req.body?.visualStyle,
                 userId: userId,
             };
 

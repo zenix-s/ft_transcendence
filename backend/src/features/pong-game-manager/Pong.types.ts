@@ -1,4 +1,5 @@
 import { GameStatus, CountdownType } from '@shared/constants/GameConstants';
+import { VisualStyle } from '@shared/domain/ValueObjects/MatchSettings.value';
 
 export enum Actions {
     AUTH,
@@ -64,6 +65,7 @@ export interface GameRules {
     winnerScore: number;
     maxGameTime: number | undefined;
     difficulty?: number;
+    visualStyle: VisualStyle;
 }
 
 /**
@@ -91,4 +93,5 @@ export interface GameSettings {
     winnerScore?: number;
     maxGameTime?: number;
     difficulty?: number;
+    visualStyle?: VisualStyle;
 }

@@ -230,9 +230,9 @@ export async function modal({
             <label class="flex items-center gap-2 cursor-pointer">
               <input
                 type="radio"
-                id="mode-2D"
+                id="mode-2d"
                 name="mode-radio"
-                value="2D"
+                value="2d"
                 class="swal2-radio accent-cyan-400"
                 checked
               >
@@ -242,9 +242,9 @@ export async function modal({
             <label class="flex items-center gap-2 cursor-pointer">
               <input
                 type="radio"
-                id="mode-3D"
+                id="mode-3d"
                 name="mode-radio"
-                value="3D"
+                value="3d"
                 class="swal2-radio accent-cyan-400"
               >
               <span data-i18n="3D">3D</span>
@@ -284,7 +284,7 @@ export async function modal({
         const time = Number(timeInput.value);
         const modeInput = document.querySelector('input[name="mode-radio"]:checked') as HTMLInputElement;
 
-        const mode = modeInput?.value ?? "2D";
+        const mode = modeInput?.value ?? "2d";
 
         return { maxPoints: points, maxTime: time, gameMode: mode };
       }

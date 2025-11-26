@@ -1,14 +1,76 @@
 import { getWsUrl } from "@/api";
 import { t } from "@/app/i18n";
 import { showToast } from "@/components/toast";
+import { refreshTournamentsHistory } from "@/components/tournamentsHistory";
 
 // TODO: Ajustar cuando el backend esté definido
+interface payload {
+  winnerId?: number;
+  loserId?: number;
+  message: string;
+}
+
 interface AuthSuccessMessage {
-  type: "authSuccess";
+  action: "authSuccess";
   userId: number;
 }
 
-interface TournamentListMessage {
+interface ErrorMessage {
+  action: "error";
+  message: string;
+}
+
+interface tournamentStartedMessage {
+  action: "tournamentStarted";
+  tournamentId: number;
+  payload: payload;
+}
+
+interface tournamentEndedMessage {
+  action: "tournamentEnded";
+  tournamentId: number;
+  payload: payload;
+}
+
+interface tournamentStateUpdatedMessage {
+  action: "tournamentStateUpdated";
+  tournamentId: number;
+  payload: payload;
+}
+
+interface newRoundStartedMessage {
+  action: "newRoundStarted";
+  tournamentId: number;
+  roundNumber: number;
+  payload: payload;
+}
+
+interface matchCreatedMessage {
+  action: "matchCreated";
+  tournamentId: number;
+  matchId: number;
+  opponentId: number | null;
+  isAgainstAI: boolean;
+  roundNumber: number;
+  payload: payload;
+}
+
+interface matchResultMessage {
+  action: "matchResult";
+  tournamentId: number;
+  matchId: number;
+  roundNumber: number;
+  payload: payload;
+}
+
+interface tournamentWonMessage {
+  action: "tournamentWon";
+  tournamentId: number;
+  userId: number;
+  payload: payload;
+}
+
+/* interface TournamentListMessage {
   type: "tournamentList";
   tournaments: Tournament[]; // Reemplazar con interfaz real
 }
@@ -17,7 +79,7 @@ interface TournamentCreatedMessage {
   type: "tournamentCreated";
   tournamentId: number;
   name: string;
-}
+} */
 
 interface Tournament {
   id: number;
@@ -40,7 +102,7 @@ export class TournamentWebSocketClient {
   private tournaments: Tournament[] = [];
 
   constructor(token: string) {
-    this.wsUrl = getWsUrl("/tournaments/"); // Actualizar al EndPoint correspondiente a los torneos
+    this.wsUrl = getWsUrl("/tournaments/pong/"); // Actualizar al EndPoint correspondiente a los torneos
     this.token = token;
   }
 
@@ -73,7 +135,8 @@ export class TournamentWebSocketClient {
   }
 
   private authenticate() {
-    const msg = { action: 0, token: this.token };
+    //const msg = { action: 0, token: this.token };
+    const msg = { token: this.token };
     this.send(msg);
   }
 
@@ -87,19 +150,73 @@ export class TournamentWebSocketClient {
 
   private async handleMessage(message: unknown) {
     // Detectar tipo
-    const type = (message as { type?: unknown})?.type;
+    const action = (message as { action?: unknown})?.action;
 
-    switch (type) {
+    switch (action) {
       case "authSuccess": {
         const msg = message as AuthSuccessMessage;
         this.isAuthenticated = true;
         console.log(`✅ [Tournaments] ${t("SuccessAuthenticated")}`, msg.userId);
-        // Mejor sólo devolver lista cuando la página lo solicite????
-        setTimeout(() => this.requestTournamentList(), 100);
         break;
       }
 
-      case "tournamentList": {
+      case "error": {
+        const msg = message as ErrorMessage;
+        console.error(`❌ [Tournaments] ${t("ErrorFromServer")}:`, msg.message);
+        showToast(`${t("ErrorFromServer")}: ${msg.message}`, "error");
+        break;
+      }
+
+      case "tournamentStarted": {
+        const msg = message as tournamentStartedMessage;
+        console.log(`🏆 [Tournaments] ${t("TournamentStarted")}`, msg.tournamentId);
+        showToast(`${t("TournamentStarted")}: ${msg.tournamentId}`, "success");
+        break;
+      }
+
+      case "tournamentEnded": {
+        const msg = message as tournamentEndedMessage;
+        console.log(`🏆 [Tournaments] ${t("TournamentEnded")}`, msg.tournamentId);
+        showToast(`${t("TournamentEnded")}: ${msg.tournamentId}`, "info");
+        break;
+      }
+
+      case "tournamentStateUpdated": {
+        const msg = message as tournamentStateUpdatedMessage;
+        console.log(`🔄 [Tournaments] ${t("TournamentStateUpdated")}`, msg.tournamentId);
+        refreshTournamentsHistory(); // Actualizar la historia de torneos
+        break;
+      }
+
+      case "newRoundStarted": {
+        const msg = message as newRoundStartedMessage;
+        console.log(`🔔 [Tournaments] ${t("NewRoundStarted")}`, msg.roundNumber);
+        showToast(`${t("NewRoundStarted")}: ${msg.roundNumber}`, "info");
+        break;
+      }
+
+      case "matchCreated": {
+        const msg = message as matchCreatedMessage;
+        console.log(`🎮 [Tournaments] ${t("MatchCreated")}`, msg.matchId);
+        showToast(`${t("MatchCreated")}: ${msg.matchId}`, "info");
+        break;
+      }
+
+      case "matchResult": {
+        const msg = message as matchResultMessage;
+        console.log(`📊 [Tournaments] ${t("MatchResult")}`, msg.matchId);
+        showToast(`${t("MatchResult")}: ${msg.matchId}`, "info");
+        break;
+      }
+
+      case "tournamentWon": {
+        const msg = message as tournamentWonMessage;
+        console.log(`🏅 [Tournaments] ${t("TournamentWon")}`, msg.tournamentId);
+        showToast(`${t("TournamentWon")}: ${msg.tournamentId}`, "success");
+        break;
+      }
+
+      /* case "tournamentList": {
         const msg = message as TournamentListMessage;
         this.tournaments  = msg.tournaments;
         console.log("📋 [Tournaments] List received", this.tournaments); // Translation i18n needed
@@ -143,36 +260,36 @@ export class TournamentWebSocketClient {
 
         this.notifyTournamentUpdate();
         break;
-      }
+      } */
 
       default:
         console.log(`📨 [Tournaments] ${t("MsgReceived")}`, message);
     }
   }
 
-  public requestTournamentList() {
+  /* public requestTournamentList() {
     if (!this.isAuthenticated) {
       console.error("❌ [Tournaments] Not authenticated"); // Translation i18n needed
       return;
     }
     this.send({ action: 1 });
-  }
+  } */
 
   // 🔔 Callbacks para frontend
-  private onTournamentUpdateCallback: ((tournaments: unknown[]) => void) | null = null;
+  /* private onTournamentUpdateCallback: ((tournaments: unknown[]) => void) | null = null;
 
   public onTournamentUpdate(callback: (tournaments: unknown[]) => void) {
     this.onTournamentUpdateCallback = callback;
     if (this.tournaments.length > 0) {
       callback([...this.tournaments]);
     }
-  }
+  } */
 
-  private notifyTournamentUpdate() {
+  /* private notifyTournamentUpdate() {
     if (this.onTournamentUpdateCallback) {
       this.onTournamentUpdateCallback([...this.tournaments]);
     }
-  }
+  } */
 
   public getTournaments() {
     return [...this.tournaments];
@@ -184,7 +301,7 @@ export class TournamentWebSocketClient {
 
   disconnect() {
     if (this.socket) {
-      console.log(`👋 ${t("ClosingWs")}`);
+      console.log(`👋 [Tournaments] ${t("ClosingWs")}`);
       this.socket.close();
     }
   }

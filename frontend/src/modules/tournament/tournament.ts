@@ -6,6 +6,7 @@ import { countInputLenght } from "@/components/inputCounter";
 import { showToast } from "@/components/toast";
 import { updateSliders } from "@/components/updateSliders";
 import { getReadyTournamentSocket } from "./tournamentSocketUtils";
+import { createTournamentSocket } from "./tournamentSocketInstance";
 
 export async function tournament() {
 	renderButtons();
@@ -87,7 +88,8 @@ export async function createTournament(): Promise<number> {
 				}
 
 				// Conectar WebSocket ??
-				//createTournamentSocket(token);
+				const token = localStorage.getItem("access_token") || "";
+				createTournamentSocket(token);
 
 				showToast(t("TournamentCreatedSuccessfully"));
 				console.log(`Torneo creado con nombre ${tournamentname}, a ${points} puntos, ${time}s y en ${mode}.`); // DB
@@ -127,7 +129,8 @@ export async function joinTournament(tournamentId: number) {
 		}
 
 		// Conectar al WebSocket del torneo
-		//createSocialSocket(token);
+		const token = localStorage.getItem("access_token") || "";
+		createTournamentSocket(token);
 
 		showToast(t("JoinedTournamentSuccessfully"));
 		console.log(`Unido al torneo con id ${tournamentId}`); // DB

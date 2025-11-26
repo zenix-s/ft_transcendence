@@ -152,7 +152,7 @@ document.addEventListener("i18n-updated", async () => {
   reloadGameHistory(token);
 
   // Reload Tournaments History solo si existe tabla y hay token
-  reloadTournamentsHistory(token);
+  reloadTournamentsHistory();
 
     updateSliders();
 });
@@ -183,8 +183,8 @@ export async function reloadGameHistory(token: string | null) {
   }
 }
 
-export async function reloadTournamentsHistory(token: string | null) {
-  if (tournamentTable && token) {
+export async function reloadTournamentsHistory() {
+  if (tournamentTable) {
     const tableEl = tournamentTable.dom;
     const headerDiv = tableEl.parentElement?.querySelector<HTMLDivElement>(".datatable-header");
     const tournamentPerPageSelect = headerDiv?.querySelector<HTMLSelectElement>("select.datatable-selector");
@@ -201,7 +201,7 @@ export async function reloadTournamentsHistory(token: string | null) {
     tournamentTable.destroy();
 
     // 4. Volver a cargar historial
-    await loadTournamentsHistory(undefined, currentPerPage);
+    await loadTournamentsHistory(currentPerPage);
 
     // 5. Restaurar página en la que estabas
     if (currentPage > 0)

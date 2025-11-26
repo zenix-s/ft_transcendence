@@ -4,6 +4,7 @@ import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { ApplicationError } from '@shared/Errors';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
 import MatchType from '@shared/domain/ValueObjects/MatchType.value';
+import { ISocialWebSocketService } from '@features/socialSocket/services/ISocialWebSocketService.interface';
 
 export interface IAcceptGameInvitationResponse {
     success: boolean;
@@ -14,15 +15,18 @@ export interface IAcceptGameInvitationResponse {
 export interface IAcceptGameInvitationRequest {
     userId?: number;
     gameId: number;
+    inviterUsername?: string;
 }
 
 export default class AcceptGameInvitationCommand
     implements ICommand<IAcceptGameInvitationRequest, IAcceptGameInvitationResponse>
 {
     private readonly matchRepository: IMatchRepository;
+    private readonly socialWebSocketService: ISocialWebSocketService;
 
     constructor(private readonly fastify: FastifyInstance) {
         this.matchRepository = this.fastify.MatchRepository;
+        this.socialWebSocketService = this.fastify.SocialWebSocketService;
     }
 
     validate(request?: IAcceptGameInvitationRequest | undefined): Result<void> {
@@ -38,6 +42,10 @@ export default class AcceptGameInvitationCommand
             return Result.error(ApplicationError.InvalidRequestData);
         }
 
+        if (request.inviterUsername && typeof request.inviterUsername !== 'string') {
+            return Result.error(ApplicationError.InvalidRequestData);
+        }
+
         return Result.success(undefined);
     }
 
@@ -49,7 +57,7 @@ export default class AcceptGameInvitationCommand
                 return Result.error(ApplicationError.InvalidRequestData);
             }
 
-            const { userId, gameId } = request;
+            const { userId, gameId, inviterUsername } = request;
 
             // 1: Validar que el juego existe
             const match = await this.matchRepository.findById({ id: gameId });
@@ -83,6 +91,39 @@ export default class AcceptGameInvitationCommand
 
             if (!joinResult.isSuccess) {
                 return Result.error(joinResult.error || ApplicationError.InternalServerError);
+            }
+
+            // 5: Si se proporcionó el username del invitador, enviar notificación de aceptación
+            if (inviterUsername) {
+                // Obtener la información del usuario que acepta la invitación
+                const userResult = await this.fastify.UserRepository.getUser({ id: userId as number });
+                if (!userResult.isSuccess || !userResult.value) {
+                    return Result.error(ApplicationError.UserNotFound);
+                }
+
+                const user = userResult.value;
+
+                // Obtener la información del usuario que envió la invitación
+                const inviterResult = await this.fastify.UserRepository.getUser({
+                    username: inviterUsername,
+                });
+                if (inviterResult.isSuccess && inviterResult.value) {
+                    const inviter = inviterResult.value;
+
+                    // Solo notificar si el usuario que acepta no es el mismo que envió la invitación
+                    if (inviter.id !== userId) {
+                        // Enviar notificación de aceptación al usuario que envió la invitación
+                        await this.socialWebSocketService.sendGameInvitationAcceptance({
+                            fromUserId: userId as number,
+                            fromUsername: user.username,
+                            fromUserAvatar: user.avatar || null,
+                            toUserId: inviter.id,
+                            gameId,
+                            gameTypeName: matchType.name,
+                            message: `${user.username} ha aceptado tu invitación al juego ${matchType.name}`,
+                        });
+                    }
+                }
             }
 
             return Result.success({

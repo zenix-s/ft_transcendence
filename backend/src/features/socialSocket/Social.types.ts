@@ -71,3 +71,13 @@ export interface GameInvitationRejectionResponse extends SocialWebSocketResponse
     gameTypeName: string;
     message: string;
 }
+
+export interface GameInvitationAcceptanceResponse extends SocialWebSocketResponse {
+    type: 'gameInvitationAcceptance';
+    fromUserId: number;
+    fromUsername: string;
+    fromUserAvatar: string | null;
+    gameId: number;
+    gameTypeName: string;
+    message: string;
+}

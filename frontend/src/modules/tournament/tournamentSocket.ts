@@ -177,7 +177,7 @@ export class TournamentWebSocketClient {
       case "tournamentEnded": {
         const msg = message as tournamentEndedMessage;
         console.log(`🏆 [Tournaments] ${t("TournamentEnded")}`, msg.tournamentId);
-        showToast(`${t("TournamentEnded")}: ${msg.tournamentId}`, "info");
+        showToast(`${t("TournamentEnded")}: ${msg.tournamentId}`, "success");
         break;
       }
 
@@ -191,21 +191,21 @@ export class TournamentWebSocketClient {
       case "newRoundStarted": {
         const msg = message as newRoundStartedMessage;
         console.log(`🔔 [Tournaments] ${t("NewRoundStarted")}`, msg.roundNumber);
-        showToast(`${t("NewRoundStarted")}: ${msg.roundNumber}`, "info");
+        showToast(`${t("NewRoundStarted")}: ${msg.roundNumber}`, "success");
         break;
       }
 
       case "matchCreated": {
         const msg = message as matchCreatedMessage;
         console.log(`🎮 [Tournaments] ${t("MatchCreated")}`, msg.matchId);
-        showToast(`${t("MatchCreated")}: ${msg.matchId}`, "info");
+        showToast(`${t("MatchCreated")}: ${msg.matchId}`, "success");
         break;
       }
 
       case "matchResult": {
         const msg = message as matchResultMessage;
         console.log(`📊 [Tournaments] ${t("MatchResult")}`, msg.matchId);
-        showToast(`${t("MatchResult")}: ${msg.matchId}`, "info");
+        showToast(`${t("MatchResult")}: ${msg.matchId}`, "success");
         break;
       }
 

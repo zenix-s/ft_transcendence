@@ -35,7 +35,7 @@ const initialPage = location.pathname.replace("/", "") || "home";
 navigateTo(initialPage, true);
 
 // 🌐 Imports WebSocket Social
-import { createSocialSocket, destroySocialSocket, getSocialSocket } from "@/modules/social/socketInstance";
+import { createSocialSocket, getSocialSocket } from "@/modules/social/socketInstance";
 import { SocialWebSocketClient } from "@/modules/social/socialSocket";
 import { getColor, setColors } from "@/modules/game/getColors";
 

@@ -11,7 +11,7 @@ interface payload {
 }
 
 interface AuthSuccessMessage {
-  action: "authSuccess";
+  action: "auth";
   userId: number;
 }
 
@@ -88,11 +88,11 @@ interface Tournament {
   [key: string]: unknown;
 }
 
-interface TournamentUpdatedMessage {
+/* interface TournamentUpdatedMessage {
   type: "tournamentUpdated";
   tournamentId: number;
   data: Partial<Tournament>; // Detalles que quiera enviar el backend
-}
+} */
 
 export class TournamentWebSocketClient {
   private socket: WebSocket | null = null;
@@ -102,7 +102,7 @@ export class TournamentWebSocketClient {
   private tournaments: Tournament[] = [];
 
   constructor(token: string) {
-    this.wsUrl = getWsUrl("/tournaments/pong/"); // Actualizar al EndPoint correspondiente a los torneos
+    this.wsUrl = getWsUrl("/ws/tournaments/pong"); // Actualizar al EndPoint correspondiente a los torneos
     this.token = token;
   }
 
@@ -117,6 +117,7 @@ export class TournamentWebSocketClient {
 
     this.socket.onmessage = (event: MessageEvent<string>) => {
       try {
+        console.log("📥 [Tournaments] raw WS message:", event.data); // DB
         const message = JSON.parse(event.data);
         this.handleMessage(message);
       } catch (err) {
@@ -135,8 +136,8 @@ export class TournamentWebSocketClient {
   }
 
   private authenticate() {
-    //const msg = { action: 0, token: this.token };
-    const msg = { token: this.token };
+    const msg = { action: "auth", token: this.token };
+    //const msg = { token: this.token };
     this.send(msg);
   }
 
@@ -153,7 +154,7 @@ export class TournamentWebSocketClient {
     const action = (message as { action?: unknown})?.action;
 
     switch (action) {
-      case "authSuccess": {
+      case "auth": {
         const msg = message as AuthSuccessMessage;
         this.isAuthenticated = true;
         console.log(`✅ [Tournaments] ${t("SuccessAuthenticated")}`, msg.userId);

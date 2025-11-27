@@ -87,7 +87,7 @@ async function App(fastify: FastifyInstance) {
 
     fastify.register(pongWebSocketRoutes, { prefix: '/game/pong' });
     fastify.register(socialWebSocketRoutes, { prefix: '/social' });
-    fastify.register(tournamentWebSocketRoutes, { prefix: '/tournaments/pong' });
+    fastify.register(tournamentWebSocketRoutes, { prefix: '/ws/tournaments/pong' });
 
     fastify.register(async function authenticatedContext(fastify) {
         fastify.addHook('preHandler', fastify.auth([fastify.authenticate]));

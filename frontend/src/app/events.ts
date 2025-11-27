@@ -1,8 +1,9 @@
 import { navigateTo } from "@/app/navigation";
 import { applySavedColors } from "@/components/colorPicker";
 import { modal } from "@/components/modal";
-import { refreshTournamentsHistory } from "@/components/tournamentsHistory";
+import { handleParticipationAction, refreshTournamentsHistory } from "@/components/tournamentsHistory";
 import { destroySocialSocket } from "@/modules/social/socketInstance";
+import { destroyTournamentSocket } from "@/modules/tournament/tournamentSocketInstance";
 
 /**
  * The `setupEventListeners` function adds event listeners for click and popstate events to handle
@@ -23,6 +24,7 @@ export function setupEventListeners() {
         localStorage.removeItem("color_primary");
         localStorage.removeItem("color_secondary");
         destroySocialSocket(); // Desconectar y limpiar el WebSocket
+        destroyTournamentSocket(); // Desconectar y limpiar el WebSocket
         localStorage.removeItem("access_token");
 
         // Forzar colores por defecto
@@ -58,13 +60,19 @@ export function setupEventListeners() {
       navigateTo(target.dataset.page!);
       return;
     }
-  });
 
-  // Listener para el botón de refresh de torneos
-  document.addEventListener("click", (event) => {
-    const target = event.target as HTMLElement;
+    // 🔹 4. Listener para el botón de refresh de torneos
     if (target.id === "refreshTournamentsBtn") {
-      refreshTournamentsHistory();
+      await refreshTournamentsHistory();
+      return;
+    }
+
+    // 🔹 5. Listener para el botón de unirse o abandonar torneos
+    if (target.classList.contains("participation-btn")) {
+      event.preventDefault();
+      // Llama a la nueva función que maneja la lógica de fetch, toast y refresh.
+      handleParticipationAction(target);
+      return;
     }
   });
 }

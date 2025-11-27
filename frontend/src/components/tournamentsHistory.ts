@@ -1,7 +1,5 @@
 import { DataTable } from "simple-datatables";
 import { t, updateTexts } from "@/app/i18n";
-import { getCurrentUser } from "@/modules/users";
-import type { User } from "@/types/user";
 import { apiUrl } from "@/api";
 import { showToast } from "./toast";
 
@@ -110,58 +108,12 @@ export async function loadTournamentsHistory(perPage:number = 5) {
         }
     }, 50); // 50ms es suficiente
 
-    // 4. Adding an event listener to detect click on join/leave button
-    const table  = document.getElementById("tournamentsTable") as HTMLElement;
-    table?.addEventListener("click", async (event) => {
-      const target = event.target as HTMLElement;
-      
-      // Solo ejecutamos si el clic viene de un botón
-      if (!target.classList.contains("participation-btn"))
-        return;
-      
-      event.preventDefault();
-
-      const tournamentId = target.dataset.tournamentid;
-      const action = target.dataset.i18n;
-
-      console.log("Tournament ID:", tournamentId, "action:", action); // DB
-
-      try {
-        const response = await fetch(apiUrl(`/tournaments/pong/tournaments/${tournamentId}/${action}`), {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${localStorage.getItem("access_token") || ""}`,
-          },
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          const errorcode = data.error;
-          if (errorcode === "InvalidRequest")
-            showToast(t("ParticipantAdditionError"), "error");
-          else
-            showToast(t(errorcode), "error");
-          return;
-        }
-
-        showToast(t("InvitationSentSuccessfully"));
-
-        // Recargar tabla
-        refreshTournamentsHistory();
-
-      } catch {
-        showToast(t("NetworkOrServerError"), "error");
-      }
-
-    });
-
-    // 5. Ajustar enlaces de paginación (AHORA que existen)
+    // 4. Ajustar enlaces de paginación (AHORA que existen)
     document.querySelectorAll(".datatable-pagination a").forEach(link => {
       link.setAttribute("href", "#");
     });
 
-    // 6. Traducir las celdas recién insertadas
+    // 5. Traducir las celdas recién insertadas
     updateTexts();
 
   } catch (error) {
@@ -196,16 +148,50 @@ export function getParticipationButton(isRegistered: boolean, tournamentId: numb
   }
 }
 
-// Funciones para unirse o abandonar un torneo (placeholders)
-export async function joinTournament(tournamentId: number) {
-  console.log(`Joining tournament with ID: ${tournamentId}`);
-  // Lógica para unirse al torneo
+export async function handleParticipationAction(target: HTMLElement) {
+  const tournamentId = target.dataset.tournamentid;
+  const action = target.dataset.i18n; // "join" o "leave"
+
+  if (!tournamentId || !action) return;
+
+  console.log("Tournament ID:", tournamentId, "action:", action); // DB
+
+  try {
+    const response = await fetch(apiUrl(`/tournaments/pong/tournaments/${tournamentId}/${action}`), {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${localStorage.getItem("access_token") || ""}`,
+        },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        const errorcode = data.error;
+        if (errorcode === "InvalidRequest")
+            showToast(t("ParticipantAdditionError"), "error");
+        else
+            showToast(t(errorcode), "error");
+        return;
+    }
+
+    // Mensaje de éxito dinámico (Join/Leave)
+    if (action === "join") {
+          showToast(t("ParticipationSuccess")); // Asumo que tienes una clave para 'Se ha unido al torneo'
+    } else if (action === "leave") {
+          showToast(t("LeaveSuccess")); // Asumo que tienes una clave para 'Ha abandonado el torneo'
+    } else {
+          showToast(t("InvitationSentSuccessfully")); // Mensaje genérico de éxito
+    }
+
+    // Recargar tabla
+    await refreshTournamentsHistory();
+
+  } catch {
+      showToast(t("NetworkOrServerError"), "error");
+  }
 }
 
-export async function leaveTournament(tournamentId: number) {
-  console.log(`Leaving tournament with ID: ${tournamentId}`);
-  // Lógica para abandonar el torneo
-}
 export async function refreshTournamentsHistory(perPage: number = 5) {
   try {
     // Destruir la tabla existente si ya fue inicializada

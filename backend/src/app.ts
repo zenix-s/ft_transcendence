@@ -27,6 +27,7 @@ import MediatorHandlerPlugin from '@shared/mediators/MediatorHandlerPlugin';
 import PongTournamentsHttpRoutes from '@features/tournaments/pong/http/pong-tournaments.http';
 import PongTournamentManagerPlugin from '@features/tournaments/pong/plugins/PongTournamentManagerPlugin';
 import tournamentWebSocketRoutes from '@features/tournaments/pong/websocket/tournament.websocket';
+import TournamentWebSocketServicePlugin from '@features/tournaments/pong/plugins/TournamentWebSocketServicePlugin';
 
 async function App(fastify: FastifyInstance) {
     fastify.register(fastifyJWT, {
@@ -44,6 +45,7 @@ async function App(fastify: FastifyInstance) {
     fastify.register(SocialWebSocketServicePlugin);
     fastify.register(PongGameManagerPlugin);
     fastify.register(PongTournamentManagerPlugin);
+    fastify.register(TournamentWebSocketServicePlugin)
 
     fastify.register(fastifyMultipart, {
         limits: {

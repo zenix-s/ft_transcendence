@@ -70,29 +70,12 @@ interface tournamentWonMessage {
   payload: payload;
 }
 
-/* interface TournamentListMessage {
-  type: "tournamentList";
-  tournaments: Tournament[]; // Reemplazar con interfaz real
-}
-
-interface TournamentCreatedMessage {
-  type: "tournamentCreated";
-  tournamentId: number;
-  name: string;
-} */
-
 interface Tournament {
   id: number;
   name?: string;
   // otras propiedades del torneo
   [key: string]: unknown;
 }
-
-/* interface TournamentUpdatedMessage {
-  type: "tournamentUpdated";
-  tournamentId: number;
-  data: Partial<Tournament>; // Detalles que quiera enviar el backend
-} */
 
 export class TournamentWebSocketClient {
   private socket: WebSocket | null = null;
@@ -117,7 +100,7 @@ export class TournamentWebSocketClient {
 
     this.socket.onmessage = (event: MessageEvent<string>) => {
       try {
-        console.log("📥 [Tournaments] raw WS message:", event.data); // DB
+        //console.log("📥 [Tournaments] raw WS message:", event.data); // DB
         const message = JSON.parse(event.data);
         this.handleMessage(message);
       } catch (err) {
@@ -161,6 +144,7 @@ export class TournamentWebSocketClient {
         break;
       }
 
+      // token inválido, formato incorrecto, acción desconocida, no autenticado, error del servidor
       case "error": {
         const msg = message as ErrorMessage;
         console.error(`❌ [Tournaments] ${t("ErrorFromServer")}:`, msg.message);
@@ -168,6 +152,7 @@ export class TournamentWebSocketClient {
         break;
       }
 
+      // Enviado SÓLO A LOS PARTICIPANTES cuando el torneo comienza
       case "tournamentStarted": {
         const msg = message as tournamentStartedMessage;
         console.log(`🏆 [Tournaments] ${t("TournamentStarted")}`, msg.tournamentId);
@@ -175,6 +160,7 @@ export class TournamentWebSocketClient {
         break;
       }
 
+      // Enviado SÓLO A LOS PARTICIPANTES cuando el torneo termina
       case "tournamentEnded": {
         const msg = message as tournamentEndedMessage;
         console.log(`🏆 [Tournaments] ${t("TournamentEnded")}`, msg.tournamentId);
@@ -182,13 +168,15 @@ export class TournamentWebSocketClient {
         break;
       }
 
+      // Enviado SÓLO A LOS PARTICIPANTES cuando el estado del torneo cambia
       case "tournamentStateUpdated": {
         const msg = message as tournamentStateUpdatedMessage;
         console.log(`🔄 [Tournaments] ${t("TournamentStateUpdated")}`, msg.tournamentId);
-        refreshTournamentsHistory(); // Actualizar la historia de torneos
+        await refreshTournamentsHistory(); // Actualizar la historia de torneos
         break;
       }
 
+      // Enviado SÓLO A LOS PARTICIPANTES cuando comienza una nueva ronda
       case "newRoundStarted": {
         const msg = message as newRoundStartedMessage;
         console.log(`🔔 [Tournaments] ${t("NewRoundStarted")}`, msg.roundNumber);
@@ -196,6 +184,7 @@ export class TournamentWebSocketClient {
         break;
       }
 
+      // Enviado SÓLO AL PARTICIPANTE que debe jugar la partida
       case "matchCreated": {
         const msg = message as matchCreatedMessage;
         console.log(`🎮 [Tournaments] ${t("MatchCreated")}`, msg.matchId);
@@ -203,6 +192,7 @@ export class TournamentWebSocketClient {
         break;
       }
 
+      // Enviado SÓLO A LOS PARTICIPANTES cuando se reporta el resultado de una partida
       case "matchResult": {
         const msg = message as matchResultMessage;
         console.log(`📊 [Tournaments] ${t("MatchResult")}`, msg.matchId);
@@ -210,6 +200,7 @@ export class TournamentWebSocketClient {
         break;
       }
 
+      // Enviado SÓLO AL PARTICIPANTE que gana el torneo
       case "tournamentWon": {
         const msg = message as tournamentWonMessage;
         console.log(`🏅 [Tournaments] ${t("TournamentWon")}`, msg.tournamentId);
@@ -217,80 +208,10 @@ export class TournamentWebSocketClient {
         break;
       }
 
-      /* case "tournamentList": {
-        const msg = message as TournamentListMessage;
-        this.tournaments  = msg.tournaments;
-        console.log("📋 [Tournaments] List received", this.tournaments); // Translation i18n needed
-        this.notifyTournamentUpdate();
-        break;
-      }
-
-      case "tournamentCreated": {
-        const msg = message as TournamentCreatedMessage;
-        console.log("🏆 [Tournaments] New tournament", msg); // Translation i18n needed
-
-        showToast(`🏆 Nuevo torneo creado: ${msg.name}`, "success"); // Translation i18n needed
-
-
-        this.tournaments.push({
-          id: msg.tournamentId,
-          name: msg.name,
-        });
-
-        this.notifyTournamentUpdate();
-
-        break;
-      }
-
-      case "tournamentUpdated": {
-        const msg = message as TournamentUpdatedMessage;
-
-        console.log("🔄 [Tournaments] Update", msg); // Translation i18n needed
-
-        // Buscar y actualizar
-        const index = this.tournaments.findIndex(
-          (t: Tournament) => t.id === msg.tournamentId
-        );
-
-        if (index !== -1) {
-          this.tournaments[index] = {
-            ...this.tournaments[index],
-            ...msg.data,
-          };
-        }
-
-        this.notifyTournamentUpdate();
-        break;
-      } */
-
       default:
         console.log(`📨 [Tournaments] ${t("MsgReceived")}`, message);
     }
   }
-
-  /* public requestTournamentList() {
-    if (!this.isAuthenticated) {
-      console.error("❌ [Tournaments] Not authenticated"); // Translation i18n needed
-      return;
-    }
-    this.send({ action: 1 });
-  } */
-
-  // 🔔 Callbacks para frontend
-  /* private onTournamentUpdateCallback: ((tournaments: unknown[]) => void) | null = null;
-
-  public onTournamentUpdate(callback: (tournaments: unknown[]) => void) {
-    this.onTournamentUpdateCallback = callback;
-    if (this.tournaments.length > 0) {
-      callback([...this.tournaments]);
-    }
-  } */
-
-  /* private notifyTournamentUpdate() {
-    if (this.onTournamentUpdateCallback) {
-      this.onTournamentUpdateCallback([...this.tournaments]);
-    }
-  } */
 
   public getTournaments() {
     return [...this.tournaments];

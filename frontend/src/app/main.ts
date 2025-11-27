@@ -13,6 +13,7 @@ import { loadChart } from "@/components/graph";
 import { matchTable, loadMatchHistory } from "@/components/history";
 import { tournamentTable, loadTournamentsHistory } from "@/components/tournamentsHistory";
 import { updateSliders } from "@/components/updateSliders";
+import { createGameSocket, getGameSocket } from "@/modules/game/gameSocket";
 
 // i18n
 //import { setLanguage, t, currentLang } from "./i18n";
@@ -33,13 +34,16 @@ applySavedColors();
 const initialPage = location.pathname.replace("/", "") || "home";
 navigateTo(initialPage, true);
 
-// 🌐 Inicializar WebSocket Social si hay token
+// 🌐 Imports WebSocket Social
 import { createSocialSocket, destroySocialSocket, getSocialSocket } from "@/modules/social/socketInstance";
 import { SocialWebSocketClient } from "@/modules/social/socialSocket";
 import { getColor, setColors } from "@/modules/game/getColors";
-import { createGameSocket, getGameSocket } from "@/modules/game/gameSocket";
 
+// 🌐 Importaciones necesarias para el WS de Torneos
+import { createTournamentSocket, getTournamentSocket } from "@/modules/tournament/tournamentSocketInstance";
+import { TournamentWebSocketClient } from "@/modules/tournament/tournamentSocket";
 
+// 🌐 Inicializar WebSocket Social si hay token
 async function initSocialSocket(): Promise<SocialWebSocketClient | null> {
   const token = localStorage.getItem("access_token");
   if (!token) return null;
@@ -63,8 +67,33 @@ async function initSocialSocket(): Promise<SocialWebSocketClient | null> {
   return ws;
 }
 
+async function initTournamentSocket(): Promise<TournamentWebSocketClient | null> {
+  const token = localStorage.getItem("access_token");
+  if (!token) return null;
+
+  let ws: TournamentWebSocketClient | null = getTournamentSocket();
+
+  if (!ws) {
+    console.log(`🏆 ${t("InitializingTournamentWs")}`);
+    ws = createTournamentSocket(token);
+    // Esperar a que el socket se conecte y autentique antes de continuar
+    await new Promise<void>((resolve) => {
+      const interval = setInterval(() => {
+        // Usamos getAuthenticated del cliente del torneo
+        if ((ws?.getAuthenticated())) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 50);
+    });
+  }
+
+  return ws;
+}
+
 // Inicializa el WebSocket al cargar
 initSocialSocket();
+initTournamentSocket();
 
 // Configurar los eventos
 setupEventListeners();

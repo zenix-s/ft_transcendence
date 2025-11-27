@@ -178,6 +178,7 @@ export const translations: Record<Language, Record<string, string>> = {
     AlreadyInvitationInProgress: "You already have an invitation in progress",
     /* WebSocket */
     InitializingSocialWs: "Initializing Social WebSocket from main.ts",
+    InitializingTournamentWs: "Initializing Tournament WebSocket from main.ts",
     ConnectingToWs: "Connecting to WebSocket...",
     WsConnected: "WebSocket connected",
     ErrorParsingMsg: "Error parsing message:",
@@ -224,6 +225,8 @@ export const translations: Record<Language, Record<string, string>> = {
     ParticipantAdditionError: "Error adding participant",
     ParticipantAlreadyExists: "You are already registered for this tournament",
     refresh: "Refresh",
+    ParticipationSuccess: "You have successfully joined the tournament",
+    LeaveSuccess: "You have successfully left the tournament",
   },
   es: {
     start: "Comenzar",
@@ -401,6 +404,7 @@ export const translations: Record<Language, Record<string, string>> = {
     AlreadyInvitationInProgress: "Ya tienes una invitación en curso",
     /* WebSocket */
     InitializingSocialWs: "Inicializando WebSocket Social desde main.ts",
+    InitializingTournamentWs: "Inicializando WebSocket de Torneos desde main.ts",
     ConnectingToWs: "Conectando a WebSocket...",
     WsConnected: "WebSocket conectado",
     ErrorParsingMsg: "Error parseando mensaje:",
@@ -447,6 +451,8 @@ export const translations: Record<Language, Record<string, string>> = {
     ParticipantAdditionError: "Error al agregar participante",
     ParticipantAlreadyExists: "Ya estás inscrito a este torneo",
     refresh: "Actualizar",
+    ParticipationSuccess: "Te has unido al torneo con éxito",
+    LeaveSuccess: "Has salido del torneo con éxito",
   },
   fr: {
     start: "Démarrer",
@@ -624,6 +630,7 @@ export const translations: Record<Language, Record<string, string>> = {
     AlreadyInvitationInProgress: "Une invitation est déjà en cours de traitement.",
     /* WebSocket */
     InitializingSocialWs: "Initialisation de WebSocket Social à partir de main.ts",
+    InitializingTournamentWs: "Initialisation de WebSocket Tournoi à partir de main.ts",
     ConnectingToWs: "Connexion au WebSocket...",
     WsConnected: "WebSocket connecté",
     ErrorParsingMsg: "Erreur lors de l'analyse du message :",
@@ -670,6 +677,8 @@ export const translations: Record<Language, Record<string, string>> = {
     ParticipantAdditionError: "Erreur lors de l'ajout du participant",
     ParticipantAlreadyExists: "Vous êtes déjà inscrit à ce tournoi",
     refresh: "Rafraîchir",
+    ParticipationSuccess: "Vous avez rejoint le tournoi avec succès",
+    LeaveSuccess: "Vous avez quitté le tournoi avec succès",
   },
 };
 

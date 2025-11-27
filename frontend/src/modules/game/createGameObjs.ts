@@ -3,6 +3,7 @@ import type { Ball, Player, Score } from "./gameData";
 import { showToast } from "@/components/toast";
 import { t } from "@/app/i18n";
 import { navigateTo } from "@/app/navigation";
+import { getColor, setColors } from "./getColors";
 
 export function createBall(playerView: string | null, scene:Scene)
 {
@@ -57,10 +58,10 @@ export function createPlayerRight(playerView: string | null, scene:Scene)
 	if (playerView === "2D")
 	{
 		paddle2Mat.disableLighting = true;
-		paddle2Mat.emissiveColor = new Color3(1, 0, 0);  // Red
+		paddle2Mat.emissiveColor = new Color3(0.8, 0.2, 0.2);  // Red
 	}
 	else
-		paddle2Mat.diffuseColor = new Color3(1, 0, 0);  // Red
+		paddle2Mat.diffuseColor = new Color3(0.8, 0.2, 0.2);  // Red
 	paddle2.material = paddle2Mat;
 
 	const	playerRight : Player = {
@@ -82,10 +83,10 @@ export function createPlayerLeft(playerView: string | null, scene:Scene)
 	if (playerView === "2D")
 	{
 		paddle1Mat.disableLighting = true;
-		paddle1Mat.emissiveColor = new Color3(0, 0, 1); // Blue
+		paddle1Mat.emissiveColor = new Color3(0.2, 0.4, 0.8); // Blue
 	}
 	else
-		paddle1Mat.diffuseColor = new Color3(0, 0, 1); // Blue
+		paddle1Mat.diffuseColor = new Color3(0.2, 0.4, 0.8); // Blue
 	paddle1.material = paddle1Mat;
 
 	const playerLeft : Player = {
@@ -97,42 +98,27 @@ export function createPlayerLeft(playerView: string | null, scene:Scene)
 
 export function createTable(scene:Scene)
 {
-	const table : Mesh = MeshBuilder.CreateBox("table", { width: 8.8, depth: 8, height: 0.2 }, scene);
+	const table : Mesh = MeshBuilder.CreateBox("table", { width: 8.8, depth: 8.2, height: 0.2 }, scene);
 	table.position.y = 0.1;
 	const tableMat = new StandardMaterial("tableMat", scene);
-	tableMat.emissiveColor = new Color3(0.5, 0.5, 0.5);
+	tableMat.emissiveColor = new Color3(0.2, 0.2, 0.2);
 	tableMat.disableLighting = true;
 	table.material = tableMat;
 
-	const borders = new StandardMaterial("lineMat");
-	borders.disableLighting = true;
-	borders.emissiveColor = new Color3(1, 1, 1);
-	const thickness = 0.08;
-	
-	// BORDE SUPERIOR
-	const top = MeshBuilder.CreateBox("lineTop", { width: 8.8, depth: thickness, height: 0.21 }, scene);
-	top.position.set(0, 0.105, 4 - thickness / 2);
-	top.material = borders;
+	if (localStorage.getItem("theme") === "dark")
+	{
+		const borderColor = getColor("--color-primary");
+		const bgColor = getColor("--color-secondary");
+		setColors(scene, bgColor, borderColor);
+	}
+	else if (localStorage.getItem("theme") === "light")
+	{
+		const borderColor = getColor("--color-secondary");
+		const bgColor = getColor("--color-primary");
+		setColors(scene, bgColor, borderColor);
+	}
 
-	// BORDE INFERIOR
-	const bottom = MeshBuilder.CreateBox("lineBottom", { width: 8.8, depth: thickness, height: 0.21 }, scene);
-	bottom.position.set(0, 0.105, -4 + thickness / 2);
-	bottom.material = borders;
-
-	// BORDE IZQUIERDO
-	const left = MeshBuilder.CreateBox("lineLeft", { width: thickness, depth: 8, height: 0.21 }, scene);
-	left.position.set(-4.4 + thickness / 2, 0.105, 0);
-	left.material = borders;
-
-	// BORDE DERECHO
-	const right = MeshBuilder.CreateBox("lineRight", { width: thickness, depth: 8, height: 0.21 }, scene);
-	right.position.set(4.4 - thickness / 2, 0.105, 0);
-	right.material = borders;
-
-	// LÍNEA DEL CENTRO
-	const midline = MeshBuilder.CreateBox("midline", { width: 0.1, depth: 8, height: 0.21 }, scene);
-	midline.position.set(0, 0.105, 0);
-	midline.material = borders;
+	return (table);
 }
 
 export function createCamera(playerView: string | null, scene:Scene, canvas:HTMLCanvasElement)

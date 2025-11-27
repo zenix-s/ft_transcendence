@@ -1,13 +1,16 @@
 import { t } from "@/app/i18n";
 import { navigateTo } from "@/app/navigation";
 import { showToast } from "@/components/toast";
-import { Engine, Scene, HemisphericLight, Vector3 } from "@babylonjs/core";
+import { Engine, Scene, Mesh, HemisphericLight, Vector3 } from "@babylonjs/core";
 import type { Ball, Player, Score } from "./gameData";
 import { createBall, createCamera, createPlayerLeft, createPlayerRight, createScores, createTable } from "./createGameObjs";
 import { createGameSocket, getGameSocket } from "./gameSocket";
+import { setColors } from "./getColors";
 
-export function renderValues(posPlayerL:number, playerL:Player | undefined, posPlayerR:number, playerR:Player | undefined,
-	pointsL:number, pointsR:number, scores:Score | undefined, ballX:number, ballY:number, ball:Ball | undefined)
+export function renderValues(posPlayerL:number, playerL:Player | undefined,
+	posPlayerR:number, playerR:Player | undefined,
+	pointsL:number, pointsR:number, scores:Score | undefined,
+	ballX:number, ballY:number, ball:Ball | undefined)
 {
 	if (!ball || !playerL || !playerR || !scores)
 		return;
@@ -21,7 +24,6 @@ export function renderValues(posPlayerL:number, playerL:Player | undefined, posP
 	scores.pointsRight = pointsR;
 	scores.scoreLeft.textContent = scores.pointsLeft.toString();
 	scores.scoreRight.textContent = scores.pointsRight.toString();
-
 }
 
 export function initGame3D() {
@@ -55,9 +57,19 @@ export function initGame3D() {
 		return ;
 	}
 
+	let ws = getGameSocket();
+	if (!ws)
+	{
+		const token = localStorage.getItem("access_token");
+		ws = createGameSocket(token);
+		ws.setAuth();
+	}
+
 	// Motor y escena
 	const engine = new Engine(canvas, true);
 	const scene = new Scene(engine);
+
+	ws.setScene(scene);
 
 	// Ajustar tamaño del canvas
 	adjustCanvasSize(canvas, engine);
@@ -70,7 +82,7 @@ export function initGame3D() {
 	light.intensity = 1.2;
 
 	// Mesa
-	createTable(scene);
+	const table = createTable(scene);
 
 	// JUGADORES
 	const playerLeft = createPlayerLeft(playerView, scene);
@@ -84,16 +96,8 @@ export function initGame3D() {
 	// PELOTA
 	const ball = createBall(playerView, scene);
 
-
-	let ws = getGameSocket();
-	if (!ws)
-	{
-		const token = localStorage.getItem("access_token");
-		ws = createGameSocket(token);
-		ws.setAuth();
-	}
 	ws.authenticate(Number(id));
-	ws.initializeGame(Number(id), playerLeft, playerRight, scores, ball, engine, scene, buttonUp, buttonDown);
+	ws.initializeGame(Number(id), playerLeft, playerRight, scores, ball, engine, scene, table, buttonUp, buttonDown);
 	ws.play();
 		
 	window.addEventListener("resize", () => {

@@ -34,8 +34,10 @@ const initialPage = location.pathname.replace("/", "") || "home";
 navigateTo(initialPage, true);
 
 // 🌐 Inicializar WebSocket Social si hay token
-import { createSocialSocket, getSocialSocket } from "@/modules/social/socketInstance";
+import { createSocialSocket, destroySocialSocket, getSocialSocket } from "@/modules/social/socketInstance";
 import { SocialWebSocketClient } from "@/modules/social/socialSocket";
+import { getColor, setColors } from "@/modules/game/getColors";
+import { createGameSocket, getGameSocket } from "@/modules/game/gameSocket";
 
 
 async function initSocialSocket(): Promise<SocialWebSocketClient | null> {
@@ -87,6 +89,30 @@ if (toggle) {
       localStorage.setItem("theme", "light");
     }
 
+    //cambiar colores del juego
+    const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
+	  if (canvas)
+	  {
+      let ws = getGameSocket();
+      if (!ws)
+      {
+        const token = localStorage.getItem("access_token");
+        ws = createGameSocket(token);
+        ws.setAuth();
+      }
+      if (localStorage.getItem("theme") === "dark")
+      {
+        const borderColor = getColor("--color-primary");
+        const bgColor = getColor("--color-secondary");
+        setColors(ws.getScene(), bgColor, borderColor);
+      }
+      else if (localStorage.getItem("theme") === "light")
+      {
+        const borderColor = getColor("--color-secondary");
+        const bgColor = getColor("--color-primary");
+        setColors(ws.getScene(), bgColor, borderColor);
+      }
+    }
     //Reload doughnut
     // Obtener el canvas
     const ctx = document.getElementById("donutChart") as HTMLCanvasElement | null;

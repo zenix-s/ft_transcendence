@@ -5,7 +5,7 @@ import { modal } from "@/components/modal";
 import { showToast } from "@/components/toast";
 import { renderValues } from "./game";
 import type { Ball, Player, Score } from "./gameData";
-import type { Engine, Scene } from "@babylonjs/core";
+import type { Engine, Mesh, Scene } from "@babylonjs/core";
 import { endGameAndErrors } from "./authAndErrors";
 import { Actions } from "@/types/gameOptions"
 import { getCurrentUser } from "../users";
@@ -92,6 +92,7 @@ export class GameWebSocket {
 	private	ball: Ball | undefined;
 	private	engine: Engine | undefined;
 	private scene: Scene | undefined;
+	private table: Mesh | undefined;
 	private gameId: number;
 	private keyMove?: ((event: KeyboardEvent) => void);
 	private keyStop?: ((event: KeyboardEvent) => void);
@@ -278,9 +279,11 @@ export class GameWebSocket {
 					break ;
 				}
 				this.countdown(data);
-				renderValues(data.state.player1.position, this.player1, data.state.player2.position, this.player2,
-								data.state.player1.score, data.state.player2.score, this.scores,
-								data.state.ball.position.x, data.state.ball.position.y, this.ball);
+				renderValues(data.state.player1.position, this.player1,
+								data.state.player2.position, this.player2,
+								data.state.player1.score, data.state.player2.score,
+								this.scores, data.state.ball.position.x,
+								data.state.ball.position.y, this.ball);
 				break ;
 			}
 			case "error": {
@@ -299,8 +302,18 @@ export class GameWebSocket {
 		}
 	}
 
+	public setScene(scene: Scene)
+	{
+		this.scene = scene;
+	}
+
+	public getScene()
+	{
+		return (this.scene);
+	}
+
 	public initializeGame(gameId:number, player1: Player, player2: Player,
-		scores: Score, ball: Ball, engine : Engine, scene : Scene,
+		scores: Score, ball: Ball, engine: Engine, scene: Scene, table: Mesh,
 		buttonUp: HTMLButtonElement, buttonDown: HTMLButtonElement)
 	{
 		this.gameId = gameId;
@@ -310,6 +323,7 @@ export class GameWebSocket {
 		this.ball = ball;
 		this.engine = engine;
 		this.scene = scene;
+		this.table = table;
 		this.buttonUp = buttonUp;
 		this.buttonDown = buttonDown;
 		this.setEvents();

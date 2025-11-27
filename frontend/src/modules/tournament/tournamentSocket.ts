@@ -40,7 +40,7 @@ export class TournamentWebSocketClient {
   private tournaments: Tournament[] = [];
 
   constructor(token: string) {
-    this.wsUrl = getWsUrl("/tournaments/"); // Actualizar al EndPoint correspondiente a los torneos
+    this.wsUrl = getWsUrl("/tournaments/pong"); // Actualizar al EndPoint correspondiente a los torneos
     this.token = token;
   }
 

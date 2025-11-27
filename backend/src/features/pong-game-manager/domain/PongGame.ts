@@ -7,6 +7,7 @@ import {
     GAME_STATUS_UTILS,
 } from '@shared/constants/GameConstants';
 import { User } from '@shared/domain/Entities/User.entity';
+import { VisualStyle } from '@shared/domain/ValueObjects/MatchSettings.value';
 import { CountdownManager } from '../services/CountdownManager';
 
 interface PlayerState {
@@ -90,8 +91,15 @@ export class PongGame {
     private aiDifficulty: number;
     private isCancelled: boolean;
     private aiTimer: number;
+    private visualStyle: VisualStyle;
 
-    constructor(winnerScore = 5, maxGameTime = 120, isPlayer2AI = false, aiDifficulty = 0.95) {
+    constructor(
+        winnerScore = 5,
+        maxGameTime = 120,
+        isPlayer2AI = false,
+        aiDifficulty = 0.95,
+        visualStyle: VisualStyle = '2d'
+    ) {
         this.gameStatus = GAME_STATUS.WAITING_FOR_PLAYERS;
         this.countdownManager = new CountdownManager();
         this.player1 = undefined;
@@ -108,6 +116,7 @@ export class PongGame {
         this.aiDifficulty = aiDifficulty;
         this.isCancelled = false;
         this.aiTimer = 0;
+        this.visualStyle = visualStyle;
     }
 
     public addPlayer(playerId: number, userData?: User): boolean {
@@ -675,6 +684,7 @@ export class PongGame {
             winnerScore: this.winnerScore,
             maxGameTime: this.maxGameTime,
             difficulty: this.aiDifficulty,
+            visualStyle: this.visualStyle,
         };
     }
 
@@ -686,6 +696,7 @@ export class PongGame {
         winnerScore?: number;
         maxGameTime?: number;
         difficulty?: number;
+        visualStyle?: VisualStyle;
     }): boolean {
         // Solo permitir modificación si el juego no ha empezado
         if (this.gameStatus === GAME_STATUS.PLAYING) {
@@ -702,6 +713,10 @@ export class PongGame {
 
         if (settings.difficulty !== undefined && settings.difficulty >= 0 && settings.difficulty <= 1) {
             this.aiDifficulty = settings.difficulty;
+        }
+
+        if (settings.visualStyle !== undefined) {
+            this.visualStyle = settings.visualStyle;
         }
 
         return true;

@@ -4,6 +4,7 @@ import { Result } from '@shared/abstractions/Result';
 import { ApplicationError } from '@shared/Errors';
 import { Actions } from '../../pong-game-manager/Pong.types';
 import { IPongService } from './IPongService.interface';
+import { VisualStyle } from '@shared/domain/ValueObjects/MatchSettings.value';
 
 export interface WebSocketMessage {
     action: Actions;
@@ -13,6 +14,7 @@ export interface WebSocketMessage {
         winnerScore?: number;
         maxGameTime?: number;
         difficulty?: number;
+        visualStyle?: VisualStyle;
     };
 }
 
@@ -174,7 +176,12 @@ export class PongWebSocketService implements IPongService {
     async handleModifySettings(
         gameId: number | null,
         playerId: number | null,
-        settings: { winnerScore?: number; maxGameTime?: number; difficulty?: number }
+        settings: {
+            winnerScore?: number;
+            maxGameTime?: number;
+            difficulty?: number;
+            visualStyle?: VisualStyle;
+        }
     ): Promise<WebSocketResponse> {
         if (!gameId || !playerId) {
             return {

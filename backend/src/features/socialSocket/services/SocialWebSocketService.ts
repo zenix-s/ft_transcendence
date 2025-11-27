@@ -9,6 +9,7 @@ import {
     FriendConnectionStatusResponse,
     GameInvitationResponse,
     GameInvitationRejectionResponse,
+    GameInvitationAcceptanceResponse,
     FriendProfileUpdateResponse,
 } from '../Social.types';
 import { ISocialWebSocketService } from './ISocialWebSocketService.interface';
@@ -238,6 +239,53 @@ export class SocialWebSocketService implements ISocialWebSocketService {
             return Result.success(undefined);
         } catch (error) {
             this.fastify.log.error(error, 'Error sending game invitation rejection');
+            return Result.error(ApplicationError.InternalServerError);
+        }
+    }
+
+    async sendGameInvitationAcceptance({
+        fromUserId,
+        fromUsername,
+        fromUserAvatar,
+        toUserId,
+        gameId,
+        gameTypeName,
+        message,
+    }: {
+        fromUserId: number;
+        fromUsername: string;
+        fromUserAvatar: string | null;
+        toUserId: number;
+        gameId: number;
+        gameTypeName: string;
+        message: string;
+    }): Promise<Result<void>> {
+        try {
+            const targetSocket = this.activeConnections.get(toUserId);
+
+            if (!targetSocket) {
+                return Result.error(ApplicationError.UserNotConnected);
+            }
+
+            const gameInvitationAcceptanceResponse: GameInvitationAcceptanceResponse = {
+                type: 'gameInvitationAcceptance',
+                success: true,
+                fromUserId,
+                fromUsername,
+                fromUserAvatar,
+                gameId,
+                gameTypeName,
+                message,
+            };
+
+            this.sendMessage(targetSocket, gameInvitationAcceptanceResponse);
+
+            this.fastify.log.info(
+                `Game invitation acceptance sent to user ${toUserId} from user ${fromUserId}`
+            );
+            return Result.success(undefined);
+        } catch (error) {
+            this.fastify.log.error(error, 'Error sending game invitation acceptance');
             return Result.error(ApplicationError.InternalServerError);
         }
     }

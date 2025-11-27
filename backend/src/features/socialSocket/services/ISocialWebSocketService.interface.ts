@@ -76,6 +76,27 @@ export interface ISocialWebSocketService {
     }): Promise<Result<void>>;
 
     /**
+     * Envía una notificación de aceptación de invitación de juego a un usuario
+     */
+    sendGameInvitationAcceptance({
+        fromUserId,
+        fromUsername,
+        fromUserAvatar,
+        toUserId,
+        gameId,
+        gameTypeName,
+        message,
+    }: {
+        fromUserId: number;
+        fromUsername: string;
+        fromUserAvatar: string | null;
+        toUserId: number;
+        gameId: number;
+        gameTypeName: string;
+        message: string;
+    }): Promise<Result<void>>;
+
+    /**
      * Envía un mensaje WebSocket a un socket específico
      */
     sendMessage(socket: WebSocket, response: SocialWebSocketResponse): void;

@@ -38,6 +38,12 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      '/ws/tournaments/pong': {
+        target: BACKEND_WSS,
+        ws: true,
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
   optimizeDeps: {

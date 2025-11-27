@@ -38,7 +38,7 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
-      '/ws/tournaments/pong': {
+      '/tournaments/pong': {
         target: BACKEND_WSS,
         ws: true,
         changeOrigin: true,

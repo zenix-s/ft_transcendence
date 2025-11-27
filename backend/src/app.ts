@@ -26,6 +26,7 @@ import FriendShipController from '@features/friendship/Friendship.presentation';
 import MediatorHandlerPlugin from '@shared/mediators/MediatorHandlerPlugin';
 import PongTournamentsHttpRoutes from '@features/tournaments/pong/http/pong-tournaments.http';
 import PongTournamentManagerPlugin from '@features/tournaments/pong/plugins/PongTournamentManagerPlugin';
+import tournamentWebSocketRoutes from '@features/tournaments/pong/websocket/tournament.websocket';
 
 async function App(fastify: FastifyInstance) {
     fastify.register(fastifyJWT, {
@@ -86,6 +87,7 @@ async function App(fastify: FastifyInstance) {
 
     fastify.register(pongWebSocketRoutes, { prefix: '/game/pong' });
     fastify.register(socialWebSocketRoutes, { prefix: '/social' });
+    fastify.register(tournamentWebSocketRoutes, { prefix: '/tournaments/pong' });
 
     fastify.register(async function authenticatedContext(fastify) {
         fastify.addHook('preHandler', fastify.auth([fastify.authenticate]));

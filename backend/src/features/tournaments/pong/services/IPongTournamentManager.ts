@@ -27,6 +27,7 @@ export interface IPongTournamentManager {
         tournamentId: number;
         userId: number;
     }): Promise<Result<void>>;
+    removeTournament(tournamentId: number): void;
     getActiveTournaments(params: { limit?: number; offset?: number }): Promise<Result<Tournament[]>>;
     getActiveTournamentsBasic(params: { limit?: number; offset?: number }): Promise<Result<Tournament[]>>;
     getTournamentById({

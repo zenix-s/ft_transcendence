@@ -322,6 +322,10 @@ export class PongTournamentManager implements IPongTournamentManager {
         }
     }
 
+    removeTournament(tournamentId: number): void {
+        this.tournaments.delete(tournamentId);
+    }
+
     getActiveTournament(tournamentId: number): ActivePongTournament | null {
         return this.tournaments.get(tournamentId) || null;
     }

@@ -153,11 +153,12 @@ export async function modal({
               type === "logout"
                 ? t("modalLogoutIsConfirmedText")
                 : "Action completed successfully.",
-            color: isDark ? "#fff" : "#131313",
+            color: color_modal,
             icon: "success",
             iconColor,
             confirmButtonText: t("modalLogoutIsConfirmedConfirmButtonText"),
-            background: isDark ? "#131313" : "#ffffff",
+            background: color_back,
+            backdrop: backdrop,
             buttonsStyling: false,
             customClass: {
               confirmButton:

@@ -15,10 +15,12 @@ export class PongTournamentManager implements IPongTournamentManager {
         userId,
         limit,
         offset,
+        onlyRegistered,
     }: {
         userId: number;
         limit?: number;
         offset?: number;
+        onlyRegistered?: boolean;
     }): Promise<Result<PongTournamentAggregate[]>> {
         try {
             // Paso 1: Obtener torneos activos
@@ -32,15 +34,28 @@ export class PongTournamentManager implements IPongTournamentManager {
 
             const activeTournaments = activeTournamentsResult.value || [];
 
-            // Paso 2: Verificar si el usuario está registrado en cada torneo
+            // Paso 2: Verificar si el usuario está registrado en cada torneo y obtener su rol
             const tournamentsWithRegistrationFlag: PongTournamentAggregate[] = [];
 
             for (const tournament of activeTournaments) {
                 const isRegistered = tournament.isUserRegistered(userId);
 
+                // Si onlyRegistered es true y el usuario no está registrado, saltar este torneo
+                if (onlyRegistered && !isRegistered) {
+                    continue;
+                }
+
+                // Obtener el rol del usuario si está registrado
+                let userRole: string | undefined;
+                if (isRegistered) {
+                    const participant = tournament.getParticipant(userId);
+                    userRole = participant?.role;
+                }
+
                 tournamentsWithRegistrationFlag.push({
                     tournament,
                     isRegistered: isRegistered,
+                    userRole: userRole,
                 });
             }
 
@@ -234,9 +249,18 @@ export class PongTournamentManager implements IPongTournamentManager {
                 return Result.error(tournamentResult.error || ApplicationError.DatabaseServiceUnavailable);
             }
 
+            // Paso 3: Obtener el rol del usuario si está registrado
+            const isRegistered = tournamentResult.value.isUserRegistered(userId);
+            let userRole: string | undefined;
+            if (isRegistered) {
+                const participant = tournamentResult.value.getParticipant(userId);
+                userRole = participant?.role;
+            }
+
             return Result.success({
                 tournament: tournamentResult.value,
-                isRegistered: tournamentResult.value.isUserRegistered(userId),
+                isRegistered: isRegistered,
+                userRole: userRole,
             });
         } catch (error) {
             return this.fastify.handleError({

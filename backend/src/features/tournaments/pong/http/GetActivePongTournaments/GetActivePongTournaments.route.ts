@@ -8,6 +8,7 @@ interface GetActivePongTournamentsRequest {
     Querystring: {
         limit?: number;
         offset?: number;
+        onlyRegistered?: boolean;
     };
 }
 
@@ -35,6 +36,11 @@ export default async function GetActivePongTournamentsRoute(fastify: FastifyInst
                             default: 0,
                             description: 'Number of tournaments to skip',
                         },
+                        onlyRegistered: {
+                            type: 'boolean',
+                            default: false,
+                            description: 'Return only tournaments where user is registered',
+                        },
                     },
                 },
                 response: {
@@ -54,6 +60,7 @@ export default async function GetActivePongTournamentsRoute(fastify: FastifyInst
                                         createdAt: { type: 'string', format: 'date-time' },
                                         participantCount: { type: 'number' },
                                         isRegistered: { type: 'boolean' },
+                                        userRole: { type: 'string' },
                                         matchSettings: {
                                             type: 'object',
                                             properties: {
@@ -101,6 +108,7 @@ export default async function GetActivePongTournamentsRoute(fastify: FastifyInst
             const requestData: IGetActivePongTournamentsRequest = {
                 limit: request.query.limit,
                 offset: request.query.offset,
+                onlyRegistered: request.query.onlyRegistered,
                 userId: request.user.id,
             };
 

@@ -6,6 +6,7 @@ import { ActivePongTournament } from './ActivePongTournament';
 export interface PongTournamentAggregate {
     tournament: Tournament;
     isRegistered: boolean;
+    userRole?: string;
 }
 
 export interface IPongTournamentManager {
@@ -40,10 +41,12 @@ export interface IPongTournamentManager {
         userId,
         limit,
         offset,
+        onlyRegistered,
     }: {
         userId: number;
         limit?: number;
         offset?: number;
+        onlyRegistered?: boolean;
     }): Promise<Result<PongTournamentAggregate[]>>;
     startTournament({
         tournamentId,

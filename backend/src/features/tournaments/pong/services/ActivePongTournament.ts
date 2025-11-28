@@ -154,16 +154,40 @@ export class ActivePongTournament {
                 return Result.error(ApplicationError.ParticipantNotFound);
             }
 
-            // Paso 4: Remover participante del torneo
+            // Paso 4: Verificar si el participante que se va es admin
+            const participant = tournament.getParticipant(userId);
+            const isAdminLeaving = participant?.isAdmin() || participant?.isAdminParticipant();
+
+            // Paso 5: Remover participante del torneo
             const removeResult = tournament.removeParticipant(userId);
             if (!removeResult) {
                 return Result.error(ApplicationError.ParticipantNotFound);
             }
 
-            // Paso 5: Actualizar el torneo en la base de datos
+            // Paso 6: Verificar si el torneo debe ser cancelado
+            const shouldCancelTournament =
+                isAdminLeaving || // Si el admin abandona
+                tournament.participantCount === 0; // Si no quedan participantes
+
+            if (shouldCancelTournament) {
+                tournament.cancel();
+
+                // Remover el torneo del mapa de torneos activos
+                this.fastify.PongTournamentManager.removeTournament(this.tournamentId);
+            }
+
+            // Paso 7: Actualizar el torneo en la base de datos
             const updateResult = await this.fastify.TournamentRepository.update({ tournament });
             if (!updateResult.isSuccess) {
                 return Result.error(updateResult.error || ApplicationError.TournamentUpdateError);
+            }
+
+            // Paso 8: Notificar el cambio de estado si el torneo fue cancelado
+            if (
+                shouldCancelTournament &&
+                this.fastify.TournamentWebSocketService?.notifyTournamentStateUpdated
+            ) {
+                this.fastify.TournamentWebSocketService.notifyTournamentStateUpdated(this.tournamentId);
             }
 
             return Result.success(undefined);

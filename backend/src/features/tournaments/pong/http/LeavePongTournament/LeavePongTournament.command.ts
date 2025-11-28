@@ -57,9 +57,19 @@ export class LeavePongTournamentCommand
                 this.fastify.TournamentWebSocketService.notifyTournamentStateUpdated(request.tournamentId);
             }
 
+            // Paso 5: Verificar si el torneo fue cancelado para ajustar el mensaje
+            const activeTournament = this.fastify.PongTournamentManager.getActiveTournament(
+                request.tournamentId
+            );
+            const wasCancelled = !activeTournament; // Si ya no está en el mapa, fue cancelado
+
+            const message = wasCancelled
+                ? 'Has abandonado el torneo. El torneo ha sido cancelado debido a tu salida.'
+                : 'Has abandonado el torneo exitosamente';
+
             return Result.success({
                 success: true,
-                message: 'Has abandonado el torneo exitosamente',
+                message,
             });
         } catch (error: unknown) {
             return this.fastify.handleError<ILeavePongTournamentResponse>({

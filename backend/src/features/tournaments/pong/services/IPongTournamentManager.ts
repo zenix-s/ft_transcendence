@@ -19,6 +19,13 @@ export interface IPongTournamentManager {
         matchSettings?: IMatchSettings;
     }): Promise<Result<number>>;
     addParticipant({ tournamentId, userId }: { tournamentId: number; userId: number }): Promise<Result<void>>;
+    removeParticipant({
+        tournamentId,
+        userId,
+    }: {
+        tournamentId: number;
+        userId: number;
+    }): Promise<Result<void>>;
     getActiveTournaments(params: { limit?: number; offset?: number }): Promise<Result<Tournament[]>>;
     getActiveTournamentsBasic(params: { limit?: number; offset?: number }): Promise<Result<Tournament[]>>;
     getTournamentById({

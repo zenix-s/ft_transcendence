@@ -134,6 +134,37 @@ export class PongTournamentManager implements IPongTournamentManager {
         }
     }
 
+    async removeParticipant({
+        tournamentId,
+        userId,
+    }: {
+        tournamentId: number;
+        userId: number;
+    }): Promise<Result<void>> {
+        try {
+            // Paso 1: Buscar el torneo activo
+            const activeTournament = this.tournaments.get(tournamentId);
+            if (!activeTournament) {
+                return Result.error(ApplicationError.TournamentNotFound);
+            }
+
+            // Paso 2: Remover participante del torneo
+            const removeParticipantResult = await activeTournament.removeParticipant({ userId });
+
+            // Paso 3: Manejar el resultado de la eliminación
+            if (!removeParticipantResult.isSuccess) {
+                return Result.error(removeParticipantResult.error || ApplicationError.ParticipantNotFound);
+            }
+
+            return Result.success(undefined);
+        } catch (error) {
+            return this.fastify.handleError({
+                code: ApplicationError.ParticipantNotFound,
+                error,
+            });
+        }
+    }
+
     async getActiveTournaments(params: { limit?: number; offset?: number }): Promise<Result<Tournament[]>> {
         try {
             // Paso 1: Buscar torneos activos usando el repository

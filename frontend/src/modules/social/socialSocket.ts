@@ -58,6 +58,7 @@ export class SocialWebSocketClient {
     this.socket.onmessage = (event: MessageEvent<string>) => {
       try {
         const message = JSON.parse(event.data);
+        console.log("msg=", message);
         this.handleMessage(message);
       } catch (err) {
         console.error(`❌ ${t("ErrorParsingMsg")}`, err);

@@ -12,6 +12,7 @@ export interface TournamentBasicResponse {
     createdAt: string;
     participantCount: number;
     isRegistered: boolean;
+    userRole?: string;
     matchSettings: {
         maxScore: number;
         maxGameTime: number;
@@ -23,6 +24,7 @@ export interface IGetActivePongTournamentsRequest {
     limit?: number;
     offset?: number;
     userId: number;
+    onlyRegistered?: boolean;
 }
 
 export interface IGetActivePongTournamentsResponse {
@@ -64,6 +66,7 @@ export class GetActivePongTournamentsCommand
             createdAt: tournament.tournament.createdAt.toISOString(),
             participantCount: tournament.tournament.participantCount,
             isRegistered: tournament.isRegistered,
+            userRole: tournament.userRole,
             matchSettings: tournament.tournament.matchSettings.toObject(),
         };
     }
@@ -82,6 +85,7 @@ export class GetActivePongTournamentsCommand
                     userId: request.userId,
                     limit: request.limit,
                     offset: request.offset,
+                    onlyRegistered: request.onlyRegistered,
                 });
 
             // Paso 2: Manejar el resultado de la consulta

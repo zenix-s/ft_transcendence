@@ -15,10 +15,12 @@ export class PongTournamentManager implements IPongTournamentManager {
         userId,
         limit,
         offset,
+        onlyRegistered,
     }: {
         userId: number;
         limit?: number;
         offset?: number;
+        onlyRegistered?: boolean;
     }): Promise<Result<PongTournamentAggregate[]>> {
         try {
             // Paso 1: Obtener torneos activos
@@ -32,15 +34,28 @@ export class PongTournamentManager implements IPongTournamentManager {
 
             const activeTournaments = activeTournamentsResult.value || [];
 
-            // Paso 2: Verificar si el usuario está registrado en cada torneo
+            // Paso 2: Verificar si el usuario está registrado en cada torneo y obtener su rol
             const tournamentsWithRegistrationFlag: PongTournamentAggregate[] = [];
 
             for (const tournament of activeTournaments) {
                 const isRegistered = tournament.isUserRegistered(userId);
 
+                // Si onlyRegistered es true y el usuario no está registrado, saltar este torneo
+                if (onlyRegistered && !isRegistered) {
+                    continue;
+                }
+
+                // Obtener el rol del usuario si está registrado
+                let userRole: string | undefined;
+                if (isRegistered) {
+                    const participant = tournament.getParticipant(userId);
+                    userRole = participant?.role;
+                }
+
                 tournamentsWithRegistrationFlag.push({
                     tournament,
                     isRegistered: isRegistered,
+                    userRole: userRole,
                 });
             }
 
@@ -134,6 +149,37 @@ export class PongTournamentManager implements IPongTournamentManager {
         }
     }
 
+    async removeParticipant({
+        tournamentId,
+        userId,
+    }: {
+        tournamentId: number;
+        userId: number;
+    }): Promise<Result<void>> {
+        try {
+            // Paso 1: Buscar el torneo activo
+            const activeTournament = this.tournaments.get(tournamentId);
+            if (!activeTournament) {
+                return Result.error(ApplicationError.TournamentNotFound);
+            }
+
+            // Paso 2: Remover participante del torneo
+            const removeParticipantResult = await activeTournament.removeParticipant({ userId });
+
+            // Paso 3: Manejar el resultado de la eliminación
+            if (!removeParticipantResult.isSuccess) {
+                return Result.error(removeParticipantResult.error || ApplicationError.ParticipantNotFound);
+            }
+
+            return Result.success(undefined);
+        } catch (error) {
+            return this.fastify.handleError({
+                code: ApplicationError.ParticipantNotFound,
+                error,
+            });
+        }
+    }
+
     async getActiveTournaments(params: { limit?: number; offset?: number }): Promise<Result<Tournament[]>> {
         try {
             // Paso 1: Buscar torneos activos usando el repository
@@ -203,9 +249,18 @@ export class PongTournamentManager implements IPongTournamentManager {
                 return Result.error(tournamentResult.error || ApplicationError.DatabaseServiceUnavailable);
             }
 
+            // Paso 3: Obtener el rol del usuario si está registrado
+            const isRegistered = tournamentResult.value.isUserRegistered(userId);
+            let userRole: string | undefined;
+            if (isRegistered) {
+                const participant = tournamentResult.value.getParticipant(userId);
+                userRole = participant?.role;
+            }
+
             return Result.success({
                 tournament: tournamentResult.value,
-                isRegistered: tournamentResult.value.isUserRegistered(userId),
+                isRegistered: isRegistered,
+                userRole: userRole,
             });
         } catch (error) {
             return this.fastify.handleError({

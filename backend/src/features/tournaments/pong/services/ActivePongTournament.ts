@@ -131,6 +131,50 @@ export class ActivePongTournament {
         return this.tournamentId;
     }
 
+    async removeParticipant({ userId }: { userId: number }): Promise<Result<void>> {
+        try {
+            // Paso 1: Obtener el torneo
+            const tournamentResult = await this.fastify.TournamentRepository.findById({
+                id: this.tournamentId,
+            });
+
+            if (!tournamentResult.isSuccess || !tournamentResult.value) {
+                return Result.error(tournamentResult.error || ApplicationError.TournamentNotFound);
+            }
+
+            const tournament = tournamentResult.value;
+
+            // Paso 2: Verificar que el torneo esté en estado UPCOMING
+            if (tournament.status !== Tournament.STATUS.UPCOMING) {
+                return Result.error(ApplicationError.TournamentNotAvailable);
+            }
+
+            // Paso 3: Verificar que el usuario esté en el torneo
+            if (!tournament.isUserRegistered(userId)) {
+                return Result.error(ApplicationError.ParticipantNotFound);
+            }
+
+            // Paso 4: Remover participante del torneo
+            const removeResult = tournament.removeParticipant(userId);
+            if (!removeResult) {
+                return Result.error(ApplicationError.ParticipantNotFound);
+            }
+
+            // Paso 5: Actualizar el torneo en la base de datos
+            const updateResult = await this.fastify.TournamentRepository.update({ tournament });
+            if (!updateResult.isSuccess) {
+                return Result.error(updateResult.error || ApplicationError.TournamentUpdateError);
+            }
+
+            return Result.success(undefined);
+        } catch (error) {
+            return this.fastify.handleError({
+                code: ApplicationError.TournamentUpdateError,
+                error,
+            });
+        }
+    }
+
     async startTournament({ userId }: { userId: number }): Promise<Result<void>> {
         try {
             // Paso 1: Obtener el torneo

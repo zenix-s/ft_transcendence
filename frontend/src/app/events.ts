@@ -1,7 +1,7 @@
 import { navigateTo } from "@/app/navigation";
 import { applySavedColors } from "@/components/colorPicker";
 import { modal } from "@/components/modal";
-import { handleParticipationAction, refreshTournamentsHistory } from "@/components/tournamentsHistory";
+import { handleParticipationJoinOrLeave, handleParticipationResults, refreshTournamentsHistory } from "@/components/tournamentsHistory";
 import { destroySocialSocket } from "@/modules/social/socketInstance";
 import { destroyTournamentSocket } from "@/modules/tournament/tournamentSocketInstance";
 
@@ -70,8 +70,14 @@ export function setupEventListeners() {
     // 🔹 5. Listener para el botón de unirse o abandonar torneos
     if (target.classList.contains("participation-btn")) {
       event.preventDefault();
+
+      if (!target.dataset.i18n) return;
+
       // Llama a la nueva función que maneja la lógica de fetch, toast y refresh.
-      handleParticipationAction(target);
+      if (target.dataset.i18n === "join" || target.dataset.i18n === "leave")
+        handleParticipationJoinOrLeave(target);
+      else if (target.dataset.i18n === "results")
+        handleParticipationResults(target);
       return;
     }
   });

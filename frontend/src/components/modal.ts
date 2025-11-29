@@ -13,7 +13,7 @@ export async function modal({
   gameName,
   activeTournament,
 }: {
-  type?: "logout" | "gameFinished" | "gameInvitation" | "setReady" | "gameCreation" | "tournamentResults",
+  type?: "logout" | "gameFinished" | "gameInvitation" | "setReady" | "gameCreation" | "tournamentResults" | "confirmLeaveTournament",
   player1Score?: number,
   player2Score?: number,
   winner?: string,
@@ -120,6 +120,15 @@ export async function modal({
       `;
       confirmButtonText = t("Return");
       icon_msg = "info";
+    }
+    else if (type === "confirmLeaveTournament") {
+      title = t("modalConfirmLeaveTournamentTitle");
+      titleText = t("modalConfirmLeaveTournamentTitle");
+      text = t("modalConfirmLeaveTournamentText");
+      confirmButtonText = t("modalConfirmLeaveTournamentConfirmButtonText");
+      showCancelButton = true;
+      cancelButtonText = t("modalConfirmLeaveTournamentCancelButtonText");
+      icon_msg = "warning";
     }
     else {
       return false; // Tipo no reconocido
@@ -329,7 +338,42 @@ export async function modal({
         return formValues; // Hay que devolver los datos en lugar de true
       } else
         return false;
-    } else { // Caso: tournamentResults
+
+    } else if (type === "confirmLeaveTournament") {
+      // Caso: confirmLeaveTournament
+      const result = await Swal.fire({
+        title,
+        titleText,
+        html: text,
+        color: color_modal,
+        icon: icon_msg,
+        iconColor,
+        showCancelButton,
+        cancelButtonText: cancelButtonText,
+        //cancelButtonColor: "#F00",
+        confirmButtonText,
+        buttonsStyling: false, // to use our own classes
+        background: color_back,
+        backdrop: backdrop,
+        allowOutsideClick: allowOutsideClick,
+        allowEscapeKey: allowEscapeKey,
+        animation,
+        customClass: {
+          actions: "gap-10",
+          confirmButton:
+            "px-4 py-2 rounded-lg font-medium bg-cyan-300 hover:bg-cyan-500 text-gray-800 ml-2 dark:bg-cyan-700 dark:hover:bg-cyan-900 dark:text-gray-100 transition-all duration-300",
+          cancelButton:
+            "px-4 py-2 rounded-lg font-medium bg-rose-600 hover:bg-rose-800 text-primary ml-2 dark:bg-rose-600 dark:hover:bg-rose-800 dark:text-primary transition-all duration-300",
+        },
+      });
+      if (result.isConfirmed) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    
+    else { // Caso: tournamentResults
       // Definir modal para resultados de torneo
       await Swal.fire({
         title,

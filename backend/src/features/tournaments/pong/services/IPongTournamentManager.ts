@@ -49,6 +49,17 @@ export interface IPongTournamentManager {
         offset?: number;
         onlyRegistered?: boolean;
     }): Promise<Result<PongTournamentAggregate[]>>;
+    getCompletedTournamentsWithIsRegisteredFlag({
+        userId,
+        limit,
+        offset,
+        onlyRegistered,
+    }: {
+        userId: number;
+        limit?: number;
+        offset?: number;
+        onlyRegistered?: boolean;
+    }): Promise<Result<PongTournamentAggregate[]>>;
     startTournament({
         tournamentId,
         userId,

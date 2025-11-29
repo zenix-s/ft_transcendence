@@ -326,6 +326,67 @@ export class PongTournamentManager implements IPongTournamentManager {
         this.tournaments.delete(tournamentId);
     }
 
+    async getCompletedTournamentsWithIsRegisteredFlag({
+        userId,
+        limit,
+        offset,
+        onlyRegistered,
+    }: {
+        userId: number;
+        limit?: number;
+        offset?: number;
+        onlyRegistered?: boolean;
+    }): Promise<Result<PongTournamentAggregate[]>> {
+        try {
+            // Paso 1: Obtener torneos completados usando el repository
+            const completedTournamentsResult = await this.fastify.TournamentRepository.findTournaments({
+                status: [Tournament.STATUS.COMPLETED, Tournament.STATUS.CANCELLED],
+                limit,
+                offset,
+            });
+
+            if (!completedTournamentsResult.isSuccess) {
+                return Result.error(
+                    completedTournamentsResult.error || ApplicationError.DatabaseServiceUnavailable
+                );
+            }
+
+            const completedTournaments = completedTournamentsResult.value || [];
+
+            // Paso 2: Verificar si el usuario estuvo registrado en cada torneo y obtener su rol
+            const tournamentsWithRegistrationFlag: PongTournamentAggregate[] = [];
+
+            for (const tournament of completedTournaments) {
+                const isRegistered = tournament.isUserRegistered(userId);
+
+                // Si onlyRegistered es true y el usuario no estuvo registrado, saltar este torneo
+                if (onlyRegistered && !isRegistered) {
+                    continue;
+                }
+
+                // Obtener el rol del usuario si estuvo registrado
+                let userRole: string | undefined;
+                if (isRegistered) {
+                    const participant = tournament.getParticipant(userId);
+                    userRole = participant?.role;
+                }
+
+                tournamentsWithRegistrationFlag.push({
+                    tournament,
+                    isRegistered: isRegistered,
+                    userRole: userRole,
+                });
+            }
+
+            return Result.success(tournamentsWithRegistrationFlag);
+        } catch (error) {
+            return this.fastify.handleError({
+                code: ApplicationError.DatabaseServiceUnavailable,
+                error,
+            });
+        }
+    }
+
     getActiveTournament(tournamentId: number): ActivePongTournament | null {
         return this.tournaments.get(tournamentId) || null;
     }

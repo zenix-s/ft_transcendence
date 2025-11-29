@@ -1,7 +1,7 @@
 import { navigateTo } from "@/app/navigation";
 import { applySavedColors } from "@/components/colorPicker";
 import { modal } from "@/components/modal";
-import { handleParticipationJoinOrLeave, handleParticipationResults, refreshTournamentsHistory } from "@/components/tournamentsHistory";
+import { handleParticipationJoinOrLeave, handleParticipationResults, handleParticipationStartTournament, refreshTournamentsHistory } from "@/components/tournamentsHistory";
 import { destroySocialSocket } from "@/modules/social/socketInstance";
 import { destroyTournamentSocket } from "@/modules/tournament/tournamentSocketInstance";
 
@@ -67,17 +67,34 @@ export function setupEventListeners() {
       return;
     }
 
-    // 🔹 5. Listener para el botón de unirse o abandonar torneos
+    // 🔹 5. Listener para los botones de unirse, abandonar, comenzar o ver resultados de los torneos
     if (target.classList.contains("participation-btn")) {
       event.preventDefault();
 
       if (!target.dataset.i18n) return;
 
       // Llama a la nueva función que maneja la lógica de fetch, toast y refresh.
-      if (target.dataset.i18n === "join" || target.dataset.i18n === "leave")
+      if (target.dataset.i18n === "join")
+        // Caso join
         handleParticipationJoinOrLeave(target);
+      else if (target.dataset.i18n === "leave") {
+        // Caso leave
+        if (target.dataset.userrole === 'admin' || target.dataset.userrole === 'admin-participant') {
+          // Caso admin o admin-participant: pedir confirmación
+          const confirmLeave = await modal({type: "confirmLeaveTournament"});
+          if (confirmLeave)
+            handleParticipationJoinOrLeave(target);
+        }
+        else
+          handleParticipationJoinOrLeave(target);
+      }
       else if (target.dataset.i18n === "results")
         handleParticipationResults(target);
+      else {
+        // Caso startTournament
+        handleParticipationStartTournament(target);
+        console.log("Iniciar torneo - función no implementada aún.");
+      }
       return;
     }
   });

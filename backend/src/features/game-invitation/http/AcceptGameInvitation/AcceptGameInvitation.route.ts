@@ -6,7 +6,6 @@ import { FastifyRequest } from 'fastify/types/request';
 interface AcceptGameInvitationRequest {
     Body: {
         gameId: number;
-        inviterUsername?: string;
     };
 }
 
@@ -25,10 +24,6 @@ export default async function AcceptGameInvitationRoute(fastify: FastifyInstance
                         gameId: {
                             type: 'number',
                             description: 'ID of the game to accept invitation for',
-                        },
-                        inviterUsername: {
-                            type: 'string',
-                            description: 'Username of the user who sent the invitation (optional)',
                         },
                     },
                 },
@@ -85,7 +80,6 @@ export default async function AcceptGameInvitationRoute(fastify: FastifyInstance
             const request = {
                 userId: userId,
                 gameId: req.body.gameId,
-                inviterUsername: req.body.inviterUsername,
             };
 
             return fastify.handleCommand({

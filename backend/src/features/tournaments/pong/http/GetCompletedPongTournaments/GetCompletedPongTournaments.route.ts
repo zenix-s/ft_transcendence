@@ -1,10 +1,10 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import {
-    GetActivePongTournamentsCommand,
-    IGetActivePongTournamentsRequest,
-} from './GetActivePongTournaments.command';
+    GetCompletedPongTournamentsCommand,
+    IGetCompletedPongTournamentsRequest,
+} from './GetCompletedPongTournaments.command';
 
-interface GetActivePongTournamentsRequest {
+interface GetCompletedPongTournamentsRequest {
     Querystring: {
         limit?: number;
         offset?: number;
@@ -12,12 +12,12 @@ interface GetActivePongTournamentsRequest {
     };
 }
 
-export default async function GetActivePongTournamentsRoute(fastify: FastifyInstance) {
-    fastify.get<GetActivePongTournamentsRequest>(
-        '/active',
+export default async function GetCompletedPongTournamentsRoute(fastify: FastifyInstance) {
+    fastify.get<GetCompletedPongTournamentsRequest>(
+        '/completed',
         {
             schema: {
-                description: 'Get active Pong tournaments',
+                description: 'Get completed Pong tournaments history',
                 tags: ['Tournament'],
                 security: [{ bearerAuth: [] }],
                 querystring: {
@@ -39,13 +39,13 @@ export default async function GetActivePongTournamentsRoute(fastify: FastifyInst
                         onlyRegistered: {
                             type: 'boolean',
                             default: false,
-                            description: 'Return only tournaments where user is registered',
+                            description: 'Return only tournaments where user was registered',
                         },
                     },
                 },
                 response: {
                     200: {
-                        description: 'Active Pong tournaments retrieved successfully',
+                        description: 'Completed Pong tournaments retrieved successfully',
                         type: 'object',
                         properties: {
                             tournaments: {
@@ -102,10 +102,10 @@ export default async function GetActivePongTournamentsRoute(fastify: FastifyInst
                 },
             },
         },
-        async (request: FastifyRequest<GetActivePongTournamentsRequest>, reply: FastifyReply) => {
-            const command = new GetActivePongTournamentsCommand(fastify);
+        async (request: FastifyRequest<GetCompletedPongTournamentsRequest>, reply: FastifyReply) => {
+            const command = new GetCompletedPongTournamentsCommand(fastify);
 
-            const requestData: IGetActivePongTournamentsRequest = {
+            const requestData: IGetCompletedPongTournamentsRequest = {
                 limit: request.query.limit,
                 offset: request.query.offset,
                 onlyRegistered: request.query.onlyRegistered,

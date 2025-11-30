@@ -2,6 +2,9 @@ import { DataTable } from "simple-datatables";
 import { t, updateTexts } from "@/app/i18n";
 import { apiUrl } from "@/api";
 import { showToast } from "./toast";
+import type { ActiveTournament } from "@/types/tournamentsTypes";
+import { modal } from "./modal";
+
 
 // Configuración de las partidas dentro de un torneo
 interface MatchSettings {
@@ -19,6 +22,7 @@ interface Tournament {
   createdAt: string;
   participantCount: number;
   isRegistered: boolean;
+  userRole: string, // 'participant' | 'admin' | 'admin-participant'
   matchSettings: MatchSettings;
 }
 
@@ -67,7 +71,7 @@ export async function loadTournamentsHistory(perPage:number = 5) {
             <td data-label="" data-i18n="points" class="px-4 py-2 text-center font-light whitespace-nowrap">${points}</td>
             <td data-label="" data-i18n="time" class="px-4 py-2 text-center font-light whitespace-nowrap">${time}</td>
             <td data-label="" data-i18n="registered" class="px-4 py-2 text-center font-light whitespace-nowrap">${registered}</td>
-            <td data-label="" data-i18n="participation" class="px-4 py-2 text-center font-light whitespace-nowrap">${getParticipationButton(tournament.isRegistered, tournament.id)}</td>
+            <td data-label="" data-i18n="participation" class="px-4 py-2 text-center font-light whitespace-nowrap">${getParticipationButton(tournament)}</td>
           </tr>
         `;
       })
@@ -139,18 +143,51 @@ export async function getActiveTournaments() {
 }
 
 // Bóton de unir o abandonar para la columna participation de la tabla de torneos dependiendo de isRegistered
-export function getParticipationButton(isRegistered: boolean, tournamentId: number): string {
-  console.log(`Tournament ID: ${tournamentId}, isRegistered: ${isRegistered}`); // DB
-  if (isRegistered) {
-    return `<button data-tournamentId="${tournamentId}" class="bg-red-600 hover:bg-red-800 text-white font-bold py-1 px-2 rounded transition-all duration-300 ease-in-out participation-btn" data-i18n="leave">Leave</button>`;
-  } else {
-    return `<button data-tournamentId="${tournamentId}" class="bg-green-600 hover:bg-green-800 text-white font-bold py-1 px-2 rounded transition-all duration-300 ease-in-out participation-btn" data-i18n="join">Join</button>`;
+export function getParticipationButton(tournament: Tournament): string {
+  const tournamentId = tournament.id;
+  const isRegistered = tournament.isRegistered;
+  const status = tournament.status;
+  const userRole = tournament.userRole; // 'participant' | 'admin' | 'admin-participant'
+  const participantCount = tournament.participantCount;
+
+  console.log(`Tournament ID: ${tournamentId}, isRegistered: ${isRegistered}, status: ${status}`); // DB
+
+  const openDiv = `<div class="flex flex-col md:flex-row items-center gap-2 justify-center">`
+  let htmlToReturn = "";
+  const closeDiv = `</div>`;
+
+  if (status === "ongoing" || status === "completed") {
+    const spanText = (status === "ongoing") ? t("inProgress") : t("completed");
+    htmlToReturn = `
+        <span data-i18n="${spanText}" class="text-gray-300 font-light">${spanText}</span>
+        <button data-tournamentId="${tournamentId}" class="bg-cyan-400 hover:bg-cyan-600 text-secondary hover:text-primary font-bold py-1 px-2 rounded transition-all duration-300 ease-in-out participation-btn" data-i18n="results">Results</button>
+    `;
+
+    htmlToReturn = openDiv + htmlToReturn + closeDiv;
+
+    return htmlToReturn;
   }
+
+  const buttonHtml = isRegistered
+  ? `<button data-tournamentId="${tournamentId}" data-userRole="${userRole}" class="bg-red-600 hover:bg-red-800 text-white font-bold py-1 px-2 rounded transition-all duration-300 ease-in-out participation-btn" data-i18n="leave">Leave</button>`
+  : `<button data-tournamentId="${tournamentId}" class="bg-green-600 hover:bg-green-800 text-white font-bold py-1 px-2 rounded transition-all duration-300 ease-in-out participation-btn" data-i18n="join">Join</button>`;
+
+  htmlToReturn += buttonHtml;
+
+  // Añadir botón Start solo si el usuario es admin o admin-participant
+  if (userRole === 'admin' || userRole === 'admin-participant') {
+    const adminBtn = `<button data-tournamentId="${tournamentId}" data-participantCount="${participantCount}" class="bg-cyan-400 hover:bg-cyan-600 text-secondary hover:text-primary font-bold py-1 px-2 rounded transition-all duration-300 ease-in-out participation-btn" data-i18n="start">Start</button>`;
+    htmlToReturn += adminBtn;
+  }
+
+  htmlToReturn = openDiv + htmlToReturn + closeDiv;
+
+  return htmlToReturn;
 }
 
-export async function handleParticipationAction(target: HTMLElement) {
+export async function handleParticipationJoinOrLeave(target: HTMLElement) {
   const tournamentId = target.dataset.tournamentid;
-  const action = target.dataset.i18n; // "join" o "leave"
+  const action = target.dataset.i18n; // "join", "leave"
 
   if (!tournamentId || !action) return;
 
@@ -170,6 +207,10 @@ export async function handleParticipationAction(target: HTMLElement) {
         const errorcode = data.error;
         if (errorcode === "InvalidRequest")
             showToast(t("ParticipantAdditionError"), "error");
+        else if (errorcode === "TournamentNotFound") {
+          showToast(t(errorcode), "error");
+          refreshTournamentsHistory();
+        }
         else
             showToast(t(errorcode), "error");
         return;
@@ -186,6 +227,78 @@ export async function handleParticipationAction(target: HTMLElement) {
 
     // Recargar tabla
     await refreshTournamentsHistory();
+
+  } catch {
+      showToast(t("NetworkOrServerError"), "error");
+  }
+}
+
+export async function handleParticipationStartTournament(target: HTMLElement) {
+  const tournamentId = target.dataset.tournamentid;
+  const action = target.dataset.i18n; // "start"
+  const participantCount = target.dataset.participantcount;
+
+  if (!tournamentId || !action) return;
+
+  console.log("Tournament ID:", tournamentId, "action:", action); // DB
+
+  try {
+    const response = await fetch(apiUrl(`/tournaments/pong/tournaments/${tournamentId}/${action}`), {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${localStorage.getItem("access_token") || ""}`,
+        },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        const errorcode = data.error;
+        if (errorcode === "TournamentStartError" && participantCount && parseInt(participantCount) < 2)
+            showToast(t("TournamentStartError") + ": " + t("NotEnoughParticipants"), "error");
+        else
+          showToast(t(errorcode), "error");
+        return;
+    }
+
+    showToast(t("TournamentStartSuccess")); // Mensaje genérico de éxito
+
+    // Recargar tabla
+    await refreshTournamentsHistory();
+
+  } catch {
+      showToast(t("NetworkOrServerError"), "error");
+  }
+}
+
+export async function handleParticipationResults(target: HTMLElement) {
+  const tournamentId = target.dataset.tournamentid;
+
+  if (!tournamentId) return;
+
+  console.log("Tournament ID:", tournamentId); // DB
+
+  try {
+    const response = await fetch(apiUrl(`/tournaments/pong/${tournamentId}`), {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${localStorage.getItem("access_token") || ""}`,
+        },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        const errorcode = data.error!;
+        showToast(t(errorcode), "error");
+        return;
+    }
+
+    // Normaliza: si viene anidado, tomar data.tournament, else data
+    const tournament = data.tournament ?? data as ActiveTournament;
+
+    // Mostrar modal con resultados
+    await modal({type: "tournamentResults", activeTournament: tournament});
 
   } catch {
       showToast(t("NetworkOrServerError"), "error");

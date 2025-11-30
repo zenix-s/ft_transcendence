@@ -20,24 +20,24 @@ export interface TournamentBasicResponse {
     };
 }
 
-export interface IGetActivePongTournamentsRequest {
+export interface IGetCompletedPongTournamentsRequest {
     limit?: number;
     offset?: number;
     userId: number;
     onlyRegistered?: boolean;
 }
 
-export interface IGetActivePongTournamentsResponse {
+export interface IGetCompletedPongTournamentsResponse {
     tournaments: TournamentBasicResponse[];
     total: number;
 }
 
-export class GetActivePongTournamentsCommand
-    implements ICommand<IGetActivePongTournamentsRequest, IGetActivePongTournamentsResponse>
+export class GetCompletedPongTournamentsCommand
+    implements ICommand<IGetCompletedPongTournamentsRequest, IGetCompletedPongTournamentsResponse>
 {
     constructor(private readonly fastify: FastifyInstance) {}
 
-    validate(request?: IGetActivePongTournamentsRequest | undefined): Result<void> {
+    validate(request?: IGetCompletedPongTournamentsRequest | undefined): Result<void> {
         if (!request) return Result.success(undefined);
 
         // Validar límite
@@ -72,16 +72,16 @@ export class GetActivePongTournamentsCommand
     }
 
     async execute(
-        request?: IGetActivePongTournamentsRequest | undefined
-    ): Promise<Result<IGetActivePongTournamentsResponse>> {
+        request?: IGetCompletedPongTournamentsRequest | undefined
+    ): Promise<Result<IGetCompletedPongTournamentsResponse>> {
         try {
             if (!request) {
                 return Result.error(ApplicationError.InvalidRequest);
             }
 
-            // Paso 1: Obtener torneos activos usando el PongTournamentManager
-            const activeTournamentsResult =
-                await this.fastify.PongTournamentManager.getActiveTournamentsWithIsRegisteredFlag({
+            // Paso 1: Obtener torneos completados usando el PongTournamentManager
+            const completedTournamentsResult =
+                await this.fastify.PongTournamentManager.getCompletedTournamentsWithIsRegisteredFlag({
                     userId: request.userId,
                     limit: request.limit,
                     offset: request.offset,
@@ -89,14 +89,14 @@ export class GetActivePongTournamentsCommand
                 });
 
             // Paso 2: Manejar el resultado de la consulta
-            if (!activeTournamentsResult.isSuccess) {
+            if (!completedTournamentsResult.isSuccess) {
                 return Result.error(
-                    activeTournamentsResult.error || ApplicationError.DatabaseServiceUnavailable
+                    completedTournamentsResult.error || ApplicationError.DatabaseServiceUnavailable
                 );
             }
 
             // Paso 3: Transformar entidades de dominio a interfaces de respuesta
-            const tournaments = activeTournamentsResult.value || [];
+            const tournaments = completedTournamentsResult.value || [];
             const tournamentResponses = tournaments.map((tournament) =>
                 this.tournamentToBasicResponse(tournament)
             );
@@ -106,7 +106,7 @@ export class GetActivePongTournamentsCommand
                 total: tournamentResponses.length,
             });
         } catch (error: unknown) {
-            return this.fastify.handleError<IGetActivePongTournamentsResponse>({
+            return this.fastify.handleError<IGetCompletedPongTournamentsResponse>({
                 code: ApplicationError.InternalServerError,
                 error,
             });

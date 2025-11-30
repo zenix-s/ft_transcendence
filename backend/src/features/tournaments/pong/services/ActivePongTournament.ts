@@ -131,6 +131,74 @@ export class ActivePongTournament {
         return this.tournamentId;
     }
 
+    async removeParticipant({ userId }: { userId: number }): Promise<Result<void>> {
+        try {
+            // Paso 1: Obtener el torneo
+            const tournamentResult = await this.fastify.TournamentRepository.findById({
+                id: this.tournamentId,
+            });
+
+            if (!tournamentResult.isSuccess || !tournamentResult.value) {
+                return Result.error(tournamentResult.error || ApplicationError.TournamentNotFound);
+            }
+
+            const tournament = tournamentResult.value;
+
+            // Paso 2: Verificar que el torneo esté en estado UPCOMING
+            if (tournament.status !== Tournament.STATUS.UPCOMING) {
+                return Result.error(ApplicationError.TournamentNotAvailable);
+            }
+
+            // Paso 3: Verificar que el usuario esté en el torneo
+            if (!tournament.isUserRegistered(userId)) {
+                return Result.error(ApplicationError.ParticipantNotFound);
+            }
+
+            // Paso 4: Verificar si el participante que se va es admin
+            const participant = tournament.getParticipant(userId);
+            const isAdminLeaving = participant?.isAdmin() || participant?.isAdminParticipant();
+
+            // Paso 5: Remover participante del torneo
+            const removeResult = tournament.removeParticipant(userId);
+            if (!removeResult) {
+                return Result.error(ApplicationError.ParticipantNotFound);
+            }
+
+            // Paso 6: Verificar si el torneo debe ser cancelado
+            const shouldCancelTournament =
+                isAdminLeaving || // Si el admin abandona
+                tournament.participantCount === 0; // Si no quedan participantes
+
+            if (shouldCancelTournament) {
+                tournament.cancel();
+
+                // Remover el torneo del mapa de torneos activos
+                this.fastify.PongTournamentManager.removeTournament(this.tournamentId);
+            }
+
+            // Paso 7: Actualizar el torneo en la base de datos
+            const updateResult = await this.fastify.TournamentRepository.update({ tournament });
+            if (!updateResult.isSuccess) {
+                return Result.error(updateResult.error || ApplicationError.TournamentUpdateError);
+            }
+
+            // Paso 8: Notificar el cambio de estado si el torneo fue cancelado
+            if (
+                shouldCancelTournament &&
+                this.fastify.TournamentWebSocketService?.notifyTournamentStateUpdated
+            ) {
+                this.fastify.TournamentWebSocketService.notifyTournamentStateUpdated(this.tournamentId);
+            }
+
+            return Result.success(undefined);
+        } catch (error) {
+            return this.fastify.handleError({
+                code: ApplicationError.TournamentUpdateError,
+                error,
+            });
+        }
+    }
+
     async startTournament({ userId }: { userId: number }): Promise<Result<void>> {
         try {
             // Paso 1: Obtener el torneo

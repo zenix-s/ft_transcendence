@@ -6,6 +6,7 @@ import { ActivePongTournament } from './ActivePongTournament';
 export interface PongTournamentAggregate {
     tournament: Tournament;
     isRegistered: boolean;
+    userRole?: string;
 }
 
 export interface IPongTournamentManager {
@@ -19,6 +20,14 @@ export interface IPongTournamentManager {
         matchSettings?: IMatchSettings;
     }): Promise<Result<number>>;
     addParticipant({ tournamentId, userId }: { tournamentId: number; userId: number }): Promise<Result<void>>;
+    removeParticipant({
+        tournamentId,
+        userId,
+    }: {
+        tournamentId: number;
+        userId: number;
+    }): Promise<Result<void>>;
+    removeTournament(tournamentId: number): void;
     getActiveTournaments(params: { limit?: number; offset?: number }): Promise<Result<Tournament[]>>;
     getActiveTournamentsBasic(params: { limit?: number; offset?: number }): Promise<Result<Tournament[]>>;
     getTournamentById({
@@ -33,10 +42,23 @@ export interface IPongTournamentManager {
         userId,
         limit,
         offset,
+        onlyRegistered,
     }: {
         userId: number;
         limit?: number;
         offset?: number;
+        onlyRegistered?: boolean;
+    }): Promise<Result<PongTournamentAggregate[]>>;
+    getCompletedTournamentsWithIsRegisteredFlag({
+        userId,
+        limit,
+        offset,
+        onlyRegistered,
+    }: {
+        userId: number;
+        limit?: number;
+        offset?: number;
+        onlyRegistered?: boolean;
     }): Promise<Result<PongTournamentAggregate[]>>;
     startTournament({
         tournamentId,

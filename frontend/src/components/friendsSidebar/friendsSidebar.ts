@@ -151,8 +151,7 @@ export async function initFriendsSidebar() {
 
 
         inviteMultiplayer(username, gameId);
-        const playerView = "3D";
-        navigateTo(`playing?id=${gameId}&mutiPlayer&view=${playerView}`); // Temporal para pruebas?
+        navigateTo(`playing?id=${gameId}&mutiPlayer&view=${confirmed.gameMode}`); // Temporal para pruebas?
         showToast("Enviada invitación a: " + username, "success");
       }
     }

@@ -7,7 +7,7 @@ import {
     GAME_STATUS_UTILS,
 } from '@shared/constants/GameConstants';
 import { User } from '@shared/domain/Entities/User.entity';
-import { VisualStyle } from '@shared/domain/ValueObjects/MatchSettings.value';
+import { IMatchSettings, VisualStyle } from '@shared/domain/ValueObjects/MatchSettings.value';
 import { CountdownManager } from '../services/CountdownManager';
 
 interface PlayerState {
@@ -684,6 +684,14 @@ export class PongGame {
             winnerScore: this.winnerScore,
             maxGameTime: this.maxGameTime,
             difficulty: this.aiDifficulty,
+            visualStyle: this.visualStyle,
+        };
+    }
+
+    public getMatchSettings(): IMatchSettings {
+        return {
+            maxScore: this.winnerScore,
+            maxGameTime: this.maxGameTime ?? 0,
             visualStyle: this.visualStyle,
         };
     }

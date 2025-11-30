@@ -1,6 +1,7 @@
 import { WebSocket } from '@fastify/websocket';
 import { Result } from '@shared/abstractions/Result';
 import { Friend, SocialWebSocketMessage, SocialWebSocketResponse } from '../Social.types';
+import { IMatchSettings } from '@shared/domain/ValueObjects/MatchSettings.value';
 
 export interface ISocialWebSocketService {
     /**
@@ -44,6 +45,7 @@ export interface ISocialWebSocketService {
         gameId,
         gameTypeName,
         message,
+        matchSettings,
     }: {
         fromUserId: number;
         fromUsername: string;
@@ -52,6 +54,7 @@ export interface ISocialWebSocketService {
         gameId: number;
         gameTypeName: string;
         message: string;
+        matchSettings: IMatchSettings;
     }): Promise<Result<void>>;
 
     /**

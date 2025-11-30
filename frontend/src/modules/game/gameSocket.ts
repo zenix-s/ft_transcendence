@@ -9,6 +9,8 @@ import type { Engine, Mesh, Scene } from "@babylonjs/core";
 import { endGameAndErrors } from "./authAndErrors";
 import { Actions } from "@/types/gameOptions"
 import { getCurrentUser } from "../users";
+import Swal from 'sweetalert2';
+
 
 export interface GameStateMessage {
 	type: "gameState";
@@ -293,6 +295,12 @@ export class GameWebSocket {
 			}
 			case "error": {
 				const data = message as ErrorMessage;
+				if (data.error === "GameCancelled")
+				{
+					console.log("cerrar modal");
+					showToast(t("GameCancelled"), "error");
+					Swal.close();
+				}
 				if (data.error === "GameAlreadyFinished" || (data.error != "UnauthorizedAccess" && data.error != "GameNotFound"))
 				{
 					this.removeEvents();

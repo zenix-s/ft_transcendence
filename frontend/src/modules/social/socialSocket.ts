@@ -6,6 +6,7 @@ import { modal } from "@/components/modal";
 import { showToast } from "@/components/toast";
 import type { Friend } from "@/types/friend"
 import { reloadGameHistory } from "@/app/main";
+import { createGameSocket } from "../game/gameSocket";
 
 interface AuthSuccessMessage {
   type: "authSuccess";
@@ -145,10 +146,15 @@ export class SocialWebSocketClient {
           // Definir que pasa si se ACEPTA la invitación
           console.log("Has aceptado la invitación");
           const response = await acceptInvitation(msg.gameId);
+
+          const token = localStorage.getItem("access_token");
+          createGameSocket(token, msg.gameId);
+
           const playerView = "3D";
           if (response)
             navigateTo(`playing?id=${msg.gameId}&mutiPlayer&view=${playerView}`); // Enviar a la partida
         }
+        console.log("he rechazado la invitación");
         // Definir que pasa si RECHAZA la invitación
         break;
       }

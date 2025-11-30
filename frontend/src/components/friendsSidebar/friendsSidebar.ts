@@ -9,6 +9,7 @@ import { apiUrl } from "@/api";
 import { navigateTo } from "@/app/navigation";
 import { modal } from "../modal";
 import type { GameOptions } from "@/types/gameOptions";
+import { createGameSocket } from "@/modules/game/gameSocket";
 
 export async function initFriendsSidebar() {
   const container = document.getElementById("friends-sidebar-container");
@@ -142,10 +143,17 @@ export async function initFriendsSidebar() {
         ); */
 
         const gameId = await fetchGameId(confirmed.maxPoints, confirmed.maxTime, confirmed.gameMode); // Create game PONG --> Y si hay otro juego?
+        console.log("estoy invitando en el modo=", confirmed.gameMode);
+
+        const token = localStorage.getItem("access_token");
+        const ws = createGameSocket(token, gameId);
+      	ws.authenticate(gameId);
+
+
         inviteMultiplayer(username, gameId);
-        //const playerView = "3D";
-        //navigateTo(`playing?id=${gameId}&mutiPlayer&view=${playerView}`); // Temporal para pruebas?
-        //showToast("Enviada invitación a: " + username, "success");
+        const playerView = "3D";
+        navigateTo(`playing?id=${gameId}&mutiPlayer&view=${playerView}`); // Temporal para pruebas?
+        showToast("Enviada invitación a: " + username, "success");
       }
     }
   });

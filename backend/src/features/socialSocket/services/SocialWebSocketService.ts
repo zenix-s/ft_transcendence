@@ -13,6 +13,7 @@ import {
     FriendProfileUpdateResponse,
 } from '../Social.types';
 import { ISocialWebSocketService } from './ISocialWebSocketService.interface';
+import { IMatchSettings } from '@shared/domain/ValueObjects/MatchSettings.value';
 
 export class SocialWebSocketService implements ISocialWebSocketService {
     private activeConnections: Map<number, WebSocket> = new Map<number, WebSocket>();
@@ -159,6 +160,7 @@ export class SocialWebSocketService implements ISocialWebSocketService {
         gameId,
         gameTypeName,
         message,
+        matchSettings,
     }: {
         fromUserId: number;
         fromUsername: string;
@@ -167,6 +169,7 @@ export class SocialWebSocketService implements ISocialWebSocketService {
         gameId: number;
         gameTypeName: string;
         message: string;
+        matchSettings: IMatchSettings;
     }): Promise<Result<void>> {
         try {
             const targetSocket = this.activeConnections.get(toUserId);
@@ -184,6 +187,7 @@ export class SocialWebSocketService implements ISocialWebSocketService {
                 gameId,
                 gameTypeName,
                 message,
+                matchSettings,
             };
 
             this.sendMessage(targetSocket, gameInvitationResponse);

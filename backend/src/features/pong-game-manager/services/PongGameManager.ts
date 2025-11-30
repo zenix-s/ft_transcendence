@@ -17,8 +17,12 @@ export class PongGameManager implements IPongGameManager {
         try {
             this.deleteGame(gameId);
 
-            const activeGame = new ActivePongGame(gameId, matchId, game, this.fastify, (id: number) =>
-                this.onGameEnd(id)
+            const activeGame = new ActivePongGame(
+                gameId,
+                matchId,
+                game,
+                this.fastify,
+                async (id: number, mId: number) => await this.onGameEnd(id, mId)
             );
 
             activeGame.start();
@@ -46,8 +50,9 @@ export class PongGameManager implements IPongGameManager {
                 matchId,
                 game,
                 this.fastify,
-                async (id: number) => {
-                    this.onGameEnd(id);
+                async (id: number, mId: number) => {
+                    await this.onGameEnd(id, mId);
+                    // IMPORTANTE: onMatchEnd se ejecuta DESPUÉS de que el match fue guardado
                     await onMatchEnd(matchId);
                 }
             );
@@ -192,8 +197,10 @@ export class PongGameManager implements IPongGameManager {
         return Result.success(games);
     }
 
-    private onGameEnd(gameId: number): void {
+    private async onGameEnd(gameId: number, matchId: number): Promise<void> {
+        // En este punto, el match YA fue guardado en la BD
         this.activeGames.delete(gameId);
+        this.fastify.log.info(`Game ${gameId} ended, match ${matchId} was saved`);
     }
 
     private setupProcessHandlers(): void {

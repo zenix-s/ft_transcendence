@@ -358,12 +358,18 @@ export class ActivePongTournament {
         matchup: ITournamentMatchup
     ): Promise<void> {
         try {
-            // Paso 1: Obtener el match de la base de datos para verificar el resultado
+            // Paso 1: Obtener el match de la base de datos
+            // GARANTÍA: El match YA fue guardado por ActivePongGame antes de llamar este callback
             const match = await this.fastify.MatchRepository.findById({ id: matchId });
             if (!match) {
                 this.fastify.log.error(`Match with ID ${matchId} not found`);
                 return;
             }
+
+            this.fastify.log.info(
+                `Processing match result - matchId: ${matchId}, status: ${match.status}, ` +
+                    `players: ${match.players.map((p) => `${p.userId}(winner:${p.isWinner})`).join(', ')}`
+            );
 
             // Paso 2: Obtener el torneo
             const tournamentResult = await this.fastify.TournamentRepository.findById({
@@ -383,7 +389,7 @@ export class ActivePongTournament {
                 return;
             }
 
-            // Paso 3: Determinar ganador y perdedor basado en el estado final del match
+            // Paso 3: Determinar ganador y perdedor basado en el estado FINAL del match
             let winnerId: number | null = null;
             let loserId: number | null = null;
 
@@ -395,55 +401,69 @@ export class ActivePongTournament {
                 if (winner && loser) {
                     winnerId = winner.userId;
                     loserId = loser.userId;
+                    this.fastify.log.info(
+                        `Match completed normally - winner: ${winnerId}, loser: ${loserId}`
+                    );
                 }
             } else if (match.status === Match.STATUS.CANCELLED) {
-                // Para partidas canceladas, verificar si hay un ganador por timeout
                 const players = match.players;
                 if (players.length >= 2) {
                     const winner = players.find((p) => p.isWinner);
                     if (winner) {
                         winnerId = winner.userId;
                         loserId = players.find((p) => p.userId !== winner.userId)?.userId || null;
+                        this.fastify.log.info(
+                            `Match cancelled with timeout winner: ${winnerId}, loser: ${loserId}`
+                        );
+                    } else {
+                        this.fastify.log.info(
+                            'Match cancelled without winner - both players will be eliminated'
+                        );
                     }
-                    // Si no hay ganador, ambos jugadores son eliminados (se maneja más abajo)
                 }
             }
 
             // Paso 4: Actualizar el matchup con el ganador (si existe)
             if (winnerId) {
                 currentRound.setMatchupWinner(matchId, winnerId);
+                this.fastify.log.info(`Set winner ${winnerId} for matchup in match ${matchId}`);
+            } else {
+                currentRound.setBothLosers(matchId);
+                this.fastify.log.info(`No winner to set for matchup in match ${matchId}`);
             }
 
             // Paso 5: Eliminar a los perdedores según el resultado
             if (match.status === Match.STATUS.COMPLETED && loserId) {
-                // Partida completada normalmente - solo eliminar al perdedor
                 const loserParticipant = tournament.getParticipant(loserId);
                 if (loserParticipant) {
                     loserParticipant.eliminate();
+                    this.fastify.log.info(`Eliminated player ${loserId} from tournament`);
                 }
             } else if (match.status === Match.STATUS.CANCELLED) {
                 if (winnerId && loserId) {
-                    // Cancelada con ganador por timeout - solo eliminar al perdedor
                     const loserParticipant = tournament.getParticipant(loserId);
                     if (loserParticipant) {
                         loserParticipant.eliminate();
+                        this.fastify.log.info(`Eliminated loser ${loserId} (timeout)`);
                     }
                 } else {
-                    // Cancelada sin ganador - eliminar a ambos jugadores
+                    // Eliminar a ambos jugadores
                     const players = match.players;
                     players.forEach((player) => {
                         const participant = tournament.getParticipant(player.userId);
                         if (participant) {
                             participant.eliminate();
+                            this.fastify.log.info(`Eliminated player ${player.userId} (double elimination)`);
                         }
                     });
                 }
             }
 
-            // Paso 4: Actualizar el torneo
+            // Paso 6: Actualizar el torneo
             await this.fastify.TournamentRepository.update({ tournament });
+            this.fastify.log.info(`Updated tournament ${this.tournamentId} state`);
 
-            // Paso 6: Notificar el resultado por websocket
+            // Paso 7: Notificar el resultado por websocket
             if (this.fastify.TournamentWebSocketService?.notifyMatchResult && matchup.matchId && winnerId) {
                 this.fastify.TournamentWebSocketService.notifyMatchResult(
                     this.tournamentId,
@@ -453,8 +473,9 @@ export class ActivePongTournament {
                 );
             }
 
-            // Paso 7: Verificar si la ronda ha terminado
+            // Paso 8: Verificar si la ronda ha terminado
             if (currentRound.isComplete) {
+                this.fastify.log.info(`Round ${roundNumber} completed for tournament ${this.tournamentId}`);
                 await this.onRoundComplete(tournament);
             }
         } catch (error) {
@@ -465,6 +486,9 @@ export class ActivePongTournament {
     private async onRoundComplete(tournament: Tournament): Promise<void> {
         try {
             const activeParticipants = tournament.getActiveParticipants();
+            this.fastify.log.info(
+                `Round complete - active participants: ${activeParticipants.map((p) => p.userId).join(', ')}`
+            );
 
             // Paso 1: Verificar si solo queda un ganador
             if (activeParticipants.length === 1) {
@@ -475,17 +499,31 @@ export class ActivePongTournament {
 
                 await this.fastify.TournamentRepository.update({ tournament });
 
-                // Notificar que el torneo ha terminado
+                this.fastify.log.info(`Tournament ${this.tournamentId} completed - winner: ${winner.userId}`);
+
                 if (this.fastify.TournamentWebSocketService?.notifyTournamentEnded) {
                     this.fastify.TournamentWebSocketService.notifyTournamentEnded(this.tournamentId);
                 }
 
-                // Notificar al ganador
                 if (this.fastify.TournamentWebSocketService?.notifyTournamentWon) {
                     this.fastify.TournamentWebSocketService.notifyTournamentWon(
                         this.tournamentId,
                         winner.userId
                     );
+                }
+
+                return;
+            }
+            
+            if (activeParticipants.length === 0) {
+                tournament.complete();
+
+                await this.fastify.TournamentRepository.update({ tournament });
+
+                this.fastify.log.info(`Tournament ${this.tournamentId} completed with no winner`);
+
+                if (this.fastify.TournamentWebSocketService?.notifyTournamentEnded) {
+                    this.fastify.TournamentWebSocketService.notifyTournamentEnded(this.tournamentId);
                 }
 
                 return;
@@ -500,7 +538,10 @@ export class ActivePongTournament {
 
             await this.fastify.TournamentRepository.update({ tournament });
 
-            // Paso 3: Notificar que comienza una nueva ronda
+            this.fastify.log.info(
+                `Created round ${nextRound.roundNumber} for tournament ${this.tournamentId}`
+            );
+
             if (this.fastify.TournamentWebSocketService?.notifyNewRoundStarted) {
                 this.fastify.TournamentWebSocketService.notifyNewRoundStarted(
                     this.tournamentId,
@@ -508,7 +549,7 @@ export class ActivePongTournament {
                 );
             }
 
-            // Paso 4: Crear todos los matches de la nueva ronda
+            // Paso 3: Crear todos los matches de la nueva ronda
             await this.createRoundMatches(tournament, nextRound);
         } catch (error) {
             this.fastify.log.error(error, `Error completing round for tournament ${this.tournamentId}`);

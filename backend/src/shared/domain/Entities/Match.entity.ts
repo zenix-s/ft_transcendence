@@ -97,10 +97,6 @@ export class Match {
     }
 
     public end(winnerIds: number[], finalScores: Record<number, number>): boolean {
-        if (this._status !== Match.STATUS.IN_PROGRESS) {
-            return false;
-        }
-
         this._status = Match.STATUS.COMPLETED;
         this._endedAt = new Date();
 
@@ -117,10 +113,6 @@ export class Match {
     }
 
     public cancel(): boolean {
-        if (this._status === Match.STATUS.COMPLETED || this._status === Match.STATUS.CANCELLED) {
-            return false;
-        }
-
         this._status = Match.STATUS.CANCELLED;
         this._endedAt = new Date();
         return true;

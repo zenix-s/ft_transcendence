@@ -87,6 +87,21 @@ export class TournamentRound {
 
         return true;
     }
+    
+    public setBothLosers(matchId: number): boolean {
+        const match = this._matchups.find((m) => m.matchId === matchId);
+        if (!match) {
+            return false;
+        }
+
+        match.winnerId = undefined;
+        match.status = 'completed';
+
+        // Verificar si todos los matchups están completados
+        this._isComplete = this._matchups.every((m) => m.status === 'completed');
+
+        return true;
+    }
 
     public getWinners(): number[] {
         return this._matchups.filter((m) => m.winnerId !== undefined).map((m) => m.winnerId as number);

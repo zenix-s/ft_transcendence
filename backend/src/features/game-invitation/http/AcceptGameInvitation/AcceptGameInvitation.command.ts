@@ -15,7 +15,6 @@ export interface IAcceptGameInvitationResponse {
 export interface IAcceptGameInvitationRequest {
     userId?: number;
     gameId: number;
-    inviterUsername?: string;
 }
 
 export default class AcceptGameInvitationCommand
@@ -42,10 +41,6 @@ export default class AcceptGameInvitationCommand
             return Result.error(ApplicationError.InvalidRequestData);
         }
 
-        if (request.inviterUsername && typeof request.inviterUsername !== 'string') {
-            return Result.error(ApplicationError.InvalidRequestData);
-        }
-
         return Result.success(undefined);
     }
 
@@ -57,7 +52,7 @@ export default class AcceptGameInvitationCommand
                 return Result.error(ApplicationError.InvalidRequestData);
             }
 
-            const { userId, gameId, inviterUsername } = request;
+            const { userId, gameId } = request;
 
             // 1: Validar que el juego existe
             const match = await this.matchRepository.findById({ id: gameId });
@@ -94,36 +89,74 @@ export default class AcceptGameInvitationCommand
             }
 
             // 5: Si se proporcionó el username del invitador, enviar notificación de aceptación
-            if (inviterUsername) {
-                // Obtener la información del usuario que acepta la invitación
-                const userResult = await this.fastify.UserRepository.getUser({ id: userId as number });
-                if (!userResult.isSuccess || !userResult.value) {
-                    return Result.error(ApplicationError.UserNotFound);
-                }
+            // if (inviterUsername) {
+            //     // Obtener la información del usuario que acepta la invitación
+            //     const userResult = await this.fastify.UserRepository.getUser({ id: userId as number });
+            //     if (!userResult.isSuccess || !userResult.value) {
+            //         return Result.error(ApplicationError.UserNotFound);
+            //     }
 
-                const user = userResult.value;
+            //     const user = userResult.value;
 
-                // Obtener la información del usuario que envió la invitación
-                const inviterResult = await this.fastify.UserRepository.getUser({
-                    username: inviterUsername,
-                });
-                if (inviterResult.isSuccess && inviterResult.value) {
-                    const inviter = inviterResult.value;
+            //     // Obtener la información del usuario que envió la invitación
+            //     const inviterResult = await this.fastify.UserRepository.getUser({
+            //         username: inviterUsername,
+            //     });
+            //     if (inviterResult.isSuccess && inviterResult.value) {
+            //         const inviter = inviterResult.value;
 
-                    // Solo notificar si el usuario que acepta no es el mismo que envió la invitación
-                    if (inviter.id !== userId) {
-                        // Enviar notificación de aceptación al usuario que envió la invitación
-                        await this.socialWebSocketService.sendGameInvitationAcceptance({
-                            fromUserId: userId as number,
-                            fromUsername: user.username,
-                            fromUserAvatar: user.avatar || null,
-                            toUserId: inviter.id,
-                            gameId,
-                            gameTypeName: matchType.name,
-                            message: `${user.username} ha aceptado tu invitación al juego ${matchType.name}`,
-                        });
-                    }
-                }
+            //         // Solo notificar si el usuario que acepta no es el mismo que envió la invitación
+            //         if (inviter.id !== userId) {
+            //             // Enviar notificación de aceptación al usuario que envió la invitación
+            //             await this.socialWebSocketService.sendGameInvitationAcceptance({
+            //                 fromUserId: userId as number,
+            //                 fromUsername: user.username,
+            //                 fromUserAvatar: user.avatar || null,
+            //                 toUserId: inviter.id,
+            //                 gameId,
+            //                 gameTypeName: matchType.name,
+            //                 message: `${user.username} ha aceptado tu invitación al juego ${matchType.name}`,
+            //             });
+            //         }
+            //     }
+            // }
+
+            // 5. Obtener la información del usuario que acepta la invitación
+            const userResult = await this.fastify.UserRepository.getUser({ id: userId as number });
+            if (!userResult.isSuccess || !userResult.value) {
+                return Result.error(ApplicationError.UserNotFound);
+            }
+
+            const user = userResult.value;
+
+            // 6: Obtener la información del creador del juego para notificarle
+            const playerIds = match.playerIds;
+            if (!playerIds || playerIds.length === 0) {
+                return Result.error(ApplicationError.GameNotFound);
+            }
+
+            // El primer jugador es el creador del juego
+            const creatorId = playerIds[0];
+            const creatorResult = await this.fastify.UserRepository.getUser({ id: creatorId });
+            if (!creatorResult.isSuccess || !creatorResult.value) {
+                return Result.error(ApplicationError.UserNotFound);
+            }
+
+            const gameCreator = creatorResult.value;
+
+            // 7: Enviar notificación de rechazo al creador del juego a través del socialSocket
+            const rejectionResult = await this.socialWebSocketService.sendGameInvitationAcceptance({
+                fromUserId: userId as number,
+                fromUsername: user.username,
+                fromUserAvatar: user.avatar || null,
+                toUserId: gameCreator.id,
+                gameId,
+                gameTypeName: matchType.name,
+                message: `${user.username} ha aceptado tu invitación al juego ${matchType.name}`,
+            });
+
+            if (!rejectionResult.isSuccess) {
+                return Result.error(rejectionResult.error || ApplicationError.InternalServerError);
             }
 
             return Result.success({

@@ -226,3 +226,31 @@ export async function acceptInvitation(gameId: number): Promise<boolean> {
 		return false;
   }
 }
+
+export async function rejectInvitation(gameId: number): Promise<boolean> {
+  try {
+    const response = await fetch(apiUrl(`/game-invitation/reject-invitation`), {
+      method: "POST",
+      body: JSON.stringify({ gameId: gameId }),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("access_token") || ""}`,
+      },
+    });
+
+    const data = await response.json();
+
+		if (!response.ok) {
+			const errorcode = data.error || "UserNotFound";
+			showToast(t(errorcode), "error");
+			return false;
+		}
+
+		showToast(t("invitationRejected"), "error");
+		return true;
+
+  } catch {
+    showToast(t("NetworkOrServerError"), "error");
+		return false;
+  }
+}

@@ -1,7 +1,7 @@
 import { getWsUrl } from "@/api";
 import { t } from "@/app/i18n";
 import { navigateTo } from "@/app/navigation";
-import { acceptInvitation } from "@/components/friendsSidebar/friendsSidebar";
+import { acceptInvitation, rejectInvitation } from "@/components/friendsSidebar/friendsSidebar";
 import { modal } from "@/components/modal";
 import { showToast } from "@/components/toast";
 import type { Friend } from "@/types/friend"
@@ -166,8 +166,12 @@ export class SocialWebSocketClient {
           if (response)
             navigateTo(`playing?id=${msg.gameId}&mutiPlayer&view=${playerView}`); // Enviar a la partida
         }
-        console.log("he rechazado la invitación");
-        // Definir que pasa si RECHAZA la invitación
+        else
+        {
+          console.log("he rechazado la invitación");
+          const response = await rejectInvitation(msg.gameId);
+          // Definir que pasa si RECHAZA la invitación
+        }
         break;
       }
 

@@ -383,7 +383,7 @@ export class GameWebSocket {
 		obj.action = Actions.LEAVE_GAME;
 		this.socket?.send(JSON.stringify(obj));
 		this.destroy();
-		navigateTo("dashboard", false, true);
+		//navigateTo("dashboard", false, true);
 		return ;
 	}
 

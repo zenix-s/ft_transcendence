@@ -151,8 +151,11 @@ export async function initFriendsSidebar() {
 
 
         inviteMultiplayer(username, gameId);
-        navigateTo(`playing?id=${gameId}&mutiPlayer&view=${confirmed.gameMode}`); // Temporal para pruebas?
-        showToast("Enviada invitación a: " + username, "success");
+        // let mode = "2D";
+        // if (confirmed.gameMode === "3d")
+        //   mode = "3D";
+        // navigateTo(`playing?id=${gameId}&mutiPlayer&view=${mode}`); // Temporal para pruebas?
+        // showToast("Enviada invitación a: " + username, "success");
       }
     }
   });

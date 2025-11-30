@@ -40,7 +40,7 @@ export function ready1()
 			return ;
 		}
 		const token = localStorage.getItem("access_token");
-		createGameSocket(token);
+		createGameSocket(token, id);
 
 		console.log("single player id =", id);
 		navigateTo(`playing?id=${id}&singleplayer&view=${playerView}`);

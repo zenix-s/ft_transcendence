@@ -9,6 +9,7 @@ import { apiUrl } from "@/api";
 import { navigateTo } from "@/app/navigation";
 import { modal } from "../modal";
 import type { GameOptions } from "@/types/gameOptions";
+import { createGameSocket } from "@/modules/game/gameSocket";
 
 export async function initFriendsSidebar() {
   const container = document.getElementById("friends-sidebar-container");
@@ -142,10 +143,19 @@ export async function initFriendsSidebar() {
         ); */
 
         const gameId = await fetchGameId(confirmed.maxPoints, confirmed.maxTime, confirmed.gameMode); // Create game PONG --> Y si hay otro juego?
+        console.log("estoy invitando en el modo=", confirmed.gameMode);
+
+        const token = localStorage.getItem("access_token");
+        const ws = createGameSocket(token, gameId);
+      	ws.authenticate(gameId);
+
+
         inviteMultiplayer(username, gameId);
-        //const playerView = "3D";
-        //navigateTo(`playing?id=${gameId}&mutiPlayer&view=${playerView}`); // Temporal para pruebas?
-        //showToast("Enviada invitación a: " + username, "success");
+        // let mode = "2D";
+        // if (confirmed.gameMode === "3d")
+        //   mode = "3D";
+        // navigateTo(`playing?id=${gameId}&mutiPlayer&view=${mode}`); // Temporal para pruebas?
+        // showToast("Enviada invitación a: " + username, "success");
       }
     }
   });
@@ -209,6 +219,34 @@ export async function acceptInvitation(gameId: number): Promise<boolean> {
 		}
 
 		showToast(t("InvitationAcceptedSuccessfully"));
+		return true;
+
+  } catch {
+    showToast(t("NetworkOrServerError"), "error");
+		return false;
+  }
+}
+
+export async function rejectInvitation(gameId: number): Promise<boolean> {
+  try {
+    const response = await fetch(apiUrl(`/game-invitation/reject-invitation`), {
+      method: "POST",
+      body: JSON.stringify({ gameId: gameId }),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("access_token") || ""}`,
+      },
+    });
+
+    const data = await response.json();
+
+		if (!response.ok) {
+			const errorcode = data.error || "UserNotFound";
+			showToast(t(errorcode), "error");
+			return false;
+		}
+
+		showToast(t("invitationRejected"), "error");
 		return true;
 
   } catch {

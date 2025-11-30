@@ -1,11 +1,12 @@
 import { getWsUrl } from "@/api";
 import { t } from "@/app/i18n";
 import { navigateTo } from "@/app/navigation";
-import { acceptInvitation } from "@/components/friendsSidebar/friendsSidebar";
+import { acceptInvitation, rejectInvitation } from "@/components/friendsSidebar/friendsSidebar";
 import { modal } from "@/components/modal";
 import { showToast } from "@/components/toast";
 import type { Friend } from "@/types/friend"
 import { reloadGameHistory } from "@/app/main";
+import { createGameSocket, getGameSocket } from "../game/gameSocket";
 
 interface AuthSuccessMessage {
   type: "authSuccess";
@@ -34,12 +35,24 @@ interface GameInvitationResponse {
     message: string;
 }
 
+interface gameInvitationAcceptance {
+  type: "gameInvitationAcceptance";
+	success: boolean;
+	fromUserId: number;
+	fromUsername: string;
+	fromUserAvatar: string | null;
+	gameId: number;
+	gameTypeName: string;
+	message: string;
+}
+
 export class SocialWebSocketClient {
   private socket: WebSocket | null = null;
   private token: string;
   private wsUrl: string;
   private isAuthenticated = false;
   private friends: Friend[] = [];
+  private gameMode?: string;
 
   constructor(token: string) {
     this.wsUrl = getWsUrl("/social/");
@@ -58,6 +71,7 @@ export class SocialWebSocketClient {
     this.socket.onmessage = (event: MessageEvent<string>) => {
       try {
         const message = JSON.parse(event.data);
+        console.log("msgttt=", message);
         this.handleMessage(message);
       } catch (err) {
         console.error(`❌ ${t("ErrorParsingMsg")}`, err);
@@ -144,12 +158,36 @@ export class SocialWebSocketClient {
           // Definir que pasa si se ACEPTA la invitación
           console.log("Has aceptado la invitación");
           const response = await acceptInvitation(msg.gameId);
+
+          const token = localStorage.getItem("access_token");
+          createGameSocket(token, msg.gameId);
+
           const playerView = "3D";
           if (response)
             navigateTo(`playing?id=${msg.gameId}&mutiPlayer&view=${playerView}`); // Enviar a la partida
         }
-        // Definir que pasa si RECHAZA la invitación
+        else
+        {
+          console.log("he rechazado la invitación");
+          const response = await rejectInvitation(msg.gameId);
+          // Definir que pasa si RECHAZA la invitación
+        }
         break;
+      }
+
+      case "gameInvitationAcceptance": {
+        const msg = message as gameInvitationAcceptance;
+        let mode = "2D";
+        navigateTo(`playing?id=${msg.gameId}&mutiPlayer&view=${mode}`); // Temporal para pruebas?
+        showToast("Aceptada la invitación por: " + msg.fromUsername, "success");
+        break ;
+      }
+
+      case "gameInvitationRejection": {
+        const ws = getGameSocket();
+        if (ws)
+          ws.invitationRejected();
+        break ;
       }
 
       case "friendProfileUpdate": {

@@ -61,7 +61,7 @@ export function initGame3D() {
 	if (!ws)
 	{
 		const token = localStorage.getItem("access_token");
-		ws = createGameSocket(token);
+		ws = createGameSocket(token, Number(id));
 		ws.setAuth();
 	}
 

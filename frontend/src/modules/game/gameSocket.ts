@@ -9,6 +9,8 @@ import type { Engine, Mesh, Scene } from "@babylonjs/core";
 import { endGameAndErrors } from "./authAndErrors";
 import { Actions } from "@/types/gameOptions"
 import { getCurrentUser } from "../users";
+import Swal from 'sweetalert2';
+
 
 export interface GameStateMessage {
 	type: "gameState";
@@ -105,10 +107,10 @@ export class GameWebSocket {
 	private up: number;
 	private down: number;
 
-	constructor(token: string) {
+	constructor(token: string, id:number) {
 		this.wsUrl = getWsUrl("/game/pong");
 		this.token = token;
-		this.gameId = 0;
+		this.gameId = id;
 		this.div = null;
 		this.start = 0;
 		this.up = 0;
@@ -242,6 +244,11 @@ export class GameWebSocket {
 		switch (type) {
 			case "gameState": {
 				const data = message as GameStateMessage;
+				if (data.state.gameStatus === "waiting_for_players")
+				{
+					console.log("NO SECOND_PLAYER");
+					break ;
+				}
 				if (data.state.gameStatus === "waiting_for_ready")
 				{
 					if (this.ready == false)
@@ -288,6 +295,12 @@ export class GameWebSocket {
 			}
 			case "error": {
 				const data = message as ErrorMessage;
+				if (data.error === "GameCancelled")
+				{
+					console.log("cerrar modal");
+					showToast(t("GameCancelled"), "error");
+					Swal.close();
+				}
 				if (data.error === "GameAlreadyFinished" || (data.error != "UnauthorizedAccess" && data.error != "GameNotFound"))
 				{
 					this.removeEvents();
@@ -359,18 +372,18 @@ export class GameWebSocket {
 		showToast(t("invitationAcceppted"), "success");
 	}
 
-	public invitationRejected(gameId:number)
+	public invitationRejected()
 	{
 		const obj : message = {
 			action : Actions.AUTH,
-			gameId : gameId,
+			gameId : this.gameId,
 			token : this.token
 		};
 		showToast(t("invitationRejected"), "error");
 		obj.action = Actions.LEAVE_GAME;
 		this.socket?.send(JSON.stringify(obj));
 		this.destroy();
-		navigateTo("dashboard", false, true);
+		//navigateTo("dashboard", false, true);
 		return ;
 	}
 
@@ -423,10 +436,10 @@ export class GameWebSocket {
 
 let instance: GameWebSocket | null = null;
 
-export function createGameSocket(token: string| null): GameWebSocket {
+export function createGameSocket(token: string| null, id: number): GameWebSocket {
   if (!token) throw new Error("❌ No se puede crear WebSocket sin token válido");
   if (!instance) {
-	instance = new GameWebSocket(token);
+	instance = new GameWebSocket(token, id);
 	instance.connect();
   }
   instance.checkSocket();

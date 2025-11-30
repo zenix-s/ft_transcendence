@@ -63,7 +63,7 @@ export class ActivePongGame {
             this.game.update();
 
             // Paso 4: Verificar timeout si el juego no ha comenzado
-            if (!this.game.isGameRunning()) {
+            if (this.game.isTimeoutWindow()) {
                 if (Date.now() - this.gameStartTime > this.GAME_TIMEOUT_MS) {
                     this.handleGameEnd(() => this.cancelMatchDueToTimeout());
                     return;

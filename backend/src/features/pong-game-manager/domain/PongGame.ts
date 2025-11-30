@@ -106,7 +106,7 @@ export class PongGame {
         this.player2 = undefined;
         this.ball = {
             position: { x: 50, y: 50 },
-            velocity: { x: Math.random() > 0.5 ? 0.8 : -0.8, y: 0 },
+            velocity: this.generateInitialBallVelocity(),
         };
         this.lastUpdate = Date.now();
         this.gameTimer = 0;
@@ -536,12 +536,27 @@ export class PongGame {
         }
     }
 
+    private generateInitialBallVelocity(): { x: number; y: number } {
+        // Generate an initial velocity with a small random angle and a consistent speed.
+        // Direction is chosen randomly towards player1 (negative x) or player2 (positive x).
+        // Angle is limited to avoid too-steep trajectories at game start.
+        const MAX_ANGLE_DEG = 20; // Max deviation from horizontal in degrees
+        const angleDeg = (Math.random() * 2 - 1) * MAX_ANGLE_DEG; // random between -MAX..+MAX
+        const angleRad = (angleDeg * Math.PI) / 180;
+        const speed = 0.8; // base speed magnitude (kept compatible with previous behavior)
+
+        // Randomly choose initial lateral direction: 1 => right (towards player2), -1 => left (towards player1)
+        const lateralDirection = Math.random() > 0.5 ? 1 : -1;
+
+        const vx = lateralDirection * Math.cos(angleRad) * speed;
+        const vy = Math.sin(angleRad) * speed;
+
+        return { x: vx, y: vy };
+    }
+
     private resetBall(): void {
         this.ball.position = { x: 50, y: 50 };
-        this.ball.velocity = {
-            x: Math.random() > 0.5 ? 0.8 : -0.8,
-            y: 0,
-        };
+        this.ball.velocity = this.generateInitialBallVelocity();
     }
 
     private resetPlayerPositions(): void {
@@ -611,6 +626,13 @@ export class PongGame {
 
     public isGameRunning(): boolean {
         return this.gameStatus === GAME_STATUS.PLAYING;
+    }
+
+    public isTimeoutWindow(): boolean {
+        return (
+            this.gameStatus === GAME_STATUS.WAITING_FOR_PLAYERS ||
+            this.gameStatus === GAME_STATUS.WAITING_FOR_READY
+        );
     }
 
     public getPlayerCount(): number {

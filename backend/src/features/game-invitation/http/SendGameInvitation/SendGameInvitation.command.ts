@@ -68,6 +68,11 @@ export default class SendGameInvitationCommand
                 return Result.error(ApplicationError.GameNotFound);
             }
 
+            const activeGameResult = this.fastify.PongGameManager.getGame(gameId);
+            if (!activeGameResult.isSuccess || !activeGameResult.value) {
+                return Result.error(ApplicationError.GameNotFound);
+            }
+
             // 2: Obtener el tipo de juego usando el gameTypeId del match
             const gameTypeId = match.matchTypeId;
             const matchType = MatchType.byId(gameTypeId);
@@ -110,6 +115,7 @@ export default class SendGameInvitationCommand
                 gameId,
                 gameTypeName: matchType.name,
                 message: message || `${sender.username} te ha invitado a jugar!`,
+                matchSettings: activeGameResult.value.getMatchSettings(),
             });
 
             if (!invitationResult.isSuccess) {

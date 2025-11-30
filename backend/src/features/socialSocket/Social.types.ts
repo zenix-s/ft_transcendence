@@ -1,3 +1,5 @@
+import { IMatchSettings } from '@shared/domain/ValueObjects/MatchSettings.value';
+
 export enum SocialActions {
     AUTH = 0,
     LIST_FRIENDS = 1,
@@ -53,6 +55,7 @@ export interface GameInvitationResponse extends SocialWebSocketResponse {
     gameId: number;
     gameTypeName: string;
     message: string;
+    matchSettings: IMatchSettings;
 }
 
 export interface FriendProfileUpdateResponse extends SocialWebSocketResponse {

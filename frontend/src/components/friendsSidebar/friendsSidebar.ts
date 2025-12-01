@@ -6,7 +6,6 @@ import { renderAvatar } from "../renderAvatar";
 import { showToast } from "../toast";
 import { fetchGameId } from "@/modules/game/getData";
 import { apiUrl } from "@/api";
-import { navigateTo } from "@/app/navigation";
 import { modal } from "../modal";
 import type { GameOptions } from "@/types/gameOptions";
 import { createGameSocket } from "@/modules/game/gameSocket";
@@ -143,19 +142,17 @@ export async function initFriendsSidebar() {
         ); */
 
         const gameId = await fetchGameId(confirmed.maxPoints, confirmed.maxTime, confirmed.gameMode); // Create game PONG --> Y si hay otro juego?
-        console.log("estoy invitando en el modo=", confirmed.gameMode);
+        console.log("confirmed=", confirmed, "estoy invitando en el modo=", confirmed.gameMode);
 
         const token = localStorage.getItem("access_token");
         const ws = createGameSocket(token, gameId);
       	ws.authenticate(gameId);
-
+        let playerView = "2D";
+        if (confirmed.gameMode === "3d")
+            playerView = "3D";
+        ws.setGameView(playerView);
 
         inviteMultiplayer(username, gameId);
-        // let mode = "2D";
-        // if (confirmed.gameMode === "3d")
-        //   mode = "3D";
-        // navigateTo(`playing?id=${gameId}&mutiPlayer&view=${mode}`); // Temporal para pruebas?
-        // showToast("Enviada invitación a: " + username, "success");
       }
     }
   });

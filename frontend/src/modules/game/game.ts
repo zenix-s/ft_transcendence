@@ -1,11 +1,10 @@
 import { t } from "@/app/i18n";
 import { navigateTo } from "@/app/navigation";
 import { showToast } from "@/components/toast";
-import { Engine, Scene, Mesh, HemisphericLight, Vector3 } from "@babylonjs/core";
+import { Engine, Scene, HemisphericLight, Vector3 } from "@babylonjs/core";
 import type { Ball, Player, Score } from "./gameData";
 import { createBall, createCamera, createPlayerLeft, createPlayerRight, createScores, createTable } from "./createGameObjs";
 import { createGameSocket, getGameSocket } from "./gameSocket";
-import { setColors } from "./getColors";
 
 export function renderValues(posPlayerL:number, playerL:Player | undefined,
 	posPlayerR:number, playerR:Player | undefined,
@@ -29,10 +28,7 @@ export function renderValues(posPlayerL:number, playerL:Player | undefined,
 export function initGame3D() {
 	const params = new URLSearchParams(window.location.search);
 	const id = params.get("id");
-	const singlePlayer = params.get("singlePlayer");
-	const multiPlayer = params.get("mutiPlayer");
-	const playerView = params.get("view");
-	if (!id || !playerView || (playerView != "2D" && playerView != "3D") || !(!singlePlayer && !multiPlayer) || (singlePlayer && multiPlayer))
+	if (!id)
 	{
 		showToast(t("URLNotCorrect"), "error");
 		console.warn(t("URLNotCorrect"));
@@ -75,18 +71,18 @@ export function initGame3D() {
 	adjustCanvasSize(canvas, engine);
 
 	// Cámara
-	createCamera(playerView, scene, canvas);
+	createCamera(ws.getGameView(), scene, canvas);
 
 	// Luz
 	const light = new HemisphericLight("light", new Vector3(0, 1, 0), scene);
 	light.intensity = 1.2;
 
 	// Mesa
-	const table = createTable(scene);
+	createTable(scene);
 
 	// JUGADORES
-	const playerLeft = createPlayerLeft(playerView, scene);
-	const playerRight = createPlayerRight(playerView, scene);
+	const playerLeft = createPlayerLeft(ws.getGameView(), scene);
+	const playerRight = createPlayerRight(ws.getGameView(), scene);
 
 	//SCORE
 	const scores = createScores();
@@ -94,10 +90,10 @@ export function initGame3D() {
 		return ;
 
 	// PELOTA
-	const ball = createBall(playerView, scene);
+	const ball = createBall(ws.getGameView(), scene);
 
 	ws.authenticate(Number(id));
-	ws.initializeGame(Number(id), playerLeft, playerRight, scores, ball, engine, scene, table, buttonUp, buttonDown);
+	ws.initializeGame(Number(id), playerLeft, playerRight, scores, ball, engine, scene, buttonUp, buttonDown);
 	ws.play();
 		
 	window.addEventListener("resize", () => {
@@ -107,7 +103,6 @@ export function initGame3D() {
 			console.warn(t("CanvasNotFound"));
 			return ;
 		}
-		//engine.resize();
 		adjustCanvasSize(canvas, engine);
 	});
 }

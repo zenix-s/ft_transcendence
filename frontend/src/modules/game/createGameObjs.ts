@@ -111,14 +111,12 @@ export function createTable(scene:Scene)
 		const bgColor = getColor("--color-secondary");
 		setColors(scene, bgColor, borderColor);
 	}
-	else if (localStorage.getItem("theme") === "light")
+	else
 	{
 		const borderColor = getColor("--color-secondary");
 		const bgColor = getColor("--color-primary");
 		setColors(scene, bgColor, borderColor);
 	}
-
-	return (table);
 }
 
 export function createCamera(playerView: string | null, scene:Scene, canvas:HTMLCanvasElement)

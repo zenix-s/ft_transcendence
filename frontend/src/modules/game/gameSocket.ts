@@ -88,13 +88,13 @@ export class GameWebSocket {
 	private start: number;
 	private div: HTMLDivElement | null = null;
 	private ready: boolean;
+	private gameMode: string | null = null;
 	private player1: Player | undefined;
 	private player2: Player | undefined;
 	private	scores: Score | undefined;
 	private	ball: Ball | undefined;
 	private	engine: Engine | undefined;
 	private scene: Scene | undefined;
-	private table: Mesh | undefined;
 	private gameId: number;
 	private keyMove?: ((event: KeyboardEvent) => void);
 	private keyStop?: ((event: KeyboardEvent) => void);
@@ -163,6 +163,16 @@ export class GameWebSocket {
 
 	public setAuth() {
 		this.ready = true;
+	}
+
+	public setGameView(gameMode: string)
+	{
+		this.gameMode = gameMode;
+	}
+
+	public getGameView()
+	{
+		return (this.gameMode);
 	}
 
 	public async authenticate(gameId:number) {
@@ -326,7 +336,7 @@ export class GameWebSocket {
 	}
 
 	public initializeGame(gameId:number, player1: Player, player2: Player,
-		scores: Score, ball: Ball, engine: Engine, scene: Scene, table: Mesh,
+		scores: Score, ball: Ball, engine: Engine, scene: Scene,
 		buttonUp: HTMLButtonElement, buttonDown: HTMLButtonElement)
 	{
 		this.gameId = gameId;
@@ -336,7 +346,6 @@ export class GameWebSocket {
 		this.ball = ball;
 		this.engine = engine;
 		this.scene = scene;
-		this.table = table;
 		this.buttonUp = buttonUp;
 		this.buttonDown = buttonDown;
 		this.setEvents();

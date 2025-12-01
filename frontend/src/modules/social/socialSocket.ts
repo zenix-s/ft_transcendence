@@ -26,13 +26,21 @@ interface FriendConnectionStatusMessage {
 }
 
 interface GameInvitationResponse {
-    type: 'gameInvitation';
-    fromUserId: number;
-    fromUsername: string;
-    fromUserAvatar: string | null;
-    gameId: number;
-    gameTypeName: string;
-    message: string;
+  type: "gameInvitation";
+  success: boolean;
+  message: string;
+  fromUserId: number;
+  fromUsername: string;
+  fromUserAvatar: string | null;
+  gameId: number;
+  gameTypeName: string;
+  matchSettings: MatchSettings;
+}
+
+interface MatchSettings {
+  maxGameTime: number;
+  maxScore: number;
+  visualStyle: string;
 }
 
 interface gameInvitationAcceptance {
@@ -168,11 +176,15 @@ export class SocialWebSocketClient {
           const response = await acceptInvitation(msg.gameId);
 
           const token = localStorage.getItem("access_token");
-          createGameSocket(token, msg.gameId);
+          const ws = createGameSocket(token, msg.gameId);
 
-          const playerView = "3D";
+          console.log("msg=", msg, "visual style =", msg.matchSettings.visualStyle);
+          let playerView = "2D";
+          if (msg.matchSettings.visualStyle === "3d")
+            playerView = "3D";
+          ws.setGameView(playerView);
           if (response)
-            navigateTo(`playing?id=${msg.gameId}&mutiPlayer&view=${playerView}`); // Enviar a la partida
+            navigateTo(`playing?id=${msg.gameId}`); // Enviar a la partida
         }
         else
         {
@@ -185,8 +197,7 @@ export class SocialWebSocketClient {
 
       case "gameInvitationAcceptance": {
         const msg = message as gameInvitationAcceptance;
-        let mode = "2D";
-        navigateTo(`playing?id=${msg.gameId}&mutiPlayer&view=${mode}`); // Temporal para pruebas?
+        navigateTo(`playing?id=${msg.gameId}`); // Temporal para pruebas?
         showToast("Aceptada la invitación por: " + msg.fromUsername, "success");
         break ;
       }

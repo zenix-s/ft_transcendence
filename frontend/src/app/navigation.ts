@@ -13,7 +13,6 @@ import { getCurrentUser } from "@/modules/users";
 import { ready1 } from "@/modules/game/setReady1";
 import { t } from "@/app/i18n"
 import { initGame3D } from "@/modules/game/game";
-import { updateSliders } from "@/components/updateSliders";
 import { tournament } from "@/modules/tournament/tournament";
 import { loadTournamentsHistory } from "@/components/tournamentsHistory";
 import { getGameSocket } from "@/modules/game/gameSocket";

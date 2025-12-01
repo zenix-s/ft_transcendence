@@ -2,7 +2,6 @@ import { apiUrl } from "@/api";
 
 export function fetchGameId(matchPoints: number = 5, gameTime: number = 120, gameMode: string = "2d") {
   // return fetch("https://localhost:3000/game/pong/create", {
-  console.log(gameMode); // Únicamente está aquí para que no de error por no usar la variable hasta que se actualice el endpoint.
   return fetch(apiUrl("/game/pong/create"), {
     method: "POST",
     headers: {
@@ -12,7 +11,8 @@ export function fetchGameId(matchPoints: number = 5, gameTime: number = 120, gam
     },
     body: JSON.stringify({
       winnerScore: matchPoints,
-      maxGameTime: gameTime
+      maxGameTime: gameTime,
+      visualStyle: gameMode
     })
   })
     .then(response => {
@@ -31,7 +31,7 @@ export function fetchGameId(matchPoints: number = 5, gameTime: number = 120, gam
     });
 }
 
-export function fetchSinglePlayerGameId(winnerScore: number, aiDifficulty: number, maxTime: Number) {
+export function fetchSinglePlayerGameId(winnerScore: number, aiDifficulty: number, maxTime: Number, gameMode: string) {
   // return fetch("https://localhost:3000/game/pong/create-singleplayer", {
   console.log("get id=", apiUrl("/game/pong/create-singleplayer"));
   return fetch(apiUrl("/game/pong/create-singleplayer"), {
@@ -44,7 +44,8 @@ export function fetchSinglePlayerGameId(winnerScore: number, aiDifficulty: numbe
     body: JSON.stringify({
       winnerScore: winnerScore,
       maxGameTime: maxTime,
-      aiDifficulty: aiDifficulty / 10
+      aiDifficulty: aiDifficulty / 10,
+      visualStyle: gameMode
     })
   })
     .then(response => {

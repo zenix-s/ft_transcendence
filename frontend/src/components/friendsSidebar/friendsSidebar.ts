@@ -246,7 +246,6 @@ export async function rejectInvitation(gameId: number): Promise<boolean> {
 			return false;
 		}
 
-		showToast(t("invitationRejected"), "error");
 		return true;
 
   } catch {

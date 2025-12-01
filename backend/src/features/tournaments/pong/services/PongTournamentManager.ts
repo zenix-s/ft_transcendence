@@ -184,7 +184,7 @@ export class PongTournamentManager implements IPongTournamentManager {
         try {
             // Paso 1: Buscar torneos activos usando el repository
             const activeTournamentsResult = await this.fastify.TournamentRepository.findTournaments({
-                status: [Tournament.STATUS.UPCOMING, Tournament.STATUS.ONGOING],
+                status: [Tournament.STATUS.UPCOMING, Tournament.STATUS.ONGOING, Tournament.STATUS.COMPLETED],
                 limit: params.limit,
                 offset: params.offset,
             });

@@ -149,6 +149,13 @@ export class SocialWebSocketClient {
       case "gameInvitation": {
         const msg = message as GameInvitationResponse;
         console.log(`${msg.fromUsername} con id ${msg.fromUserId} te ha invitado a jugar a PONG con el número de partida ${msg.gameId} y el mensaje: ${msg.message}`);
+        const urlObjeto = new URL(window.location.href);
+        if (urlObjeto.pathname === "/playing")
+        {
+          console.log("se ha rechazado la invitación");
+          await rejectInvitation(msg.gameId);
+          break ;
+        }
         const confirmed = await modal({
           type: "gameInvitation",
           winner: msg.fromUsername,
@@ -157,6 +164,7 @@ export class SocialWebSocketClient {
         {
           // Definir que pasa si se ACEPTA la invitación
           console.log("Has aceptado la invitación");
+
           const response = await acceptInvitation(msg.gameId);
 
           const token = localStorage.getItem("access_token");
@@ -169,7 +177,7 @@ export class SocialWebSocketClient {
         else
         {
           console.log("he rechazado la invitación");
-          const response = await rejectInvitation(msg.gameId);
+          await rejectInvitation(msg.gameId);
           // Definir que pasa si RECHAZA la invitación
         }
         break;

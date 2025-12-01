@@ -157,6 +157,14 @@ export class SocialWebSocketClient {
         {
           // Definir que pasa si se ACEPTA la invitación
           console.log("Has aceptado la invitación");
+          
+          const urlActual: string = window.location.href;
+          console.log("La URL de la página es:", urlActual);
+          const urlObjeto = new URL(window.location.href);
+          console.log("Dominio:", urlObjeto.origin);
+          console.log("Ruta:", urlObjeto.pathname);
+
+
           const response = await acceptInvitation(msg.gameId);
 
           const token = localStorage.getItem("access_token");

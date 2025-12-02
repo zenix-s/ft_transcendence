@@ -12,6 +12,7 @@ export async function modal({
   playerColor,
   gameName,
   activeTournament,
+  tournamentModal = false,
 }: {
   type?: "logout" | "gameFinished" | "gameInvitation" | "setReady" | "gameCreation" | "tournamentResults" | "confirmLeaveTournament",
   player1Score?: number,
@@ -20,6 +21,7 @@ export async function modal({
   playerColor?: string,
   gameName?: string,
   activeTournament?: ActiveTournament,
+  tournamentModal?: boolean,
 } = {}): Promise<boolean | GameOptions> {
     const isDark = !document.documentElement.classList.contains("dark");
 
@@ -38,6 +40,7 @@ export async function modal({
     const backdrop = "rgba(0,0,0,0.8)"
     let allowOutsideClick = true;
     let allowEscapeKey = true;
+    let position = "center";
 
     /* Overwrite options */
     if (type === "logout") {
@@ -83,9 +86,10 @@ export async function modal({
       title = t("modalGameInvitationTitle");
       titleText = t("modalGameInvitationTitleText");
       const nameOfGame = gameName ? gameName : "";
-      text = `${winner} ${t("modalGameInvitationText")} ${nameOfGame}`;
+      text = winner ? `${winner} ${t("modalGameInvitationText")} ${nameOfGame}` : `${t("modalTournamentGameInvitationText")}`;
       confirmButtonText = `<i class="fa fa-thumbs-up"></i> ${t("modalGameInvitationConfirmButtonText")}`;
-      showCancelButton = true;
+      showCancelButton = tournamentModal ? false : true;
+      position = tournamentModal ? "top-end" : "center";
       cancelButtonText = `<i class="fa fa-thumbs-down"></i> ${t("modalGameInvitationCancelButtonText")}`;
       icon_msg = "question";
       allowOutsideClick = false;
@@ -138,7 +142,7 @@ export async function modal({
     let timerInterval: ReturnType<typeof setInterval> | null = null;
 
     /* MAIN LOGIC */
-    if (type !== "gameCreation" && type !== "tournamentResults") {
+    if (type !== "gameCreation" && type !== "tournamentResults" && type !== "gameInvitation") {
       const result = await Swal.fire({
         title,
         titleText,
@@ -206,7 +210,42 @@ export async function modal({
       } else {
         return false;
       }
-    } else if (type === "gameCreation") {
+    }
+
+    else if (type === "gameInvitation") {
+      const result = await Swal.fire({
+        title,
+        titleText,
+        html: text,
+        color: color_modal,
+        icon: icon_msg,
+        iconColor,
+        showCancelButton,
+        cancelButtonText: cancelButtonText,
+        position,
+        confirmButtonText,
+        buttonsStyling: false, // to use our own classes
+        background: color_back,
+        backdrop: backdrop,
+        allowOutsideClick: allowOutsideClick,
+        allowEscapeKey: allowEscapeKey,
+        animation,
+        customClass: {
+          actions: "gap-10",
+          confirmButton:
+            "px-4 py-2 rounded-lg font-medium bg-cyan-300 hover:bg-cyan-500 text-gray-800 ml-2 dark:bg-cyan-700 dark:hover:bg-cyan-900 dark:text-gray-100 transition-all duration-300",
+          cancelButton:
+            "px-4 py-2 rounded-lg font-medium bg-rose-600 hover:bg-rose-800 text-primary ml-2 dark:bg-rose-600 dark:hover:bg-rose-800 dark:text-primary transition-all duration-300",
+        },
+      });
+      if (result.isConfirmed) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    else if (type === "gameCreation") {
       // Caso: gameCreation
       const { value: formValues } = await Swal.fire({
         title,

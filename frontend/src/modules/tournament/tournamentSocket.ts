@@ -1,7 +1,11 @@
 import { getWsUrl } from "@/api";
 import { t } from "@/app/i18n";
+import { acceptInvitation, rejectInvitation } from "@/components/friendsSidebar/friendsSidebar";
+import { modal } from "@/components/modal";
 import { showToast } from "@/components/toast";
 import { refreshTournamentsHistory } from "@/components/tournamentsHistory";
+import { createGameSocket } from "../game/gameSocket";
+import { navigateTo } from "@/app/navigation";
 
 // TODO: Ajustar cuando el backend esté definido
 interface payload {
@@ -186,10 +190,30 @@ export class TournamentWebSocketClient {
 
       // Enviado SÓLO AL PARTICIPANTE que debe jugar la partida
       case "matchCreated": {
-        const msg = message as matchCreatedMessage;
-        console.log(`🎮 [Tournaments] ${t("MatchCreated")}`, msg.matchId);
-        showToast(`${t("MatchCreated")}: ${msg.matchId}`, "success");
-        break;
+            const msg = message as matchCreatedMessage;
+            console.log(`🎮 [Tournaments] ${t("MatchCreated")}`, msg.matchId);
+            
+            // Mostrar modal de confirmación
+            const confirmed = await modal({
+                type: "gameInvitation",
+                tournamentModal: true,
+                gameName: "Tournament Match"
+            });
+            
+            if (confirmed) {
+                // Guardar el modo de juego en localStorage para que initGame3D() lo use
+                const playerView = "2D";
+                localStorage.setItem("pendingGameView", playerView);
+                
+                // Solo navegar - initGame3D() se encargará del resto
+                navigateTo(`playing?id=${msg.matchId}`);
+            } else {
+                console.log("Invitación de torneo rechazada");
+                // Manejar rechazo (si es posible en torneos)
+            }
+            
+            break;
+
       }
 
       // Enviado SÓLO A LOS PARTICIPANTES cuando se reporta el resultado de una partida

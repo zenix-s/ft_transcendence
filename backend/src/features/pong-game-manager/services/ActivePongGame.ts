@@ -1,5 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { PongGame } from '../domain/PongGame';
+import { json } from 'node:stream/consumers';
 
 export class ActivePongGame {
     private loop?: NodeJS.Timeout;
@@ -58,6 +59,8 @@ export class ActivePongGame {
                 }
                 return;
             }
+
+            this.fastify.log.info("Game status: " + JSON.stringify(this.game.getGameState()));
 
             // Paso 3: Actualizar el juego
             this.game.update();

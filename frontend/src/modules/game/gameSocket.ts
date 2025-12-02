@@ -165,8 +165,10 @@ export class GameWebSocket {
 		this.ready = true;
 	}
 
-	public setGameView(gameMode: string)
+	public setGameView(gameMode: string | null)
 	{
+		if (gameMode === null)
+			this.gameMode = "2D";
 		this.gameMode = gameMode;
 	}
 
@@ -261,8 +263,11 @@ export class GameWebSocket {
 				}
 				if (data.state.gameStatus === "waiting_for_ready")
 				{
+					console.log("111 HE ESTADO AQUI")
 					if (this.ready == false)
 					{
+					console.log("111 HE ESTADO AQUI DENTR 222")
+						
 						this.ready = true;
 						const obj : message = {
 							action : Actions.AUTH,

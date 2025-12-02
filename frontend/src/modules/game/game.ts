@@ -56,9 +56,17 @@ export function initGame3D() {
 	let ws = getGameSocket();
 	if (!ws)
 	{
-		const token = localStorage.getItem("access_token");
-		ws = createGameSocket(token, Number(id));
-		ws.setAuth();
+        const token = localStorage.getItem("access_token");
+        ws = createGameSocket(token, Number(id));
+        
+        // Recuperar el modo de juego guardado (si existe)
+        const savedView = localStorage.getItem("pendingGameView");
+        if (savedView) {
+            ws.setGameView(savedView);
+            localStorage.removeItem("pendingGameView");
+        }
+        
+        ws.setAuth();
 	}
 
 	// Motor y escena

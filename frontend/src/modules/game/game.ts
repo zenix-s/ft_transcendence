@@ -25,7 +25,7 @@ export function renderValues(posPlayerL:number, playerL:Player | undefined,
 	scores.scoreRight.textContent = scores.pointsRight.toString();
 }
 
-export function initGame3D() {
+export async function initGame3D() {
 	const params = new URLSearchParams(window.location.search);
 	const id = params.get("id");
 	if (!id)
@@ -60,6 +60,9 @@ export function initGame3D() {
 		ws = createGameSocket(token, Number(id));
 		ws.setAuth();
 	}
+	console.log("authing");
+	ws.authenticate(Number(id));
+	console.log("authed");
 
 	// Motor y escena
 	const engine = new Engine(canvas, true);
@@ -92,7 +95,6 @@ export function initGame3D() {
 	// PELOTA
 	const ball = createBall(ws.getGameView(), scene);
 
-	ws.authenticate(Number(id));
 	ws.initializeGame(Number(id), playerLeft, playerRight, scores, ball, engine, scene, buttonUp, buttonDown);
 	ws.play();
 		

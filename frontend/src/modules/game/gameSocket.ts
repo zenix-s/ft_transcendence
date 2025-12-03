@@ -56,6 +56,7 @@ interface GameRules {
 	winnerScore: number;
 	maxGameTime: number;
 	difficulty: number;
+	visualStyle: string;
 }
 
 interface Winner {
@@ -118,7 +119,7 @@ export class GameWebSocket {
 		this.ready = false;
 	}
 
-	connect() {
+	async connect() {
 		this.socket = new WebSocket(this.wsUrl);
 
 		this.socket.addEventListener("open", () => {
@@ -129,12 +130,14 @@ export class GameWebSocket {
 			console.log("mensaje recibido=", msg.data);
 			try {
 				const data = JSON.parse(msg.data);
-				this.handleMessage(data);
+				await this.handleMessage(data);
 			} catch (err) {
 				console.error(`❌ ${t("game")}: ${t("ErrorParsingMsg")}`, err);
 			}
 		})
 
+		await this.waitForOpen();
+		
 		this.socket.onclose = () => {
 			console.log("🔴", t("game"), ": ", t("WsClosed"));
 		};
@@ -248,7 +251,6 @@ export class GameWebSocket {
 	}
 	
 	private async handleMessage(message: unknown) {
-		await this.waitForOpen();
 		// Detectar tipo
 		const type = (message as { type?: unknown})?.type;
 		switch (type) {
@@ -261,6 +263,11 @@ export class GameWebSocket {
 				}
 				if (data.state.gameStatus === "waiting_for_ready")
 				{
+					let mode = "2D";
+					if (data.state.gameRules.visualStyle == "3d")
+						mode = "3D";
+					this.gameMode = mode;
+					console.log("set mode=", mode);
 					if (this.ready == false)
 					{
 						this.ready = true;

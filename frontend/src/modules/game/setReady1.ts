@@ -44,7 +44,7 @@ export function ready1()
 		}
 		const token = localStorage.getItem("access_token");
 		const ws = createGameSocket(token, id);
-		ws.setGameView(playerView);
+		//ws.setGameView(playerView);
 
 		console.log("single player id =", id);
 		navigateTo(`playing?id=${id}`);

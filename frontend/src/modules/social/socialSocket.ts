@@ -182,7 +182,7 @@ export class SocialWebSocketClient {
           let playerView = "2D";
           if (msg.matchSettings.visualStyle === "3d")
             playerView = "3D";
-          ws.setGameView(playerView);
+          //ws.setGameView(playerView);
           if (response)
             navigateTo(`playing?id=${msg.gameId}`); // Enviar a la partida
         }

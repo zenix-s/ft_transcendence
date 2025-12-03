@@ -150,7 +150,7 @@ export async function initFriendsSidebar() {
         let playerView = "2D";
         if (confirmed.gameMode === "3d")
             playerView = "3D";
-        ws.setGameView(playerView);
+        //ws.setGameView(playerView);
 
         inviteMultiplayer(username, gameId);
       }

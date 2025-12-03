@@ -35,14 +35,14 @@ async function endGame(finBool:number, gameId:number,
 		renderValues(50, player1, 50, player2, score1, score2, scores, 50, 50, ball);
 		const playerL = finished.match.players[0].userId;
 		const playerR = finished.match.players[1].userId;
-		console.log("1=", playerL, " 2=", playerR, " 1=", score1, " 2=", score2, " winner=", finished.match.winner.username);
+		console.log("1=", playerL, " 2=", playerR, " 1=", score1, " 2=", score2, " winner=", finished.match.winner?.username);
 		ws?.destroy();
 		navigateTo("dashboard", false, true);
 		await modal({
 			type: "gameFinished",
 			player1Score: finished.match.players[0].score,
 			player2Score: finished.match.players[1].score,
-			winner: finished.match.winner.username});
+			winner: finished.match.winner?.username});
 	}
 }
 

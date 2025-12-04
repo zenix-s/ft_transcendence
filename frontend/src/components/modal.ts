@@ -74,11 +74,19 @@ export async function modal({
     }
     else if (type === "setReady")
     {
+      let GameMove;
+      const isMobile = /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
+      
+      if (isMobile)
+        GameMove = t("GameMoveMobile");
+      else
+        GameMove = t("GameMove");
+
       title = t("SetReady");
       let GameInfo = t("GameInfoBlue");
       if (playerColor === "red")
         GameInfo = t("GameInfoRed");
-      titleText = `${t("isReady")}\n\n${GameInfo}\n${t("GameMove")}`;
+      titleText = `${t("isReady")}\n\n${GameInfo}\n${GameMove}`;
       confirmButtonText = t("Ready");
       text = `${t("ClickReady")}<br><br><b></b>`;
       icon_msg = "question";

@@ -53,19 +53,29 @@ async function initSocialSocket(): Promise<SocialWebSocketClient | null> {
   if (!ws) {
     console.log(`🌐 ${t("InitializingSocialWs")}`);
     ws = createSocialSocket(token);
-    // Esperar a que el socket se conecte y autentique antes de continuar
-    await new Promise<void>((resolve) => {
-      const interval = setInterval(() => {
-        if ((ws?.getAuthenticated())) {
-          clearInterval(interval);
-          resolve();
-        }
-      }, 50);
-    });
   }
+
+  // 🔹 Siempre esperar autenticación
+  await new Promise<void>((resolve) => {
+    const interval = setInterval(() => {
+      if (ws?.getAuthenticated()) {
+        clearInterval(interval);
+        resolve();
+      }
+    }, 50);
+    
+    // Timeout de 15s
+    setTimeout(() => {
+      clearInterval(interval);
+      resolve();
+    }, 15000);
+  });
 
   return ws;
 }
+
+// 🔹 Esperar a que se inicialice
+await initSocialSocket();
 
 async function initTournamentSocket(): Promise<TournamentWebSocketClient | null> {
   const token = localStorage.getItem("access_token");

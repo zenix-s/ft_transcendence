@@ -5,7 +5,7 @@ import { modal } from "@/components/modal";
 import { showToast } from "@/components/toast";
 import { renderValues } from "./game";
 import type { Ball, Player, Score } from "./gameData";
-import type { Engine, Mesh, Scene } from "@babylonjs/core";
+import type { Engine, Scene } from "@babylonjs/core";
 import { endGameAndErrors } from "./authAndErrors";
 import { Actions } from "@/types/gameOptions"
 import { getCurrentUser } from "../users";
@@ -187,6 +187,37 @@ export class GameWebSocket {
 		obj.action = Actions.REQUEST_STATE;
 		this.socket?.send(JSON.stringify(obj));
 	}
+
+	private async openModal(data: GameStateMessage)
+	{
+		const obj : message = {
+			action : Actions.AUTH,
+			gameId : this.gameId,
+			token : this.token
+		};
+		const userResponse = await getCurrentUser();
+		if (!userResponse || !localStorage.getItem("access_token"))
+		{
+			console.warn(t("UserNotFound"));
+			return;
+		}
+		const user = userResponse.user.id;
+		let color = "blue";
+		if (user === Number(data.state.player2?.id))
+			color = "red";
+		const userConfirmed = await modal({type: "setReady", playerColor: color});
+		if (!userConfirmed)
+		{
+			console.log("User canceled the modal");
+			obj.action = Actions.LEAVE_GAME;
+			this.socket?.send(JSON.stringify(obj));
+			this.destroy();
+			navigateTo("dashboard", false, true);
+			return ;
+		}
+		obj.action = Actions.SET_READY;
+		this.socket?.send(JSON.stringify(obj));
+	}
 	
 	private async setEvents()
 	{
@@ -228,6 +259,15 @@ export class GameWebSocket {
 		this.buttonUp?.addEventListener("touchend", this.buttonUpReleased);
 		this.buttonDown?.addEventListener("touchstart", this.buttonDownPressed);
 		this.buttonDown?.addEventListener("touchend", this.buttonDownReleased);
+
+		this.buttonUp?.addEventListener("mousedown", this.buttonUpPressed);
+		this.buttonUp?.addEventListener("mouseup", this.buttonUpReleased);
+		this.buttonUp?.addEventListener("mouseleave", this.buttonUpReleased);
+
+		this.buttonDown?.addEventListener("mousedown", this.buttonDownPressed);
+		this.buttonDown?.addEventListener("mouseup", this.buttonDownReleased);
+		this.buttonDown?.addEventListener("mouseleave", this.buttonDownReleased);
+
 	}
 
 	public async removeEvents()
@@ -241,6 +281,16 @@ export class GameWebSocket {
 		this.buttonUp?.removeEventListener("touchend", this.buttonUpReleased!);
 		this.buttonDown?.removeEventListener("touchstart", this.buttonDownPressed!);
 		this.buttonDown?.removeEventListener("touchend", this.buttonDownReleased!);
+
+		this.buttonUp?.removeEventListener("mousedown", this.buttonUpPressed!);
+		this.buttonUp?.removeEventListener("mouseup", this.buttonUpReleased!);
+		this.buttonUp?.removeEventListener("mouseleave", this.buttonUpReleased!);
+
+		this.buttonDown?.removeEventListener("mousedown", this.buttonDownPressed!);
+		this.buttonDown?.removeEventListener("mouseup", this.buttonDownReleased!);
+		this.buttonDown?.removeEventListener("mouseleave", this.buttonDownReleased!);
+
+
 		this.buttonUpPressed = undefined;
 		this.buttonUpReleased = undefined;
 		this.buttonDownPressed = undefined;
@@ -264,34 +314,7 @@ export class GameWebSocket {
 					if (this.ready == false)
 					{
 						this.ready = true;
-						const obj : message = {
-							action : Actions.AUTH,
-							gameId : this.gameId,
-							token : this.token
-						};
-						const userResponse = await getCurrentUser();
-						if (!userResponse || !localStorage.getItem("access_token"))
-						{
-							console.warn(t("UserNotFound"));
-							return;
-						}
-						const user = userResponse.user.id;
-						let color = "blue";
-						if (user === Number(data.state.player2?.id))
-							color = "red";
-						console.log("color=", color);
-						const userConfirmed = await modal({type: "setReady", playerColor: color});
-						if (!userConfirmed)
-						{
-							console.log("User canceled the modal");
-							obj.action = Actions.LEAVE_GAME;
-							this.socket?.send(JSON.stringify(obj));
-							this.destroy();
-							navigateTo("dashboard", false, true);
-							return ;
-						}
-						obj.action = Actions.SET_READY;
-						this.socket?.send(JSON.stringify(obj));
+						this.openModal(data);
 					}
 					break ;
 				}

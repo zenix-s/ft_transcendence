@@ -1,12 +1,19 @@
 <div class="scanlines"></div>
 
 <div>
-    <div class="absolute top-20 left-1/2 transform -translate-x-1/2 flex gap-10 text-secondary dark:text-primary text-4xl font-bold">
-    <div id="scoreLeft" class="text-shadow-blue">0</div>
-    <div class="text-shadow-redblue">-</div>
-    <div id="scoreRight" class="text-shadow-red">0</div>
-  </div>
+    <div class="absolute top-18 left-1/2 transform -translate-x-1/2 flex gap-5 text-secondary dark:text-primary text-4xl font-bold">
+      <div id="timerText" data-i18n="CHRONO:" class="text-shadow-redblue"></div>
+      <div id="timer" class="text-shadow-redblue">0</div>
+      <div id="timerText" data-i18n="s" class="text-shadow-redblue"></div>
+    </div>
 
+
+    <div class="absolute top-28 left-1/2 transform -translate-x-1/2 flex gap-5 md:gap-10 text-secondary dark:text-primary text-4xl font-bold">
+      <div id="scoreLeft" class="text-shadow-blue">0</div>
+      <div class="text-shadow-redblue">-</div>
+      <div id="scoreRight" class="text-shadow-red">0</div>
+    </div>
+    
   <div class="bg-primary dark:bg-secondary flex justify-center items-center h-screen w-screen">
     <canvas id="gameCanvas" class="w-full h-full"></canvas>
   </div>

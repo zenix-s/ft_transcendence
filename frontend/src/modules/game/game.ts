@@ -53,6 +53,15 @@ export function initGame3D() {
 		return ;
 	}
 
+	const timer = document.getElementById("timer") as HTMLElement;
+	if (!timer)
+	{
+		showToast(t("TimerNotFound"), "error");
+		console.warn(t("TimerNotFound"));
+		navigateTo("dashboard", false, true);
+		return ;
+	}
+
 	let ws = getGameSocket();
 	if (!ws)
 	{
@@ -93,7 +102,7 @@ export function initGame3D() {
 	const ball = createBall(ws.getGameView(), scene);
 
 	ws.authenticate(Number(id));
-	ws.initializeGame(Number(id), playerLeft, playerRight, scores, ball, engine, scene, buttonUp, buttonDown);
+	ws.initializeGame(Number(id), playerLeft, playerRight, scores, ball, engine, scene, buttonUp, buttonDown, timer);
 	ws.play();
 		
 	window.addEventListener("resize", () => {

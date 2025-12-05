@@ -13,20 +13,19 @@ export class PongGameManager implements IPongGameManager {
         this.setupProcessHandlers();
     }
 
-    async createGame(gameId: number, matchId: number, game: PongGame): Promise<Result<void>> {
+    async createGame(matchId: number, game: PongGame): Promise<Result<void>> {
         try {
-            this.deleteGame(gameId);
+            this.deleteGame(matchId);
 
             const activeGame = new ActivePongGame(
-                gameId,
                 matchId,
                 game,
                 this.fastify,
-                async (id: number, mId: number) => await this.onGameEnd(id, mId)
+                async (matchId: number) => await this.onGameEnd(matchId)
             );
 
             activeGame.start();
-            this.activeGames.set(gameId, activeGame);
+            this.activeGames.set(matchId, activeGame);
 
             return Result.success(undefined);
         } catch (error) {
@@ -45,17 +44,11 @@ export class PongGameManager implements IPongGameManager {
         try {
             this.deleteGame(matchId);
 
-            const activeGame = new ActivePongGame(
-                matchId,
-                matchId,
-                game,
-                this.fastify,
-                async (id: number, mId: number) => {
-                    await this.onGameEnd(id, mId);
-                    // IMPORTANTE: onMatchEnd se ejecuta DESPUÉS de que el match fue guardado
-                    await onMatchEnd(matchId);
-                }
-            );
+            const activeGame = new ActivePongGame(matchId, game, this.fastify, async (matchId: number) => {
+                await this.onGameEnd(matchId);
+                // IMPORTANTE: onMatchEnd se ejecuta DESPUÉS de que el match fue guardado
+                await onMatchEnd(matchId);
+            });
 
             activeGame.start();
             this.activeGames.set(matchId, activeGame);
@@ -69,16 +62,16 @@ export class PongGameManager implements IPongGameManager {
         }
     }
 
-    getGame(gameId: number): Result<PongGame> {
-        const activeGame = this.activeGames.get(gameId);
+    getGame(matchId: number): Result<PongGame> {
+        const activeGame = this.activeGames.get(matchId);
         if (!activeGame) {
             return Result.error(ApplicationError.GameNotFound);
         }
         return Result.success(activeGame.game);
     }
 
-    movePaddle(gameId: number, playerId: number, direction: 'up' | 'down'): Result<void> {
-        const activeGame = this.activeGames.get(gameId);
+    movePaddle(matchId: number, playerId: number, direction: 'up' | 'down'): Result<void> {
+        const activeGame = this.activeGames.get(matchId);
         if (!activeGame) {
             return Result.error(ApplicationError.GameNotFound);
         }
@@ -91,8 +84,8 @@ export class PongGameManager implements IPongGameManager {
         return Result.success(undefined);
     }
 
-    setPlayerReady(gameId: number, playerId: number, isReady: boolean): Result<{ gameStarted: boolean }> {
-        const activeGame = this.activeGames.get(gameId);
+    setPlayerReady(matchId: number, playerId: number, isReady: boolean): Result<{ gameStarted: boolean }> {
+        const activeGame = this.activeGames.get(matchId);
         if (!activeGame) {
             return Result.error(ApplicationError.GameNotFound);
         }
@@ -106,10 +99,17 @@ export class PongGameManager implements IPongGameManager {
         return Result.success({ gameStarted });
     }
 
-    async addPlayerToGame(gameId: number, playerId: number): Promise<Result<void>> {
+    // async addPlayerToGame(matchId: number, playerId: number): Promise<Result<void>> {
+    async addPlayerToGame({
+        matchId,
+        playerId,
+    }: {
+        matchId: number;
+        playerId: number;
+    }): Promise<Result<void>> {
         try {
             // Paso 1: Validar que el juego existe en memoria
-            const activeGame = this.activeGames.get(gameId);
+            const activeGame = this.activeGames.get(matchId);
             if (!activeGame) {
                 return Result.error(ApplicationError.GameNotFound);
             }
@@ -161,8 +161,8 @@ export class PongGameManager implements IPongGameManager {
         }
     }
 
-    getGameState(gameId: number): Result<{ gameId: number; state: GameState }> {
-        const gameResult = this.getGame(gameId);
+    getGameState(matchId: number): Result<{ gameId: number; state: GameState }> {
+        const gameResult = this.getGame(matchId);
         if (!gameResult.isSuccess) {
             return Result.error(gameResult.error || ApplicationError.GameNotFound);
         }
@@ -170,23 +170,23 @@ export class PongGameManager implements IPongGameManager {
             return Result.error(ApplicationError.GameNotFound);
         }
         return Result.success({
-            gameId,
+            gameId: matchId,
             state: gameResult.value.getGameState(),
         });
     }
 
-    deleteGame(gameId: number): Result<void> {
-        const activeGame = this.activeGames.get(gameId);
+    deleteGame(matchId: number): Result<void> {
+        const activeGame = this.activeGames.get(matchId);
         if (!activeGame) {
             return Result.error(ApplicationError.GameNotFound);
         }
         activeGame.stop();
-        this.activeGames.delete(gameId);
+        this.activeGames.delete(matchId);
         return Result.success(undefined);
     }
 
-    gameExists(gameId: number): Result<boolean> {
-        return Result.success(this.activeGames.has(gameId));
+    gameExists(matchId: number): Result<boolean> {
+        return Result.success(this.activeGames.has(matchId));
     }
 
     getAllGames(): Result<Map<number, PongGame>> {
@@ -197,10 +197,10 @@ export class PongGameManager implements IPongGameManager {
         return Result.success(games);
     }
 
-    private async onGameEnd(gameId: number, matchId: number): Promise<void> {
+    private async onGameEnd(matchId: number): Promise<void> {
         // En este punto, el match YA fue guardado en la BD
-        this.activeGames.delete(gameId);
-        this.fastify.log.info(`Game ${gameId} ended, match ${matchId} was saved`);
+        this.activeGames.delete(matchId);
+        this.fastify.log.info(`Game ${matchId} ended, match ${matchId} was saved`);
     }
 
     private setupProcessHandlers(): void {
@@ -223,8 +223,8 @@ export class PongGameManager implements IPongGameManager {
         return Result.success(Array.from(this.activeGames.keys()));
     }
 
-    modifyGameSettings(gameId: number, playerId: number, settings: GameSettings): Result<void> {
-        const activeGame = this.activeGames.get(gameId);
+    modifyGameSettings(matchId: number, playerId: number, settings: GameSettings): Result<void> {
+        const activeGame = this.activeGames.get(matchId);
         if (!activeGame) {
             return Result.error(ApplicationError.GameNotFound);
         }
@@ -248,8 +248,8 @@ export class PongGameManager implements IPongGameManager {
         return Result.success(undefined);
     }
 
-    leaveGame(gameId: number, playerId: number): Result<void> {
-        const activeGame = this.activeGames.get(gameId);
+    leaveGame(matchId: number, playerId: number): Result<void> {
+        const activeGame = this.activeGames.get(matchId);
         if (!activeGame) {
             return Result.error(ApplicationError.GameNotFound);
         }
@@ -264,13 +264,6 @@ export class PongGameManager implements IPongGameManager {
         if (!success) {
             return Result.error(ApplicationError.InvalidRequest);
         }
-
-        // // Si el juego fue cancelado (no había empezado), eliminarlo de memoria
-        // if (activeGame.game.getIsCancelled()) {
-        //     activeGame.stop();
-        //     this.activeGames.delete(gameId);
-        // }
-        // Si estaba en curso, el juego terminará normalmente con ganador
 
         return Result.success(undefined);
     }

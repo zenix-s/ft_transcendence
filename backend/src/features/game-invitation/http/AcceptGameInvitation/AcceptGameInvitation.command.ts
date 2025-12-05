@@ -17,9 +17,10 @@ export interface IAcceptGameInvitationRequest {
     gameId: number;
 }
 
-export default class AcceptGameInvitationCommand
-    implements ICommand<IAcceptGameInvitationRequest, IAcceptGameInvitationResponse>
-{
+export default class AcceptGameInvitationCommand implements ICommand<
+    IAcceptGameInvitationRequest,
+    IAcceptGameInvitationResponse
+> {
     private readonly matchRepository: IMatchRepository;
     private readonly socialWebSocketService: ISocialWebSocketService;
 
@@ -179,7 +180,10 @@ export default class AcceptGameInvitationCommand
                 return Result.error(ApplicationError.GameNotFound);
             }
 
-            const addPlayerResult = await this.fastify.PongGameManager.addPlayerToGame(gameId, userId);
+            const addPlayerResult = await this.fastify.PongGameManager.addPlayerToGame({
+                matchId: gameId,
+                playerId: userId,
+            });
             if (!addPlayerResult.isSuccess) {
                 return Result.error(addPlayerResult.error || ApplicationError.InternalServerError);
             }

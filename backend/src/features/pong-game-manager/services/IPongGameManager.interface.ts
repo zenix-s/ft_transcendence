@@ -6,42 +6,43 @@ export interface IPongGameManager {
     /**
      * Crea un nuevo juego activo y lo inicia
      */
-    createGame(gameId: number, matchId: number, game: PongGame): Promise<Result<void>>;
+    createGame(matchId: number, game: PongGame): Promise<Result<void>>;
 
     /**
      * Obtiene un juego por su ID
      */
-    getGame(gameId: number): Result<PongGame>;
+    getGame(matchId: number): Result<PongGame>;
 
     /**
      * Mueve la paleta de un jugador
      */
-    movePaddle(gameId: number, playerId: number, direction: 'up' | 'down'): Result<void>;
+    movePaddle(matchId: number, playerId: number, direction: 'up' | 'down'): Result<void>;
 
     /**
      * Establece el estado de listo de un jugador
      */
-    setPlayerReady(gameId: number, playerId: number, isReady: boolean): Result<{ gameStarted: boolean }>;
+    setPlayerReady(matchId: number, playerId: number, isReady: boolean): Result<{ gameStarted: boolean }>;
 
     /**
      * Agrega un jugador al juego
      */
-    addPlayerToGame(gameId: number, playerId: number): Promise<Result<void>>;
+    // addPlayerToGame(matchId: number, playerId: number): Promise<Result<void>>;
+    addPlayerToGame({ matchId, playerId }: { matchId: number; playerId: number }): Promise<Result<void>>;
 
     /**
      * Obtiene el estado actual de un juego
      */
-    getGameState(gameId: number): Result<{ gameId: number; state: GameState }>;
+    getGameState(matchId: number): Result<{ gameId: number; state: GameState }>;
 
     /**
      * Elimina un juego activo y lo detiene
      */
-    deleteGame(gameId: number): Result<void>;
+    deleteGame(matchId: number): Result<void>;
 
     /**
      * Verifica si un juego existe
      */
-    gameExists(gameId: number): Result<boolean>;
+    gameExists(matchId: number): Result<boolean>;
 
     /**
      * Obtiene todos los juegos activos
@@ -61,12 +62,12 @@ export interface IPongGameManager {
     /**
      * Modifica las configuraciones del juego antes de empezar
      */
-    modifyGameSettings(gameId: number, playerId: number, settings: GameSettings): Result<void>;
+    modifyGameSettings(matchId: number, playerId: number, settings: GameSettings): Result<void>;
 
     /**
      * Permite a un jugador abandonar el juego
      */
-    leaveGame(gameId: number, playerId: number): Result<void>;
+    leaveGame(matchId: number, playerId: number): Result<void>;
 
     /**
      * Crea un nuevo juego de torneo con callback personalizado

@@ -56,6 +56,7 @@ interface GameRules {
 	winnerScore: number;
 	maxGameTime: number;
 	difficulty: number;
+	visualStyle: string;
 }
 
 interface Winner {
@@ -106,6 +107,7 @@ export class GameWebSocket {
 	private buttonDownReleased?: ((event: Event) => void);
 	private up: number;
 	private down: number;
+	private timer?: HTMLElement;
 
 	constructor(token: string, id:number) {
 		this.wsUrl = getWsUrl("/game/pong");
@@ -136,6 +138,7 @@ export class GameWebSocket {
 		})
 
 		this.socket.onclose = () => {
+			//this.destroy();
 			console.log("🔴", t("game"), ": ", t("WsClosed"));
 		};
 
@@ -304,6 +307,7 @@ export class GameWebSocket {
 		switch (type) {
 			case "gameState": {
 				const data = message as GameStateMessage;
+				this.updateTimer(data);
 				if (data.state.gameStatus === "waiting_for_players")
 				{
 					console.log("NO SECOND_PLAYER");
@@ -360,7 +364,8 @@ export class GameWebSocket {
 
 	public initializeGame(gameId:number, player1: Player, player2: Player,
 		scores: Score, ball: Ball, engine: Engine, scene: Scene,
-		buttonUp: HTMLButtonElement, buttonDown: HTMLButtonElement)
+		buttonUp: HTMLButtonElement, buttonDown: HTMLButtonElement,
+		timer: HTMLElement)
 	{
 		this.gameId = gameId;
 		this.player1 = player1;
@@ -371,7 +376,16 @@ export class GameWebSocket {
 		this.scene = scene;
 		this.buttonUp = buttonUp;
 		this.buttonDown = buttonDown;
+		this.timer = timer;
 		this.setEvents();
+	}
+
+	private updateTimer(data: GameStateMessage)
+	{
+		const time = data.state.gameRules.maxGameTime - data.state.gameTimer;
+		if (!this.timer)
+			return;
+		this.timer.textContent = (time.toFixed()).toString();
 	}
 
 	public async	play(){

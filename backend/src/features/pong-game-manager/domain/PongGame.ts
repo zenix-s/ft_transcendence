@@ -9,6 +9,7 @@ import {
 import { User } from '@shared/domain/Entities/User.entity';
 import { IMatchSettings, VisualStyle } from '@shared/domain/ValueObjects/MatchSettings.value';
 import { CountdownManager } from '../services/CountdownManager';
+import { AIOpponent } from './AIOpponent';
 
 interface PlayerState {
     position: number;
@@ -87,10 +88,10 @@ export class PongGame {
     private gameTimer: number;
     private winnerScore: number;
     private maxGameTime?: number;
-    private isPlayer2AI: boolean;
+    private isAIMode: boolean;
     private aiDifficulty: number;
+    private aiOpponent?: AIOpponent;
     private isCancelled: boolean;
-    private aiTimer: number;
     private visualStyle: VisualStyle;
 
     constructor(
@@ -112,27 +113,30 @@ export class PongGame {
         this.gameTimer = 0;
         this.winnerScore = winnerScore;
         this.maxGameTime = maxGameTime;
-        this.isPlayer2AI = isPlayer2AI;
+        this.isAIMode = isPlayer2AI;
         this.aiDifficulty = aiDifficulty;
+        this.aiOpponent = undefined; // Created when player2 is added
         this.isCancelled = false;
-        this.aiTimer = 0;
         this.visualStyle = visualStyle;
     }
 
     public addPlayer(playerId: number, userData?: User): boolean {
         if (!this.player1) {
             this.player1 = new PongPlayer(playerId, userData);
-            if (this.isPlayer2AI && !this.player2) {
+            if (this.isAIMode && !this.player2) {
+                // Create AI player
                 this.player2 = new PongPlayer(1, {
                     id: CONSTANTES_APP.AI_PLAYER.ID,
                     username: CONSTANTES_APP.AI_PLAYER.NAME,
                     email: CONSTANTES_APP.AI_PLAYER.EMAIL,
                 });
                 this.player2.setReady(true);
+                // Create AI controller for player2
+                this.aiOpponent = new AIOpponent(this.player2, this.aiDifficulty);
             }
             this.updateGameStatus();
             return true;
-        } else if (!this.player2 && !this.isPlayer2AI) {
+        } else if (!this.player2 && !this.isAIMode) {
             this.player2 = new PongPlayer(playerId, userData);
             this.updateGameStatus();
             return true;
@@ -164,7 +168,7 @@ export class PongGame {
     }
 
     public arePlayersReady(): boolean {
-        if (this.isPlayer2AI) {
+        if (this.isAIMode) {
             return this.player1?.isReady() === true;
         }
         return this.player1?.isReady() === true && this.player2?.isReady() === true;
@@ -235,8 +239,10 @@ export class PongGame {
             return;
         }
 
-        if (this.isPlayer2AI && this.player2) {
-            this.updateAI();
+        // AI controls player2 directly
+        if (this.aiOpponent && this.player1) {
+            const enemyY = this.player1.getState().position;
+            this.aiOpponent.update(this.ball, enemyY);
         }
 
         this.updateBall(deltaTime);
@@ -284,167 +290,6 @@ export class PongGame {
         }
     }
 
-    private updateAI(): void {
-        // Verificar que existe el jugador 2 y que es IA
-        if (!this.player2 || !this.isPlayer2AI) return;
-
-        // Obtener posiciones actuales de la pelota y la pala de la IA
-        const player2State = this.player2.getState();
-        const ballY = this.ball.position.y;
-        const paddleY = player2State.position;
-
-        // ===== CONSTANTES DE DIFICULTAD DE LA IA =====
-        // Niveles de dificultad disponibles (0.6 = Fácil, 0.8 = Media, 1.0 = Difícil)
-        // const EASY = 0.6; // Nivel 6
-        const MEDIUM = 0.8; // Nivel 8
-        const HARD = 1.0; // Nivel 10
-
-        // Velocidad de reacción (milisegundos entre cada movimiento)
-        const SPEED_EASY = 15; // Igual velocidad pero con más fallos
-        const SPEED_MEDIUM = 15; // Igual velocidad pero con algunos fallos
-        const SPEED_HARD = 15; // Velocidad máxima sin fallos
-
-        // Punto de reacción (posición X donde la IA empieza a reaccionar)
-        // Valores más bajos = reacciona antes (más difícil)
-        const REACTION_EASY = 50; // Reacciona tarde (cuando pelota está cerca)
-        const REACTION_MEDIUM = 40; // Reacciona en punto medio
-        const REACTION_HARD = 35; // Reacciona temprano pero no instantáneo
-
-        // Cantidad de error en el objetivo (imprecisión de la IA)
-        const ERROR_EASY = 12; // ±12 unidades de error (muy imprecisa)
-        const ERROR_MEDIUM = 6; // ±6 unidades de error (bastante imprecisa)
-        const ERROR_HARD = 2; // ±2 unidades de error (casi perfecta pero humana)
-
-        // Umbral de precisión (qué tan cerca debe estar para dejar de moverse)
-        const THRESHOLD_EASY = 5; // Mucho menos precisa
-        const THRESHOLD_MEDIUM = 3; // Menos precisa
-        const THRESHOLD_HARD = 1; // Muy precisa
-
-        // ===== SELECCIÓN DE CONFIGURACIÓN SEGÚN DIFICULTAD =====
-        let aiMoveInterval, reactionPoint, errorAmount, threshold;
-
-        if (this.aiDifficulty >= HARD) {
-            // Nivel 10 (Difícil) - IA casi perfecta
-            aiMoveInterval = SPEED_HARD;
-            reactionPoint = REACTION_HARD;
-            errorAmount = ERROR_HARD;
-            threshold = THRESHOLD_HARD;
-        } else if (this.aiDifficulty >= MEDIUM) {
-            // Nivel 8 (Media) - IA competente con pequeños errores
-            aiMoveInterval = SPEED_MEDIUM;
-            reactionPoint = REACTION_MEDIUM;
-            errorAmount = ERROR_MEDIUM;
-            threshold = THRESHOLD_MEDIUM;
-        } else {
-            // Nivel 6 (Fácil) - IA lenta e imprecisa
-            aiMoveInterval = SPEED_EASY;
-            reactionPoint = REACTION_EASY;
-            errorAmount = ERROR_EASY;
-            threshold = THRESHOLD_EASY;
-        }
-
-        // ===== CONTROL DE VELOCIDAD DE REACCIÓN Y FALLOS =====
-        // Limitar la frecuencia con la que la IA puede moverse
-        const now = Date.now();
-        if (this.aiTimer == 0) this.aiTimer = now;
-        if (now - this.aiTimer < aiMoveInterval) {
-            return; // No ha pasado suficiente tiempo, salir sin mover
-        }
-        this.aiTimer = now;
-
-        // ===== FALLOS DE DECISIÓN SEGÚN DIFICULTAD =====
-        // Todas las IA pueden fallar ocasionalmente (humanización)
-        let decisionFailureChance = 0;
-        if (this.aiDifficulty < MEDIUM) {
-            decisionFailureChance = 0.4; // 40% fácil
-        } else if (this.aiDifficulty < HARD) {
-            decisionFailureChance = 0.2; // 20% media
-        } else {
-            decisionFailureChance = 0.05; // 5% difícil (muy ocasional)
-        }
-
-        if (Math.random() < decisionFailureChance) {
-            return; // Fallar en tomar una decisión (quedarse inmóvil)
-        }
-
-        // ===== COMPORTAMIENTO CUANDO LA PELOTA SE ALEJA =====
-        // Si la pelota se mueve hacia la izquierda (alejándose de la IA)
-        if (this.ball.velocity.x <= 0) {
-            // Solo la IA difícil usa la estrategia avanzada de posicionamiento
-            if (this.aiDifficulty >= HARD) {
-                // En lugar de ir al centro absoluto (50), ir a la mitad de la zona actual
-                let targetZone;
-                if (paddleY <= 40) {
-                    // Zona superior: ir a la mitad entre 10 y 40
-                    targetZone = 35;
-                } else if (paddleY >= 60) {
-                    // Zona inferior: ir a la mitad entre 60 y 90
-                    targetZone = 65;
-                } else {
-                    // Zona media: ir al centro
-                    targetZone = 50;
-                }
-
-                const zoneDiff = targetZone - paddleY;
-                if (Math.abs(zoneDiff) > 5) {
-                    if (zoneDiff > 0) {
-                        this.player2.moveDown(); // Moverse hacia abajo hacia la zona objetivo
-                    } else {
-                        this.player2.moveUp(); // Moverse hacia arriba hacia la zona objetivo
-                    }
-                }
-            }
-            // IA fácil y media se quedan donde están (no usan tácticas avanzadas)
-            return; // No seguir procesando si la pelota se aleja
-        }
-
-        // ===== VERIFICAR SI LA PELOTA ESTÁ EN ZONA DE REACCIÓN =====
-        // Solo reaccionar cuando la pelota cruza el punto de reacción
-        if (this.ball.position.x < reactionPoint) {
-            return; // Pelota aún no ha llegado al punto de reacción
-        }
-
-        // ===== CALCULAR POSICIÓN OBJETIVO CON ERROR =====
-        // Calcular dónde debe ir la pala, añadiendo imprecisión según dificultad
-        let targetY = ballY;
-
-        // ===== ESTRATEGIA DE ÁNGULOS (SOLO IA MEDIA Y ALTA) =====
-        // IA media y alta intentan golpear con los extremos de la pala para crear ángulos
-        if (this.aiDifficulty >= MEDIUM) {
-            const useAngleStrategy =
-                this.aiDifficulty >= HARD
-                    ? Math.random() < 0.7 // IA difícil: 70% del tiempo usa ángulos
-                    : Math.random() < 0.2; // IA media: solo 20% del tiempo usa ángulos
-
-            if (useAngleStrategy) {
-                // Decidir si golpear con parte superior o inferior de la pala
-                const useTopOfPaddle = Math.random() < 0.5;
-                const angleOffset = useTopOfPaddle ? -5 : 5; // ±5 unidades para golpear con extremos
-                targetY += angleOffset;
-
-                // Asegurar que el objetivo esté dentro de los límites de la pala
-                targetY = Math.max(10, Math.min(90, targetY));
-            }
-        }
-
-        // Añadir error aleatorio después de la estrategia de ángulos
-        if (errorAmount > 0) {
-            targetY += (Math.random() - 0.5) * errorAmount; // Añadir error aleatorio
-        }
-
-        // ===== MOVER LA PALA HACIA EL OBJETIVO =====
-        // Calcular diferencia entre posición actual y objetivo
-        const diff = targetY - paddleY;
-
-        // Solo moverse si la diferencia es mayor que el umbral de precisión
-        if (Math.abs(diff) > threshold) {
-            if (diff > 0 && paddleY < 90) {
-                this.player2.moveDown(); // Mover hacia abajo
-            } else if (diff < 0 && paddleY > 10) {
-                this.player2.moveUp(); // Mover hacia arriba
-            }
-        }
-    }
 
     private updateBall(deltaTime: number): void {
         // Solo mover la pelota si no hay countdown activo
@@ -566,6 +411,10 @@ export class PongGame {
         if (this.player2) {
             this.player2.resetPosition();
         }
+        // Reset AI target position to match player2's reset position
+        if (this.aiOpponent) {
+            this.aiOpponent.resetTarget();
+        }
     }
 
     public movePlayer(playerId: number, direction: 'up' | 'down'): boolean {
@@ -618,7 +467,7 @@ export class PongGame {
             gameRules: this.getGameRules(),
             isGameOver: this.isGameOver(),
             winner: this.isGameOver() ? this.getWinner() : null,
-            isSinglePlayer: this.isPlayer2AI,
+            isSinglePlayer: this.isAIMode,
             isCancelled: this.isCancelled,
             countdownInfo: this.countdownManager.getActiveCountdown(),
         };
@@ -719,7 +568,7 @@ export class PongGame {
     }
 
     public isSinglePlayerMode(): boolean {
-        return this.isPlayer2AI;
+        return this.isAIMode;
     }
 
     public modifySettings(settings: {
@@ -741,8 +590,11 @@ export class PongGame {
             this.maxGameTime = settings.maxGameTime;
         }
 
-        if (settings.difficulty !== undefined && settings.difficulty >= 0 && settings.difficulty <= 1) {
+        if (settings.difficulty !== undefined && settings.difficulty >= 0.6 && settings.difficulty <= 1.0) {
             this.aiDifficulty = settings.difficulty;
+            if (this.aiOpponent) {
+                this.aiOpponent.setDifficulty(settings.difficulty);
+            }
         }
 
         if (settings.visualStyle !== undefined) {
@@ -769,7 +621,7 @@ export class PongGame {
         }
 
         // Si no quedan jugadores humanos, cancelar el juego
-        if (!this.player1 && (!this.player2 || this.isPlayer2AI)) {
+        if (!this.player1 && (!this.player2 || this.isAIMode)) {
             this.isCancelled = true;
         }
 

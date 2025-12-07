@@ -31,10 +31,7 @@ export function ready1()
 			AIdiff = GameDifficulty.EASY;
 		else if (difficulty === "hard")
 			AIdiff = GameDifficulty.HARD;
-		let mode = "2d";
-		if (playerView === "3D")
-			mode = "3d"
-		const id = await fetchSinglePlayerGameId(Number(maxPoints), AIdiff, Number(maxTime), mode);
+		const id = await fetchSinglePlayerGameId(Number(maxPoints), AIdiff, Number(maxTime), playerView);
 		if (!id)
 		{
 			showToast(t("NoGameId"), "error");
@@ -43,8 +40,7 @@ export function ready1()
 			return ;
 		}
 		const token = localStorage.getItem("access_token");
-		const ws = createGameSocket(token, id);
-		ws.setGameView(playerView);
+		createGameSocket(token, id);
 
 		console.log("single player id =", id);
 		navigateTo(`playing?id=${id}`);

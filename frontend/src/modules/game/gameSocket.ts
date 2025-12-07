@@ -168,11 +168,6 @@ export class GameWebSocket {
 		this.ready = true;
 	}
 
-	public setGameView(gameMode: string)
-	{
-		this.gameMode = gameMode;
-	}
-
 	public getGameView()
 	{
 		return (this.gameMode);
@@ -307,6 +302,7 @@ export class GameWebSocket {
 		switch (type) {
 			case "gameState": {
 				const data = message as GameStateMessage;
+				this.gameMode = data.state.gameRules.visualStyle;
 				this.updateTimer(data);
 				if (data.state.gameStatus === "waiting_for_players")
 				{
@@ -350,6 +346,11 @@ export class GameWebSocket {
 			default:
 				return ;
 		}
+	}
+
+	public getGameMode()
+	{
+		return (this.gameMode);
 	}
 
 	public setScene(scene: Scene)

@@ -60,7 +60,6 @@ export class SocialWebSocketClient {
   private wsUrl: string;
   private isAuthenticated = false;
   private friends: Friend[] = [];
-  private gameMode?: string;
 
   constructor(token: string) {
     this.wsUrl = getWsUrl("/social/");
@@ -176,13 +175,9 @@ export class SocialWebSocketClient {
           const response = await acceptInvitation(msg.gameId);
 
           const token = localStorage.getItem("access_token");
-          const ws = createGameSocket(token, msg.gameId);
+          createGameSocket(token, msg.gameId);
 
           console.log("msg=", msg, "visual style =", msg.matchSettings.visualStyle);
-          let playerView = "2D";
-          if (msg.matchSettings.visualStyle === "3d")
-            playerView = "3D";
-          ws.setGameView(playerView);
           if (response)
             navigateTo(`playing?id=${msg.gameId}`); // Enviar a la partida
         }

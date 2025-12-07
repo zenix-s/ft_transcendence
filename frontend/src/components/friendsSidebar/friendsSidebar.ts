@@ -154,10 +154,6 @@ export async function initFriendsSidebar() {
         const token = localStorage.getItem("access_token");
         const ws = createGameSocket(token, gameId);
       	ws.authenticate(gameId);
-        let playerView = "2D";
-        if (confirmed.gameMode === "3d")
-            playerView = "3D";
-        ws.setGameView(playerView);
 
         inviteMultiplayer(username, gameId);
       }

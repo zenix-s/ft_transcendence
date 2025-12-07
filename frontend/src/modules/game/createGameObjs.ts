@@ -11,7 +11,7 @@ export function createBall(playerView: string | null, scene:Scene)
 	const ball : Ball = {
 		ball : ball_html,
 	}
-	if (playerView === "2D")
+	if (playerView === "2d")
 	{
 		ball.ball.position.y = 0.2;
 		const mat = new StandardMaterial("ballMat", scene);
@@ -49,13 +49,13 @@ export function createScores()
 export function createPlayerRight(playerView: string | null, scene:Scene)
 {
 	let paddle2;
-	if (playerView === "2D")
+	if (playerView === "2d")
 		paddle2 = MeshBuilder.CreateBox("paddle2", { width: 0.2, height: 0.01, depth: 1.5 }, scene);
 	else
 		paddle2 = MeshBuilder.CreateBox("paddle2", { width: 0.2, height: 0.5, depth: 1.5 }, scene);
 	paddle2.position.set(3.8, 0.2, 0);
 	const paddle2Mat = new StandardMaterial("paddle2Mat", scene);
-	if (playerView === "2D")
+	if (playerView === "2d")
 	{
 		paddle2Mat.disableLighting = true;
 		paddle2Mat.emissiveColor = new Color3(0.8, 0.2, 0.2);  // Red
@@ -74,13 +74,13 @@ export function createPlayerRight(playerView: string | null, scene:Scene)
 export function createPlayerLeft(playerView: string | null, scene:Scene)
 {
 	let paddle1 : Mesh;
-	if (playerView === "2D")
+	if (playerView === "2d")
 		paddle1 = MeshBuilder.CreateBox("paddle1", { width: 0.2, height: 0.01, depth: 1.5 }, scene);
 	else
 		paddle1 = MeshBuilder.CreateBox("paddle1", { width: 0.2, height: 0.5, depth: 1.5 }, scene);
 	paddle1.position.set(-3.8, 0.2, 0);
 	const paddle1Mat = new StandardMaterial("paddle1Mat", scene);
-	if (playerView === "2D")
+	if (playerView === "2d")
 	{
 		paddle1Mat.disableLighting = true;
 		paddle1Mat.emissiveColor = new Color3(0.2, 0.4, 0.8); // Blue
@@ -122,7 +122,7 @@ export function createTable(scene:Scene)
 export function createCamera(playerView: string | null, scene:Scene, canvas:HTMLCanvasElement)
 {
 	let camera;
-	if (playerView === "3D")
+	if (playerView === "3d")
 		camera = new ArcRotateCamera("camera", Math.PI / 2 + Math.PI, Math.PI / 6, 12, Vector3.Zero(), scene);
 	else
 		camera = new ArcRotateCamera("camera", Math.PI / 2 + Math.PI, 0 , 12, Vector3.Zero(), scene);

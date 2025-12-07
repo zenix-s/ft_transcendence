@@ -23,9 +23,10 @@ export interface ICreateSinglePlayerGameRequest {
     userId?: number;
 }
 
-export default class CreateSinglePlayerGameCommand
-    implements ICommand<ICreateSinglePlayerGameRequest, ICreateSinglePlayerGameResponse>
-{
+export default class CreateSinglePlayerGameCommand implements ICommand<
+    ICreateSinglePlayerGameRequest,
+    ICreateSinglePlayerGameResponse
+> {
     private readonly matchRepository: IMatchRepository;
 
     constructor(private readonly fastify: FastifyInstance) {
@@ -118,10 +119,13 @@ export default class CreateSinglePlayerGameCommand
 
             const matchId = createdMatch.id as number;
 
-            const gameResult = await this.fastify.PongGameManager.createGame(matchId, matchId, game);
+            const gameResult = await this.fastify.PongGameManager.createGame(matchId, game);
 
             // Paso 4: Agregar el jugador a través del PongGameManager para aplicar todas las protecciones
-            const addPlayerResult = await this.fastify.PongGameManager.addPlayerToGame(matchId, userId);
+            const addPlayerResult = await this.fastify.PongGameManager.addPlayerToGame({
+                matchId: matchId,
+                playerId: userId,
+            });
             if (!addPlayerResult.isSuccess) {
                 try {
                     await this.matchRepository.delete({ id: matchId });

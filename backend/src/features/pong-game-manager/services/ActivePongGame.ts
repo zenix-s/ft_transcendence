@@ -8,12 +8,11 @@ export class ActivePongGame {
     private readonly GAME_TIMEOUT_MS = 1 * 60 * 1000; // 5 minutos timeout
 
     constructor(
-        public readonly gameId: number,
         public readonly matchId: number,
         public readonly game: PongGame,
         private readonly fastify: FastifyInstance,
         // Callback async - se ejecuta DESPUÉS de guardar el match
-        private readonly onGameEnd: (gameId: number, matchId: number) => Promise<void>
+        private readonly onGameEnd: (matchId: number) => Promise<void>
     ) {}
 
     start(): void {
@@ -76,10 +75,10 @@ export class ActivePongGame {
                 this.handleGameEnd(() => this.saveMatchHistory());
             }
         } catch (error) {
-            this.fastify.log.error(error, `Error processing game tick for game ${this.gameId}`);
+            this.fastify.log.error(error, `Error processing game tick for game ${this.matchId}`);
             this.stop();
             // Llamar callback de error sin guardar
-            this.onGameEnd(this.gameId, this.matchId).catch((err) => {
+            this.onGameEnd(this.matchId).catch((err) => {
                 this.fastify.log.error(err, 'Error in onGameEnd callback');
             });
         }
@@ -101,9 +100,9 @@ export class ActivePongGame {
                 await saveFunction();
 
                 // SEGUNDO: Llamar al callback (que procesará el resultado del torneo)
-                await this.onGameEnd(this.gameId, this.matchId);
+                await this.onGameEnd(this.matchId);
             } catch (error) {
-                this.fastify.log.error(error, `Error handling game end for game ${this.gameId}`);
+                this.fastify.log.error(error, `Error handling game end for game ${this.matchId}`);
             }
         })();
     }
@@ -215,7 +214,7 @@ export class ActivePongGame {
             const matchEnded = match.end(winnerIds, finalScores);
             if (!matchEnded) {
                 this.fastify.log.error(
-                    `Failed to end match ${this.matchId} for game ${this.gameId} - match not in progress`
+                    `Failed to end match ${this.matchId} for game ${this.matchId} - match not in progress`
                 );
                 return;
             }
@@ -223,10 +222,10 @@ export class ActivePongGame {
             // CRÍTICO: Guardar el match ANTES de retornar
             const updatedMatch = await this.fastify.MatchRepository.update({ match });
             if (!updatedMatch) {
-                this.fastify.log.error(`Failed to update match ${this.matchId} for game ${this.gameId}`);
+                this.fastify.log.error(`Failed to update match ${this.matchId} for game ${this.matchId}`);
             }
         } catch (error) {
-            this.fastify.log.error(error, `Error saving match history for game ${this.gameId}`);
+            this.fastify.log.error(error, `Error saving match history for game ${this.matchId}`);
             throw error; // Re-lanzar para que handleGameEnd lo capture
         }
     }

@@ -96,7 +96,7 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
             const matchId = createdMatch.id as number;
 
             const game = new PongGame(winnerScore, maxGameTime, false, 0.95, visualStyle);
-            const gameResult = await this.fastify.PongGameManager.createGame(matchId, matchId, game);
+            const gameResult = await this.fastify.PongGameManager.createGame(matchId, game);
 
             if (!gameResult.isSuccess) {
                 try {
@@ -108,7 +108,10 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
             }
 
             // Unir automáticamente al creador del juego como anfitrión
-            const addPlayerResult = await this.fastify.PongGameManager.addPlayerToGame(matchId, userId);
+            const addPlayerResult = await this.fastify.PongGameManager.addPlayerToGame({
+                matchId: matchId,
+                playerId: userId,
+            });
             if (!addPlayerResult.isSuccess) {
                 // Si falla al agregar el jugador, eliminar el juego y el match
                 try {

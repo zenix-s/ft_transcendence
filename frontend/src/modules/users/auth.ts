@@ -102,9 +102,24 @@ export function setupRegisterForm() {
         localStorage.setItem("userId", userId);
 
         // Conectar WebSocket
-        createSocialSocket(token);
-        /* wsClient = new SocialWebSocketClient(token);
-        wsClient.connect(); */
+        //createSocialSocket(token);
+
+        // 🔹 Conectar WebSocket Y ESPERAR a que esté autenticado
+        const ws = createSocialSocket(token);
+        await new Promise<void>((resolve) => {
+          const checkAuth = setInterval(() => {
+            if (ws.getAuthenticated()) {
+              clearInterval(checkAuth);
+              resolve();
+            }
+          }, 50);
+          
+          // Timeout de seguridad (15s)
+          setTimeout(() => {
+            clearInterval(checkAuth);
+            resolve();
+          }, 15000);
+        });
 
         showToast(t("UserCreatedSuccessfully"));
         registerForm.reset();

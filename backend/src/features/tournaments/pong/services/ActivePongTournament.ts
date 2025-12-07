@@ -322,6 +322,19 @@ export class ActivePongTournament {
                 return;
             }
 
+            // Agregar el primer jugador al juego
+            await this.fastify.PongGameManager.addPlayerToGame({
+                matchId: matchId,
+                playerId: player1Id,
+            });
+
+            if (!isAgainstAI) {
+                await this.fastify.PongGameManager.addPlayerToGame({
+                    matchId: matchId,
+                    playerId: player2Id,
+                });
+            }
+
             // Paso 6: Notificar a los jugadores por websocket
             if (this.fastify.TournamentWebSocketService?.notifyMatchCreated) {
                 this.fastify.TournamentWebSocketService.notifyMatchCreated(
@@ -514,7 +527,7 @@ export class ActivePongTournament {
 
                 return;
             }
-            
+
             if (activeParticipants.length === 0) {
                 tournament.complete();
 

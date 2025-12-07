@@ -138,7 +138,7 @@ export class GameWebSocket {
 		})
 
 		this.socket.onclose = () => {
-			this.destroy();
+			//this.destroy();
 			console.log("🔴", t("game"), ": ", t("WsClosed"));
 		};
 

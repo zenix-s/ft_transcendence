@@ -80,7 +80,7 @@ export function setupEventListeners() {
             // Llama a la nueva función que maneja la lógica de fetch, toast y refresh.
             if (target.dataset.i18n === 'join')
                 // Caso join
-                handleParticipationJoinOrLeave(target);
+                await handleParticipationJoinOrLeave(target);
             else if (target.dataset.i18n === 'leave') {
                 // Caso leave
                 if (
@@ -91,13 +91,13 @@ export function setupEventListeners() {
                     const confirmLeave = await modal({
                         type: 'confirmLeaveTournament',
                     });
-                    if (confirmLeave) handleParticipationJoinOrLeave(target);
-                } else handleParticipationJoinOrLeave(target);
+                    if (confirmLeave) await handleParticipationJoinOrLeave(target);
+                } else await handleParticipationJoinOrLeave(target);
             } else if (target.dataset.i18n === 'results')
-                handleParticipationResults(target);
+                await handleParticipationResults(target);
             else {
                 // Caso startTournament
-                handleParticipationStartTournament(target);
+                await handleParticipationStartTournament(target);
                 console.log('Iniciar torneo - función no implementada aún.');
             }
             return;

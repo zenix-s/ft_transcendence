@@ -16,6 +16,7 @@ import { getColor, setColors } from "@/modules/game/getColors";
 import { createTournamentSocket, getTournamentSocket } from "@/modules/tournament/tournamentSocketInstance";
 import { TournamentWebSocketClient } from "@/modules/tournament/tournamentSocket";
 import { getCurrentUser } from "@/modules/users";
+import { showToast } from "@/components/toast";
 
 // Exponer utilidades al ámbito global
 declare global {
@@ -44,7 +45,8 @@ async function validateSession(page: string): Promise<boolean> {
   
   // Si no hay token, redirigir a login
   if (!token) {
-    console.warn("⚠️ No token found. Redirecting to login...");
+    console.warn(`${t("NoTokenFound")}`); // DB
+    showToast(`${t("NoTokenFound")}`, "error");
     navigateTo("login", false, true);
     return false;
   }
@@ -52,7 +54,7 @@ async function validateSession(page: string): Promise<boolean> {
   // Validar que el usuario existe
   const currentUser = await getCurrentUser();
   if (!currentUser) {
-    console.warn("⚠️ Invalid token or user not found. Redirecting to login...");
+    console.warn("⚠️ Invalid token or user not found. Redirecting to login..."); // DB
     // getCurrentUser ya limpia el token y muestra el error
     navigateTo("login", false, true);
     return false;
@@ -118,39 +120,27 @@ async function initTournamentSocket(): Promise<TournamentWebSocketClient | null>
 }
 
 // ====================
-// 🚀 INICIALIZACIÓN
+// 🌐 Languajes
 // ====================
-async function initialize() {
-  // 1. Detectar página inicial
-  const initialPage = location.pathname.replace("/", "") || "home";
-  
-  // 2. Validar sesión antes de continuar
-  const isValid = await validateSession(initialPage);
-  
-  if (!isValid) {
-    // Ya se redirigió en validateSession
-    return;
-  }
-
-  // 3. Si hay token válido, inicializar WebSockets
-  const token = localStorage.getItem("access_token");
-  if (token) {
-    await Promise.all([
-      initSocialSocket(),
-      initTournamentSocket()
-    ]);
-  }
-
-  // 4. Navegar a la página inicial
-  navigateTo(initialPage, true);
+const savedLang = (localStorage.getItem("lang") as "en" | "es" | "fr" | null);
+if (savedLang) {
+  setLanguage(savedLang);
+} else {
+  setLanguage("en");
 }
 
-// Ejecutar inicialización
-initialize();
+// Render inicial de botones
+renderButtons();
 
-// Configurar los eventos
-setupEventListeners();
-window.addEventListener("popstate", handlePopState);
+// Conectar selector del DOM
+const langSelector = document.getElementById("lang_selector") as HTMLSelectElement | null;
+if (langSelector) {
+  langSelector.value = savedLang || currentLang;
+  langSelector.addEventListener("change", (event: Event) => {
+    const select = event.target as HTMLSelectElement;
+    setLanguage(select.value as "en" | "es" | "fr");
+  });
+}
 
 // ====================
 // 🌙 Toggle dark mode
@@ -195,27 +185,39 @@ if (localStorage.getItem("theme") === "dark") {
 }
 
 // ====================
-// 🌐 Languajes
+// 🚀 INICIALIZACIÓN
 // ====================
-const savedLang = (localStorage.getItem("lang") as "en" | "es" | "fr" | null);
-if (savedLang) {
-  setLanguage(savedLang);
-} else {
-  setLanguage("en");
+async function initialize() {
+  // 1. Detectar página inicial
+  const initialPage = location.pathname.replace("/", "") || "home";
+  
+  // 2. Validar sesión antes de continuar
+  const isValid = await validateSession(initialPage);
+  
+  if (!isValid) {
+    // Ya se redirigió en validateSession
+    return;
+  }
+
+  // 3. Si hay token válido, inicializar WebSockets
+  const token = localStorage.getItem("access_token");
+  if (token) {
+    await Promise.all([
+      initSocialSocket(),
+      initTournamentSocket()
+    ]);
+  }
+
+  // 4. Navegar a la página inicial
+  navigateTo(initialPage, true);
 }
 
-// Render inicial de botones
-renderButtons();
+// Ejecutar inicialización
+initialize();
 
-// Conectar selector del DOM
-const langSelector = document.getElementById("lang_selector") as HTMLSelectElement | null;
-if (langSelector) {
-  langSelector.value = savedLang || currentLang;
-  langSelector.addEventListener("change", (event: Event) => {
-    const select = event.target as HTMLSelectElement;
-    setLanguage(select.value as "en" | "es" | "fr");
-  });
-}
+// Configurar los eventos
+setupEventListeners();
+window.addEventListener("popstate", handlePopState);
 
 // ====================
 // 🕹️ Translated buttons

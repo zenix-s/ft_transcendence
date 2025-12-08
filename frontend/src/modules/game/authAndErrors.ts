@@ -83,14 +83,27 @@ export async function endGameAndErrors(
     ball: Ball | undefined
 ) {
     let finBool = 0;
-    if (!ball || !player1 || !player2 || !scores) return;
+    if (!ball || !player1 || !player2 || !scores)
+    {
+        const ws = getGameSocket();
+        if (!ws) {
+            showToast('Internal error no WS', 'error');
+            console.warn('Internal error no WS');
+            navigateTo('dashboard', false, true);
+            return;
+        }
+        ws?.destroy();
+        console.warn(t('GameError'));
+        navigateTo('dashboard', false, true);
+        return;
+    }
 
     if (data == 'GameAlreadyFinished') {
         endGame(finBool, gameId, player1, player2, scores, ball);
         finBool = 1;
         return;
     }
-    if (data == 'GameNotFound') return;
+    if (data == 'GameNotFound' || data === 'PlayerNotInGame') return;
     if (data == 'noActiveGame') {
         showToast(t('noActiveGame'), 'error');
         console.warn(t('noActiveGame'));

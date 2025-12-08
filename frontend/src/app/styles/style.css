@@ -4,21 +4,45 @@
 
 /* Animaciones glitch */
 @keyframes glitch {
-  2%,64% { transform: translate(2px,0) skew(0deg); }
-  4%,60% { transform: translate(-2px,0) skew(0deg); }
-  62%    { transform: translate(0,0) skew(5deg); }
+    2%,
+    64% {
+        transform: translate(2px, 0) skew(0deg);
+    }
+    4%,
+    60% {
+        transform: translate(-2px, 0) skew(0deg);
+    }
+    62% {
+        transform: translate(0, 0) skew(5deg);
+    }
 }
 
 @keyframes glitchTop {
-  2%,64% { transform: translate(2px,-2px); }
-  4%,60% { transform: translate(-2px,2px); }
-  62%    { transform: translate(13px,-1px) skew(-13deg); }
+    2%,
+    64% {
+        transform: translate(2px, -2px);
+    }
+    4%,
+    60% {
+        transform: translate(-2px, 2px);
+    }
+    62% {
+        transform: translate(13px, -1px) skew(-13deg);
+    }
 }
 
 @keyframes glitchBotom {
-  2%,64% { transform: translate(-2px,0); }
-  4%,60% { transform: translate(-2px,0); }
-  62%    { transform: translate(-22px,5px) skew(21deg); }
+    2%,
+    64% {
+        transform: translate(-2px, 0);
+    }
+    4%,
+    60% {
+        transform: translate(-2px, 0);
+    }
+    62% {
+        transform: translate(-22px, 5px) skew(21deg);
+    }
 }
 
 /* Pseudo-elementos glitch */
@@ -28,92 +52,94 @@
 #subtitle:after,
 .my_button:before,
 .my_button:after {
-  content: attr(title);
-  position: absolute;
-  right: 0;
+    content: attr(title);
+    position: absolute;
+    right: 0;
 }
 
 #title:before,
 #subtitle:before,
 .my_button:before {
-  animation: glitchTop 1s linear infinite;
-  clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
-  -webkit-clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+    animation: glitchTop 1s linear infinite;
+    clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+    -webkit-clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
 }
 
 #title:after,
 #subtitle:after,
 .my_button:after {
-  animation: glitchBotom 1.5s linear infinite;
-  clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
-  -webkit-clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+    animation: glitchBotom 1.5s linear infinite;
+    clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+    -webkit-clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
 }
 
 .text-shadow-blue {
-  text-shadow:
-    -2px -2px 3px #0A5EC4,   /* dark blue inner shadow */
-    3px 3px 6px #5BC7FF,    /* light blue glow */
-    0 0 12px rgba(91,199,255,0.7); /* extra glow */
+    text-shadow:
+        -2px -2px 3px #0a5ec4,
+        /* dark blue inner shadow */ 3px 3px 6px #5bc7ff,
+        /* light blue glow */ 0 0 12px rgba(91, 199, 255, 0.7); /* extra glow */
 }
 
 .text-shadow-red {
-  text-shadow:
-    -2px -2px 3px #B1001F,   /* deep red */
-    3px 3px 6px #FF5A5A,    /* brighter red */
-    0 0 12px rgba(255,90,90,0.7); /* glow */
+    text-shadow:
+        -2px -2px 3px #b1001f,
+        /* deep red */ 3px 3px 6px #ff5a5a,
+        /* brighter red */ 0 0 12px rgba(255, 90, 90, 0.7); /* glow */
 }
 
 /* Red core + Blue aura */
 .text-shadow-redblue {
-  text-shadow:
-    -2px -2px 2px #B1001F,      /* deep red inner */
-    0 0 8px #5BC7FF,        /* bright red core glow */
-    2px 2px 4px #5BC7FF,            /* soft blue glow */
-    0 0 14px rgba(255, 91, 91, 0.7); /* extended blue aura */
+    text-shadow:
+        -2px -2px 2px #b1001f,
+        /* deep red inner */ 0 0 8px #5bc7ff,
+        /* bright red core glow */ 2px 2px 4px #5bc7ff,
+        /* soft blue glow */ 0 0 14px rgba(255, 91, 91, 0.7); /* extended blue aura */
 }
 
 /* Purple glow */
 .text-shadow-purple {
-  text-shadow:
-    -2px -2px 2px #4B0082,        /* indigo */
-    2px 2px 4px #8A2BE2,          /* vivid purple */
-    0 0 8px #C71585,              /* magenta highlight */
-    0 0 14px rgba(180,70,255,0.8); /* outer glow */
+    text-shadow:
+        -2px -2px 2px #4b0082,
+        /* indigo */ 2px 2px 4px #8a2be2,
+        /* vivid purple */ 0 0 8px #c71585,
+        /* magenta highlight */ 0 0 14px rgba(180, 70, 255, 0.8); /* outer glow */
 }
-
-
 
 /* Scanlines */
 .scanlines {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  mix-blend-mode: difference;
-  pointer-events: none;
-  z-index: -100;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    mix-blend-mode: difference;
+    pointer-events: none;
+    z-index: -100;
 }
 
 .scanlines::before {
-  content: "";
-  position: absolute;
-  width: 100vw;
-  height: 100vh;
-  top: 0;
-  left: 0;
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0%,
-    rgba(255, 255, 255, 0.05) .5%,
-    transparent 1%
-  );
-  animation: fudge 7s ease-in-out alternate infinite;
-  pointer-events: none;
+    content: '';
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(255, 255, 255, 0.05) 0.5%,
+        transparent 1%
+    );
+    animation: fudge 7s ease-in-out alternate infinite;
+    pointer-events: none;
 }
 
 @keyframes fudge {
-  from { transform: translate(0px, 0px); }
-  to   { transform: translate(0px, 2%); }
+    from {
+        transform: translate(0px, 0px);
+    }
+    to {
+        transform: translate(0px, 2%);
+    }
 }

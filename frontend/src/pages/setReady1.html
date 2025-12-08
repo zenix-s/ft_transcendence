@@ -1,109 +1,165 @@
 <div class="scanlines"></div>
 
 <!-- Bloque centrado sin ocupar toda la pantalla -->
-<div class="center-screen justify-center py-10 gap-20">
-  <div class="flex justify-center items-center gap-5 md:gap-16 sm:gap-7">
-    <div id="player1" data-i18n="player1"
-      class="relative text-center text-4xl sm:text-6xl md:text-8xl font-mono tracking-tight animate-[glitch_1s_linear_infinite] text-secondary dark:text-primary text-shadow-blue"></div>
-  
-    <div class="relative text-center text-4xl sm:text-6xl md:text-8xl font-mono tracking-tight animate-[glitch_1s_linear_infinite] text-secondary dark:text-primary text-shadow-redblue">
-      VS
-    </div>
-  
-    <div id="AI" data-i18n="AI"
-      class="relative text-center text-4xl sm:text-6xl md:text-8xl font-mono tracking-tight animate-[glitch_1s_linear_infinite] text-secondary dark:text-primary text-shadow-red"></div>
-  </div>
-  
-  <!-- Options container -->
-  <div class="flex flex-col justify-center items-center gap-10">
-    <div class="flex flex-col gap-4">
-      <label for="points-range" class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono" role="tooltip" data-i18n="modalGameCreationmaxPoints">
-      </label>
-      <input
-        id="points-range"
-        type="range"
-        name="points-range"
-        class="swal2-range accent-cyan-400"
-        min="3" max="15" value="5" step="1"
-      >
-    </div>
-    <div class="flex flex-col gap-4">
-      <label for="time-range" class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono" role="tooltip" data-i18n="modalGameCreationMaxTime">
-      </label>
-      <input
-        id="time-range"
-        type="range"
-        name="time-range"
-        class="swal2-range accent-cyan-400"
-        min="30" max="300" value="120" step="30"
-      >
-    </div>
-    <div class="flex flex-col gap-4">
-      <p class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono" data-i18n="modalGameCreationGameMode">Mode:</p>
-      <div class="flex justify-center gap-10">
-        <label class="flex items-center gap-2 cursor-pointer">
-          <input
-            type="radio"
-            id="mode-2D"
-            name="mode-radio"
-            value="2d"
-            class="swal2-radio accent-cyan-400"
-            checked
-          >
-          <span class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono" data-i18n="2D">2D</span>
-        </label>
+<div class="center-screen justify-center gap-20 py-10">
+    <div class="flex items-center justify-center gap-5 sm:gap-7 md:gap-16">
+        <div
+            id="player1"
+            data-i18n="player1"
+            class="text-secondary dark:text-primary text-shadow-blue relative animate-[glitch_1s_linear_infinite] text-center font-mono text-4xl tracking-tight sm:text-6xl md:text-8xl"
+        ></div>
 
-        <label class="flex items-center gap-4 cursor-pointer">
-          <input
-            type="radio"
-            id="mode-3D"
-            name="mode-radio"
-            value="3d"
-            class="swal2-radio accent-cyan-400"
-          >
-          <span class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono" data-i18n="3D">3D</span>
-        </label>
-      </div>
-    </div>
-    <div class="flex flex-col gap-4 items-center">
-      <p class="text-secondary dark:text-primary items-center text-xl sm:text-4xl md:text-5xl font-mono" data-i18n="difficultyAI">Mode:</p>
-      <div class="flex justify-center gap-10">
-        <label class="flex items-center gap-2 cursor-pointer">
-          <input
-            type="radio"
-            id="diff"
-            name="diff-radio"
-            value="easy"
-            class="swal2-radio accent-cyan-400"
-          >
-          <span class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono" data-i18n="easy"></span>
-        </label>
+        <div
+            class="text-secondary dark:text-primary text-shadow-redblue relative animate-[glitch_1s_linear_infinite] text-center font-mono text-4xl tracking-tight sm:text-6xl md:text-8xl"
+        >
+            VS
+        </div>
 
-        <label class="flex items-center gap-4 cursor-pointer">
-          <input
-            type="radio"
-            id="diff"
-            name="diff-radio"
-            value="normal"
-            class="swal2-radio accent-cyan-400"
-            checked
-          >
-          <span class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono" data-i18n="normal"></span>
-        </label>
-        <label class="flex items-center gap-4 cursor-pointer">
-          <input
-            type="radio"
-            id="diff"
-            name="diff-radio"
-            value="hard"
-            class="swal2-radio accent-cyan-400"
-          >
-          <span class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono" data-i18n="hard"></span>
-        </label>
-      </div>
+        <div
+            id="AI"
+            data-i18n="AI"
+            class="text-secondary dark:text-primary text-shadow-red relative animate-[glitch_1s_linear_infinite] text-center font-mono text-4xl tracking-tight sm:text-6xl md:text-8xl"
+        ></div>
     </div>
-  </div>
 
-  <div id="ready-button" data-button="Ready" ></div>
-  <a href="#" data-page="dashboard" data-i18n="Cancel" class="text-3xl text-secondary dark:text-primary hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] transition-all duration-300 capitalize"></a>
+    <!-- Options container -->
+    <div class="flex flex-col items-center justify-center gap-10">
+        <div class="flex flex-col gap-4">
+            <label
+                for="points-range"
+                class="text-secondary dark:text-primary font-mono text-xl sm:text-4xl md:text-5xl"
+                role="tooltip"
+                data-i18n="modalGameCreationmaxPoints"
+            >
+            </label>
+            <input
+                id="points-range"
+                type="range"
+                name="points-range"
+                class="swal2-range accent-cyan-400"
+                min="3"
+                max="15"
+                value="5"
+                step="1"
+            />
+        </div>
+        <div class="flex flex-col gap-4">
+            <label
+                for="time-range"
+                class="text-secondary dark:text-primary font-mono text-xl sm:text-4xl md:text-5xl"
+                role="tooltip"
+                data-i18n="modalGameCreationMaxTime"
+            >
+            </label>
+            <input
+                id="time-range"
+                type="range"
+                name="time-range"
+                class="swal2-range accent-cyan-400"
+                min="30"
+                max="300"
+                value="120"
+                step="30"
+            />
+        </div>
+        <div class="flex flex-col gap-4">
+            <p
+                class="text-secondary dark:text-primary font-mono text-xl sm:text-4xl md:text-5xl"
+                data-i18n="modalGameCreationGameMode"
+            >
+                Mode:
+            </p>
+            <div class="flex justify-center gap-10">
+                <label class="flex cursor-pointer items-center gap-2">
+                    <input
+                        type="radio"
+                        id="mode-2D"
+                        name="mode-radio"
+                        value="2d"
+                        class="swal2-radio accent-cyan-400"
+                        checked
+                    />
+                    <span
+                        class="text-secondary dark:text-primary font-mono text-xl sm:text-4xl md:text-5xl"
+                        data-i18n="2D"
+                        >2D</span
+                    >
+                </label>
+
+                <label class="flex cursor-pointer items-center gap-4">
+                    <input
+                        type="radio"
+                        id="mode-3D"
+                        name="mode-radio"
+                        value="3d"
+                        class="swal2-radio accent-cyan-400"
+                    />
+                    <span
+                        class="text-secondary dark:text-primary font-mono text-xl sm:text-4xl md:text-5xl"
+                        data-i18n="3D"
+                        >3D</span
+                    >
+                </label>
+            </div>
+        </div>
+        <div class="flex flex-col items-center gap-4">
+            <p
+                class="text-secondary dark:text-primary items-center font-mono text-xl sm:text-4xl md:text-5xl"
+                data-i18n="difficultyAI"
+            >
+                Mode:
+            </p>
+            <div class="flex justify-center gap-10">
+                <label class="flex cursor-pointer items-center gap-2">
+                    <input
+                        type="radio"
+                        id="diff"
+                        name="diff-radio"
+                        value="easy"
+                        class="swal2-radio accent-cyan-400"
+                    />
+                    <span
+                        class="text-secondary dark:text-primary font-mono text-xl sm:text-4xl md:text-5xl"
+                        data-i18n="easy"
+                    ></span>
+                </label>
+
+                <label class="flex cursor-pointer items-center gap-4">
+                    <input
+                        type="radio"
+                        id="diff"
+                        name="diff-radio"
+                        value="normal"
+                        class="swal2-radio accent-cyan-400"
+                        checked
+                    />
+                    <span
+                        class="text-secondary dark:text-primary font-mono text-xl sm:text-4xl md:text-5xl"
+                        data-i18n="normal"
+                    ></span>
+                </label>
+                <label class="flex cursor-pointer items-center gap-4">
+                    <input
+                        type="radio"
+                        id="diff"
+                        name="diff-radio"
+                        value="hard"
+                        class="swal2-radio accent-cyan-400"
+                    />
+                    <span
+                        class="text-secondary dark:text-primary font-mono text-xl sm:text-4xl md:text-5xl"
+                        data-i18n="hard"
+                    ></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div id="ready-button" data-button="Ready"></div>
+    <a
+        href="#"
+        data-page="dashboard"
+        data-i18n="Cancel"
+        class="text-secondary dark:text-primary text-3xl capitalize transition-all duration-300 hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue]"
+    ></a>
 </div>

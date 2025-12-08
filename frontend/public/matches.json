@@ -1,43 +1,43 @@
 {
-  "matches": [
-    {
-      "id": 2,
-      "gameTypeId": 2,
-      "status": "in_progress",
-      "startedAt": "2025-09-30T20:39:56.380Z",
-      "createdAt": "2025-09-30T20:39:56.380Z",
-      "players": [
+    "matches": [
         {
-          "userId": 2,
-          "score": 0,
-          "isWinner": false
+            "id": 2,
+            "gameTypeId": 2,
+            "status": "in_progress",
+            "startedAt": "2025-09-30T20:39:56.380Z",
+            "createdAt": "2025-09-30T20:39:56.380Z",
+            "players": [
+                {
+                    "userId": 2,
+                    "score": 0,
+                    "isWinner": false
+                },
+                {
+                    "userId": 1,
+                    "score": 0,
+                    "isWinner": false
+                }
+            ]
         },
         {
-          "userId": 1,
-          "score": 0,
-          "isWinner": false
+            "id": 1,
+            "gameTypeId": 2,
+            "status": "in_progress",
+            "startedAt": "2025-09-30T20:38:56.216Z",
+            "createdAt": "2025-09-30T20:38:56.215Z",
+            "players": [
+                {
+                    "userId": 2,
+                    "score": 0,
+                    "isWinner": false
+                },
+                {
+                    "userId": 1,
+                    "score": 0,
+                    "isWinner": false
+                }
+            ]
         }
-      ]
-    },
-    {
-      "id": 1,
-      "gameTypeId": 2,
-      "status": "in_progress",
-      "startedAt": "2025-09-30T20:38:56.216Z",
-      "createdAt": "2025-09-30T20:38:56.215Z",
-      "players": [
-        {
-          "userId": 2,
-          "score": 0,
-          "isWinner": false
-        },
-        {
-          "userId": 1,
-          "score": 0,
-          "isWinner": false
-        }
-      ]
-    }
-  ],
-  "total": 2
+    ],
+    "total": 2
 }

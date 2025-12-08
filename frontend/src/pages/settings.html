@@ -1,237 +1,313 @@
 <div class="scanlines"></div>
-<div class="flex flex-col items-center min-w-screen">
+<div class="flex min-w-screen flex-col items-center">
+    <!-- Barra superior -->
+    <header
+        class="mb-16 flex w-full max-w-5xl items-center justify-between border-2 border-cyan-400 p-4 sm:mt-24 dark:border"
+    >
+        <h1
+            data-i18n="settings"
+            class="glitch hidden text-3xl font-bold tracking-wider uppercase sm:block"
+        >
+            <!--DASHBOARD-->
+        </h1>
+        <div class="flex flex-col items-center justify-center gap-4">
+            <div
+                id="user-data"
+                class="flex w-full flex-row items-center justify-start gap-4 sm:justify-end"
+            >
+                <img
+                    id="user-avatar"
+                    src="/images/avatar1.jpg"
+                    alt="Avatar"
+                    class="h-10 w-10 rounded-full border border-cyan-400 object-cover"
+                />
+                <span id="user-name" class="text-lg"><!--USER NAME--></span>
+            </div>
+            <nav class="flex w-full text-lg">
+                <!-- LANDSCAPE -->
+                <div
+                    id="lanscape"
+                    class="relative hidden w-full flex-row items-center justify-start gap-4 sm:flex sm:justify-end"
+                >
+                    <!-- Dashboard -->
+                    <a
+                        href="#"
+                        data-page="dashboard"
+                        data-i18n="dashboard"
+                        class="text-secondary dark:text-primary capitalize transition-all duration-300 hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue]"
+                    ></a>
+                    <span>|</span>
+                    <!-- Logout -->
+                    <a
+                        href="#"
+                        data-page="logout"
+                        data-i18n="logout"
+                        class="text-secondary dark:text-primary capitalize transition-all duration-300 hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue]"
+                    ></a>
+                </div>
 
-   <!-- Barra superior -->
-    <header class="w-full max-w-5xl border-2 dark:border border-cyan-400 p-4 flex justify-between items-center mb-16 sm:mt-24">
-      <h1 data-i18n="settings" class="text-3xl hidden sm:block font-bold glitch tracking-wider uppercase"><!--DASHBOARD--></h1>
-      <div class="flex flex-col justify-center items-center gap-4">
-        <div id="user-data" class="flex flex-row w-full justify-start sm:justify-end items-center gap-4">
-          <img id="user-avatar" src="/images/avatar1.jpg" alt="Avatar" class="w-10 h-10 rounded-full object-cover border border-cyan-400" />
-          <span id="user-name" class="text-lg"><!--USER NAME--></span>
+                <!-- MOVILE -->
+                <div
+                    id="movile"
+                    class="flex w-full flex-row items-center justify-start gap-4 sm:hidden sm:justify-end"
+                >
+                    <!-- Dashboard -->
+                    <a
+                        href="#"
+                        data-page="dashboard"
+                        class="text-secondary hover:text-cyan dark:text-primary fa-solid fa-house-user text-xl transition"
+                    ></a>
+                    <span>|</span>
+                    <!-- Logout -->
+                    <a
+                        href="#"
+                        data-page="logout"
+                        class="text-secondary hover:text-cyan dark:text-primary fa-solid fa-right-from-bracket text-xl transition"
+                    ></a>
+                </div>
+            </nav>
         </div>
-        <nav class="flex text-lg w-full">
-          <!-- LANDSCAPE -->
-          <div id="lanscape" class="relative w-full hidden sm:flex flex-row gap-4 justify-start sm:justify-end items-center">
-            <!-- Dashboard -->
-            <a href="#" data-page="dashboard" data-i18n="dashboard" class="text-secondary dark:text-primary hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] transition-all duration-300 capitalize"></a>
-            <span>|</span>
-            <!-- Logout -->
-            <a href="#" data-page="logout" data-i18n="logout" class="text-secondary dark:text-primary hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] transition-all duration-300 capitalize"></a>
-          </div>
-
-          <!-- MOVILE -->
-          <div id="movile" class="sm:hidden w-full flex flex-row gap-4 justify-start sm:justify-end items-center">
-            <!-- Dashboard -->
-            <a href="#" data-page="dashboard" class="text-xl text-secondary hover:text-cyan dark:text-primary transition fa-solid fa-house-user"></a>
-            <span>|</span>
-            <!-- Logout -->
-            <a href="#" data-page="logout" class="text-xl text-secondary hover:text-cyan dark:text-primary transition fa-solid fa-right-from-bracket"></a>
-          </div>
-        </nav>
-      </div>
     </header>
 
     <!-- Settings -->
-    <div class="flex flex-col justify-center items-center gap-8 max-w-5xl w-full">
-      <!-- User Settings -->
-      <div class="border-2 dark:border border-cyan-400 p-8 text-center relative w-full flex flex-col gap-8">
-        <!-- Section Title -->
-        <h2 data-i18n="userSettings" class="text-md sm:text-2xl font-bold mb-2 uppercase absolute -top-3 sm:-top-5 text-shadow-[-3px_-3px_0_var(--color-primary),3px_3px_0_var(--color-primary)] dark:text-shadow-[-3px_-3px_0_var(--color-secondary),3px_3px_0_var(--color-secondary)]"></h2>
+    <div
+        class="flex w-full max-w-5xl flex-col items-center justify-center gap-8"
+    >
+        <!-- User Settings -->
+        <div
+            class="relative flex w-full flex-col gap-8 border-2 border-cyan-400 p-8 text-center dark:border"
+        >
+            <!-- Section Title -->
+            <h2
+                data-i18n="userSettings"
+                class="text-md absolute -top-3 mb-2 font-bold uppercase text-shadow-[-3px_-3px_0_var(--color-primary),3px_3px_0_var(--color-primary)] sm:-top-5 sm:text-2xl dark:text-shadow-[-3px_-3px_0_var(--color-secondary),3px_3px_0_var(--color-secondary)]"
+            ></h2>
 
-        <!-- Avatar -->
-        <div class="flex flex-col justify-center items-start gap-3">
-          <p data-i18n="avatarSelection"></p>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full">
-            <div class="flex flex-row justify-center items-center gap-4 w-full">
-              <div id="avatarDropZone" 
-                 class="w-full h-32 flex flex-col justify-center items-center p-4 
-                        border-2 border-dashed border-cyan-400 dark:border-cyan-600 
-                        text-gray-500 dark:text-gray-400 cursor-pointer transition-colors duration-200">
-                <p data-i18n="dragAndDrop" class="text-balance">Arrastra y suelta tu avatar aquí</p>
-                <p data-i18n="clickToSelect" class="text-sm text-balance">(O haz click para seleccionar)</p>
-                
-                <input type="file" 
-                       id="avatarFileInput" 
-                       accept="image/*" 
-                       class="hidden"> 
-                
-                <img id="avatarPreview" 
-                     src="/images/avatar1.jpg" 
-                     alt="Avatar Preview" 
-                     class="max-h-full max-w-full object-cover hidden"
-                >
-              </div>
+            <!-- Avatar -->
+            <div class="flex flex-col items-start justify-center gap-3">
+                <p data-i18n="avatarSelection"></p>
+                <div class="grid w-full grid-cols-1 gap-5 sm:grid-cols-2">
+                    <div
+                        class="flex w-full flex-row items-center justify-center gap-4"
+                    >
+                        <div
+                            id="avatarDropZone"
+                            class="flex h-32 w-full cursor-pointer flex-col items-center justify-center border-2 border-dashed border-cyan-400 p-4 text-gray-500 transition-colors duration-200 dark:border-cyan-600 dark:text-gray-400"
+                        >
+                            <p data-i18n="dragAndDrop" class="text-balance">
+                                Arrastra y suelta tu avatar aquí
+                            </p>
+                            <p
+                                data-i18n="clickToSelect"
+                                class="text-sm text-balance"
+                            >
+                                (O haz click para seleccionar)
+                            </p>
+
+                            <input
+                                type="file"
+                                id="avatarFileInput"
+                                accept="image/*"
+                                class="hidden"
+                            />
+
+                            <img
+                                id="avatarPreview"
+                                src="/images/avatar1.jpg"
+                                alt="Avatar Preview"
+                                class="hidden max-h-full max-w-full object-cover"
+                            />
+                        </div>
+                    </div>
+
+                    <button
+                        id="updateAvatar"
+                        data-i18n="updateAvatar"
+                        class="text-secondary dark:text-primary border-secondary dark:border-primary relative w-full cursor-pointer overflow-hidden border bg-transparent px-6 py-2 font-mono text-xl shadow-none transition-all duration-700 hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[0px_0_0_red,-0px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue]"
+                    >
+                        Update Avatar
+                    </button>
+                </div>
             </div>
-            
-            <button id="updateAvatar" data-i18n="updateAvatar" class="w-full relative bg-transparent text-secondary dark:text-primary border border-secondary dark:border-primary px-6 py-2 font-mono text-xl cursor-pointer transition-all duration-700 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[0px_0_0_red,-0px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] overflow-hidden">Update Avatar</button>
-          </div>
-        </div>
 
-        <hr class="w-full text-cyan-400">
+            <hr class="w-full text-cyan-400" />
 
-        <!-- User Name Form -->
-        <form class="flex flex-col justify-center items-start gap-3 w-full">
-          <!-- Campo oculto para accesibilidad -->
-          <!-- <input
+            <!-- User Name Form -->
+            <form class="flex w-full flex-col items-start justify-center gap-3">
+                <!-- Campo oculto para accesibilidad -->
+                <!-- <input
             type="text"
             name="username"
             autocomplete="username"
             style="display:none"
           /> -->
-          <p data-i18n="userName"></p>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full text-sm">
-            <!-- New User Name -->
-            <div class="relative overflow-visible">
-              <input
-                type="text"
-                name="username"
-                autocomplete="username"
-                data-i18n="newUserName"
-                placeholder="newUserName"
-                class="w-full border-2 dark:border border-cyan-400 placeholder-secondary dark:placeholder-gray-400 px-2 py-2 sm:py-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                id="userNameInput"
-                data-tooltip-target="tooltip-name"
-                maxlength="20"
-              />
-              <span id="username-counter" class="absolute right-2 top-2 text-xs text-secondary dark:text-primary transition-all duration-300 ease-in-out">0/20</span>
-              <div
-                data-tooltip="tooltip-name"
-                role="tooltip"
-                class="z-50 absolute left-0 bottom-1/2 -translate-y-7 px-3 py-2 text-sm text-primary dark:text-secondary bg-secondary dark:bg-primary border border-primary dark:border-secondary rounded-lg shadow-lg opacity-0 scale-95 transition-all duration-200 pointer-events-none w-full whitespace-pre-line"
-                data-i18n="toolTipUsername"
-              >
-                Tu nombre debe tener al menos 3 caracteres.
-                <div class="absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2"></div>
-              </div>
-            </div>
-            <!-- Update button -->
-            <button
-              title="Update"
-              id="updateUserName"
-              class="w-full relative bg-transparent text-secondary dark:text-primary border border-secondary dark:border-primary px-6 py-2 font-mono text-xl cursor-pointer transition-all duration-700 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[0px_0_0_red,-0px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] overflow-hidden text-balance"
-              data-i18n="updateUserName"
-              type="submit"
-            >
-                Update User Name
-            </button>
-          </div>
-        </form>
+                <p data-i18n="userName"></p>
+                <div
+                    class="grid w-full grid-cols-1 gap-5 text-sm sm:grid-cols-2"
+                >
+                    <!-- New User Name -->
+                    <div class="relative overflow-visible">
+                        <input
+                            type="text"
+                            name="username"
+                            autocomplete="username"
+                            data-i18n="newUserName"
+                            placeholder="newUserName"
+                            class="placeholder-secondary w-full border-2 border-cyan-400 px-2 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none sm:py-4 dark:border dark:placeholder-gray-400"
+                            id="userNameInput"
+                            data-tooltip-target="tooltip-name"
+                            maxlength="20"
+                        />
+                        <span
+                            id="username-counter"
+                            class="text-secondary dark:text-primary absolute top-2 right-2 text-xs transition-all duration-300 ease-in-out"
+                            >0/20</span
+                        >
+                        <div
+                            data-tooltip="tooltip-name"
+                            role="tooltip"
+                            class="text-primary dark:text-secondary bg-secondary dark:bg-primary border-primary dark:border-secondary pointer-events-none absolute bottom-1/2 left-0 z-50 w-full -translate-y-7 scale-95 rounded-lg border px-3 py-2 text-sm whitespace-pre-line opacity-0 shadow-lg transition-all duration-200"
+                            data-i18n="toolTipUsername"
+                        >
+                            Tu nombre debe tener al menos 3 caracteres.
+                            <div
+                                class="bg-secondary dark:bg-primary absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45"
+                            ></div>
+                        </div>
+                    </div>
+                    <!-- Update button -->
+                    <button
+                        title="Update"
+                        id="updateUserName"
+                        class="text-secondary dark:text-primary border-secondary dark:border-primary relative w-full cursor-pointer overflow-hidden border bg-transparent px-6 py-2 font-mono text-xl text-balance shadow-none transition-all duration-700 hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[0px_0_0_red,-0px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue]"
+                        data-i18n="updateUserName"
+                        type="submit"
+                    >
+                        Update User Name
+                    </button>
+                </div>
+            </form>
 
-        <hr class="w-full text-cyan-400">
+            <hr class="w-full text-cyan-400" />
 
-        <!-- Password Form -->
-        <form class="flex flex-col justify-center items-start gap-2 
-        w-full">
-          <!-- Campo oculto para accesibilidad -->
-          <input
-            type="text"
-            name="password"
-            autocomplete="password"
-            style="display:none"
-          />
-          <p data-i18n="Password"></p>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 w-full text-sm">
-            <!-- New Password -->
-            <div class="relative">
-              <input
-                type="password"
-                name="newPassword"
-                autocomplete="new-password"
-                data-i18n="newPassword"
-                placeholder="newPassword"
-                class="w-full border-2 dark:border border-cyan-400 placeholder-secondary dark:placeholder-gray-400 px-2 py-2 sm:py-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                data-tooltip-target="tooltip-password"
-              />
-              <div
-                data-tooltip="tooltip-password"
-                role="tooltip"
-                class="z-50 absolute left-0 bottom-1/2 -translate-y-9 px-3 py-2 text-sm text-primary dark:text-secondary bg-secondary dark:bg-primary border border-primary dark:border-secondary rounded-lg shadow-lg opacity-0 scale-95 transition-all duration-200 pointer-events-none w-full whitespace-pre-line"
-                data-i18n="toolTipPassword"
-              >
-                La contraseña debe tener mínimo 8 caracteres, incluyendo un número.
-                <div class="absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2"></div>
-              </div>
-            </div>
-            <!-- Repeat Password -->
-            <div class="relative">
-              <input
-                type="password"
-                name="repeat_password"
-                autocomplete="new-password"
-                data-i18n="Repeat_Password"
-                placeholder="Repeat_Password"
-                class="w-full border-2 dark:border border-cyan-400 placeholder-secondary dark:placeholder-gray-400 px-2 py-2 sm:py-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <!-- Update button -->
-            <button
-              title="Update"
-              class="w-full relative bg-transparent text-secondary dark:text-primary border border-secondary dark:border-primary px-6 py-2 font-mono text-xl cursor-pointer transition-all duration-700 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[0px_0_0_red,-0px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] overflow-hidden text-balance"
-              data-i18n="updatePassword"
-            >
-                Update Password
-            </button>
-          </div>
-        </form>
-
-        <hr class="w-full text-cyan-400">
-
-        <!-- Color Picker -->
-        <form class="flex flex-col justify-center items-start gap-2 
-        w-full">
-          <!-- Campo oculto para accesibilidad -->
-          <input
-            type="text"
-            name="password"
-            autocomplete="password"
-            style="display:none"
-          />
-          <!-- <p data-i18n="Password"></p> -->
-          <p>Color picker</p>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 w-full text-sm">
-            <!-- Primary color -->
-            <div class="relative">
-              <label for="color_primary">Primary color</label>
-              <input
-                title="Primary color"
-                type="color"
-                id="color_primary"
-                name="color_primary"
-                value="#ffffff"
-                class="relative w-full h-20 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-              />
-            </div>
-            <!-- Secondary color -->
-              <div class="relative">
-                <label for="color_secondary">Secondary color</label>
+            <!-- Password Form -->
+            <form class="flex w-full flex-col items-start justify-center gap-2">
+                <!-- Campo oculto para accesibilidad -->
                 <input
-                  title="Secondary color"
-                  type="color"
-                  id="color_secondary"
-                  name="color_secondary"
-                  value="#131313"
-                  class="relative w-full h-20 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                    type="text"
+                    name="password"
+                    autocomplete="password"
+                    style="display: none"
                 />
-              </div>
-            <!-- Update button -->
-            <button
-              title="Update"
-              title="Update"
-              id="color_reset"
-              class="w-full relative bg-transparent text-secondary dark:text-primary border border-secondary dark:border-primary px-6 py-2 font-mono text-xl cursor-pointer transition-all duration-700 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[0px_0_0_red,-0px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] overflow-hidden text-balance"
-            >
-                Reset colors
-            </button>
-          </div>
-        </form>
-      </div>
+                <p data-i18n="Password"></p>
+                <div
+                    class="grid w-full grid-cols-1 gap-5 text-sm sm:grid-cols-3"
+                >
+                    <!-- New Password -->
+                    <div class="relative">
+                        <input
+                            type="password"
+                            name="newPassword"
+                            autocomplete="new-password"
+                            data-i18n="newPassword"
+                            placeholder="newPassword"
+                            class="placeholder-secondary w-full border-2 border-cyan-400 px-2 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none sm:py-4 dark:border dark:placeholder-gray-400"
+                            data-tooltip-target="tooltip-password"
+                        />
+                        <div
+                            data-tooltip="tooltip-password"
+                            role="tooltip"
+                            class="text-primary dark:text-secondary bg-secondary dark:bg-primary border-primary dark:border-secondary pointer-events-none absolute bottom-1/2 left-0 z-50 w-full -translate-y-9 scale-95 rounded-lg border px-3 py-2 text-sm whitespace-pre-line opacity-0 shadow-lg transition-all duration-200"
+                            data-i18n="toolTipPassword"
+                        >
+                            La contraseña debe tener mínimo 8 caracteres,
+                            incluyendo un número.
+                            <div
+                                class="bg-secondary dark:bg-primary absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45"
+                            ></div>
+                        </div>
+                    </div>
+                    <!-- Repeat Password -->
+                    <div class="relative">
+                        <input
+                            type="password"
+                            name="repeat_password"
+                            autocomplete="new-password"
+                            data-i18n="Repeat_Password"
+                            placeholder="Repeat_Password"
+                            class="placeholder-secondary w-full border-2 border-cyan-400 px-2 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none sm:py-4 dark:border dark:placeholder-gray-400"
+                        />
+                    </div>
+                    <!-- Update button -->
+                    <button
+                        title="Update"
+                        class="text-secondary dark:text-primary border-secondary dark:border-primary relative w-full cursor-pointer overflow-hidden border bg-transparent px-6 py-2 font-mono text-xl text-balance shadow-none transition-all duration-700 hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[0px_0_0_red,-0px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue]"
+                        data-i18n="updatePassword"
+                    >
+                        Update Password
+                    </button>
+                </div>
+            </form>
 
-      <!-- Game Settings -->
-      <!-- <div class="border border-cyan-400 p-8 text-center relative w-full">
+            <hr class="w-full text-cyan-400" />
+
+            <!-- Color Picker -->
+            <form class="flex w-full flex-col items-start justify-center gap-2">
+                <!-- Campo oculto para accesibilidad -->
+                <input
+                    type="text"
+                    name="password"
+                    autocomplete="password"
+                    style="display: none"
+                />
+                <!-- <p data-i18n="Password"></p> -->
+                <p>Color picker</p>
+                <div
+                    class="grid w-full grid-cols-1 gap-5 text-sm sm:grid-cols-3"
+                >
+                    <!-- Primary color -->
+                    <div class="relative">
+                        <label for="color_primary">Primary color</label>
+                        <input
+                            title="Primary color"
+                            type="color"
+                            id="color_primary"
+                            name="color_primary"
+                            value="#ffffff"
+                            class="relative h-20 w-full cursor-pointer focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        />
+                    </div>
+                    <!-- Secondary color -->
+                    <div class="relative">
+                        <label for="color_secondary">Secondary color</label>
+                        <input
+                            title="Secondary color"
+                            type="color"
+                            id="color_secondary"
+                            name="color_secondary"
+                            value="#131313"
+                            class="relative h-20 w-full cursor-pointer focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        />
+                    </div>
+                    <!-- Update button -->
+                    <button
+                        title="Update"
+                        title="Update"
+                        id="color_reset"
+                        class="text-secondary dark:text-primary border-secondary dark:border-primary relative w-full cursor-pointer overflow-hidden border bg-transparent px-6 py-2 font-mono text-xl text-balance shadow-none transition-all duration-700 hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[0px_0_0_red,-0px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue]"
+                    >
+                        Reset colors
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Game Settings -->
+        <!-- <div class="border border-cyan-400 p-8 text-center relative w-full">
         <h2 data-i18n="gameSettings" class="text-md sm:text-2xl font-bold mb-2 uppercase absolute -top-3 sm:-top-5 text-shadow-[-3px_-3px_0_var(--color-primary),3px_3px_0_var(--color-primary)] dark:text-shadow-[-3px_-3px_0_var(--color-secondary),3px_3px_0_var(--color-secondary)]"></h2>
         <p data-i18n="playOthers" class="text-sm tracking-widest uppercase">PLAY WITH OTHERS</p>
       </div> -->
     </div>
-  </div>
+</div>
 <!-- Friends Sidebar -->
 <div id="friends-sidebar-container"></div>

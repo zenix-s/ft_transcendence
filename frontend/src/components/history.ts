@@ -1,109 +1,125 @@
-import { DataTable } from "simple-datatables";
-import { t, updateTexts } from "@/app/i18n";
-import { getCurrentUser, getHistory } from "@/modules/users";
-import type { User } from "@/types/user";
+import { DataTable } from 'simple-datatables';
+import { t, updateTexts } from '@/app/i18n';
+import { getCurrentUser, getHistory } from '@/modules/users';
+import type { User } from '@/types/user';
 
 // Jugador dentro de un Match
 interface Player {
-  userId: number;
-  username: string;
-  score: number;
-  isWinner: boolean;
+    userId: number;
+    username: string;
+    score: number;
+    isWinner: boolean;
 }
 
 // Cada Match
 interface Match {
-  id: number;
-  gameTypeId: number;
-  status: string;
-  startedAt: string; // o Date si luego lo parseas
-  createdAt: string;
-  players: Player[];
+    id: number;
+    gameTypeId: number;
+    status: string;
+    startedAt: string; // o Date si luego lo parseas
+    createdAt: string;
+    players: Player[];
 }
 
 // Respuesta completa del backend
 interface MatchesResponse {
-  matches: Match[];
-  total: number;
+    matches: Match[];
+    total: number;
 }
 
 export let matchTable: DataTable; // Variable global o de módulo
 
 export async function loadMatchHistory(user?: User, perPage: number = 5) {
-  try {
-    // Si no recibo un user se lo solicito a getCurrentUser()
-    if (!user) {
-      const userResponse = await getCurrentUser();
-      if (!userResponse) return;
-      user = userResponse.user;
-    }
+    try {
+        // Si no recibo un user se lo solicito a getCurrentUser()
+        if (!user) {
+            const userResponse = await getCurrentUser();
+            if (!userResponse) return;
+            user = userResponse.user;
+        }
 
-    const currentUser: User = user;
+        const currentUser: User = user;
 
-    // 1. Fetch al backend
-    const response = await getHistory(user.id);
-    if (!response || !response.ok) throw new Error(t("errorLoadingHistory"));
+        // 1. Fetch al backend
+        const response = await getHistory(user.id);
+        if (!response || !response.ok)
+            throw new Error(t('errorLoadingHistory'));
 
-    const data: MatchesResponse = await response.json();
+        const data: MatchesResponse = await response.json();
 
-    // Obtener el jugador actual
-    //const currentUser = await getCurrentUser();
+        // Obtener el jugador actual
+        //const currentUser = await getCurrentUser();
 
-    // 2. Insertar datos en el tbody
-    const tbody = document.querySelector<HTMLTableSectionElement>("#matchTable tbody")!;
-    tbody.innerHTML = data.matches
-      .map((match) => {
-        // El oponente es "el otro" jugador
-        const opponent = match.players.find(p => p.userId !== currentUser.id)?.username ?? "N/A";
-        const score = match.players.map(p => p.score).join(" - ");
-        const winner = match.players.find(p => p.isWinner)?.username ?? "-";
-        const game = (match.gameTypeId >= 1 && match.gameTypeId <= 3) ? "Pong" : t("rps");
+        // 2. Insertar datos en el tbody
+        const tbody =
+            document.querySelector<HTMLTableSectionElement>(
+                '#matchTable tbody'
+            )!;
+        tbody.innerHTML = data.matches
+            .map((match) => {
+                // El oponente es "el otro" jugador
+                const opponent =
+                    match.players.find((p) => p.userId !== currentUser.id)
+                        ?.username ?? 'N/A';
+                const score = match.players.map((p) => p.score).join(' - ');
+                const winner =
+                    match.players.find((p) => p.isWinner)?.username ?? '-';
+                const game =
+                    match.gameTypeId >= 1 && match.gameTypeId <= 3
+                        ? 'Pong'
+                        : t('rps');
 
-        return `
+                return `
           <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
             <td data-label="" data-i18n="game" class="px-4 py-2 text-center text-primary sm:text-gray-800 sm:dark:text-gray-200 font-light whitespace-nowrap">${game}</td>
             <td data-label="" data-i18n="opponent" class="px-4 py-2 text-center text-primary sm:text-gray-800 sm:dark:text-gray-200 font-light whitespace-nowrap">${opponent}</td>
             <td data-label="" data-i18n="result" class="px-4 py-2 text-center text-primary sm:text-gray-800 sm:dark:text-gray-200 font-light whitespace-nowrap">${score}</td>
             <td data-label="" data-i18n="winner" class="px-4 py-2 text-center text-green-600 dark:text-green-400 whitespace-nowrap">${winner}</td>
             <td data-label="" data-i18n="date" class="px-4 py-2 text-center text-gray-500 dark:text-gray-400 whitespace-nowrap">
-              ${new Date(match.startedAt).toLocaleString("es-ES", {
-                dateStyle: "short",
-                timeStyle: "short",
+              ${new Date(match.startedAt).toLocaleString('es-ES', {
+                  dateStyle: 'short',
+                  timeStyle: 'short',
               })}
             </td>
           </tr>
         `;
-      })
-      .join("");
+            })
+            .join('');
 
-    // 3. Inicializar la tabla con paginación
-    matchTable  = new DataTable("#matchTable", {
-      perPage: perPage,
-      perPageSelect: [5, 10, 20],
-      searchable: false,
-      sortable: false,
-      labels: {
-        placeholder: t("search"),
-        //perPage: "{select} por página",
-        perPage: t("perPage"),
-        noRows: t("noGames"),
-        //info: "Mostrando {start} a {end} de {rows} partidas",
-        //info: "t('showing')" + " {start} " + "t('to')" + " {end} " + "t('of')" + " {rows} " + "t('games')",
-        //info: `t('showing')` + {start} + "t('to')" + " {end} " + "t('of')" + " {rows} " + t('games')`,
-        //info: "{start} - {end} (total: {rows})",
-        info: t("showing") + " {start} " + t("to") + " {end} " + t("of") + " {rows} " + t("games")
-      }
-    });
+        // 3. Inicializar la tabla con paginación
+        matchTable = new DataTable('#matchTable', {
+            perPage: perPage,
+            perPageSelect: [5, 10, 20],
+            searchable: false,
+            sortable: false,
+            labels: {
+                placeholder: t('search'),
+                //perPage: "{select} por página",
+                perPage: t('perPage'),
+                noRows: t('noGames'),
+                //info: "Mostrando {start} a {end} de {rows} partidas",
+                //info: "t('showing')" + " {start} " + "t('to')" + " {end} " + "t('of')" + " {rows} " + "t('games')",
+                //info: `t('showing')` + {start} + "t('to')" + " {end} " + "t('of')" + " {rows} " + t('games')`,
+                //info: "{start} - {end} (total: {rows})",
+                info:
+                    t('showing') +
+                    ' {start} ' +
+                    t('to') +
+                    ' {end} ' +
+                    t('of') +
+                    ' {rows} ' +
+                    t('games'),
+            },
+        });
 
-    // 4. Ajustar enlaces de paginación (AHORA que existen)
-    document.querySelectorAll(".datatable-pagination a").forEach(link => {
-      link.setAttribute("href", "#");
-    });
+        // 4. Ajustar enlaces de paginación (AHORA que existen)
+        document.querySelectorAll('.datatable-pagination a').forEach((link) => {
+            link.setAttribute('href', '#');
+        });
 
-    // 5. Traducir las celdas recién insertadas
-    updateTexts();
-
-  } catch (error) {
-    console.error(error);
-  }
+        // 5. Traducir las celdas recién insertadas
+        updateTexts();
+    } catch (error) {
+        console.error(error);
+    }
 }

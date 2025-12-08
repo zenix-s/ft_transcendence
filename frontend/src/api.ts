@@ -9,21 +9,25 @@ const protocol = window.location.protocol;
 
 // --- En DEV: siempre usar el proxy de Vite (rutas relativas)
 // Esto evita que el navegador haga peticiones directas a :3000 desde otra máquina.
-export const API_BASE_URL = isDev ? "" : `${protocol}//${hostname}:${BACKEND_PORT}`;
-export const WS_BASE_URL  = isDev ? "" : `${protocol === "https:" ? "wss" : "ws"}://${hostname}:${BACKEND_PORT}`;
+export const API_BASE_URL = isDev
+    ? ''
+    : `${protocol}//${hostname}:${BACKEND_PORT}`;
+export const WS_BASE_URL = isDev
+    ? ''
+    : `${protocol === 'https:' ? 'wss' : 'ws'}://${hostname}:${BACKEND_PORT}`;
 
 export function apiUrl(path: string) {
-  if (isDev) return `/api${path}`; // <<<<<<<<<<<<<<<<<<< cambio clave
-  return `${API_BASE_URL}${path}`;
+    if (isDev) return `/api${path}`; // <<<<<<<<<<<<<<<<<<< cambio clave
+    return `${API_BASE_URL}${path}`;
 }
 
 export function getWsUrl(path: string) {
-  if (isDev) {
-    // Ligar el WS al front dev server; Vite proxy (ws: true) lo reenviará.
-    const wsProto = protocol === "https:" ? "wss" : "ws";
-    return `${wsProto}://${window.location.host}${path}`;
-  }
-  return `${WS_BASE_URL}${path}`;
+    if (isDev) {
+        // Ligar el WS al front dev server; Vite proxy (ws: true) lo reenviará.
+        const wsProto = protocol === 'https:' ? 'wss' : 'ws';
+        return `${wsProto}://${window.location.host}${path}`;
+    }
+    return `${WS_BASE_URL}${path}`;
 }
 
 //////////////////////////////

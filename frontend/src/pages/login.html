@@ -1,151 +1,160 @@
 <div class="scanlines"></div>
 <div class="center-screen">
-  <div class="min-h-screen flex items-center justify-cente w-full max-w-4xl">
-    <div
-      class="flex flex-col md:flex-row gap-8 md:gap-12 w-full max-w-4xl justify-center items-stretch"
-    >
-      <!-- Login Form -->
-      <div
-        class="flex flex-col items-center rounded-xl p-8 relative w-full md:w-1/2 justify-center"
-      >
-        <h1
-          title="Login"
-          class="relative text-4xl font-mono text-center tracking-tight text-secondary mb-6 animate-[glitch_1s_linear_infinite] dark:text-primary"
-          data-i18n="form_login_title"
+    <div class="justify-cente flex min-h-screen w-full max-w-4xl items-center">
+        <div
+            class="flex w-full max-w-4xl flex-col items-stretch justify-center gap-8 md:flex-row md:gap-12"
         >
-          <!-- Login -->
-        </h1>
-        <form class="flex flex-col gap-4 w-full max-w-xs">
-          <input
-            class="border border-secondary dark:border-primary rounded px-4 py-2 text-secondary bg-transparent dark:bg-primary font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
-            name="email"
-            type="email"
-            data-i18n="Email"
-            placeholder="Email"
-            autocomplete="email"
-          />
-          <input
-            class="border border-secondary dark:border-primary rounded px-4 py-2 text-secondary bg-transparent dark:bg-primary font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
-            name="password"
-            type="password"
-            data-i18n="Password"
-            placeholder="Password"
-            autocomplete="current-password"
-          />
-          <button
-            title="Login"
-            class="relative bg-transparent text-secondary dark:text-primary border border-secondary dark:border-primary px-6 py-2 font-mono text-xl cursor-pointer transition-all duration-700 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[0px_0_0_red,-0px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] mt-2"
-            data-i18n="form_login_button"
-          >
-            <!-- Login -->
-          </button>
-        </form>
-      </div>
-
-
-      <!-- Register Form -->
-      <div
-        class="flex flex-col items-center rounded-xl p-8 relative w-full md:w-1/2 justify-center0"
-      >
-        <h1
-          title="Register"
-          class="relative text-4xl font-mono text-center tracking-tight text-secondary mb-6 animate-[glitch_1s_linear_infinite] dark:text-primary"
-          data-i18n="form_register_title"
-        >
-          <!-- Register -->
-        </h1>
-        <form class="flex flex-col gap-4 w-full max-w-xs">
-
-          <!-- username -->
-          <div class="relative overflow-visible">
-            <input
-              class="w-full border border-secondary dark:border-primary rounded px-4 py-2 text-secondary bg-transparent dark:bg-primary font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
-              name="username"
-              type="text"
-              data-i18n="User"
-              placeholder="User"
-              autocomplete="username"
-              data-tooltip-target="tooltip-name"
-              maxlength="20"
-            />
-            <span id="username-counter" class="absolute right-2 top-2 text-xs text-secondary">0/20</span>
+            <!-- Login Form -->
             <div
-              data-tooltip="tooltip-name"
-              role="tooltip"
-              class="z-50 absolute left-0 bottom-1/2 -translate-y-7 px-3 py-2 text-sm text-primary dark:text-secondary bg-secondary dark:bg-primary border border-primary dark:border-secondary rounded-lg shadow-lg opacity-0 scale-95 transition-all duration-200 pointer-events-none w-full whitespace-pre-line"
-              data-i18n="toolTipUsername"
+                class="relative flex w-full flex-col items-center justify-center rounded-xl p-8 md:w-1/2"
             >
-              Tu nombre debe tener al menos 3 caracteres.
-              <div class="absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2"></div>
+                <h1
+                    title="Login"
+                    class="text-secondary dark:text-primary relative mb-6 animate-[glitch_1s_linear_infinite] text-center font-mono text-4xl tracking-tight"
+                    data-i18n="form_login_title"
+                >
+                    <!-- Login -->
+                </h1>
+                <form class="flex w-full max-w-xs flex-col gap-4">
+                    <input
+                        class="border-secondary dark:border-primary text-secondary dark:bg-primary rounded border bg-transparent px-4 py-2 font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        name="email"
+                        type="email"
+                        data-i18n="Email"
+                        placeholder="Email"
+                        autocomplete="email"
+                    />
+                    <input
+                        class="border-secondary dark:border-primary text-secondary dark:bg-primary rounded border bg-transparent px-4 py-2 font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        name="password"
+                        type="password"
+                        data-i18n="Password"
+                        placeholder="Password"
+                        autocomplete="current-password"
+                    />
+                    <button
+                        title="Login"
+                        class="text-secondary dark:text-primary border-secondary dark:border-primary relative mt-2 cursor-pointer border bg-transparent px-6 py-2 font-mono text-xl shadow-none transition-all duration-700 hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[0px_0_0_red,-0px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue]"
+                        data-i18n="form_login_button"
+                    >
+                        <!-- Login -->
+                    </button>
+                </form>
             </div>
-          </div>
 
-          <!-- email -->
-          <div class="relative overflow-visible">
-            <input
-              class="w-full border border-secondary dark:border-primary rounded px-4 py-2 text-secondary bg-transparent dark:bg-primary font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
-              name="email"
-              type="email"
-              data-i18n="Email"
-              placeholder="Email"
-              autocomplete="email"
-              data-tooltip-target="tooltip-email"
-            />
+            <!-- Register Form -->
             <div
-              data-tooltip="tooltip-email"
-              role="tooltip"
-              class="z-50 absolute left-0 bottom-1/2 -translate-y-7 px-3 py-2 text-sm text-primary dark:text-secondary bg-secondary dark:bg-primary border border-primary dark:border-secondary rounded-lg shadow-lg opacity-0 scale-95 transition-all duration-200 pointer-events-none w-full whitespace-pre-line"
-              data-i18n="toolTipEmail"
+                class="justify-center0 relative flex w-full flex-col items-center rounded-xl p-8 md:w-1/2"
             >
-              Usa un email válido, por ejemplo: nombre@dominio.com
-              <div class="absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2"></div>
+                <h1
+                    title="Register"
+                    class="text-secondary dark:text-primary relative mb-6 animate-[glitch_1s_linear_infinite] text-center font-mono text-4xl tracking-tight"
+                    data-i18n="form_register_title"
+                >
+                    <!-- Register -->
+                </h1>
+                <form class="flex w-full max-w-xs flex-col gap-4">
+                    <!-- username -->
+                    <div class="relative overflow-visible">
+                        <input
+                            class="border-secondary dark:border-primary text-secondary dark:bg-primary w-full rounded border bg-transparent px-4 py-2 font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            name="username"
+                            type="text"
+                            data-i18n="User"
+                            placeholder="User"
+                            autocomplete="username"
+                            data-tooltip-target="tooltip-name"
+                            maxlength="20"
+                        />
+                        <span
+                            id="username-counter"
+                            class="text-secondary absolute top-2 right-2 text-xs"
+                            >0/20</span
+                        >
+                        <div
+                            data-tooltip="tooltip-name"
+                            role="tooltip"
+                            class="text-primary dark:text-secondary bg-secondary dark:bg-primary border-primary dark:border-secondary pointer-events-none absolute bottom-1/2 left-0 z-50 w-full -translate-y-7 scale-95 rounded-lg border px-3 py-2 text-sm whitespace-pre-line opacity-0 shadow-lg transition-all duration-200"
+                            data-i18n="toolTipUsername"
+                        >
+                            Tu nombre debe tener al menos 3 caracteres.
+                            <div
+                                class="bg-secondary dark:bg-primary absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45"
+                            ></div>
+                        </div>
+                    </div>
+
+                    <!-- email -->
+                    <div class="relative overflow-visible">
+                        <input
+                            class="border-secondary dark:border-primary text-secondary dark:bg-primary w-full rounded border bg-transparent px-4 py-2 font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            name="email"
+                            type="email"
+                            data-i18n="Email"
+                            placeholder="Email"
+                            autocomplete="email"
+                            data-tooltip-target="tooltip-email"
+                        />
+                        <div
+                            data-tooltip="tooltip-email"
+                            role="tooltip"
+                            class="text-primary dark:text-secondary bg-secondary dark:bg-primary border-primary dark:border-secondary pointer-events-none absolute bottom-1/2 left-0 z-50 w-full -translate-y-7 scale-95 rounded-lg border px-3 py-2 text-sm whitespace-pre-line opacity-0 shadow-lg transition-all duration-200"
+                            data-i18n="toolTipEmail"
+                        >
+                            Usa un email válido, por ejemplo: nombre@dominio.com
+                            <div
+                                class="bg-secondary dark:bg-primary absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45"
+                            ></div>
+                        </div>
+                    </div>
+
+                    <!-- password -->
+                    <div class="relative overflow-visible">
+                        <input
+                            class="border-secondary dark:border-primary text-secondary dark:bg-primary w-full rounded border bg-transparent px-4 py-2 font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            name="password"
+                            type="password"
+                            data-i18n="Password"
+                            placeholder="Password"
+                            autocomplete="new-password"
+                            data-tooltip-target="tooltip-password"
+                        />
+                        <div
+                            data-tooltip="tooltip-password"
+                            role="tooltip"
+                            class="text-primary dark:text-secondary bg-secondary dark:bg-primary border-primary dark:border-secondary pointer-events-none absolute bottom-1/2 left-0 z-50 w-full -translate-y-7 scale-95 rounded-lg border px-3 py-2 text-sm whitespace-pre-line opacity-0 shadow-lg transition-all duration-200"
+                            data-i18n="toolTipPassword"
+                        >
+                            La contraseña debe tener mínimo 8 caracteres,
+                            incluyendo un número.
+                            <div
+                                class="bg-secondary dark:bg-primary absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45"
+                            ></div>
+                        </div>
+                    </div>
+
+                    <!-- repeat_password -->
+                    <div class="relative overflow-visible">
+                        <input
+                            class="border-secondary dark:border-primary text-secondary dark:bg-primary w-full rounded border bg-transparent px-4 py-2 font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            name="repeat_password"
+                            type="password"
+                            data-i18n="Repeat_Password"
+                            placeholder="Repeat_Password"
+                            autocomplete="new-password"
+                        />
+                    </div>
+
+                    <!-- register button -->
+                    <button
+                        title="Register"
+                        class="text-secondary dark:text-primary border-secondary dark:border-primary relative mt-2 w-full cursor-pointer border bg-transparent px-6 py-2 font-mono text-xl shadow-none transition-all duration-700 hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[0px_0_0_red,-0px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue]"
+                        data-i18n="form_register_title"
+                    >
+                        Register
+                    </button>
+                </form>
             </div>
-          </div>
-
-          <!-- password -->
-          <div class="relative overflow-visible">
-            <input
-              class="w-full border border-secondary dark:border-primary rounded px-4 py-2 text-secondary bg-transparent dark:bg-primary font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
-              name="password"
-              type="password"
-              data-i18n="Password"
-              placeholder="Password"
-              autocomplete="new-password"
-              data-tooltip-target="tooltip-password"
-            />
-            <div
-              data-tooltip="tooltip-password"
-              role="tooltip"
-              class="z-50 absolute left-0 bottom-1/2 -translate-y-7 px-3 py-2 text-sm text-primary dark:text-secondary bg-secondary dark:bg-primary border border-primary dark:border-secondary rounded-lg shadow-lg opacity-0 scale-95 transition-all duration-200 pointer-events-none w-full whitespace-pre-line"
-              data-i18n="toolTipPassword"
-            >
-              La contraseña debe tener mínimo 8 caracteres, incluyendo un número.
-              <div class="absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2"></div>
-            </div>
-          </div>
-
-          <!-- repeat_password -->
-          <div class="relative overflow-visible">
-            <input
-              class="w-full border border-secondary dark:border-primary rounded px-4 py-2 text-secondary bg-transparent dark:bg-primary font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
-              name="repeat_password"
-              type="password"
-              data-i18n="Repeat_Password"
-              placeholder="Repeat_Password"
-              autocomplete="new-password"
-            />
-          </div>
-
-          <!-- register button -->
-          <button
-            title="Register"
-            class="w-full relative bg-transparent text-secondary dark:text-primary border border-secondary dark:border-primary px-6 py-2 font-mono text-xl cursor-pointer transition-all duration-700 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[0px_0_0_red,-0px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] mt-2"
-            data-i18n="form_register_title"
-          >
-            Register
-          </button>
-        </form>
-      </div>
+        </div>
     </div>
-  </div>
 </div>

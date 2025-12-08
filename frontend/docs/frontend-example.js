@@ -49,7 +49,7 @@ class SocialWebSocketClient {
     authenticate() {
         const authMessage = {
             action: 0, // AUTH action
-            token: this.token
+            token: this.token,
         };
 
         console.log('Sending authentication:', authMessage);
@@ -63,7 +63,7 @@ class SocialWebSocketClient {
         }
 
         const listFriendsMessage = {
-            action: 1 // LIST_FRIENDS action
+            action: 1, // LIST_FRIENDS action
         };
 
         console.log('Requesting friends list');
@@ -85,7 +85,9 @@ class SocialWebSocketClient {
             case 'authSuccess':
                 this.isAuthenticated = true;
                 this.userId = message.userId;
-                console.log(`Authentication successful. User ID: ${this.userId}`);
+                console.log(
+                    `Authentication successful. User ID: ${this.userId}`
+                );
 
                 if (this.onAuthSuccess) {
                     this.onAuthSuccess(message.userId);
@@ -109,7 +111,7 @@ class SocialWebSocketClient {
                 console.log(`Friend connection status update:`, {
                     friendId: message.friendId,
                     username: message.username,
-                    isConnected: message.isConnected
+                    isConnected: message.isConnected,
                 });
 
                 this.updateFriendStatus(message.friendId, message.isConnected);
@@ -133,10 +135,12 @@ class SocialWebSocketClient {
     }
 
     updateFriendStatus(friendId, isConnected) {
-        const friend = this.friends.find(f => f.id === friendId);
+        const friend = this.friends.find((f) => f.id === friendId);
         if (friend) {
             friend.is_connected = isConnected;
-            console.log(`Updated friend ${friend.username} status to: ${isConnected ? 'online' : 'offline'}`);
+            console.log(
+                `Updated friend ${friend.username} status to: ${isConnected ? 'online' : 'offline'}`
+            );
             this.displayFriendsList();
         }
     }
@@ -148,10 +152,14 @@ class SocialWebSocketClient {
             return;
         }
 
-        this.friends.forEach(friend => {
+        this.friends.forEach((friend) => {
             const status = friend.is_connected ? '🟢 Online' : '🔴 Offline';
-            const avatar = friend.avatar ? `[Avatar: ${friend.avatar}]` : '[No Avatar]';
-            console.log(`${status} - ${friend.username} (ID: ${friend.id}) ${avatar}`);
+            const avatar = friend.avatar
+                ? `[Avatar: ${friend.avatar}]`
+                : '[No Avatar]';
+            console.log(
+                `${status} - ${friend.username} (ID: ${friend.id}) ${avatar}`
+            );
         });
         console.log('==================\n');
     }

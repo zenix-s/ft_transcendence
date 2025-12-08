@@ -1,155 +1,275 @@
 <div class="scanlines"></div>
-<div class="flex flex-col items-center min-w-screen">
+<div class="flex min-w-screen flex-col items-center">
+    <!-- Barra superior -->
+    <header
+        class="mb-16 flex w-full max-w-5xl items-center justify-between border border-cyan-400 p-4 sm:mt-24"
+    >
+        <h1
+            data-i18n="dashboard"
+            class="glitch hidden text-3xl font-bold tracking-wider uppercase sm:block"
+        >
+            <!--DASHBOARD-->
+        </h1>
+        <div class="flex flex-col items-center justify-center gap-4">
+            <div
+                id="user-data"
+                class="flex w-full flex-row items-center justify-start gap-4 sm:justify-end"
+            >
+                <img
+                    id="user-avatar"
+                    src="/images/avatar1.jpg"
+                    alt="Avatar"
+                    class="h-10 w-10 rounded-full border border-cyan-400 object-cover"
+                />
+                <span id="user-name" class="text-lg"><!--USER NAME--></span>
+            </div>
+            <nav class="flex w-full text-lg">
+                <!-- LANDSCAPE -->
+                <div
+                    id="lanscape"
+                    class="relative hidden w-full flex-row items-center justify-start gap-4 sm:flex sm:justify-end"
+                >
+                    <!-- Settings -->
+                    <a
+                        href="#"
+                        data-page="settings"
+                        data-i18n="settings"
+                        class="text-secondary dark:text-primary capitalize transition-all duration-300 hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue]"
+                    ></a>
+                    <span>|</span>
+                    <!-- Logout -->
+                    <a
+                        href="#"
+                        data-page="logout"
+                        data-i18n="logout"
+                        class="text-secondary dark:text-primary capitalize transition-all duration-300 hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue]"
+                    ></a>
+                </div>
 
-   <!-- Barra superior -->
-    <header class="w-full max-w-5xl border border-cyan-400 p-4 flex justify-between items-center mb-16 sm:mt-24">
-      <h1 data-i18n="dashboard" class="text-3xl hidden sm:block font-bold glitch tracking-wider uppercase"><!--DASHBOARD--></h1>
-      <div class="flex flex-col justify-center items-center gap-4">
-        <div id="user-data" class="flex flex-row w-full justify-start sm:justify-end items-center gap-4">
-          <img id="user-avatar" src="/images/avatar1.jpg" alt="Avatar" class="w-10 h-10 rounded-full object-cover border border-cyan-400" />
-          <span id="user-name" class="text-lg"><!--USER NAME--></span>
+                <!-- MOVILE -->
+                <div
+                    id="movile"
+                    class="flex w-full flex-row items-center justify-start gap-4 sm:hidden sm:justify-end"
+                >
+                    <!-- Settings -->
+                    <a
+                        href="#"
+                        data-page="settings"
+                        class="text-secondary hover:text-cyan dark:text-primary fa-solid fa-gear text-xl transition"
+                    ></a>
+                    <span>|</span>
+                    <!-- Logout -->
+                    <a
+                        href="#"
+                        data-page="logout"
+                        class="text-secondary hover:text-cyan dark:text-primary fa-solid fa-right-from-bracket text-xl transition"
+                    ></a>
+                </div>
+            </nav>
         </div>
-        <nav class="flex text-lg w-full">
-          <!-- LANDSCAPE -->
-          <div id="lanscape" class="relative w-full hidden sm:flex flex-row gap-4 justify-start sm:justify-end items-center">
-            <!-- Settings -->
-            <a href="#" data-page="settings" data-i18n="settings" class="text-secondary dark:text-primary hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] transition-all duration-300 capitalize"></a>
-            <span>|</span>
-            <!-- Logout -->
-            <a href="#" data-page="logout" data-i18n="logout" class="text-secondary dark:text-primary hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] transition-all duration-300 capitalize"></a>
-          </div>
-
-          <!-- MOVILE -->
-          <div id="movile" class="sm:hidden w-full flex flex-row gap-4 justify-start sm:justify-end items-center">
-            <!-- Settings -->
-            <a href="#" data-page="settings" class="text-xl text-secondary hover:text-cyan dark:text-primary transition fa-solid fa-gear"></a>
-            <span>|</span>
-            <!-- Logout -->
-            <a href="#" data-page="logout" class="text-xl text-secondary hover:text-cyan dark:text-primary transition fa-solid fa-right-from-bracket"></a>
-          </div>
-        </nav>
-      </div>
     </header>
 
     <!-- Texto central -->
-    <div data-i18n="welcome" class="w-full max-w-5xl text-4xl md:text-7xl font-bold glitch mb-12 tracking-widest text-center uppercase text-shadow-[-2px_-1px_0_cyan,2px_1px_0_magenta]">
-      WELCOME
+    <div
+        data-i18n="welcome"
+        class="glitch mb-12 w-full max-w-5xl text-center text-4xl font-bold tracking-widest uppercase text-shadow-[-2px_-1px_0_cyan,2px_1px_0_magenta] md:text-7xl"
+    >
+        WELCOME
     </div>
 
     <!-- Botones principales -->
-    <div class="grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(0,1fr))] gap-8 max-w-5xl w-full px-4">
-      <!-- Botón 1 jugador -->
-      <div id="setReady1" data-page="setReady1" class="border border-cyan-400 p-8 text-center cursor-pointer hover:skew-x-[5deg] active:skew-x-[5deg] transition-all duration-300 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] active:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] hover:animate-[glitch_1s_linear_infinite] active:animate-[glitch_1s_linear_infinite]">
-        <h2 id="setReady1" data-page="setReady1" data-i18n="onePlayerGame" class="text-3xl font-bold glitch mb-2 uppercase">1 PLAYER GAME</h2>
-        <p id="setReady1" data-page="setReady1" data-i18n="playBot" class="text-sm tracking-widest uppercase">PLAY AGAINST A BOT</p>
-      </div>
+    <div
+        class="grid w-full max-w-5xl grid-cols-1 gap-8 px-4 md:grid-cols-[repeat(auto-fit,minmax(0,1fr))]"
+    >
+        <!-- Botón 1 jugador -->
+        <div
+            id="setReady1"
+            data-page="setReady1"
+            class="cursor-pointer border border-cyan-400 p-8 text-center shadow-none transition-all duration-300 hover:skew-x-[5deg] hover:animate-[glitch_1s_linear_infinite] hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:skew-x-[5deg] active:animate-[glitch_1s_linear_infinite] active:shadow-[5px_0_5px_red,-5px_0_5px_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue]"
+        >
+            <h2
+                id="setReady1"
+                data-page="setReady1"
+                data-i18n="onePlayerGame"
+                class="glitch mb-2 text-3xl font-bold uppercase"
+            >
+                1 PLAYER GAME
+            </h2>
+            <p
+                id="setReady1"
+                data-page="setReady1"
+                data-i18n="playBot"
+                class="text-sm tracking-widest uppercase"
+            >
+                PLAY AGAINST A BOT
+            </p>
+        </div>
 
-      <!-- Botón multijugador -->
-      <!-- <div class="border border-cyan-400 p-8 text-center cursor-pointer hover:skew-x-[5deg] active:skew-x-[5deg] transition-all duration-300 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] active:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] hover:animate-[glitch_1s_linear_infinite] active:animate-[glitch_1s_linear_infinite]">
+        <!-- Botón multijugador -->
+        <!-- <div class="border border-cyan-400 p-8 text-center cursor-pointer hover:skew-x-[5deg] active:skew-x-[5deg] transition-all duration-300 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] active:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] hover:animate-[glitch_1s_linear_infinite] active:animate-[glitch_1s_linear_infinite]">
         <h2 data-i18n="multiplayer" class="text-3xl font-bold glitch mb-2 uppercase">MULTIPLAYER</h2>
         <p data-i18n="playOthers" class="text-sm tracking-widest uppercase">PLAY WITH OTHERS</p>
       </div> -->
 
-      <!-- Botón torneo -->
-      <div data-page="tournament" class="border border-cyan-400 p-8 text-center cursor-pointer hover:skew-x-[5deg] active:skew-x-[5deg] transition-all duration-300 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] active:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue] hover:animate-[glitch_1s_linear_infinite] active:animate-[glitch_1s_linear_infinite]">
-        <h2 data-page="tournament" data-i18n="tournament" class="text-3xl font-bold glitch mb-2 uppercase">Tournament</h2>
-        <p data-page="tournament" data-i18n="configTournament" class="text-sm tracking-widest uppercase">Create and configure a tournament</p>
-      </div>
+        <!-- Botón torneo -->
+        <div
+            data-page="tournament"
+            class="cursor-pointer border border-cyan-400 p-8 text-center shadow-none transition-all duration-300 hover:skew-x-[5deg] hover:animate-[glitch_1s_linear_infinite] hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[1px_0_0_red,-1px_0_0_blue] active:skew-x-[5deg] active:animate-[glitch_1s_linear_infinite] active:shadow-[5px_0_5px_red,-5px_0_5px_blue] active:text-shadow-[1px_0_0_red,-1px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] dark:active:text-shadow-[5px_0_0_red,-5px_0_0_blue]"
+        >
+            <h2
+                data-page="tournament"
+                data-i18n="tournament"
+                class="glitch mb-2 text-3xl font-bold uppercase"
+            >
+                Tournament
+            </h2>
+            <p
+                data-page="tournament"
+                data-i18n="configTournament"
+                class="text-sm tracking-widest uppercase"
+            >
+                Create and configure a tournament
+            </p>
+        </div>
     </div>
 
     <!-- Graph -->
-    <div class="relative -z-1 flex justify-center items-center min-h-[350px] text-secondary dark:text-primary">
-      <div class="absolute -translate-y-6">
-        <p id="user-total-games" class="text-8xl font-bold text-center"><!--31--></p>
-        <p class="text-2xl text-center" data-i18n="played_games">partidas</p>
-      </div>
-      <canvas id="donutChart" class="max-w-sm"></canvas>
+    <div
+        class="text-secondary dark:text-primary relative -z-1 flex min-h-[350px] items-center justify-center"
+    >
+        <div class="absolute -translate-y-6">
+            <p id="user-total-games" class="text-center text-8xl font-bold">
+                <!--31-->
+            </p>
+            <p class="text-center text-2xl" data-i18n="played_games">
+                partidas
+            </p>
+        </div>
+        <canvas id="donutChart" class="max-w-sm"></canvas>
     </div>
 
     <!-- Tournaments list -->
-    <div class="w-full max-w-5xl mx-auto p-6">
-      <div class="mb-4 flex justify-between items-center">
-        <h2 data-i18n="tournaments" class="text-2xl font-bold text-gray-800 dark:text-cyan">
-          Torneos
-        </h2>
-        <button id="refreshTournamentsBtn"
-                class="bg-gray-800 hover:bg-gray-600 dark:bg-cyan-400 dark:hover:bg-cyan-600 text-primary dark:text-gray-800 font-bold py-1 px-3 rounded transition-all duration-300 ease-in-out"
+    <div class="mx-auto w-full max-w-5xl p-6">
+        <div class="mb-4 flex items-center justify-between">
+            <h2
+                data-i18n="tournaments"
+                class="dark:text-cyan text-2xl font-bold text-gray-800"
+            >
+                Torneos
+            </h2>
+            <button
+                id="refreshTournamentsBtn"
+                class="text-primary rounded bg-gray-800 px-3 py-1 font-bold transition-all duration-300 ease-in-out hover:bg-gray-600 dark:bg-cyan-400 dark:text-gray-800 dark:hover:bg-cyan-600"
                 data-i18n="refresh"
-        >
-          Refresh
-        </button>
-      </div>
-      <div class="rounded-lg shadow">
-        <table
-          id="tournamentsTable"
-          class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm"
-        >
-          <thead class="bg-gray-100 dark:bg-gray-800">
-            <tr>
-              <th data-i18n="name" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                Name
-              </th>
-              <th data-i18n="game" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                Game
-              </th>
-              <th data-i18n="points" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                Points
-              </th>
-              <th data-i18n="time" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                Time
-              </th>
-              <th data-i18n="registered" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                Registered
-              </th>
-              <th data-i18n="participation" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                Participation
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
-      </div>
+            >
+                Refresh
+            </button>
+        </div>
+        <div class="rounded-lg shadow">
+            <table
+                id="tournamentsTable"
+                class="min-w-full divide-y divide-gray-200 text-sm dark:divide-gray-700"
+            >
+                <thead class="bg-gray-100 dark:bg-gray-800">
+                    <tr>
+                        <th
+                            data-i18n="name"
+                            class="px-4 py-2 text-center font-semibold whitespace-nowrap text-gray-700 dark:text-gray-300"
+                        >
+                            Name
+                        </th>
+                        <th
+                            data-i18n="game"
+                            class="px-4 py-2 text-center font-semibold whitespace-nowrap text-gray-700 dark:text-gray-300"
+                        >
+                            Game
+                        </th>
+                        <th
+                            data-i18n="points"
+                            class="px-4 py-2 text-center font-semibold whitespace-nowrap text-gray-700 dark:text-gray-300"
+                        >
+                            Points
+                        </th>
+                        <th
+                            data-i18n="time"
+                            class="px-4 py-2 text-center font-semibold whitespace-nowrap text-gray-700 dark:text-gray-300"
+                        >
+                            Time
+                        </th>
+                        <th
+                            data-i18n="registered"
+                            class="px-4 py-2 text-center font-semibold whitespace-nowrap text-gray-700 dark:text-gray-300"
+                        >
+                            Registered
+                        </th>
+                        <th
+                            data-i18n="participation"
+                            class="px-4 py-2 text-center font-semibold whitespace-nowrap text-gray-700 dark:text-gray-300"
+                        >
+                            Participation
+                        </th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
 
     <!-- History -->
-    <div class="w-full max-w-5xl mx-auto p-6">
-      <h2 data-i18n="gameHistory" class="text-2xl font-bold mb-4 text-gray-800 dark:text-cyan">
-        Historial de Partidas
-      </h2>
-      <div class="rounded-lg shadow">
-        <table
-          id="matchTable"
-          class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm"
+    <div class="mx-auto w-full max-w-5xl p-6">
+        <h2
+            data-i18n="gameHistory"
+            class="dark:text-cyan mb-4 text-2xl font-bold text-gray-800"
         >
-          <thead class="bg-gray-100 dark:bg-gray-800">
-            <tr>
-              <!-- <th class="px-4 py-2 text-left font-semibold text-gray-700 dark:text-gray-300">
+            Historial de Partidas
+        </h2>
+        <div class="rounded-lg shadow">
+            <table
+                id="matchTable"
+                class="min-w-full divide-y divide-gray-200 text-sm dark:divide-gray-700"
+            >
+                <thead class="bg-gray-100 dark:bg-gray-800">
+                    <tr>
+                        <!-- <th class="px-4 py-2 text-left font-semibold text-gray-700 dark:text-gray-300">
                 Jugador 1
               </th> -->
-              <th data-i18n="game" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                Game
-              </th>
-              <th data-i18n="opponent" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                Opponent
-              </th>
-              <th data-i18n="result" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                Resultado
-              </th>
-              <th data-i18n="winner" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                Ganador
-              </th>
-              <th data-i18n="date" class="px-4 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                Fecha
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
-      </div>
+                        <th
+                            data-i18n="game"
+                            class="px-4 py-2 text-center font-semibold whitespace-nowrap text-gray-700 dark:text-gray-300"
+                        >
+                            Game
+                        </th>
+                        <th
+                            data-i18n="opponent"
+                            class="px-4 py-2 text-center font-semibold whitespace-nowrap text-gray-700 dark:text-gray-300"
+                        >
+                            Opponent
+                        </th>
+                        <th
+                            data-i18n="result"
+                            class="px-4 py-2 text-center font-semibold whitespace-nowrap text-gray-700 dark:text-gray-300"
+                        >
+                            Resultado
+                        </th>
+                        <th
+                            data-i18n="winner"
+                            class="px-4 py-2 text-center font-semibold whitespace-nowrap text-gray-700 dark:text-gray-300"
+                        >
+                            Ganador
+                        </th>
+                        <th
+                            data-i18n="date"
+                            class="px-4 py-2 text-center font-semibold whitespace-nowrap text-gray-700 dark:text-gray-300"
+                        >
+                            Fecha
+                        </th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
-  </div>
+</div>
 
 <!-- Friends Sidebar -->
 <div id="friends-sidebar-container"></div>

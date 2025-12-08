@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
-import { PongGame } from '../../../pong-game-manager/domain/PongGame';
+import { PongGame } from '../../../pong-game-manager/domain/PongGame.entity';
 
 import { Match } from '@shared/domain/Entities/Match.entity';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';

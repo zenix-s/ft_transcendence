@@ -9,81 +9,16 @@ import {
 import { User } from '@shared/domain/Entities/User.entity';
 import { IMatchSettings, VisualStyle } from '@shared/domain/ValueObjects/MatchSettings.value';
 import { CountdownManager } from '../services/CountdownManager';
-import { AIOpponent } from './AIOpponent';
-
-interface PlayerState {
-    position: number;
-    score: number;
-    isReady: boolean;
-}
-
-export class PongPlayer {
-    private playerId: number;
-    private userData: User | null;
-    private state: PlayerState;
-
-    constructor(playerId: number, userData?: User) {
-        this.playerId = playerId;
-        this.userData = userData || null;
-        this.state = {
-            position: 50,
-            score: 0,
-            isReady: false,
-        };
-    }
-
-    public moveUp(): void {
-        if (this.state.position > 10) {
-            this.state.position -= 1;
-        }
-    }
-
-    public moveDown(): void {
-        if (this.state.position < 90) {
-            this.state.position += 1;
-        }
-    }
-
-    public getState(): PlayerState {
-        return this.state;
-    }
-
-    public getId(): number {
-        return this.playerId;
-    }
-
-    public incrementScore(): void {
-        this.state.score += 1;
-    }
-
-    public setReady(ready: boolean): void {
-        this.state.isReady = ready;
-    }
-
-    public isReady(): boolean {
-        return this.state.isReady;
-    }
-
-    public getUsername(): string {
-        return this.userData?.username || `Player ${this.playerId}`;
-    }
-
-    public resetPosition(): void {
-        this.state.position = 50;
-    }
-}
-
-interface BallState {
-    position: { x: number; y: number };
-    velocity: { x: number; y: number };
-}
+import { AIOpponent } from './AIOpponent.entity';
+import { PongPlayer } from './PongPlayer.entity';
+import { PongBall } from './PongBall.entity';
 
 export class PongGame {
     private gameStatus: GameStatus;
     private countdownManager: CountdownManager;
     private player1?: PongPlayer;
     private player2?: PongPlayer;
-    private ball: BallState;
+    private ball: PongBall;
     private lastUpdate: number;
     private gameTimer: number;
     private winnerScore: number;
@@ -105,17 +40,14 @@ export class PongGame {
         this.countdownManager = new CountdownManager();
         this.player1 = undefined;
         this.player2 = undefined;
-        this.ball = {
-            position: { x: 50, y: 50 },
-            velocity: this.generateInitialBallVelocity(),
-        };
+        this.ball = new PongBall();
         this.lastUpdate = Date.now();
         this.gameTimer = 0;
         this.winnerScore = winnerScore;
         this.maxGameTime = maxGameTime;
         this.isAIMode = isPlayer2AI;
         this.aiDifficulty = aiDifficulty;
-        this.aiOpponent = undefined; // Created when player2 is added
+        this.aiOpponent = undefined;
         this.isCancelled = false;
         this.visualStyle = visualStyle;
     }
@@ -124,14 +56,12 @@ export class PongGame {
         if (!this.player1) {
             this.player1 = new PongPlayer(playerId, userData);
             if (this.isAIMode && !this.player2) {
-                // Create AI player
                 this.player2 = new PongPlayer(1, {
                     id: CONSTANTES_APP.AI_PLAYER.ID,
                     username: CONSTANTES_APP.AI_PLAYER.NAME,
                     email: CONSTANTES_APP.AI_PLAYER.EMAIL,
                 });
                 this.player2.setReady(true);
-                // Create AI controller for player2
                 this.aiOpponent = new AIOpponent(this.player2, this.aiDifficulty);
             }
             this.updateGameStatus();
@@ -151,7 +81,6 @@ export class PongGame {
         player.setReady(ready);
         this.updateGameStatus();
 
-        // Si ambos están listos y no hay countdown activo, iniciar countdown de inicio
         if (
             this.arePlayersReady() &&
             this.gameStatus === GAME_STATUS.WAITING_FOR_READY &&
@@ -220,33 +149,29 @@ export class PongGame {
         const deltaTime = (now - this.lastUpdate) / 1000;
         this.lastUpdate = now;
 
-        // Siempre actualizar countdowns
         this.countdownManager.update(deltaTime);
 
-        // Solo actualizar lógica del juego si está en estado PLAYING
         if (this.gameStatus !== GAME_STATUS.PLAYING) {
-            // No hacer nada más si hay un countdown activo o el juego terminó
             if (
                 GAME_STATUS_UTILS.isCountdownState(this.gameStatus) ||
                 GAME_STATUS_UTILS.isEndedState(this.gameStatus)
             ) {
                 return;
             }
-            // Solo actualizar estado si está en estado de espera
             if (GAME_STATUS_UTILS.isWaitingState(this.gameStatus)) {
                 this.updateGameStatus();
             }
             return;
         }
 
-        // AI controls player2 directly
         if (this.aiOpponent && this.player1) {
             const enemyY = this.player1.getState().position;
-            this.aiOpponent.update(this.ball, enemyY);
+            this.aiOpponent.update(this.ball.getState(), enemyY);
         }
 
         this.updateBall(deltaTime);
         this.checkCollisions();
+        this.checkGoals();
         this.gameTimer += deltaTime;
         this.checkWinConditions();
     }
@@ -257,20 +182,17 @@ export class PongGame {
         scorer.incrementScore();
         this.gameStatus = GAME_STATUS.GOAL_SCORED;
 
-        // Verificar si el juego terminó
         if (this.checkWinConditions()) {
-            return; // El juego terminó
+            return;
         }
 
         this.resetPlayerPositions();
-        this.resetBall();
+        this.ball.reset();
 
-        // Si el juego continúa, iniciar countdown para reanudar
         this.startGoalCountdown();
     }
 
     private updateGameStatus(): void {
-        // No cambiar estado si está en countdown o jugando
         if (
             GAME_STATUS_UTILS.isCountdownState(this.gameStatus) ||
             this.gameStatus === GAME_STATUS.PLAYING ||
@@ -290,118 +212,44 @@ export class PongGame {
         }
     }
 
-
     private updateBall(deltaTime: number): void {
-        // Solo mover la pelota si no hay countdown activo
         if (this.countdownManager.hasActiveCountdown()) {
             return;
         }
 
-        // Aplicar resistencia al aire muy sutil para ralentizar la pelota gradualmente
-        const currentSpeed = Math.sqrt(
-            this.ball.velocity.x * this.ball.velocity.x + this.ball.velocity.y * this.ball.velocity.y
-        );
-
-        if (currentSpeed > 1.8) {
-            // Solo aplicar resistencia si hay velocidad alta
-            const airResistance = 0.9975; // Resistencia moderada para velocidades altas
-            this.ball.velocity.x *= airResistance;
-            this.ball.velocity.y *= airResistance;
-        }
-
-        this.ball.position.x += this.ball.velocity.x * deltaTime * 60;
-        this.ball.position.y += this.ball.velocity.y * deltaTime * 60;
-
-        if (this.ball.position.y <= 0 || this.ball.position.y >= 100) {
-            this.ball.velocity.y = -this.ball.velocity.y;
-            this.ball.position.y = Math.max(0, Math.min(100, this.ball.position.y));
-        }
-
-        if (this.ball.position.x <= 0) {
-            this.onGoalScored(this.player2);
-        } else if (this.ball.position.x >= 100) {
-            this.onGoalScored(this.player1);
-        }
+        this.ball.update(deltaTime);
     }
 
     private checkCollisions(): void {
         if (!this.player1 || !this.player2) return;
 
+        const ballPos = this.ball.getPosition();
         const player1State = this.player1.getState();
         const player2State = this.player2.getState();
 
-        // Colisión con pala del jugador 1 (izquierda)
-        if (this.ball.position.x <= 5 && this.ball.position.x >= 0) {
-            if (Math.abs(this.ball.position.y - player1State.position) <= 10) {
-                // Calcular qué parte de la pala tocó la pelota (-1 superior, 0 centro, 1 inferior)
-                const contactPoint = (this.ball.position.y - player1State.position) / 10;
-
-                // Aumentar velocidad moderadamente en cada golpe (máximo 2.2x)
-                const currentSpeed = Math.sqrt(
-                    this.ball.velocity.x * this.ball.velocity.x + this.ball.velocity.y * this.ball.velocity.y
-                );
-                const speedMultiplier = Math.min(2.2, currentSpeed * 1.06);
-
-                // Aplicar ángulo basado en el punto de contacto
-                const maxAngleModifier = 0.4;
-
-                this.ball.velocity.x = speedMultiplier * Math.cos(contactPoint * 0.3);
-                this.ball.velocity.y = this.ball.velocity.y * 0.8 + contactPoint * maxAngleModifier;
-
-                // Limitar velocidad Y para mantener jugabilidad
-                this.ball.velocity.y = Math.max(-0.6, Math.min(0.6, this.ball.velocity.y));
-
-                this.ball.position.x = 5;
+        if (ballPos.x <= 5 && ballPos.x >= 0) {
+            if (Math.abs(ballPos.y - player1State.position) <= 10) {
+                const contactPoint = (ballPos.y - player1State.position) / 10;
+                this.ball.reflectFromPaddle(contactPoint, true);
             }
         }
 
-        // Colisión con pala del jugador 2 (derecha)
-        if (this.ball.position.x >= 95 && this.ball.position.x <= 100) {
-            if (Math.abs(this.ball.position.y - player2State.position) <= 10) {
-                // Calcular qué parte de la pala tocó la pelota (-1 superior, 0 centro, 1 inferior)
-                const contactPoint = (this.ball.position.y - player2State.position) / 10;
-
-                // Aumentar velocidad moderadamente en cada golpe (máximo 2.2x)
-                const currentSpeed = Math.sqrt(
-                    this.ball.velocity.x * this.ball.velocity.x + this.ball.velocity.y * this.ball.velocity.y
-                );
-                const speedMultiplier = Math.min(2.2, currentSpeed * 1.06);
-
-                // Aplicar ángulo basado en el punto de contacto
-                const maxAngleModifier = 0.4;
-
-                this.ball.velocity.x = -speedMultiplier * Math.cos(contactPoint * 0.3);
-                this.ball.velocity.y = this.ball.velocity.y * 0.8 + contactPoint * maxAngleModifier;
-
-                // Limitar velocidad Y para mantener jugabilidad
-                this.ball.velocity.y = Math.max(-0.6, Math.min(0.6, this.ball.velocity.y));
-
-                this.ball.position.x = 95;
+        if (ballPos.x >= 95 && ballPos.x <= 100) {
+            if (Math.abs(ballPos.y - player2State.position) <= 10) {
+                const contactPoint = (ballPos.y - player2State.position) / 10;
+                this.ball.reflectFromPaddle(contactPoint, false);
             }
         }
     }
 
-    private generateInitialBallVelocity(): { x: number; y: number } {
-        // Generate an initial velocity with a small random angle and a consistent speed.
-        // Direction is chosen randomly towards player1 (negative x) or player2 (positive x).
-        // Angle is limited to avoid too-steep trajectories at game start.
-        const MAX_ANGLE_DEG = 20; // Max deviation from horizontal in degrees
-        const angleDeg = (Math.random() * 2 - 1) * MAX_ANGLE_DEG; // random between -MAX..+MAX
-        const angleRad = (angleDeg * Math.PI) / 180;
-        const speed = 0.8; // base speed magnitude (kept compatible with previous behavior)
+    private checkGoals(): void {
+        const ballPos = this.ball.getPosition();
 
-        // Randomly choose initial lateral direction: 1 => right (towards player2), -1 => left (towards player1)
-        const lateralDirection = Math.random() > 0.5 ? 1 : -1;
-
-        const vx = lateralDirection * Math.cos(angleRad) * speed;
-        const vy = Math.sin(angleRad) * speed;
-
-        return { x: vx, y: vy };
-    }
-
-    private resetBall(): void {
-        this.ball.position = { x: 50, y: 50 };
-        this.ball.velocity = this.generateInitialBallVelocity();
+        if (ballPos.x <= 0) {
+            this.onGoalScored(this.player2);
+        } else if (ballPos.x >= 100) {
+            this.onGoalScored(this.player1);
+        }
     }
 
     private resetPlayerPositions(): void {
@@ -411,7 +259,6 @@ export class PongGame {
         if (this.player2) {
             this.player2.resetPosition();
         }
-        // Reset AI target position to match player2's reset position
         if (this.aiOpponent) {
             this.aiOpponent.resetTarget();
         }
@@ -436,7 +283,6 @@ export class PongGame {
     }
 
     public getGameState() {
-        // Solo actualizar estado si no estamos en countdown o jugando
         if (
             !GAME_STATUS_UTILS.isCountdownState(this.gameStatus) &&
             this.gameStatus !== GAME_STATUS.PLAYING &&
@@ -462,7 +308,7 @@ export class PongGame {
                       ...this.player2.getState(),
                   }
                 : null,
-            ball: this.ball,
+            ball: this.ball.getState(),
             arePlayersReady: this.arePlayersReady(),
             gameRules: this.getGameRules(),
             isGameOver: this.isGameOver(),
@@ -577,7 +423,6 @@ export class PongGame {
         difficulty?: number;
         visualStyle?: VisualStyle;
     }): boolean {
-        // Solo permitir modificación si el juego no ha empezado
         if (this.gameStatus === GAME_STATUS.PLAYING) {
             return false;
         }
@@ -604,50 +449,22 @@ export class PongGame {
         return true;
     }
 
-    public removePlayer(playerId: number): boolean {
-        const player = this.getPlayerById(playerId);
-        if (!player) return false;
-
-        // Si el juego ya empezó, no permitir abandonar (debe usar cancelGame)
-        if (this.gameStatus === GAME_STATUS.PLAYING) {
-            return false;
-        }
-
-        // Remover el jugador
-        if (this.player1?.getId() === playerId) {
-            this.player1 = undefined;
-        } else if (this.player2?.getId() === playerId) {
-            this.player2 = undefined;
-        }
-
-        // Si no quedan jugadores humanos, cancelar el juego
-        if (!this.player1 && (!this.player2 || this.isAIMode)) {
-            this.isCancelled = true;
-        }
-
-        return true;
-    }
-
     public cancelGame(playerId: number): boolean {
         const player = this.getPlayerById(playerId);
         if (!player) return false;
 
         if (this.gameStatus === GAME_STATUS.PLAYING) {
-            // Si está en curso, dar victoria al oponente
             if (this.player1?.getId() === playerId && this.player2) {
-                // Player1 abandona, player2 gana
                 for (let i = this.player2.getState().score; i < this.winnerScore; i++) {
                     this.player2.incrementScore();
                 }
             } else if (this.player2?.getId() === playerId && this.player1) {
-                // Player2 abandona, player1 gana
                 for (let i = this.player1.getState().score; i < this.winnerScore; i++) {
                     this.player1.incrementScore();
                 }
             }
             this.gameStatus = GAME_STATUS.GAME_OVER;
         } else {
-            // Si no ha empezado, cancelar
             this.isCancelled = true;
         }
 

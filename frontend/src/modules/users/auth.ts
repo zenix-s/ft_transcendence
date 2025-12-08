@@ -262,9 +262,13 @@ export async function getCurrentUser(): Promise<GetCurrentUserResponse  | null> 
 function handleInvalidSession(messageKey: string) {
   if (!sessionHandled) {
     sessionHandled = true;
-    showToast(t(messageKey), "error");
+
+    const page = new URL(window.location.href);
+    if (page.pathname !== "/home" && page.pathname !== "/" && page.pathname !== "" && page.pathname !== "/login") {
+      navigateTo("login");
+      showToast(t(messageKey), "error");
+    }
     localStorage.removeItem("access_token");
-    navigateTo("login", false, true);
   }
 }
 

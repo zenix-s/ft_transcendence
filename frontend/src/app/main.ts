@@ -13,7 +13,7 @@ import { loadChart } from "@/components/graph";
 import { matchTable, loadMatchHistory } from "@/components/history";
 import { tournamentTable, loadTournamentsHistory } from "@/components/tournamentsHistory";
 import { updateSliders } from "@/components/updateSliders";
-import { createGameSocket, getGameSocket } from "@/modules/game/gameSocket";
+import { getGameSocket } from "@/modules/game/gameSocket";
 
 // i18n
 //import { setLanguage, t, currentLang } from "./i18n";
@@ -34,6 +34,8 @@ applySavedColors();
 const initialPage = location.pathname.replace("/", "") || "home";
 navigateTo(initialPage, true);
 
+await getCurrentUser();
+
 // 🌐 Imports WebSocket Social
 import { createSocialSocket, getSocialSocket } from "@/modules/social/socketInstance";
 import { SocialWebSocketClient } from "@/modules/social/socialSocket";
@@ -42,6 +44,7 @@ import { getColor, setColors } from "@/modules/game/getColors";
 // 🌐 Importaciones necesarias para el WS de Torneos
 import { createTournamentSocket, getTournamentSocket } from "@/modules/tournament/tournamentSocketInstance";
 import { TournamentWebSocketClient } from "@/modules/tournament/tournamentSocket";
+import { getCurrentUser } from "@/modules/users";
 
 // 🌐 Inicializar WebSocket Social si hay token
 async function initSocialSocket(): Promise<SocialWebSocketClient | null> {

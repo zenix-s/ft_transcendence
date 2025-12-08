@@ -268,10 +268,10 @@ document.addEventListener('i18n-updated', async () => {
     const token = localStorage.getItem('access_token');
 
     // Reload Game History solo si existe tabla y hay token
-    reloadGameHistory(token);
+    await reloadGameHistory(token);
 
     // Reload Tournaments History solo si existe tabla y hay token
-    reloadTournamentsHistory();
+    await reloadTournamentsHistory();
 
     updateSliders();
 });
@@ -327,13 +327,19 @@ export async function reloadTournamentsHistory() {
             ? parseInt(tournamentPerPageSelect.value, 10)
             : tournamentTable.options.perPage; // usa el valor actual de la tabla
 
-        // 3. Destruir tabla
+        // 3. Clear tbody BEFORE destroying to prevent visual glitch
+        const tbody = document.querySelector<HTMLTableSectionElement>(
+            '#tournamentsTable tbody'
+        );
+        if (tbody) tbody.innerHTML = '';
+
+        // 4. Destruir tabla
         tournamentTable.destroy();
 
-        // 4. Volver a cargar historial
+        // 5. Volver a cargar historial
         await loadTournamentsHistory(currentPerPage);
 
-        // 5. Restaurar página en la que estabas
+        // 6. Restaurar página en la que estabas
         if (currentPage > 0) tournamentTable.page(currentPage);
     }
 }

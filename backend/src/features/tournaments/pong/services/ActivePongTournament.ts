@@ -5,7 +5,7 @@ import { Tournament } from '@shared/domain/Entities/Tournament.entity';
 import { TournamentParticipant } from '@shared/domain/Entities/TournamentParticipant.entity';
 import { IMatchSettings } from '@shared/domain/ValueObjects/MatchSettings.value';
 import { Match } from '@shared/domain/Entities/Match.entity';
-import { PongGame } from '@features/pong-game-manager/domain/PongGame';
+import { PongGame } from '@features/pong-game-manager/domain/PongGame.entity';
 import { TournamentRound, ITournamentMatchup } from '@shared/domain/Entities/TournamentRound.entity';
 
 export class ActivePongTournament {

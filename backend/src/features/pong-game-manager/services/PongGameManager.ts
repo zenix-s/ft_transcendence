@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { Result } from '@shared/abstractions/Result';
-import { PongGame } from '../domain/PongGame';
+import { PongGame } from '../domain/PongGame.entity';
 import { ActivePongGame } from './ActivePongGame';
 import { ApplicationError } from '@shared/Errors';
 import { IPongGameManager } from './IPongGameManager.interface';

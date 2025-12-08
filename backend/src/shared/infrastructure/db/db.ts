@@ -187,7 +187,7 @@ export default fp(
 
         // ESTO ES PARA TESTING NO LLEVAR A PROD
         // TestUsers
-        const hashedPasswordTest = await hashPassword('Testpassword1234');
+        const hashedPasswordTest = await hashPassword('1234');
         await connection.execute(
             `
                 INSERT OR IGNORE INTO users (id, username, email, password)

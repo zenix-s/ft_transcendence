@@ -1,5 +1,5 @@
 import { Result } from '@shared/abstractions/Result';
-import { PongGame } from '../domain/PongGame';
+import { PongGame } from '../domain/PongGame.entity';
 import { GameState, GameSettings } from '../Pong.types';
 
 export interface IPongGameManager {

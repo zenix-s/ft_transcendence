@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { PongGame } from '../domain/PongGame';
+import { PongGame } from '../domain/PongGame.entity';
 
 export class ActivePongGame {
     private loop?: NodeJS.Timeout;

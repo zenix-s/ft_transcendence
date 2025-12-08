@@ -10,7 +10,7 @@ export const GAME_STATUS = {
     GOAL_COUNTDOWN: 'goal_countdown',
     PAUSED: 'paused',
     GAME_OVER: 'game_over',
-    CANCELLED: 'cancelled'
+    CANCELLED: 'cancelled',
 } as const;
 
 /**
@@ -23,7 +23,7 @@ export type GameStatus = (typeof GAME_STATUS)[keyof typeof GAME_STATUS];
  */
 export const COUNTDOWN_TYPES = {
     START: 'start',
-    GOAL: 'goal'
+    GOAL: 'goal',
 } as const;
 
 /**
@@ -49,8 +49,7 @@ export const GAME_STATUS_UTILS = {
     isCountdownState: (status: GameStatus) =>
         status === GAME_STATUS.START_COUNTDOWN || status === GAME_STATUS.GOAL_COUNTDOWN,
 
-    isActiveGameState: (status: GameStatus) =>
-        status === GAME_STATUS.PLAYING,
+    isActiveGameState: (status: GameStatus) => status === GAME_STATUS.PLAYING,
 
     isEndedState: (status: GameStatus) =>
         status === GAME_STATUS.GAME_OVER || status === GAME_STATUS.CANCELLED,

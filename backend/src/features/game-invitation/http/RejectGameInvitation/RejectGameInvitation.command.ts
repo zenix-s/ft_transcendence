@@ -16,9 +16,10 @@ export interface IRejectGameInvitationRequest {
     gameId: number;
 }
 
-export default class RejectGameInvitationCommand
-    implements ICommand<IRejectGameInvitationRequest, IRejectGameInvitationResponse>
-{
+export default class RejectGameInvitationCommand implements ICommand<
+    IRejectGameInvitationRequest,
+    IRejectGameInvitationResponse
+> {
     private readonly socialWebSocketService: ISocialWebSocketService;
     private readonly matchRepository: IMatchRepository;
 

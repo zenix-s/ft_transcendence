@@ -45,7 +45,7 @@ async function App(fastify: FastifyInstance) {
     fastify.register(SocialWebSocketServicePlugin);
     fastify.register(PongGameManagerPlugin);
     fastify.register(PongTournamentManagerPlugin);
-    fastify.register(TournamentWebSocketServicePlugin)
+    fastify.register(TournamentWebSocketServicePlugin);
 
     fastify.register(fastifyMultipart, {
         limits: {

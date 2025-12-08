@@ -32,9 +32,10 @@ export interface IGetCompletedPongTournamentsResponse {
     total: number;
 }
 
-export class GetCompletedPongTournamentsCommand
-    implements ICommand<IGetCompletedPongTournamentsRequest, IGetCompletedPongTournamentsResponse>
-{
+export class GetCompletedPongTournamentsCommand implements ICommand<
+    IGetCompletedPongTournamentsRequest,
+    IGetCompletedPongTournamentsResponse
+> {
     constructor(private readonly fastify: FastifyInstance) {}
 
     validate(request?: IGetCompletedPongTournamentsRequest | undefined): Result<void> {

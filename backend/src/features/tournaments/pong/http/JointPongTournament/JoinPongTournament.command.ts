@@ -13,9 +13,10 @@ export interface IJoinPongTournamentResponse {
     message: string;
 }
 
-export class JoinPongTournamentCommand
-    implements ICommand<IJoinPongTournamentRequest, IJoinPongTournamentResponse>
-{
+export class JoinPongTournamentCommand implements ICommand<
+    IJoinPongTournamentRequest,
+    IJoinPongTournamentResponse
+> {
     constructor(private readonly fastify: FastifyInstance) {}
 
     validate(request?: IJoinPongTournamentRequest | undefined): Result<void> {

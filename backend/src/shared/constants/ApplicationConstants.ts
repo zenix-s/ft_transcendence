@@ -5,4 +5,3 @@ export const CONSTANTES_APP = {
         EMAIL: 'ai@system.local',
     },
 } as const;
-

@@ -13,9 +13,10 @@ export interface ILeavePongTournamentResponse {
     message: string;
 }
 
-export class LeavePongTournamentCommand
-    implements ICommand<ILeavePongTournamentRequest, ILeavePongTournamentResponse>
-{
+export class LeavePongTournamentCommand implements ICommand<
+    ILeavePongTournamentRequest,
+    ILeavePongTournamentResponse
+> {
     constructor(private readonly fastify: FastifyInstance) {}
 
     validate(request?: ILeavePongTournamentRequest | undefined): Result<void> {

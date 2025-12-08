@@ -105,6 +105,12 @@ clean-certs:
 	@echo "🗑️ Eliminando certificados..."
 	rm -f backend/certs/*.pem frontend/certs/*.pem
 
+format-front:
+	docker compose exec frontend npx prettier --write .
+
+format-back:
+	docker compose exec backend npx prettier --write .
+
 # Reconstruir todo desde cero
 rebuild: fclean build
 

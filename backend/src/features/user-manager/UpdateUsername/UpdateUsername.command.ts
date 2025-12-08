@@ -16,9 +16,10 @@ export interface IUsernameUpadteResponse {
     };
 }
 
-export default class UsernameUpdateCommand
-    implements ICommand<IUsernameUpdateRequest, IUsernameUpadteResponse>
-{
+export default class UsernameUpdateCommand implements ICommand<
+    IUsernameUpdateRequest,
+    IUsernameUpadteResponse
+> {
     constructor(private readonly fastify: FastifyInstance) {}
 
     validate(request?: IUsernameUpdateRequest): Result<void> {

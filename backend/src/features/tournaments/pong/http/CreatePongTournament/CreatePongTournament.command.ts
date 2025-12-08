@@ -18,9 +18,10 @@ export interface ICreatePongTournamentResponse {
     tournamentId?: number;
 }
 
-export class CreatePongTournamentCommand
-    implements ICommand<ICreatePongTournamentRequest, ICreatePongTournamentResponse>
-{
+export class CreatePongTournamentCommand implements ICommand<
+    ICreatePongTournamentRequest,
+    ICreatePongTournamentResponse
+> {
     constructor(private readonly fastify: FastifyInstance) {}
 
     validate(request?: ICreatePongTournamentRequest | undefined): Result<void> {

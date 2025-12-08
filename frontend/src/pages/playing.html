@@ -1,27 +1,46 @@
 <div class="scanlines"></div>
 
 <div>
-    <div class="absolute top-18 left-1/2 transform -translate-x-1/2 flex gap-5 text-secondary dark:text-primary text-4xl font-bold">
-      <div id="timerText" data-i18n="CHRONO:" class="text-shadow-redblue"></div>
-      <div id="timer" class="text-shadow-redblue">0</div>
-      <div id="timerText" data-i18n="s" class="text-shadow-redblue"></div>
+    <div
+        class="text-secondary dark:text-primary absolute top-18 left-1/2 flex -translate-x-1/2 transform gap-5 text-4xl font-bold"
+    >
+        <div
+            id="timerText"
+            data-i18n="CHRONO:"
+            class="text-shadow-redblue"
+        ></div>
+        <div id="timer" class="text-shadow-redblue">0</div>
+        <div id="timerText" data-i18n="s" class="text-shadow-redblue"></div>
     </div>
 
-
-    <div class="absolute top-28 left-1/2 transform -translate-x-1/2 flex gap-5 md:gap-10 text-secondary dark:text-primary text-4xl font-bold">
-      <div id="scoreLeft" class="text-shadow-blue">0</div>
-      <div class="text-shadow-redblue">-</div>
-      <div id="scoreRight" class="text-shadow-red">0</div>
+    <div
+        class="text-secondary dark:text-primary absolute top-28 left-1/2 flex -translate-x-1/2 transform gap-5 text-4xl font-bold md:gap-10"
+    >
+        <div id="scoreLeft" class="text-shadow-blue">0</div>
+        <div class="text-shadow-redblue">-</div>
+        <div id="scoreRight" class="text-shadow-red">0</div>
     </div>
-    
-  <div class="bg-primary dark:bg-secondary flex justify-center items-center h-screen w-screen">
-    <canvas id="gameCanvas" class="w-full h-full"></canvas>
-  </div>
 
-  <div class="lg:hidden absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-10 text-white text-4xl font-bold">
-    <button id="button-up" class="w-20 h-20 flex items-center justify-center text-7xl
-                 bg-gray-400 rounded-lg active:bg-gray-500">⬆</button>
-    <button id="button-down" class="w-20 h-20 flex items-center justify-center text-7xl
-                 bg-gray-400 rounded-lg active:bg-gray-500">⬇</button>
-  </div>
+    <div
+        class="bg-primary dark:bg-secondary flex h-screen w-screen items-center justify-center"
+    >
+        <canvas id="gameCanvas" class="h-full w-full"></canvas>
+    </div>
+
+    <div
+        class="absolute bottom-4 left-1/2 flex -translate-x-1/2 transform gap-10 text-4xl font-bold text-white lg:hidden"
+    >
+        <button
+            id="button-up"
+            class="flex h-20 w-20 items-center justify-center rounded-lg bg-gray-400 text-7xl active:bg-gray-500"
+        >
+            ⬆
+        </button>
+        <button
+            id="button-down"
+            class="flex h-20 w-20 items-center justify-center rounded-lg bg-gray-400 text-7xl active:bg-gray-500"
+        >
+            ⬇
+        </button>
+    </div>
 </div>

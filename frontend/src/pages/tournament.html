@@ -1,103 +1,145 @@
 <div class="scanlines"></div>
 
 <!-- Bloque centrado sin ocupar toda la pantalla -->
-<div class="center-screen justify-center py-10 gap-20">
-  <div class="flex justify-center items-center gap-5 md:gap-16 sm:gap-7">
-    <div
-      data-i18n="tournament"
-      class="relative text-center text-6xl md:text-8xl font-mono tracking-tight animate-[glitch_1s_linear_infinite] text-secondary dark:text-primary text-shadow-blue capitalize">
-    </div>
-  </div>
-  
-  <form id="tournamentForm" class="flex flex-col gap-16 text-left w-full max-w-3xl px-4">
-    <!-- Nombre del torneo -->
-    <div class="flex flex-col gap-2 relative overflow-visible">
-      <label for="name-input" class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono after:content-[':']" role="tooltip" data-i18n="tournamentName">
-      </label>
-      <input
-        id="tournament-name"
-        name="tournament-name"
-        data-i18n="tournamentName"
-        placeholder="tournamentName"
-        type="text"
-        maxlength="20"
-        data-tooltip-target="tooltip-tournament"
-        class="border-2 border-secondary dark:border-cyan-400 rounded-md p-2 focus:outline-none hover:border-cyan-400 focus:border-cyan-400 active:border-cyan-400 hover:dark:border-primary focus:dark:border-primary active:dark:border-primary"
-      />
-      <span id="tournament-name-counter" class="absolute right-2 top-12 sm:top-14 md:top-17 text-md text-secondary dark:text-primary">0/40</span>
-      <div
-        data-tooltip="tooltip-tournament"
-        role="tooltip"
-        class="z-50 absolute left-0 bottom-1/2 -translate-y-2 sm:-translate-y-0 px-3 py-2 text-sm text-primary dark:text-secondary bg-secondary dark:bg-primary border border-primary dark:border-secondary rounded-lg shadow-lg opacity-0 scale-95 transition-all duration-200 pointer-events-none w-full whitespace-pre-line"
-        data-i18n="toolTipTournamentName"
-      >
-        El torneo debe tener al menos 3 caracteres.
-        <div class="absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2"></div>
-      </div>
+<div class="center-screen justify-center gap-20 py-10">
+    <div class="flex items-center justify-center gap-5 sm:gap-7 md:gap-16">
+        <div
+            data-i18n="tournament"
+            class="text-secondary dark:text-primary text-shadow-blue relative animate-[glitch_1s_linear_infinite] text-center font-mono text-6xl tracking-tight capitalize md:text-8xl"
+        ></div>
     </div>
 
-    <!-- Puntos máximos -->
-    <div class="flex flex-col gap-2">
-      <label for="points-range" class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono" role="tooltip" data-i18n="modalGameCreationmaxPoints">
-      </label>
-      <input
-        id="points-range"
-        type="range"
-        name="points-range"
-        class="swal2-range accent-cyan-400"
-        min="3" max="15" value="5" step="1"
-      >
-    </div>
+    <form
+        id="tournamentForm"
+        class="flex w-full max-w-3xl flex-col gap-16 px-4 text-left"
+    >
+        <!-- Nombre del torneo -->
+        <div class="relative flex flex-col gap-2 overflow-visible">
+            <label
+                for="name-input"
+                class="text-secondary dark:text-primary font-mono text-xl after:content-[':'] sm:text-4xl md:text-5xl"
+                role="tooltip"
+                data-i18n="tournamentName"
+            >
+            </label>
+            <input
+                id="tournament-name"
+                name="tournament-name"
+                data-i18n="tournamentName"
+                placeholder="tournamentName"
+                type="text"
+                maxlength="20"
+                data-tooltip-target="tooltip-tournament"
+                class="border-secondary hover:dark:border-primary focus:dark:border-primary active:dark:border-primary rounded-md border-2 p-2 hover:border-cyan-400 focus:border-cyan-400 focus:outline-none active:border-cyan-400 dark:border-cyan-400"
+            />
+            <span
+                id="tournament-name-counter"
+                class="text-md text-secondary dark:text-primary absolute top-12 right-2 sm:top-14 md:top-17"
+                >0/40</span
+            >
+            <div
+                data-tooltip="tooltip-tournament"
+                role="tooltip"
+                class="text-primary dark:text-secondary bg-secondary dark:bg-primary border-primary dark:border-secondary pointer-events-none absolute bottom-1/2 left-0 z-50 w-full -translate-y-2 scale-95 rounded-lg border px-3 py-2 text-sm whitespace-pre-line opacity-0 shadow-lg transition-all duration-200 sm:-translate-y-0"
+                data-i18n="toolTipTournamentName"
+            >
+                El torneo debe tener al menos 3 caracteres.
+                <div
+                    class="bg-secondary dark:bg-primary absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45"
+                ></div>
+            </div>
+        </div>
 
-    <!-- Tiempo máximo -->
-    <div class="flex flex-col gap-2">
-      <label for="time-range" class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono" role="tooltip" data-i18n="modalGameCreationMaxTime">
-      </label>
-      <input
-        id="time-range"
-        type="range"
-        name="time-range"
-        class="swal2-range accent-cyan-400"
-        min="30" max="300" value="120" step="30"
-      >
-    </div>
+        <!-- Puntos máximos -->
+        <div class="flex flex-col gap-2">
+            <label
+                for="points-range"
+                class="text-secondary dark:text-primary font-mono text-xl sm:text-4xl md:text-5xl"
+                role="tooltip"
+                data-i18n="modalGameCreationmaxPoints"
+            >
+            </label>
+            <input
+                id="points-range"
+                type="range"
+                name="points-range"
+                class="swal2-range accent-cyan-400"
+                min="3"
+                max="15"
+                value="5"
+                step="1"
+            />
+        </div>
 
-    <!-- Modo de juego -->
-    <div class="flex flex-col gap-4">
-      <p class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono" data-i18n="modalGameCreationGameMode">Mode:</p>
-      <div class="flex justify-center gap-10">
-        <label class="flex items-center gap-2 cursor-pointer">
-          <input
-            type="radio"
-            id="mode-2D"
-            name="mode-radio"
-            value="2d"
-            class="swal2-radio accent-cyan-400"
-            checked
-          >
-          <span class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono" data-i18n="2D">2D</span>
-        </label>
+        <!-- Tiempo máximo -->
+        <div class="flex flex-col gap-2">
+            <label
+                for="time-range"
+                class="text-secondary dark:text-primary font-mono text-xl sm:text-4xl md:text-5xl"
+                role="tooltip"
+                data-i18n="modalGameCreationMaxTime"
+            >
+            </label>
+            <input
+                id="time-range"
+                type="range"
+                name="time-range"
+                class="swal2-range accent-cyan-400"
+                min="30"
+                max="300"
+                value="120"
+                step="30"
+            />
+        </div>
 
-        <label class="flex items-center gap-2 cursor-pointer">
-          <input
-            type="radio"
-            id="mode-3D"
-            name="mode-radio"
-            value="3d"
-            class="swal2-radio accent-cyan-400"
-          >
-          <span class="text-secondary dark:text-primary text-xl sm:text-4xl md:text-5xl font-mono" data-i18n="3D">3D</span>
-        </label>
-      </div>
-    </div>
+        <!-- Modo de juego -->
+        <div class="flex flex-col gap-4">
+            <p
+                class="text-secondary dark:text-primary font-mono text-xl sm:text-4xl md:text-5xl"
+                data-i18n="modalGameCreationGameMode"
+            >
+                Mode:
+            </p>
+            <div class="flex justify-center gap-10">
+                <label class="flex cursor-pointer items-center gap-2">
+                    <input
+                        type="radio"
+                        id="mode-2D"
+                        name="mode-radio"
+                        value="2d"
+                        class="swal2-radio accent-cyan-400"
+                        checked
+                    />
+                    <span
+                        class="text-secondary dark:text-primary font-mono text-xl sm:text-4xl md:text-5xl"
+                        data-i18n="2D"
+                        >2D</span
+                    >
+                </label>
 
-    <button
-      class="uppercase"
-      data-button="createTournament"
-      title="createTournament"
-      class="w-full relative bg-transparent text-secondary dark:text-primary border border-secondary dark:border-primary px-6 py-2 font-mono text-xl cursor-pointer transition-all duration-700 shadow-none hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[0px_0_0_red,-0px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue] mt-2"
-      data-i18n="createTournament">
-    </button>
-  </form>
+                <label class="flex cursor-pointer items-center gap-2">
+                    <input
+                        type="radio"
+                        id="mode-3D"
+                        name="mode-radio"
+                        value="3d"
+                        class="swal2-radio accent-cyan-400"
+                    />
+                    <span
+                        class="text-secondary dark:text-primary font-mono text-xl sm:text-4xl md:text-5xl"
+                        data-i18n="3D"
+                        >3D</span
+                    >
+                </label>
+            </div>
+        </div>
 
+        <button
+            class="uppercase"
+            data-button="createTournament"
+            title="createTournament"
+            class="text-secondary dark:text-primary border-secondary dark:border-primary relative mt-2 w-full cursor-pointer border bg-transparent px-6 py-2 font-mono text-xl shadow-none transition-all duration-700 hover:shadow-[5px_0_5px_red,-5px_0_5px_blue] hover:text-shadow-[0px_0_0_red,-0px_0_0_blue] dark:hover:text-shadow-[5px_0_0_red,-5px_0_0_blue]"
+            data-i18n="createTournament"
+        ></button>
+    </form>
 </div>

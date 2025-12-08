@@ -1,16 +1,20 @@
-import Toastify from "toastify-js";
-import "toastify-js/src/toastify.css";
+import Toastify from 'toastify-js';
+import 'toastify-js/src/toastify.css';
 
-export function showToast(message: string, type: "success" | "error" = "success", duration = 3000) {
-  Toastify({
-    text: message,
-    duration: duration,
-    gravity: "top", // top o bottom
-    position: "right", // left, center, right
-    close: true, // botón de cerrar
-    className: type === "success" ? "toast-success" : "toast-error",
-    stopOnFocus: true, // detener el timer si el usuario pasa el ratón
-  }).showToast();
+export function showToast(
+    message: string,
+    type: 'success' | 'error' = 'success',
+    duration = 3000
+) {
+    Toastify({
+        text: message,
+        duration: duration,
+        gravity: 'top', // top o bottom
+        position: 'right', // left, center, right
+        close: true, // botón de cerrar
+        className: type === 'success' ? 'toast-success' : 'toast-error',
+        stopOnFocus: true, // detener el timer si el usuario pasa el ratón
+    }).showToast();
 }
 
 /* export function showToast(message: string, type: "success" | "error" = "success", duration = 3000) {

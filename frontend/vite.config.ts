@@ -1,10 +1,10 @@
-import { defineConfig } from 'vite'
-import tailwindcss from '@tailwindcss/vite'
-import tsconfigPaths from 'vite-tsconfig-paths'
-import fs from 'fs'
+import { defineConfig } from 'vite';
+import tailwindcss from '@tailwindcss/vite';
+import tsconfigPaths from 'vite-tsconfig-paths';
+import fs from 'fs';
 
-const BACKEND_URL = 'https://backend:3000'
-const BACKEND_WSS = 'wss://backend:3000'
+const BACKEND_URL = 'https://backend:3000';
+const BACKEND_WSS = 'wss://backend:3000';
 
 export default defineConfig({
     plugins: [
@@ -49,4 +49,4 @@ export default defineConfig({
     optimizeDeps: {
         include: ['chart.js'], // fuerza que vite procese este módulo
     },
-})
+});

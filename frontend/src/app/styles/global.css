@@ -1,184 +1,193 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  /* --color-mint-500: oklch(0.72 0.11 178); */
-  --color-primary: #FFF;       /* white */
-  --color-secondary: #131313;  /* dark-grey */
-  --color-cyan: #00d3f2;       /* cyan-400 */
-  --color-magenta: #ff00ff;    /* magenta */
+    /* --color-mint-500: oklch(0.72 0.11 178); */
+    --color-primary: #fff; /* white */
+    --color-secondary: #131313; /* dark-grey */
+    --color-cyan: #00d3f2; /* cyan-400 */
+    --color-magenta: #ff00ff; /* magenta */
 }
 
-@layer components{
-  :root, .dark {
-    transition: background-color 0.3s ease, color 0.3s ease, filter 0.3s ease;
-  }
-
-  .center-screen {
-    @apply flex flex-col min-w-screen min-h-dvh items-center justify-center;
-  }
-  /* Estilos para la paginación de Simple-Datatables */
-  .datatable-pagination ul {
-    @apply flex gap-6 justify-center mt-4;
-  }
-
-  .datatable-pagination li {
-    @apply list-none;
-  }
-
-  .datatable-pagination a,
-  .datatable-pagination a * ,
-  .datatable-pagination button,
-  .datatable-pagination button * {
-    @apply px-0 py-0 rounded transition;
-    cursor: pointer !important;
-    pointer-events: auto !important;
-    display: inline-block;
-  }
-
-  .datatable-pagination .active a {
-    @apply bg-blue-500 text-white;
-  }
-
-  /* Personalizar el select de elementos por página */
-  .datatable-selector {
-    @apply bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded px-2 py-1;
-  }
-
-  .datatable-selector:focus {
-    @apply outline-none ring-2 ring-blue-400;
-  }
-
-  .datatable-container {
-    @apply overflow-x-auto;
-  }
-
-  .datatable-info {
-    @apply text-xs sm:text-base;
-  }
-
-  /* TOAST */
-  .toast-success {
-    background: #4ade80 !important;
-    color: var(--color-secondary) !important; /* dark-grey */
-    opacity: 1 !important;
-    font-size: 12px !important;
-    text-wrap: balance;
-    transition: 0.3s ease all;
-  }
-
-  .toast-success:hover {
-    background: #39be6a !important;
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
-  }
-
-  .toast-error {
-    min-width: fit-content;
-    background: #f87171 !important;
-    color: var(--color-secondary) !important;
-    opacity: 1 !important;
-    font-size: 0.8rem !important;
-    text-wrap: balance;
-    transition: 0.3s ease all;
-  }
-
-  .toast-error:hover {
-    background: #d15656 !important;
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
-  }
-
-  @media screen and (width >= 640px) {
-    .toast-success, .toast-error {
-      font-size: 1rem !important;
+@layer components {
+    :root,
+    .dark {
+        transition:
+            background-color 0.3s ease,
+            color 0.3s ease,
+            filter 0.3s ease;
     }
-  }
 
-  /* Para darle un color, un tamaño diferente, o usar un ícono personalizado */
-  .toastify .toast-close {
-    /* Estilos de ejemplo: */
-    background: var(--color-primary) !important;
-    color: var(--color-secondary) !important;
-    border: 0px solid var(--color-secondary) !important;
-    border-radius: 100% !important;
-    width: 30px !important;
-    height: 30px !important;
-    font-size: 15px !important;
-    margin-left: 1rem;
-    opacity: 1 !important; /* Para asegurarte de que sea visible */
-    transition: 0.3s ease all;
-  }
+    .center-screen {
+        @apply flex min-h-dvh min-w-screen flex-col items-center justify-center;
+    }
+    /* Estilos para la paginación de Simple-Datatables */
+    .datatable-pagination ul {
+        @apply mt-4 flex justify-center gap-6;
+    }
 
-  .toastify .toast-close:hover {
-    background: #ddd !important;
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
-    transform: rotateZ(90deg);
-  }
+    .datatable-pagination li {
+        @apply list-none;
+    }
 
-  /* Tournament table */
-  /* Filas pares */
-  /* #tournamentsTable tbody tr:nth-child(even) {
+    .datatable-pagination a,
+    .datatable-pagination a *,
+    .datatable-pagination button,
+    .datatable-pagination button * {
+        @apply rounded px-0 py-0 transition;
+        cursor: pointer !important;
+        pointer-events: auto !important;
+        display: inline-block;
+    }
+
+    .datatable-pagination .active a {
+        @apply bg-blue-500 text-white;
+    }
+
+    /* Personalizar el select de elementos por página */
+    .datatable-selector {
+        @apply rounded border border-gray-300 bg-gray-200 px-2 py-1 text-gray-800 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200;
+    }
+
+    .datatable-selector:focus {
+        @apply ring-2 ring-blue-400 outline-none;
+    }
+
+    .datatable-container {
+        @apply overflow-x-auto;
+    }
+
+    .datatable-info {
+        @apply text-xs sm:text-base;
+    }
+
+    /* TOAST */
+    .toast-success {
+        background: #4ade80 !important;
+        color: var(--color-secondary) !important; /* dark-grey */
+        opacity: 1 !important;
+        font-size: 12px !important;
+        text-wrap: balance;
+        transition: 0.3s ease all;
+    }
+
+    .toast-success:hover {
+        background: #39be6a !important;
+        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+    }
+
+    .toast-error {
+        min-width: fit-content;
+        background: #f87171 !important;
+        color: var(--color-secondary) !important;
+        opacity: 1 !important;
+        font-size: 0.8rem !important;
+        text-wrap: balance;
+        transition: 0.3s ease all;
+    }
+
+    .toast-error:hover {
+        background: #d15656 !important;
+        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+    }
+
+    @media screen and (width >= 640px) {
+        .toast-success,
+        .toast-error {
+            font-size: 1rem !important;
+        }
+    }
+
+    /* Para darle un color, un tamaño diferente, o usar un ícono personalizado */
+    .toastify .toast-close {
+        /* Estilos de ejemplo: */
+        background: var(--color-primary) !important;
+        color: var(--color-secondary) !important;
+        border: 0px solid var(--color-secondary) !important;
+        border-radius: 100% !important;
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 15px !important;
+        margin-left: 1rem;
+        opacity: 1 !important; /* Para asegurarte de que sea visible */
+        transition: 0.3s ease all;
+    }
+
+    .toastify .toast-close:hover {
+        background: #ddd !important;
+        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+        transform: rotateZ(90deg);
+    }
+
+    /* Tournament table */
+    /* Filas pares */
+    /* #tournamentsTable tbody tr:nth-child(even) {
     @apply bg-secondary;
   } */
 
-  /* Filas impares */
-  /* #tournamentsTable tbody tr:nth-child(odd) {
+    /* Filas impares */
+    /* #tournamentsTable tbody tr:nth-child(odd) {
     @apply bg-gray-900 ;
   } */
 
-  /* Modo oscuro: Filas pares */
-  /* .dark #tournamentsTable tbody tr:nth-child(even) {
+    /* Modo oscuro: Filas pares */
+    /* .dark #tournamentsTable tbody tr:nth-child(even) {
     @apply bg-secondary;
   } */
 
-  /* Modo oscuro: Filas impares */
-  /* .dark #tournamentsTable tbody tr:nth-child(odd) {
+    /* Modo oscuro: Filas impares */
+    /* .dark #tournamentsTable tbody tr:nth-child(odd) {
     @apply bg-gray-900;
   } */
 
-  /* === TABLE -> CARDS EN MOBILE === */
-  @media (max-width: 640px) {
-    /* Convertimos tabla en bloques */
-    table, thead, tbody, tr, td, th {
-      @apply block w-full;
-    }
+    /* === TABLE -> CARDS EN MOBILE === */
+    @media (max-width: 640px) {
+        /* Convertimos tabla en bloques */
+        table,
+        thead,
+        tbody,
+        tr,
+        td,
+        th {
+            @apply block w-full;
+        }
 
-    thead {
-      @apply hidden; /* Ocultamos cabecera */
-    }
+        thead {
+            @apply hidden; /* Ocultamos cabecera */
+        }
 
-    tbody {
-      @apply flex flex-col items-center gap-4 py-2; /* cards centradas */
-    }
+        tbody {
+            @apply flex flex-col items-center gap-4 py-2; /* cards centradas */
+        }
 
-    /* Cada fila será una "card" */
-    tr {
-      @apply  rounded-xl shadow-md hover:shadow-lg transition-transform hover:-translate-y-1 overflow-hidden;
-    }
+        /* Cada fila será una "card" */
+        tr {
+            @apply overflow-hidden rounded-xl shadow-md transition-transform hover:-translate-y-1 hover:shadow-lg;
+        }
 
-    /* Colores alternos */
-    tr:nth-child(odd) {
-      @apply bg-gray-900;
-    }
-    tr:nth-child(even) {
-      @apply bg-secondary;
-    }
+        /* Colores alternos */
+        tr:nth-child(odd) {
+            @apply bg-gray-900;
+        }
+        tr:nth-child(even) {
+            @apply bg-secondary;
+        }
 
-    /* Estilo de celdas dentro de las cards */
-    td {
-      @apply flex justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700;
-    }
+        /* Estilo de celdas dentro de las cards */
+        td {
+            @apply flex justify-between border-b border-gray-200 px-4 py-3 dark:border-gray-700;
+        }
 
-    /* Quitamos borde al último elemento */
-    td:last-child {
-      @apply border-b-0;
-    }
+        /* Quitamos borde al último elemento */
+        td:last-child {
+            @apply border-b-0;
+        }
 
-    /* Etiqueta de cada campo */
-    td::before {
-      content: attr(data-label);
-      @apply font-semibold text-primary;
+        /* Etiqueta de cada campo */
+        td::before {
+            content: attr(data-label);
+            @apply text-primary font-semibold;
+        }
     }
-  }
 }
-

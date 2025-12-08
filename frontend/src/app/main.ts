@@ -102,8 +102,8 @@ async function initTournamentSocket(): Promise<TournamentWebSocketClient | null>
 }
 
 // Inicializa el WebSocket al cargar
-initSocialSocket();
-initTournamentSocket();
+//initSocialSocket();
+await initTournamentSocket();
 
 // Configurar los eventos
 setupEventListeners();
@@ -132,24 +132,18 @@ if (toggle) {
     const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
 	  if (canvas)
 	  {
-      let ws = getGameSocket();
-      if (!ws)
-      {
-        const token = localStorage.getItem("access_token");
-        ws = createGameSocket(token);
-        ws.setAuth();
-      }
+      const ws = getGameSocket();
       if (localStorage.getItem("theme") === "dark")
       {
         const borderColor = getColor("--color-primary");
         const bgColor = getColor("--color-secondary");
-        setColors(ws.getScene(), bgColor, borderColor);
+        setColors(ws?.getScene(), bgColor, borderColor);
       }
       else if (localStorage.getItem("theme") === "light")
       {
         const borderColor = getColor("--color-secondary");
         const bgColor = getColor("--color-primary");
-        setColors(ws.getScene(), bgColor, borderColor);
+        setColors(ws?.getScene(), bgColor, borderColor);
       }
     }
     //Reload doughnut

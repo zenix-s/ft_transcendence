@@ -165,6 +165,7 @@ export const translations: Record<Language, Record<string, string>> = {
     modalConfirmLeaveTournamentText: "If you leave the tournament as an administrator, the tournament will be cancelled.</br></br><strong>Are you sure you want to leave?</strong>",
     modalConfirmLeaveTournamentConfirmButtonText: "Yes, leave",
     modalConfirmLeaveTournamentCancelButtonText: "Cancel",
+    modalTournamentGameInvitationText: "It's your turn to play a tournament game",
     /* Friends */
     friends: "Friends",
     friendName: "Friend's name...",
@@ -418,6 +419,7 @@ export const translations: Record<Language, Record<string, string>> = {
     modalConfirmLeaveTournamentText: "Si sales del torneo como administrador, el torneo será cancelado.</br></br><strong>¿Estás seguro de que quieres salir?</strong>",
     modalConfirmLeaveTournamentConfirmButtonText: "Sí, salir",
     modalConfirmLeaveTournamentCancelButtonText: "Cancelar",
+    modalTournamentGameInvitationText: "Te toca jugar una partida de torneo",
     /* Friends */
     friends: "Amigos",
     friendName: "Nombre del amigo...",
@@ -671,6 +673,7 @@ export const translations: Record<Language, Record<string, string>> = {
     modalConfirmLeaveTournamentText: "Si vous quittez le tournoi en tant qu'administrateur, le tournoi sera annulé.</br></br><strong>Êtes-vous sûr de vouloir partir?</strong>",
     modalConfirmLeaveTournamentConfirmButtonText: "Oui, partir",
     modalConfirmLeaveTournamentCancelButtonText: "Annuler",
+    modalTournamentGameInvitationText: "C'est à votre tour de jouer un match de tournoi",
     /* Friends */
     friends: "Amis",
     friendName: "Nom de l'ami...",

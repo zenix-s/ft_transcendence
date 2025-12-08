@@ -134,16 +134,19 @@ export class GameWebSocket {
 				this.handleMessage(data);
 			} catch (err) {
 				console.error(`❌ ${t("game")}: ${t("ErrorParsingMsg")}`, err);
+				this.engine?.stopRenderLoop();
 			}
 		})
 
 		this.socket.onclose = () => {
 			//this.destroy();
 			console.log("🔴", t("game"), ": ", t("WsClosed"));
+			this.engine?.stopRenderLoop();
 		};
 
 		this.socket.onerror = (err) => {
 			console.error(`⚠️ ${t("game")}: ${t("WsError")}`, err);
+			this.engine?.stopRenderLoop();
 		};
 	}
 

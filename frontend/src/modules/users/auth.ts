@@ -13,6 +13,8 @@ import {
     migrateLegacyColorsToUser,
 } from '@/components/colorPicker';
 import { countInputLenght } from '@/components/inputCounter';
+import { createTournamentSocket } from '../tournament/tournamentSocketInstance';
+import { initialize } from '@/app/main';
 
 //export let wsClient: SocialWebSocketClient | null = null;
 
@@ -110,7 +112,8 @@ export function setupRegisterForm() {
                 //createSocialSocket(token);
 
                 // 🔹 Conectar WebSocket Y ESPERAR a que esté autenticado
-                const ws = createSocialSocket(token);
+                initialize();
+                /* const ws = createSocialSocket(token);
                 await new Promise<void>((resolve) => {
                     const checkAuth = setInterval(() => {
                         if (ws.getAuthenticated()) {
@@ -124,7 +127,7 @@ export function setupRegisterForm() {
                         clearInterval(checkAuth);
                         resolve();
                     }, 15000);
-                });
+                }); */
 
                 showToast(t('UserCreatedSuccessfully'));
                 registerForm.reset();
@@ -185,8 +188,14 @@ export function validateLogin() {
                 // MIGRAR claves globales antiguas al usuario (si existen)
                 migrateLegacyColorsToUser(userId);
 
-                // Conectar WebSocket
-                createSocialSocket(token);
+                // Conectar los WS de Social y Torneos
+                initialize();
+
+                // Conectar WebSocket de Social
+                //createSocialSocket(token);
+
+                // Conectar WebSocket de Torneos
+                //createTournamentSocket(token);
                 /* wsClient = new SocialWebSocketClient(token);
         wsClient.connect(); */
 

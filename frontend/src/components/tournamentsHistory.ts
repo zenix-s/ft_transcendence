@@ -342,20 +342,23 @@ export async function handleParticipationResults(target: HTMLElement) {
     }
 }
 
-export async function refreshTournamentsHistory(perPage: number = 5) {
-    try {
-        // Destruir la tabla existente si ya fue inicializada
-        if (tournamentTable) {
-            tournamentTable.destroy();
-        } else {
-            console.warn(
-                'tournamentTable no estaba inicializada al refrescar.'
-            ); // DB
-            return;
-        }
-        // Recargar la historia de torneos
-        await loadTournamentsHistory(perPage);
-    } catch (error) {
-        console.error(error);
-    }
+export async function refreshTournamentsHistory() {
+    if (!tournamentTable) return;
+
+    const tableEl = tournamentTable.dom;
+    const headerDiv = tableEl.parentElement?.querySelector<HTMLDivElement>(
+        '.datatable-header'
+    );
+
+    const perPageSelect = headerDiv?.querySelector<HTMLSelectElement>(
+        'select.datatable-selector'
+    );
+
+    const currentPerPage = perPageSelect
+        ? parseInt(perPageSelect.value, 10)
+        : tournamentTable.options.perPage;
+
+    tournamentTable.destroy();
+
+    await loadTournamentsHistory(currentPerPage);
 }

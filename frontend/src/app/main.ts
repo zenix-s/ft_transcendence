@@ -320,7 +320,7 @@ export async function reloadTournamentsHistory() {
             );
 
         // 1. Guardar página actual
-        const currentPage = matchTable._currentPage ?? 0;
+        const currentPage = tournamentTable._currentPage ?? 0;
 
         // 2 Guardar items por página
         const currentPerPage = tournamentPerPageSelect

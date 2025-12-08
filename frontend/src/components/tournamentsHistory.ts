@@ -247,10 +247,6 @@ export async function handleParticipationJoinOrLeave(target: HTMLElement) {
         } else {
             showToast(t('InvitationSentSuccessfully')); // Mensaje genérico de éxito
         }
-
-        // Recargar tabla
-        if (action !== "join")
-            await refreshTournamentsHistory();
     } catch {
         showToast(t('NetworkOrServerError'), 'error');
     }

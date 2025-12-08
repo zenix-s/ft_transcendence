@@ -6,6 +6,7 @@ export enum TournamentSocketActions {
     TOURNAMENT_STARTED = 'tournamentStarted',
     TOURNAMENT_ENDED = 'tournamentEnded',
     TOURNAMENT_STATE_UPDATED = 'tournamentStateUpdated',
+    TOURNAMENT_LEAVE = 'tournamentLeave',
     MATCH_CREATED = 'matchCreated',
     MATCH_RESULT = 'matchResult',
     NEW_ROUND_STARTED = 'newRoundStarted',

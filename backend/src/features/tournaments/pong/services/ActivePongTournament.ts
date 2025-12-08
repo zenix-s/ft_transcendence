@@ -8,6 +8,7 @@ import { Match } from '@shared/domain/Entities/Match.entity';
 import { PongGame } from '@features/pong-game-manager/domain/PongGame.entity';
 import { TournamentRound, ITournamentMatchup } from '@shared/domain/Entities/TournamentRound.entity';
 import { CONSTANTES_APP } from '@shared/constants/ApplicationConstants';
+import { TournamentSocketActions } from '../websocket/tournament.websocket';
 
 export class ActivePongTournament {
     private tournamentId!: number;
@@ -190,6 +191,11 @@ export class ActivePongTournament {
             ) {
                 this.fastify.TournamentWebSocketService.notifyTournamentStateUpdated(this.tournamentId);
             }
+
+            this.fastify.TournamentWebSocketService.sendToUser(userId, {
+                action: TournamentSocketActions.TOURNAMENT_LEAVE,
+                tournamentId: this.tournamentId,
+            });
 
             return Result.success(undefined);
         } catch (error) {
@@ -424,7 +430,6 @@ export class ActivePongTournament {
                         winnerId = winner.userId;
                         loserId = players.find((p) => p.userId !== winner.userId)?.userId || null;
                     }
-                    
                 }
             }
 

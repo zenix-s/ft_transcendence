@@ -16,9 +16,10 @@ export interface IPasswordUpadteResponse {
     };
 }
 
-export default class PasswordUpdateCommand
-    implements ICommand<IPasswordUpdateRequest, IPasswordUpadteResponse>
-{
+export default class PasswordUpdateCommand implements ICommand<
+    IPasswordUpdateRequest,
+    IPasswordUpadteResponse
+> {
     constructor(private readonly fastify: FastifyInstance) {}
 
     validate(request?: IPasswordUpdateRequest): Result<void> {

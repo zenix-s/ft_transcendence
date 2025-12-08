@@ -17,9 +17,10 @@ export interface ISendGameInvitationRequest {
     message?: string;
 }
 
-export default class SendGameInvitationCommand
-    implements ICommand<ISendGameInvitationRequest, ISendGameInvitationResponse>
-{
+export default class SendGameInvitationCommand implements ICommand<
+    ISendGameInvitationRequest,
+    ISendGameInvitationResponse
+> {
     private readonly socialWebSocketService: ISocialWebSocketService;
     private readonly matchRepository: IMatchRepository;
 

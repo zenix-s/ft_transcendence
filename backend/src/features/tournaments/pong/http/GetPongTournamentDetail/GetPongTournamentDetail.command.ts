@@ -69,9 +69,10 @@ export interface IGetPongTournamentDetailResponse {
     tournament: TournamentDetailResponse | null;
 }
 
-export class GetPongTournamentDetailCommand
-    implements ICommand<IGetPongTournamentDetailRequest, IGetPongTournamentDetailResponse>
-{
+export class GetPongTournamentDetailCommand implements ICommand<
+    IGetPongTournamentDetailRequest,
+    IGetPongTournamentDetailResponse
+> {
     constructor(private readonly fastify: FastifyInstance) {}
 
     validate(request?: IGetPongTournamentDetailRequest | undefined): Result<void> {

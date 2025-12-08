@@ -46,9 +46,10 @@ export interface IGetGameFinalStateResponse {
     };
 }
 
-export default class GetGameFinalStateQuery
-    implements IQuery<IGetGameFinalStateRequest, IGetGameFinalStateResponse>
-{
+export default class GetGameFinalStateQuery implements IQuery<
+    IGetGameFinalStateRequest,
+    IGetGameFinalStateResponse
+> {
     private readonly matchRepository: IMatchRepository;
 
     constructor(private readonly fastify: FastifyInstance) {

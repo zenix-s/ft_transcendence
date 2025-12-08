@@ -17,9 +17,10 @@ export interface IGetMatchHistoryResponse {
     total: number;
 }
 
-export default class GetMatchHistoryQuery
-    implements IQuery<IGetMatchHistoryRequest, IGetMatchHistoryResponse>
-{
+export default class GetMatchHistoryQuery implements IQuery<
+    IGetMatchHistoryRequest,
+    IGetMatchHistoryResponse
+> {
     private readonly matchRepository: IMatchRepository;
 
     constructor(private readonly fastify: FastifyInstance) {

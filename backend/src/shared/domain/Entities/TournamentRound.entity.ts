@@ -87,7 +87,7 @@ export class TournamentRound {
 
         return true;
     }
-    
+
     public setBothLosers(matchId: number): boolean {
         const match = this._matchups.find((m) => m.matchId === matchId);
         if (!match) {

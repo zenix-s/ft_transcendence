@@ -83,8 +83,7 @@ export async function endGameAndErrors(
     ball: Ball | undefined
 ) {
     let finBool = 0;
-    if (!ball || !player1 || !player2 || !scores)
-    {
+    if (!ball || !player1 || !player2 || !scores) {
         const ws = getGameSocket();
         if (!ws) {
             showToast('Internal error no WS', 'error');

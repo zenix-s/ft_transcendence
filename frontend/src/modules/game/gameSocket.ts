@@ -350,8 +350,7 @@ export class GameWebSocket {
                     showToast(t('GameCancelled'), 'error');
                     Swal.close();
                 }
-                if (data.error == 'PlayerNotInGame')
-                    this.removeEvents();
+                if (data.error == 'PlayerNotInGame') this.removeEvents();
                 if (
                     data.error === 'GameAlreadyFinished' ||
                     (data.error != 'UnauthorizedAccess' &&

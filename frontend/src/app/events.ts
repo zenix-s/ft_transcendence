@@ -78,29 +78,31 @@ export function setupEventListeners() {
 
             if (!target.dataset.i18n) return;
 
-            if (target.dataset.i18n === 'join')
-            {
+            if (target.dataset.i18n === 'join') {
                 // Caso join
                 await handleParticipationJoinOrLeave(target);
                 return;
             }
 
-            if (target.dataset.i18n === 'leave')
-            {
+            if (target.dataset.i18n === 'leave') {
                 // Caso admin o admin-participant: pedir confirmación
-                const isAdmin: boolean = target.dataset.userrole === 'admin' || target.dataset.userrole === 'admin-participant';
+                const isAdmin: boolean =
+                    target.dataset.userrole === 'admin' ||
+                    target.dataset.userrole === 'admin-participant';
                 let confirmLeave: boolean | GameOptions = false; //
 
                 if (isAdmin)
-                    confirmLeave = await modal({type: 'confirmLeaveTournament'});
+                    confirmLeave = await modal({
+                        type: 'confirmLeaveTournament',
+                    });
 
-                if (!isAdmin || confirmLeave) await handleParticipationJoinOrLeave(target);
+                if (!isAdmin || confirmLeave)
+                    await handleParticipationJoinOrLeave(target);
 
                 return;
             }
 
-            if (target.dataset.i18n === 'results')
-            {
+            if (target.dataset.i18n === 'results') {
                 await handleParticipationResults(target);
                 return;
             }

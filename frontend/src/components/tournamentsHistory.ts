@@ -121,8 +121,9 @@ export async function loadTournamentsHistory(perPage: number = 5) {
                 btn.className =
                     'bg-blue-600 hover:bg-blue-800 text-white font-bold py-1 px-3 rounded ml-3';
 
-                btn.addEventListener('click', async () =>
-                    await refreshTournamentsHistory()
+                btn.addEventListener(
+                    'click',
+                    async () => await refreshTournamentsHistory()
                 );
 
                 top.appendChild(btn);

@@ -276,7 +276,7 @@ export class TournamentWebSocketClient {
                 );
                 break;
             }
-            
+
             case 'tournamentLeave': {
                 const msg = message as tournamentLeaveMessage;
                 console.log(
@@ -287,7 +287,7 @@ export class TournamentWebSocketClient {
                     `${t('TournamentLeave')}: ${msg.tournamentId}`,
                     'success'
                 );
-                
+
                 await refreshTournamentsHistory();
                 break;
             }

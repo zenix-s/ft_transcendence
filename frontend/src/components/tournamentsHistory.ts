@@ -342,67 +342,19 @@ export async function handleParticipationResults(target: HTMLElement) {
     }
 }
 
-/* export async function refreshTournamentsHistory() {
-    if (!tournamentTable) return;
-
-    const tableEl = tournamentTable.dom;
-    const headerDiv = tableEl.parentElement?.querySelector<HTMLDivElement>(
-        '.datatable-header'
-    );
-
-    const perPageSelect = headerDiv?.querySelector<HTMLSelectElement>(
-        'select.datatable-selector'
-    );
-
-    const currentPerPage = perPageSelect
-        ? parseInt(perPageSelect.value, 10)
-        : tournamentTable.options.perPage;
-
-    tournamentTable.destroy();
-
-    await loadTournamentsHistory(currentPerPage);
-}
- */
-
-export async function refreshTournamentsHistory() {
+export async function refreshTournamentsHistory(perPage: number = 5) {
     try {
-        let currentPerPage = 5; // Valor por defecto
-
         // Destruir la tabla existente si ya fue inicializada
         if (tournamentTable) {
-            // 1. Guardar items por página actuales antes de destruir
-            const tableEl = tournamentTable.dom;
-            const headerDiv =
-                tableEl.parentElement?.querySelector<HTMLDivElement>(
-                    '.datatable-header'
-                );
-            const selector =
-                headerDiv?.querySelector<HTMLSelectElement>(
-                    'select.datatable-selector'
-                );
-
-            currentPerPage = selector
-                ? parseInt(selector.value, 10)
-                : tournamentTable.options.perPage;
-            
-            // 2. Destruir
             tournamentTable.destroy();
-
-            // 3. tournamentTable se pone a undefined/null automáticamente si usas tournamentTable = null; en vez de export let tournamentTable: DataTable;
-            // Si no, debes añadir: tournamentTable = undefined as any;
         } else {
             console.warn(
                 'tournamentTable no estaba inicializada al refrescar.'
             ); // DB
-            // Si no está inicializada, simplemente intenta cargarla con el valor por defecto
+            return;
         }
-
-        // 4. Recargar la historia de torneos con el perPage guardado
-        await loadTournamentsHistory(currentPerPage);
-        
-        // **Nota:** No necesitas restaurar la página después de una acción como 'join'/'leave',
-        // porque la lista de torneos activos puede cambiar de orden o tamaño,
-        // lo que invalida la página anterior. Es mejor empezar en la página 1.
+        // Recargar la historia de torneos
+        await loadTournamentsHistory(perPage);
     } catch (error) {
         console.error(error);
     }

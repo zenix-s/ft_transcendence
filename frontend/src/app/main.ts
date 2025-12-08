@@ -289,7 +289,7 @@ export async function reloadGameHistory(token: string | null) {
             );
 
         // 1. Guardar página actual
-        const currentPage = matchTable._currentPage ?? 1;
+        const currentPage = matchTable._currentPage ?? 0;
 
         // 2 Guardar items por página
         const currentPerPage = matchPerPageSelect
@@ -303,7 +303,7 @@ export async function reloadGameHistory(token: string | null) {
         await loadMatchHistory(undefined, currentPerPage);
 
         // 5. Restaurar página en la que estabas
-        if (currentPage > 1) matchTable.page(currentPage);
+        if (currentPage > 0) matchTable.page(currentPage);
     }
 }
 
@@ -320,7 +320,7 @@ export async function reloadTournamentsHistory() {
             );
 
         // 1. Guardar página actual
-        const currentPage = tournamentTable._currentPage ?? 1;
+        const currentPage = tournamentTable._currentPage ?? 0;
 
         // 2 Guardar items por página
         const currentPerPage = tournamentPerPageSelect
@@ -334,6 +334,6 @@ export async function reloadTournamentsHistory() {
         await loadTournamentsHistory(currentPerPage);
 
         // 5. Restaurar página en la que estabas
-        if (currentPage > 1) tournamentTable.page(currentPage);
+        if (currentPage > 0) tournamentTable.page(currentPage);
     }
 }

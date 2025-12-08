@@ -34,7 +34,9 @@ applySavedColors();
 const initialPage = location.pathname.replace("/", "") || "home";
 navigateTo(initialPage, true);
 
-await getCurrentUser();
+const currentUser = await getCurrentUser();
+if (!currentUser)
+  navigateTo("home");
 
 // 🌐 Imports WebSocket Social
 import { createSocialSocket, getSocialSocket } from "@/modules/social/socketInstance";

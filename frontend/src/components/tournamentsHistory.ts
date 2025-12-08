@@ -121,8 +121,8 @@ export async function loadTournamentsHistory(perPage: number = 5) {
                 btn.className =
                     'bg-blue-600 hover:bg-blue-800 text-white font-bold py-1 px-3 rounded ml-3';
 
-                btn.addEventListener('click', () =>
-                    refreshTournamentsHistory()
+                btn.addEventListener('click', async () =>
+                    await refreshTournamentsHistory()
                 );
 
                 top.appendChild(btn);
@@ -234,7 +234,7 @@ export async function handleParticipationJoinOrLeave(target: HTMLElement) {
                 showToast(t('ParticipantAdditionError'), 'error');
             else if (errorcode === 'TournamentNotFound') {
                 showToast(t(errorcode), 'error');
-                refreshTournamentsHistory();
+                await refreshTournamentsHistory();
             } else showToast(t(errorcode), 'error');
             return;
         }
@@ -247,9 +247,6 @@ export async function handleParticipationJoinOrLeave(target: HTMLElement) {
         } else {
             showToast(t('InvitationSentSuccessfully')); // Mensaje genérico de éxito
         }
-
-        // Recargar tabla
-        await refreshTournamentsHistory();
     } catch {
         showToast(t('NetworkOrServerError'), 'error');
     }
@@ -346,6 +343,12 @@ export async function refreshTournamentsHistory(perPage: number = 5) {
     try {
         // Destruir la tabla existente si ya fue inicializada
         if (tournamentTable) {
+            // Clear tbody BEFORE destroying to prevent visual glitch
+            const tbody = document.querySelector<HTMLTableSectionElement>(
+                '#tournamentsTable tbody'
+            );
+            if (tbody) tbody.innerHTML = '';
+
             tournamentTable.destroy();
         } else {
             console.warn(

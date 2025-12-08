@@ -9,6 +9,7 @@ import {
 } from '@/components/tournamentsHistory';
 import { destroySocialSocket } from '@/modules/social/socketInstance';
 import { destroyTournamentSocket } from '@/modules/tournament/tournamentSocketInstance';
+import type { GameOptions } from '@/types/gameOptions';
 
 /**
  * The `setupEventListeners` function adds event listeners for click and popstate events to handle
@@ -77,29 +78,36 @@ export function setupEventListeners() {
 
             if (!target.dataset.i18n) return;
 
-            // Llama a la nueva función que maneja la lógica de fetch, toast y refresh.
             if (target.dataset.i18n === 'join')
+            {
                 // Caso join
-                handleParticipationJoinOrLeave(target);
-            else if (target.dataset.i18n === 'leave') {
-                // Caso leave
-                if (
-                    target.dataset.userrole === 'admin' ||
-                    target.dataset.userrole === 'admin-participant'
-                ) {
-                    // Caso admin o admin-participant: pedir confirmación
-                    const confirmLeave = await modal({
-                        type: 'confirmLeaveTournament',
-                    });
-                    if (confirmLeave) handleParticipationJoinOrLeave(target);
-                } else handleParticipationJoinOrLeave(target);
-            } else if (target.dataset.i18n === 'results')
-                handleParticipationResults(target);
-            else {
-                // Caso startTournament
-                handleParticipationStartTournament(target);
-                console.log('Iniciar torneo - función no implementada aún.');
+                await handleParticipationJoinOrLeave(target);
+                return;
             }
+
+            if (target.dataset.i18n === 'leave')
+            {
+                // Caso admin o admin-participant: pedir confirmación
+                const isAdmin: boolean = target.dataset.userrole === 'admin' || target.dataset.userrole === 'admin-participant';
+                let confirmLeave: boolean | GameOptions = false; //
+
+                if (isAdmin)
+                    confirmLeave = await modal({type: 'confirmLeaveTournament'});
+
+                if (!isAdmin || confirmLeave) await handleParticipationJoinOrLeave(target);
+
+                return;
+            }
+
+            if (target.dataset.i18n === 'results')
+            {
+                await handleParticipationResults(target);
+                return;
+            }
+
+            // Caso startTournament
+            await handleParticipationStartTournament(target);
+            console.log('Iniciar torneo - función no implementada aún.');
             return;
         }
     });

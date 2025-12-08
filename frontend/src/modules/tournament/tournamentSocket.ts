@@ -73,6 +73,11 @@ interface tournamentWonMessage {
     payload: payload;
 }
 
+interface tournamentLeaveMessage {
+    action: 'tournamenLeave';
+    tournamentId: number;
+}
+
 interface Tournament {
     id: number;
     name?: string;
@@ -269,6 +274,21 @@ export class TournamentWebSocketClient {
                     `${t('TournamentWon')}: ${msg.tournamentId}`,
                     'success'
                 );
+                break;
+            }
+            
+            case 'tournamentLeave': {
+                const msg = message as tournamentLeaveMessage;
+                console.log(
+                    `🏅 [Tournaments] ${t('TournamentLeave')}`,
+                    msg.tournamentId
+                );
+                showToast(
+                    `${t('TournamentLeave')}: ${msg.tournamentId}`,
+                    'success'
+                );
+                
+                await refreshTournamentsHistory();
                 break;
             }
 

@@ -84,7 +84,8 @@ export async function initGame3D() {
     // 🔹 Siempre esperar autenticación
     await new Promise<void>((resolve) => {
         const interval = setInterval(() => {
-            if (ws.getGameMode() != null) {
+            if (ws.getGameMode() != null || getGameSocket() === null) {
+				console.log("socket === ", getGameSocket() === null);
                 clearInterval(interval);
                 resolve();
             }

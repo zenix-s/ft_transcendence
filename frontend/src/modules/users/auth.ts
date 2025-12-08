@@ -111,11 +111,11 @@ export function setupRegisterForm() {
                 // Conectar WebSocket
                 //createSocialSocket(token);
 
-                // 🔹 Conectar WebSocket de Social Y ESPERAR a que esté autenticado
-                const socialWs = createSocialSocket(token);
+                // 🔹 Conectar WebSocket Y ESPERAR a que esté autenticado
+                /* const ws = createSocialSocket(token);
                 await new Promise<void>((resolve) => {
                     const checkAuth = setInterval(() => {
-                        if (socialWs.getAuthenticated()) {
+                        if (ws.getAuthenticated()) {
                             clearInterval(checkAuth);
                             resolve();
                         }
@@ -126,24 +126,9 @@ export function setupRegisterForm() {
                         clearInterval(checkAuth);
                         resolve();
                     }, 15000);
-                });
+                }); */
 
-                // 🔹 Conectar WebSocket de Social Y ESPERAR a que esté autenticado
-                const ournamentWs = createSocialSocket(token);
-                await new Promise<void>((resolve) => {
-                    const checkAuth = setInterval(() => {
-                        if (ournamentWs.getAuthenticated()) {
-                            clearInterval(checkAuth);
-                            resolve();
-                        }
-                    }, 50);
-
-                    // Timeout de seguridad (15s)
-                    setTimeout(() => {
-                        clearInterval(checkAuth);
-                        resolve();
-                    }, 15000);
-                });
+                await initialize();
 
                 showToast(t('UserCreatedSuccessfully'));
                 registerForm.reset();
@@ -204,13 +189,15 @@ export function validateLogin() {
                 // MIGRAR claves globales antiguas al usuario (si existen)
                 migrateLegacyColorsToUser(userId);
 
-                // Conectar WebSocket de Social
-                createSocialSocket(token);
-
-                // Conectar WebSocket de Torneos
-                createTournamentSocket(token);
+                // Conectar WebSocket
+                //createSocialSocket(token);
                 /* wsClient = new SocialWebSocketClient(token);
-        wsClient.connect(); */
+                wsClient.connect(); */
+
+                // Conectar websocket de torneos
+                //createTournamentSocket(token);
+
+                await initialize();
 
                 showToast(t('welcome'));
                 navigateTo('dashboard');

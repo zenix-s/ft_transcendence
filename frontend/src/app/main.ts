@@ -77,7 +77,7 @@ async function validateSession(page: string): Promise<boolean> {
 // ====================
 // 🌐 INICIALIZACIÓN DE WEBSOCKETS
 // ====================
-export async function initSocialSocket(): Promise<SocialWebSocketClient | null> {
+async function initSocialSocket(): Promise<SocialWebSocketClient | null> {
     const token = localStorage.getItem('access_token');
     if (!token) return null;
 
@@ -107,7 +107,7 @@ export async function initSocialSocket(): Promise<SocialWebSocketClient | null> 
     return ws;
 }
 
-export async function initTournamentSocket(): Promise<TournamentWebSocketClient | null> {
+async function initTournamentSocket(): Promise<TournamentWebSocketClient | null> {
     const token = localStorage.getItem('access_token');
     if (!token) return null;
 

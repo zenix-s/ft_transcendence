@@ -7,6 +7,7 @@ import { IMatchSettings } from '@shared/domain/ValueObjects/MatchSettings.value'
 import { Match } from '@shared/domain/Entities/Match.entity';
 import { PongGame } from '@features/pong-game-manager/domain/PongGame.entity';
 import { TournamentRound, ITournamentMatchup } from '@shared/domain/Entities/TournamentRound.entity';
+import { CONSTANTES_APP } from '@shared/constants/ApplicationConstants';
 
 export class ActivePongTournament {
     private tournamentId!: number;
@@ -279,7 +280,9 @@ export class ActivePongTournament {
 
             // Determinar si es contra IA
             const isAgainstAI = player2Id === undefined;
-            const playerIds = isAgainstAI ? [player1Id] : [player1Id, player2Id];
+            const playerIds = isAgainstAI
+                ? [player1Id, CONSTANTES_APP.AI_PLAYER.ID]
+                : [player1Id, player2Id];
 
             // Paso 1: Crear el Match
             const matchEntity = new Match(tournament.matchTypeId, playerIds);

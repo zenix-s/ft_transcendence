@@ -97,6 +97,25 @@ export class Match {
     }
 
     public end(winnerIds: number[], finalScores: Record<number, number>): boolean {
+        // Validación defensiva: detectar jugadores faltantes
+        const missingPlayers = Object.keys(finalScores)
+            .map(Number)
+            .filter((id) => !this._players.has(id));
+
+        if (missingPlayers.length > 0) {
+            console.warn(
+                `[Match.end] Players ${missingPlayers.join(', ')} not in match ${this._id}. Adding them.`
+            );
+            missingPlayers.forEach((playerId) => {
+                this._players.set(playerId, {
+                    userId: playerId,
+                    username: null,
+                    score: 0,
+                    isWinner: false,
+                });
+            });
+        }
+
         this._status = Match.STATUS.COMPLETED;
         this._endedAt = new Date();
 

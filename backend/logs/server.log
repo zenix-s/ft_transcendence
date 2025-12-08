@@ -1,0 +1,222 @@
+{"level":30,"time":1765206938865,"pid":1273,"hostname":"c09dd11884b5","msg":"Server listening at https://127.0.0.1:3000"}
+{"level":30,"time":1765206938865,"pid":1273,"hostname":"c09dd11884b5","msg":"Server listening at https://172.18.0.3:3000"}
+{"level":30,"time":1765207016343,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":51442},"msg":"incoming request"}
+{"level":30,"time":1765207016351,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1","res":{"statusCode":200},"responseTime":6.962357044219971,"msg":"request completed"}
+{"level":30,"time":1765207016392,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2","req":{"method":"GET","url":"/social/","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":51444},"msg":"incoming request"}
+{"level":30,"time":1765207016412,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-3","req":{"method":"GET","url":"/tournaments/pong","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":51446},"msg":"incoming request"}
+{"level":30,"time":1765207016461,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-4","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":51458},"msg":"incoming request"}
+{"level":30,"time":1765207016462,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-4","res":{"statusCode":200},"responseTime":0.7529840469360352,"msg":"request completed"}
+{"level":30,"time":1765207016483,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-5","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":51462},"msg":"incoming request"}
+{"level":30,"time":1765207016484,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-5","res":{"statusCode":200},"responseTime":0.7666008472442627,"msg":"request completed"}
+{"level":30,"time":1765207016498,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-6","req":{"method":"GET","url":"/match-history/stats/9","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":51470},"msg":"incoming request"}
+{"level":30,"time":1765207016504,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-6","res":{"statusCode":200},"responseTime":5.740128040313721,"msg":"request completed"}
+{"level":30,"time":1765207016505,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-7","req":{"method":"GET","url":"/match-history/user/9","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":51484},"msg":"incoming request"}
+{"level":30,"time":1765207016507,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-7","res":{"statusCode":200},"responseTime":2.006844997406006,"msg":"request completed"}
+{"level":30,"time":1765207016508,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-8","req":{"method":"GET","url":"/tournaments/pong/active?limit=50&offset=0","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":51500},"msg":"incoming request"}
+{"level":30,"time":1765207016513,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-8","res":{"statusCode":200},"responseTime":4.639681816101074,"msg":"request completed"}
+{"level":30,"time":1765207016519,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-9","req":{"method":"GET","url":"/match-history/stats/9","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":51502},"msg":"incoming request"}
+{"level":30,"time":1765207016520,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-9","res":{"statusCode":200},"responseTime":1.0423648357391357,"msg":"request completed"}
+{"level":30,"time":1765207018346,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-a","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":51510},"msg":"incoming request"}
+{"level":30,"time":1765207018347,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-a","res":{"statusCode":200},"responseTime":0.7709569931030273,"msg":"request completed"}
+{"level":30,"time":1765207018365,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-b","req":{"method":"GET","url":"/social/","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":51524},"msg":"incoming request"}
+{"level":30,"time":1765207018380,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-c","req":{"method":"GET","url":"/tournaments/pong","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":51532},"msg":"incoming request"}
+{"level":30,"time":1765207018407,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-d","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":51548},"msg":"incoming request"}
+{"level":30,"time":1765207018408,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-d","res":{"statusCode":200},"responseTime":0.9207918643951416,"msg":"request completed"}
+{"level":30,"time":1765207018434,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-e","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":51552},"msg":"incoming request"}
+{"level":30,"time":1765207018435,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-e","res":{"statusCode":200},"responseTime":0.6455237865447998,"msg":"request completed"}
+{"level":30,"time":1765207018448,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-f","req":{"method":"GET","url":"/match-history/stats/3","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":51564},"msg":"incoming request"}
+{"level":30,"time":1765207018453,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-f","res":{"statusCode":200},"responseTime":4.772761106491089,"msg":"request completed"}
+{"level":30,"time":1765207018454,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-g","req":{"method":"GET","url":"/match-history/user/3","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":51578},"msg":"incoming request"}
+{"level":30,"time":1765207018455,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-g","res":{"statusCode":200},"responseTime":1.3680810928344727,"msg":"request completed"}
+{"level":30,"time":1765207018457,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-h","req":{"method":"GET","url":"/tournaments/pong/active?limit=50&offset=0","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":51580},"msg":"incoming request"}
+{"level":30,"time":1765207018459,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-h","res":{"statusCode":200},"responseTime":1.8272440433502197,"msg":"request completed"}
+{"level":30,"time":1765207018477,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-i","req":{"method":"GET","url":"/match-history/stats/3","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":51590},"msg":"incoming request"}
+{"level":30,"time":1765207018479,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-i","res":{"statusCode":200},"responseTime":1.9348959922790527,"msg":"request completed"}
+{"level":30,"time":1765207025733,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-j","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52810},"msg":"incoming request"}
+{"level":30,"time":1765207025734,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-j","res":{"statusCode":200},"responseTime":0.7844750881195068,"msg":"request completed"}
+{"level":30,"time":1765207025762,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-k","req":{"method":"GET","url":"/social/","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52814},"msg":"incoming request"}
+{"level":30,"time":1765207025808,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-l","req":{"method":"GET","url":"/tournaments/pong","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52818},"msg":"incoming request"}
+{"level":30,"time":1765207025925,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-m","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52824},"msg":"incoming request"}
+{"level":30,"time":1765207025926,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-m","res":{"statusCode":200},"responseTime":0.5235061645507812,"msg":"request completed"}
+{"level":30,"time":1765207026010,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-n","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52836},"msg":"incoming request"}
+{"level":30,"time":1765207026011,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-n","res":{"statusCode":200},"responseTime":0.5397999286651611,"msg":"request completed"}
+{"level":30,"time":1765207026078,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-o","req":{"method":"GET","url":"/match-history/stats/2","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52840},"msg":"incoming request"}
+{"level":30,"time":1765207026085,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-o","res":{"statusCode":200},"responseTime":6.171164035797119,"msg":"request completed"}
+{"level":30,"time":1765207026085,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-p","req":{"method":"GET","url":"/match-history/stats/2","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52856},"msg":"incoming request"}
+{"level":30,"time":1765207026091,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-p","res":{"statusCode":200},"responseTime":5.285770893096924,"msg":"request completed"}
+{"level":30,"time":1765207026091,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-q","req":{"method":"GET","url":"/tournaments/pong/active?limit=50&offset=0","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52860},"msg":"incoming request"}
+{"level":30,"time":1765207026093,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-q","res":{"statusCode":200},"responseTime":1.5209839344024658,"msg":"request completed"}
+{"level":30,"time":1765207026093,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-r","req":{"method":"GET","url":"/match-history/user/2","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52874},"msg":"incoming request"}
+{"level":30,"time":1765207026095,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-r","res":{"statusCode":200},"responseTime":1.2678699493408203,"msg":"request completed"}
+{"level":30,"time":1765207030901,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-s","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52882},"msg":"incoming request"}
+{"level":30,"time":1765207030901,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-s","res":{"statusCode":200},"responseTime":0.523921012878418,"msg":"request completed"}
+{"level":30,"time":1765207030953,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-t","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52892},"msg":"incoming request"}
+{"level":30,"time":1765207030953,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-t","res":{"statusCode":200},"responseTime":0.554567813873291,"msg":"request completed"}
+{"level":30,"time":1765207034045,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-u","req":{"method":"POST","url":"/tournaments/pong","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52900},"msg":"incoming request"}
+{"level":30,"time":1765207034050,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-u","res":{"statusCode":201},"responseTime":4.524729013442993,"msg":"request completed"}
+{"level":30,"time":1765207034072,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-v","req":{"method":"GET","url":"/tournaments/pong/active?limit=50&offset=0","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52908},"msg":"incoming request"}
+{"level":30,"time":1765207034074,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-v","res":{"statusCode":200},"responseTime":1.6184749603271484,"msg":"request completed"}
+{"level":30,"time":1765207034075,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-w","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52912},"msg":"incoming request"}
+{"level":30,"time":1765207034076,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-w","res":{"statusCode":200},"responseTime":0.4374208450317383,"msg":"request completed"}
+{"level":30,"time":1765207034116,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-x","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52926},"msg":"incoming request"}
+{"level":30,"time":1765207034117,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-x","res":{"statusCode":200},"responseTime":0.41019487380981445,"msg":"request completed"}
+{"level":30,"time":1765207034146,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-y","req":{"method":"GET","url":"/match-history/stats/3","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52942},"msg":"incoming request"}
+{"level":30,"time":1765207034147,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-y","res":{"statusCode":200},"responseTime":0.633389949798584,"msg":"request completed"}
+{"level":30,"time":1765207034148,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-z","req":{"method":"GET","url":"/match-history/user/3","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52946},"msg":"incoming request"}
+{"level":30,"time":1765207034153,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-z","res":{"statusCode":200},"responseTime":5.31771993637085,"msg":"request completed"}
+{"level":30,"time":1765207034154,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-10","req":{"method":"GET","url":"/tournaments/pong/active?limit=50&offset=0","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52952},"msg":"incoming request"}
+{"level":30,"time":1765207034156,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-10","res":{"statusCode":200},"responseTime":2.2232489585876465,"msg":"request completed"}
+{"level":30,"time":1765207034168,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-11","req":{"method":"GET","url":"/match-history/stats/3","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52956},"msg":"incoming request"}
+{"level":30,"time":1765207034169,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-11","res":{"statusCode":200},"responseTime":0.6761319637298584,"msg":"request completed"}
+{"level":30,"time":1765207037230,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-12","req":{"method":"GET","url":"/tournaments/pong/active?limit=50&offset=0","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52476},"msg":"incoming request"}
+{"level":30,"time":1765207037231,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-12","res":{"statusCode":200},"responseTime":1.5013558864593506,"msg":"request completed"}
+{"level":30,"time":1765207039456,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-13","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52488},"msg":"incoming request"}
+{"level":30,"time":1765207039458,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-13","res":{"statusCode":200},"responseTime":1.7032780647277832,"msg":"request completed"}
+{"level":30,"time":1765207039507,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-14","req":{"method":"GET","url":"/social/","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52494},"msg":"incoming request"}
+{"level":30,"time":1765207039526,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-15","req":{"method":"GET","url":"/tournaments/pong","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52500},"msg":"incoming request"}
+{"level":30,"time":1765207039572,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-16","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52508},"msg":"incoming request"}
+{"level":30,"time":1765207039573,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-16","res":{"statusCode":200},"responseTime":0.45297789573669434,"msg":"request completed"}
+{"level":30,"time":1765207039607,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-17","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52510},"msg":"incoming request"}
+{"level":30,"time":1765207039608,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-17","res":{"statusCode":200},"responseTime":0.4174959659576416,"msg":"request completed"}
+{"level":30,"time":1765207039626,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-18","req":{"method":"GET","url":"/match-history/stats/9","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52514},"msg":"incoming request"}
+{"level":30,"time":1765207039635,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-18","res":{"statusCode":200},"responseTime":9.4666428565979,"msg":"request completed"}
+{"level":30,"time":1765207039636,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-19","req":{"method":"GET","url":"/match-history/user/9","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52516},"msg":"incoming request"}
+{"level":30,"time":1765207039636,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-19","res":{"statusCode":200},"responseTime":0.6029751300811768,"msg":"request completed"}
+{"level":30,"time":1765207039637,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1a","req":{"method":"GET","url":"/tournaments/pong/active?limit=50&offset=0","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52528},"msg":"incoming request"}
+{"level":30,"time":1765207039639,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1a","res":{"statusCode":200},"responseTime":1.5649569034576416,"msg":"request completed"}
+{"level":30,"time":1765207039648,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1b","req":{"method":"GET","url":"/match-history/stats/9","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52534},"msg":"incoming request"}
+{"level":30,"time":1765207039649,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1b","res":{"statusCode":200},"responseTime":1.2653238773345947,"msg":"request completed"}
+{"level":30,"time":1765207042286,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1c","req":{"method":"POST","url":"/tournaments/pong/tournaments/11/join","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52546},"msg":"incoming request"}
+{"level":30,"time":1765207042289,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1c","res":{"statusCode":200},"responseTime":2.071648120880127,"msg":"request completed"}
+{"level":30,"time":1765207042314,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1d","req":{"method":"GET","url":"/tournaments/pong/active?limit=50&offset=0","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52548},"msg":"incoming request"}
+{"level":30,"time":1765207042316,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1d","res":{"statusCode":200},"responseTime":1.570817232131958,"msg":"request completed"}
+{"level":30,"time":1765207042335,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1e","req":{"method":"GET","url":"/tournaments/pong/active?limit=50&offset=0","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52562},"msg":"incoming request"}
+{"level":30,"time":1765207042336,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1e","res":{"statusCode":200},"responseTime":1.8075389862060547,"msg":"request completed"}
+{"level":30,"time":1765207043261,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1f","req":{"method":"GET","url":"/tournaments/pong/active?limit=50&offset=0","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52566},"msg":"incoming request"}
+{"level":30,"time":1765207043264,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1f","res":{"statusCode":200},"responseTime":2.3890581130981445,"msg":"request completed"}
+{"level":30,"time":1765207043825,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1g","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52574},"msg":"incoming request"}
+{"level":30,"time":1765207043826,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1g","res":{"statusCode":200},"responseTime":0.4384651184082031,"msg":"request completed"}
+{"level":30,"time":1765207043863,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1h","req":{"method":"GET","url":"/social/","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52580},"msg":"incoming request"}
+{"level":30,"time":1765207043923,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1i","req":{"method":"GET","url":"/tournaments/pong","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52596},"msg":"incoming request"}
+{"level":30,"time":1765207043962,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1j","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52604},"msg":"incoming request"}
+{"level":30,"time":1765207043962,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1j","res":{"statusCode":200},"responseTime":0.3885178565979004,"msg":"request completed"}
+{"level":30,"time":1765207044041,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1k","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52618},"msg":"incoming request"}
+{"level":30,"time":1765207044042,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1k","res":{"statusCode":200},"responseTime":0.42844104766845703,"msg":"request completed"}
+{"level":30,"time":1765207044139,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1l","req":{"method":"GET","url":"/match-history/stats/2","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52624},"msg":"incoming request"}
+{"level":30,"time":1765207044144,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1l","res":{"statusCode":200},"responseTime":4.8142499923706055,"msg":"request completed"}
+{"level":30,"time":1765207044145,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1m","req":{"method":"GET","url":"/match-history/user/2","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52632},"msg":"incoming request"}
+{"level":30,"time":1765207044154,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1m","res":{"statusCode":200},"responseTime":9.337821960449219,"msg":"request completed"}
+{"level":30,"time":1765207044155,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1n","req":{"method":"GET","url":"/match-history/stats/2","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52638},"msg":"incoming request"}
+{"level":30,"time":1765207044155,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1n","res":{"statusCode":200},"responseTime":0.5719051361083984,"msg":"request completed"}
+{"level":30,"time":1765207044156,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1o","req":{"method":"GET","url":"/tournaments/pong/active?limit=50&offset=0","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":52652},"msg":"incoming request"}
+{"level":30,"time":1765207044158,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1o","res":{"statusCode":200},"responseTime":1.6405389308929443,"msg":"request completed"}
+{"level":30,"time":1765207046594,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1p","req":{"method":"POST","url":"/tournaments/pong/tournaments/11/join","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":54344},"msg":"incoming request"}
+{"level":30,"time":1765207046596,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1p","res":{"statusCode":200},"responseTime":1.5373198986053467,"msg":"request completed"}
+{"level":30,"time":1765207046631,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1q","req":{"method":"GET","url":"/tournaments/pong/active?limit=50&offset=0","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":54354},"msg":"incoming request"}
+{"level":30,"time":1765207046640,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1q","res":{"statusCode":200},"responseTime":9.002318143844604,"msg":"request completed"}
+{"level":30,"time":1765207046641,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1r","req":{"method":"GET","url":"/tournaments/pong/active?limit=50&offset=0","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":54364},"msg":"incoming request"}
+{"level":30,"time":1765207046642,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1r","res":{"statusCode":200},"responseTime":1.5033519268035889,"msg":"request completed"}
+{"level":30,"time":1765207046644,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1s","req":{"method":"GET","url":"/tournaments/pong/active?limit=50&offset=0","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":54376},"msg":"incoming request"}
+{"level":30,"time":1765207046653,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1s","res":{"statusCode":200},"responseTime":8.543720960617065,"msg":"request completed"}
+{"level":30,"time":1765207046653,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1t","req":{"method":"GET","url":"/tournaments/pong/active?limit=50&offset=0","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":54384},"msg":"incoming request"}
+{"level":30,"time":1765207046655,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1t","res":{"statusCode":200},"responseTime":1.4228270053863525,"msg":"request completed"}
+{"level":30,"time":1765207047889,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1u","req":{"method":"POST","url":"/tournaments/pong/tournaments/11/start","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":54390},"msg":"incoming request"}
+{"level":30,"time":1765207052900,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1u","res":{"statusCode":200},"responseTime":5011.260816812515,"msg":"request completed"}
+{"level":30,"time":1765207052929,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1v","req":{"method":"GET","url":"/tournaments/pong/active?limit=50&offset=0","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":54398},"msg":"incoming request"}
+{"level":30,"time":1765207052931,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1v","res":{"statusCode":200},"responseTime":1.2997748851776123,"msg":"request completed"}
+{"level":30,"time":1765207052984,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1w","req":{"method":"GET","url":"/tournaments/pong/active?limit=50&offset=0","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":54414},"msg":"incoming request"}
+{"level":30,"time":1765207052987,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1w","res":{"statusCode":200},"responseTime":2.4219610691070557,"msg":"request completed"}
+{"level":30,"time":1765207052988,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1x","req":{"method":"GET","url":"/tournaments/pong/active?limit=50&offset=0","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":54430},"msg":"incoming request"}
+{"level":30,"time":1765207052992,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1x","res":{"statusCode":200},"responseTime":4.039896011352539,"msg":"request completed"}
+{"level":30,"time":1765207053014,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1y","req":{"method":"GET","url":"/tournaments/pong/active?limit=50&offset=0","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":54432},"msg":"incoming request"}
+{"level":30,"time":1765207053020,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1y","res":{"statusCode":200},"responseTime":5.135535955429077,"msg":"request completed"}
+{"level":30,"time":1765207054648,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-1z","req":{"method":"GET","url":"/game/pong","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":54434},"msg":"incoming request"}
+{"level":30,"time":1765207054654,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-20","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":54446},"msg":"incoming request"}
+{"level":30,"time":1765207054655,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-20","res":{"statusCode":200},"responseTime":0.39861202239990234,"msg":"request completed"}
+{"level":30,"time":1765207054699,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-21","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":54462},"msg":"incoming request"}
+{"level":30,"time":1765207054699,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-21","res":{"statusCode":200},"responseTime":0.3852238655090332,"msg":"request completed"}
+{"level":30,"time":1765207054716,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-22","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":54468},"msg":"incoming request"}
+{"level":30,"time":1765207054716,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-22","res":{"statusCode":200},"responseTime":0.38588500022888184,"msg":"request completed"}
+{"level":30,"time":1765207055478,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-23","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":41410},"msg":"incoming request"}
+{"level":30,"time":1765207055479,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-23","res":{"statusCode":200},"responseTime":0.5235161781311035,"msg":"request completed"}
+{"level":30,"time":1765207055487,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-24","req":{"method":"GET","url":"/game/pong","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":41426},"msg":"incoming request"}
+{"level":30,"time":1765207055519,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-25","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":41436},"msg":"incoming request"}
+{"level":30,"time":1765207055519,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-25","res":{"statusCode":200},"responseTime":0.3865067958831787,"msg":"request completed"}
+{"level":30,"time":1765207055535,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-26","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":41446},"msg":"incoming request"}
+{"level":30,"time":1765207055536,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-26","res":{"statusCode":200},"responseTime":0.38776707649230957,"msg":"request completed"}
+{"level":30,"time":1765207056385,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-27","req":{"method":"GET","url":"/game/pong","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":41448},"msg":"incoming request"}
+{"level":30,"time":1765207056396,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-28","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":41460},"msg":"incoming request"}
+{"level":30,"time":1765207056397,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-28","res":{"statusCode":200},"responseTime":0.4387028217315674,"msg":"request completed"}
+{"level":30,"time":1765207056525,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-29","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":41476},"msg":"incoming request"}
+{"level":30,"time":1765207056527,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-29","res":{"statusCode":200},"responseTime":1.6869568824768066,"msg":"request completed"}
+{"level":30,"time":1765207056570,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2a","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":41480},"msg":"incoming request"}
+{"level":30,"time":1765207056570,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2a","res":{"statusCode":200},"responseTime":0.4537181854248047,"msg":"request completed"}
+{"level":30,"time":1765207074205,"pid":1273,"hostname":"c09dd11884b5","msg":"Game 35 ended, match 35 was saved"}
+{"level":30,"time":1765207074205,"pid":1273,"hostname":"c09dd11884b5","msg":"Processing match result - matchId: 35, status: completed, players: 3(winner:false), 9(winner:true)"}
+{"level":30,"time":1765207074205,"pid":1273,"hostname":"c09dd11884b5","msg":"Winner on COMPLETED match:[object Object]"}
+{"level":30,"time":1765207074205,"pid":1273,"hostname":"c09dd11884b5","msg":"Loser on COMPLETED match:[object Object]"}
+{"level":30,"time":1765207074205,"pid":1273,"hostname":"c09dd11884b5","msg":"Match completed normally - winner: 9, loser: 3"}
+{"level":30,"time":1765207074205,"pid":1273,"hostname":"c09dd11884b5","msg":"Set winner 9 for matchup in match 35"}
+{"level":30,"time":1765207074205,"pid":1273,"hostname":"c09dd11884b5","msg":"Eliminated player 3 from tournament"}
+{"level":30,"time":1765207074207,"pid":1273,"hostname":"c09dd11884b5","msg":"Updated tournament 11 state"}
+{"level":30,"time":1765207074229,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2b","req":{"method":"GET","url":"/match-history/final-state/35","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":45206},"msg":"incoming request"}
+{"level":30,"time":1765207074232,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2b","res":{"statusCode":200},"responseTime":2.811249017715454,"msg":"request completed"}
+{"level":30,"time":1765207074233,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2c","req":{"method":"GET","url":"/match-history/final-state/35","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":45210},"msg":"incoming request"}
+{"level":30,"time":1765207074233,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2c","res":{"statusCode":200},"responseTime":0.5904819965362549,"msg":"request completed"}
+{"level":30,"time":1765207074274,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2d","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":45212},"msg":"incoming request"}
+{"level":30,"time":1765207074275,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2d","res":{"statusCode":200},"responseTime":1.225039005279541,"msg":"request completed"}
+{"level":30,"time":1765207074276,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2e","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":45228},"msg":"incoming request"}
+{"level":30,"time":1765207074277,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2e","res":{"statusCode":200},"responseTime":0.489483118057251,"msg":"request completed"}
+{"level":30,"time":1765207074321,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2f","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":45232},"msg":"incoming request"}
+{"level":30,"time":1765207074321,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2f","res":{"statusCode":200},"responseTime":0.36882996559143066,"msg":"request completed"}
+{"level":30,"time":1765207074374,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2g","req":{"method":"GET","url":"/match-history/stats/9","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":45244},"msg":"incoming request"}
+{"level":30,"time":1765207074384,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2g","res":{"statusCode":200},"responseTime":8.932027101516724,"msg":"request completed"}
+{"level":30,"time":1765207074384,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2h","req":{"method":"GET","url":"/match-history/user/9","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":45246},"msg":"incoming request"}
+{"level":30,"time":1765207074394,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2h","res":{"statusCode":200},"responseTime":9.73200798034668,"msg":"request completed"}
+{"level":30,"time":1765207074395,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2i","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":45274},"msg":"incoming request"}
+{"level":30,"time":1765207074395,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2j","req":{"method":"GET","url":"/tournaments/pong/active?limit=50&offset=0","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":45260},"msg":"incoming request"}
+{"level":30,"time":1765207074401,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2i","res":{"statusCode":200},"responseTime":6.516223907470703,"msg":"request completed"}
+{"level":30,"time":1765207074401,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2j","res":{"statusCode":200},"responseTime":5.9537248611450195,"msg":"request completed"}
+{"level":30,"time":1765207074403,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2k","req":{"method":"GET","url":"/match-history/stats/9","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":45282},"msg":"incoming request"}
+{"level":30,"time":1765207074403,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2k","res":{"statusCode":200},"responseTime":0.44210195541381836,"msg":"request completed"}
+{"level":30,"time":1765207074439,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2l","req":{"method":"GET","url":"/match-history/stats/3","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":45292},"msg":"incoming request"}
+{"level":30,"time":1765207074448,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2l","res":{"statusCode":200},"responseTime":8.643657207489014,"msg":"request completed"}
+{"level":30,"time":1765207074448,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2m","req":{"method":"GET","url":"/match-history/user/3","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":45296},"msg":"incoming request"}
+{"level":30,"time":1765207074449,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2m","res":{"statusCode":200},"responseTime":1.1103880405426025,"msg":"request completed"}
+{"level":30,"time":1765207074452,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2n","req":{"method":"GET","url":"/tournaments/pong/active?limit=50&offset=0","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":45302},"msg":"incoming request"}
+{"level":30,"time":1765207074454,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2n","res":{"statusCode":200},"responseTime":1.462148904800415,"msg":"request completed"}
+{"level":30,"time":1765207074464,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2o","req":{"method":"GET","url":"/match-history/stats/3","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":45308},"msg":"incoming request"}
+{"level":30,"time":1765207074465,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2o","res":{"statusCode":200},"responseTime":0.4853780269622803,"msg":"request completed"}
+{"level":30,"time":1765207079870,"pid":1273,"hostname":"c09dd11884b5","msg":"Game 36 ended, match 36 was saved"}
+{"level":30,"time":1765207079870,"pid":1273,"hostname":"c09dd11884b5","msg":"Processing match result - matchId: 36, status: completed, players: 2(winner:false)"}
+{"level":30,"time":1765207079870,"pid":1273,"hostname":"c09dd11884b5","msg":"Winner on COMPLETED match:undefined"}
+{"level":30,"time":1765207079870,"pid":1273,"hostname":"c09dd11884b5","msg":"Loser on COMPLETED match:[object Object]"}
+{"level":30,"time":1765207079870,"pid":1273,"hostname":"c09dd11884b5","msg":"No winner to set for matchup in match 36"}
+{"level":30,"time":1765207079871,"pid":1273,"hostname":"c09dd11884b5","msg":"Updated tournament 11 state"}
+{"level":30,"time":1765207079896,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2p","req":{"method":"GET","url":"/match-history/final-state/36","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":34250},"msg":"incoming request"}
+{"level":30,"time":1765207079897,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2p","res":{"statusCode":200},"responseTime":0.6141319274902344,"msg":"request completed"}
+{"level":30,"time":1765207079915,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2q","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":34258},"msg":"incoming request"}
+{"level":30,"time":1765207079915,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2q","res":{"statusCode":200},"responseTime":0.4137699604034424,"msg":"request completed"}
+{"level":30,"time":1765207080090,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2r","req":{"method":"GET","url":"/auth/me","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":34260},"msg":"incoming request"}
+{"level":30,"time":1765207080090,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2r","res":{"statusCode":200},"responseTime":0.3599870204925537,"msg":"request completed"}
+{"level":30,"time":1765207080129,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2s","req":{"method":"GET","url":"/match-history/user/2","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":34262},"msg":"incoming request"}
+{"level":30,"time":1765207080131,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2s","res":{"statusCode":200},"responseTime":1.4896519184112549,"msg":"request completed"}
+{"level":30,"time":1765207080138,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2t","req":{"method":"GET","url":"/tournaments/pong/active?limit=50&offset=0","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":34270},"msg":"incoming request"}
+{"level":30,"time":1765207080140,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2t","res":{"statusCode":200},"responseTime":1.2941288948059082,"msg":"request completed"}
+{"level":30,"time":1765207080146,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2u","req":{"method":"GET","url":"/match-history/stats/2","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":34286},"msg":"incoming request"}
+{"level":30,"time":1765207080147,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2u","res":{"statusCode":200},"responseTime":0.5366370677947998,"msg":"request completed"}
+{"level":30,"time":1765207080173,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2v","req":{"method":"GET","url":"/match-history/stats/2","host":"backend:3000","remoteAddress":"172.18.0.2","remotePort":34292},"msg":"incoming request"}
+{"level":30,"time":1765207080174,"pid":1273,"hostname":"c09dd11884b5","reqId":"req-2v","res":{"statusCode":200},"responseTime":0.5825810432434082,"msg":"request completed"}
+{"level":30,"time":1765207084874,"pid":1273,"hostname":"c09dd11884b5","msg":"Round 1 completed for tournament 11"}
+{"level":30,"time":1765207084874,"pid":1273,"hostname":"c09dd11884b5","msg":"Round complete - active participants: 9, 2"}
+{"level":30,"time":1765207084875,"pid":1273,"hostname":"c09dd11884b5","msg":"Created round 2 for tournament 11"}
+{"level":30,"time":1765207149879,"pid":1273,"hostname":"c09dd11884b5","msg":"Game 37 ended, match 37 was saved"}
+{"level":30,"time":1765207149879,"pid":1273,"hostname":"c09dd11884b5","msg":"Processing match result - matchId: 37, status: cancelled, players: 9(winner:false), 2(winner:false)"}
+{"level":30,"time":1765207149879,"pid":1273,"hostname":"c09dd11884b5","msg":"Match cancelled without winner - both players will be eliminated"}
+{"level":30,"time":1765207149879,"pid":1273,"hostname":"c09dd11884b5","msg":"No winner to set for matchup in match 37"}
+{"level":30,"time":1765207149879,"pid":1273,"hostname":"c09dd11884b5","msg":"Eliminated player 9 (double elimination)"}
+{"level":30,"time":1765207149879,"pid":1273,"hostname":"c09dd11884b5","msg":"Eliminated player 2 (double elimination)"}
+{"level":30,"time":1765207149880,"pid":1273,"hostname":"c09dd11884b5","msg":"Updated tournament 11 state"}
+{"level":30,"time":1765207154882,"pid":1273,"hostname":"c09dd11884b5","msg":"Round 2 completed for tournament 11"}
+{"level":30,"time":1765207154882,"pid":1273,"hostname":"c09dd11884b5","msg":"Round complete - active participants: "}
+{"level":30,"time":1765207154883,"pid":1273,"hostname":"c09dd11884b5","msg":"Tournament 11 completed with no winner"}

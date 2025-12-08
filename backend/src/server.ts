@@ -8,7 +8,10 @@ const port = 3000;
 const host = '0.0.0.0';
 
 const server = fastify({
-    logger: true,
+    logger: {
+        level: 'info',
+        file: './logs/server.log',
+    },
     https: {
         key: fs.readFileSync('./certs/key.pem'),
         cert: fs.readFileSync('./certs/cert.pem'),

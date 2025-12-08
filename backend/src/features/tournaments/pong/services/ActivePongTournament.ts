@@ -250,6 +250,8 @@ export class ActivePongTournament {
                 this.fastify.TournamentWebSocketService.notifyTournamentStarted(this.tournamentId);
             }
 
+            await new Promise((resolve) => setTimeout(resolve, 5000));
+
             // Paso 8: Crear todos los matches de la primera ronda
             await this.createRoundMatches(tournament, firstRound);
 
@@ -409,10 +411,17 @@ export class ActivePongTournament {
             let winnerId: number | null = null;
             let loserId: number | null = null;
 
+            if (match.hasPlayer(0)) {
+                this.fastify.log.info('ai play= ' + match);
+            }
+
             if (match.status === Match.STATUS.COMPLETED) {
                 const players = match.players;
                 const winner = players.find((p) => p.isWinner);
                 const loser = players.find((p) => !p.isWinner);
+
+                this.fastify.log.info('Winner on COMPLETED match:' + winner);
+                this.fastify.log.info('Loser on COMPLETED match:' + loser);
 
                 if (winner && loser) {
                     winnerId = winner.userId;
@@ -494,6 +503,8 @@ export class ActivePongTournament {
                 );
             }
 
+            await new Promise((resolve) => setTimeout(resolve, 5000));
+
             // Paso 8: Verificar si la ronda ha terminado
             if (currentRound.isComplete) {
                 this.fastify.log.info(`Round ${roundNumber} completed for tournament ${this.tournamentId}`);
@@ -569,6 +580,8 @@ export class ActivePongTournament {
                     nextRound.roundNumber
                 );
             }
+
+            await new Promise((resolve) => setTimeout(resolve, 5000));
 
             // Paso 3: Crear todos los matches de la nueva ronda
             await this.createRoundMatches(tournament, nextRound);

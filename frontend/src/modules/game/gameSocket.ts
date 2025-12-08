@@ -127,7 +127,7 @@ export class GameWebSocket {
         });
 
         this.socket.addEventListener('message', async (msg) => {
-            console.log('mensaje recibido=', msg.data);
+            // console.log('mensaje recibido=', msg.data);
             try {
                 const data = JSON.parse(msg.data);
                 this.handleMessage(data);

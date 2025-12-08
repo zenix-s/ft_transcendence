@@ -441,6 +441,11 @@ export class ActivePongTournament {
 
             // Paso 4: Actualizar el matchup con el ganador (si existe)
             if (winnerId) {
+                const winnerParticipant = tournament.getParticipant(winnerId);
+                if (winnerParticipant) {
+                    winnerParticipant.addScore(1);
+                    this.fastify.log.info(`Added 1 point to winner ${winnerId}`);
+                }
                 currentRound.setMatchupWinner(matchId, winnerId);
                 this.fastify.log.info(`Set winner ${winnerId} for matchup in match ${matchId}`);
             } else {

@@ -249,7 +249,8 @@ export async function handleParticipationJoinOrLeave(target: HTMLElement) {
         }
 
         // Recargar tabla
-        await refreshTournamentsHistory();
+        if (action !== "join")
+            await refreshTournamentsHistory();
     } catch {
         showToast(t('NetworkOrServerError'), 'error');
     }

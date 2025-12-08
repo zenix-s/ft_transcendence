@@ -3,21 +3,19 @@ import "@/app/styles/global.css";
 import { navigateTo, handlePopState } from "@/app/navigation";
 import { setupEventListeners } from "@/app/events";
 import { applySavedColors } from "@/components/colorPicker";
-
-//import { startGame } from "./game";
-
-// Components
-//import { GlitchButton } from "./components/GlitchButton";
 import { GlitchButton } from "@/components/GlitchButton";
 import { loadChart } from "@/components/graph";
 import { matchTable, loadMatchHistory } from "@/components/history";
 import { tournamentTable, loadTournamentsHistory } from "@/components/tournamentsHistory";
 import { updateSliders } from "@/components/updateSliders";
 import { getGameSocket } from "@/modules/game/gameSocket";
-
-// i18n
-//import { setLanguage, t, currentLang } from "./i18n";
 import { setLanguage, t, currentLang } from "@/app/i18n";
+import { createSocialSocket, getSocialSocket } from "@/modules/social/socketInstance";
+import { SocialWebSocketClient } from "@/modules/social/socialSocket";
+import { getColor, setColors } from "@/modules/game/getColors";
+import { createTournamentSocket, getTournamentSocket } from "@/modules/tournament/tournamentSocketInstance";
+import { TournamentWebSocketClient } from "@/modules/tournament/tournamentSocket";
+import { getCurrentUser } from "@/modules/users";
 
 // Exponer utilidades al ámbito global
 declare global {
@@ -30,25 +28,42 @@ declare global {
 // Al cargar toda la SPA, aplica los colores guardados
 applySavedColors();
 
-// Detectar la página inicial según la URL actual
-const initialPage = location.pathname.replace("/", "") || "home";
-navigateTo(initialPage, true);
+// ====================
+// 🔐 VALIDACIÓN DE TOKEN
+// ====================
+// Páginas que NO requieren autenticación
+const PUBLIC_PAGES = ["home", "login", "404"];
 
-const currentUser = await getCurrentUser();
-if (!currentUser)
-  navigateTo("home");
+async function validateSession(page: string): Promise<boolean> {
+  // Si es página pública, no validar
+  if (PUBLIC_PAGES.includes(page)) {
+    return true;
+  }
 
-// 🌐 Imports WebSocket Social
-import { createSocialSocket, getSocialSocket } from "@/modules/social/socketInstance";
-import { SocialWebSocketClient } from "@/modules/social/socialSocket";
-import { getColor, setColors } from "@/modules/game/getColors";
+  const token = localStorage.getItem("access_token");
+  
+  // Si no hay token, redirigir a login
+  if (!token) {
+    console.warn("⚠️ No token found. Redirecting to login...");
+    navigateTo("login", false, true);
+    return false;
+  }
 
-// 🌐 Importaciones necesarias para el WS de Torneos
-import { createTournamentSocket, getTournamentSocket } from "@/modules/tournament/tournamentSocketInstance";
-import { TournamentWebSocketClient } from "@/modules/tournament/tournamentSocket";
-import { getCurrentUser } from "@/modules/users";
+  // Validar que el usuario existe
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    console.warn("⚠️ Invalid token or user not found. Redirecting to login...");
+    // getCurrentUser ya limpia el token y muestra el error
+    navigateTo("login", false, true);
+    return false;
+  }
 
-// 🌐 Inicializar WebSocket Social si hay token
+  return true;
+}
+
+// ====================
+// 🌐 INICIALIZACIÓN DE WEBSOCKETS
+// ====================
 async function initSocialSocket(): Promise<SocialWebSocketClient | null> {
   const token = localStorage.getItem("access_token");
   if (!token) return null;
@@ -60,7 +75,7 @@ async function initSocialSocket(): Promise<SocialWebSocketClient | null> {
     ws = createSocialSocket(token);
   }
 
-  // 🔹 Siempre esperar autenticación
+  // 🔹 Esperar autenticación
   await new Promise<void>((resolve) => {
     const interval = setInterval(() => {
       if (ws?.getAuthenticated()) {
@@ -79,9 +94,6 @@ async function initSocialSocket(): Promise<SocialWebSocketClient | null> {
   return ws;
 }
 
-// 🔹 Esperar a que se inicialice
-await initSocialSocket();
-
 async function initTournamentSocket(): Promise<TournamentWebSocketClient | null> {
   const token = localStorage.getItem("access_token");
   if (!token) return null;
@@ -94,8 +106,7 @@ async function initTournamentSocket(): Promise<TournamentWebSocketClient | null>
     // Esperar a que el socket se conecte y autentique antes de continuar
     await new Promise<void>((resolve) => {
       const interval = setInterval(() => {
-        // Usamos getAuthenticated del cliente del torneo
-        if ((ws?.getAuthenticated())) {
+        if (ws?.getAuthenticated()) {
           clearInterval(interval);
           resolve();
         }
@@ -106,9 +117,36 @@ async function initTournamentSocket(): Promise<TournamentWebSocketClient | null>
   return ws;
 }
 
-// Inicializa el WebSocket al cargar
-//initSocialSocket();
-await initTournamentSocket();
+// ====================
+// 🚀 INICIALIZACIÓN
+// ====================
+async function initialize() {
+  // 1. Detectar página inicial
+  const initialPage = location.pathname.replace("/", "") || "home";
+  
+  // 2. Validar sesión antes de continuar
+  const isValid = await validateSession(initialPage);
+  
+  if (!isValid) {
+    // Ya se redirigió en validateSession
+    return;
+  }
+
+  // 3. Si hay token válido, inicializar WebSockets
+  const token = localStorage.getItem("access_token");
+  if (token) {
+    await Promise.all([
+      initSocialSocket(),
+      initTournamentSocket()
+    ]);
+  }
+
+  // 4. Navegar a la página inicial
+  navigateTo(initialPage, true);
+}
+
+// Ejecutar inicialización
+initialize();
 
 // Configurar los eventos
 setupEventListeners();
@@ -119,11 +157,8 @@ window.addEventListener("popstate", handlePopState);
 // ====================
 const toggle = document.getElementById("dark_mode_toggle");
 
-// console.log("🔍 toggle encontrado:", toggle); // DB
-
 if (toggle) {
   toggle.addEventListener("click", () => {
-    // console.log("👉 Botón clicado!"); // DB
     document.documentElement.classList.toggle("dark");
 
     // Guardar preferencia
@@ -135,17 +170,13 @@ if (toggle) {
 
     //cambiar colores del juego
     const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
-	  if (canvas)
-	  {
+    if (canvas) {
       const ws = getGameSocket();
-      if (localStorage.getItem("theme") === "dark")
-      {
+      if (localStorage.getItem("theme") === "dark") {
         const borderColor = getColor("--color-primary");
         const bgColor = getColor("--color-secondary");
         setColors(ws?.getScene(), bgColor, borderColor);
-      }
-      else if (localStorage.getItem("theme") === "light")
-      {
+      } else {
         const borderColor = getColor("--color-secondary");
         const bgColor = getColor("--color-primary");
         setColors(ws?.getScene(), bgColor, borderColor);
@@ -173,7 +204,7 @@ if (savedLang) {
   setLanguage("en");
 }
 
-// 👇 Aquí forzamos render inicial de botones
+// Render inicial de botones
 renderButtons();
 
 // Conectar selector del DOM
@@ -218,7 +249,7 @@ document.addEventListener("i18n-updated", async () => {
   // Reload Tournaments History solo si existe tabla y hay token
   reloadTournamentsHistory();
 
-    updateSliders();
+  updateSliders();
 });
 
 export async function reloadGameHistory(token: string | null) {
@@ -232,7 +263,7 @@ export async function reloadGameHistory(token: string | null) {
 
     // 2 Guardar items por página
     const currentPerPage = matchPerPageSelect
-    ? parseInt(matchPerPageSelect.value, 10)
+      ? parseInt(matchPerPageSelect.value, 10)
     : matchTable.options.perPage; // usa el valor actual de la tabla
 
     // 3. Destruir tabla
@@ -258,7 +289,7 @@ export async function reloadTournamentsHistory() {
 
     // 2 Guardar items por página
     const currentPerPage = tournamentPerPageSelect
-    ? parseInt(tournamentPerPageSelect.value, 10)
+      ? parseInt(tournamentPerPageSelect.value, 10)
     : tournamentTable.options.perPage; // usa el valor actual de la tabla
 
     // 3. Destruir tabla

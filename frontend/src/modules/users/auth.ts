@@ -223,6 +223,7 @@ export async function getCurrentUser(): Promise<GetCurrentUserResponse  | null> 
     switch (response.status) {
       case 200:
         // ✅ Usuario válido
+        sessionHandled = false;
         return result as GetCurrentUserResponse;
 
       case 401:
@@ -262,8 +263,17 @@ export async function getCurrentUser(): Promise<GetCurrentUserResponse  | null> 
 function handleInvalidSession(messageKey: string) {
   if (!sessionHandled) {
     sessionHandled = true;
+    console.warn(`⚠️ Invalid session: ${messageKey}`);
     showToast(t(messageKey), "error");
+
+    // Limpiar todo el estado de autenticación
     localStorage.removeItem("access_token");
+    localStorage.removeItem("userId");
+
+    // Resetear flag después de 2 segundos
+    setTimeout(() => {
+      sessionHandled = false;
+    }, 2000);
   }
 }
 

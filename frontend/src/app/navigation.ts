@@ -2,9 +2,6 @@ import { setupRegisterForm, validateLogin, loadDashboard, loadSettings } from "@
 import { renderButtons } from "@/app/main";
 import { updateTexts } from "@/app/i18n";
 import { loadChart } from "@/components/graph"
-
-//import { initGame3D } from "@/modules/game/game";
-
 import { Tooltip } from "@/components/tooltip";
 import { loadMatchHistory } from "@/components/history";
 import { redirect } from "@/components/redirect";
@@ -17,18 +14,24 @@ import { tournament } from "@/modules/tournament/tournament";
 import { loadTournamentsHistory } from "@/components/tournamentsHistory";
 import { getGameSocket } from "@/modules/game/gameSocket";
 
+// Páginas que requieren autenticación
+const PRIVATE_PAGES = [
+  "dashboard",
+  "settings",
+  "playing",
+  "setReady1",
+  "tournament"
+];
+
 // Llamada                            Efecto
 // navigateTo("home")                 Carga "home" y añade al historial
 // navigateTo("home", false, true)    Carga "home" y reemplaza la página actual
 // navigateTo("home", true)           Carga "home" sin tocar la URL
 // navigateTo("home", true, true)     Rara vez útil — no cambia URL ni historial
 export async function navigateTo(page: string, skipPushState = false, replace = false) {
-  // console.log("navigation"); // DB
-  //console.log(page); // DB
-
   // Para que cuando le paso parámetros a la url las cosas funcionen
   const pageBase: string = (page.split("?"))[0];
-  console.log("pageBase=", pageBase); // DB
+  console.log("pageBase=", pageBase);
 
   // 🚨 Bloquear números SOLO cuando vienen de la SPA (clicks internos)
   if (!skipPushState && !isNaN(Number(page))) {
@@ -36,32 +39,56 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
     return;
   }
 
+  // ============================================
+  // 🔐 VALIDACIÓN DE AUTENTICACIÓN
+  // ============================================
+  
+  // Si intenta acceder a página privada sin token válido
+  if (PRIVATE_PAGES.includes(pageBase)) {
+    const token = localStorage.getItem("access_token");
+    
+    if (!token) {
+      console.warn("⚠️ Attempting to access private page without token");
+      navigateTo("login", false, true);
+      return;
+    }
+
+    // Validar que el usuario existe (solo en primera navegación a privada)
+    const userResponse = await getCurrentUser();
+    if (!userResponse) {
+      console.warn("⚠️ Invalid token or user not found");
+      // getCurrentUser ya limpia el token y muestra el toast
+      navigateTo("login", false, true);
+      return;
+    }
+  }
+
   // Redirección automática si el usuario ya tiene token y entra a login
-  if (page === "login" && localStorage.getItem("access_token")) {
+  if (pageBase === "login" && localStorage.getItem("access_token")) {
     navigateTo("dashboard", false, true);
     return;
   }
 
-  if (pageBase != "playing")
-  {
+  // ============================================
+  // 🧹 LIMPIEZA DE RECURSOS
+  // ============================================
+  
+  // Destruir WebSocket del juego si salimos de playing
+  if (pageBase !== "playing") {
     const ws = getGameSocket();
-    if (ws)
-      ws.destroy();
+    if (ws) ws.destroy();
   }
 
-  // Redirección automática si el usuario no tiene token y entra a páginas prohibidas sin token
-  /* if (page === "game" && !localStorage.getItem("access_token")) {
-    console.log("PRUEBAAAAA 222");
-    navigateTo("login");
-    return;
-  } */
-
+  // ============================================
+  // 📄 CARGA DE PÁGINA
+  // ============================================
+  
   // Actualizar la URL sin recargar la página
   if (!skipPushState) {
-     if (replace) {
-      history.replaceState({}, "", `/${page}`); // sustituye la entrada actual
+    if (replace) {
+      history.replaceState({}, "", `/${page}`);
     } else {
-      history.pushState({}, "", `/${page}`); // añade nueva entrada
+      history.pushState({}, "", `/${page}`);
     }
   }
 
@@ -69,14 +96,13 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
   const response = await fetch(`/src/pages/${pageBase}.html`);
   const html = await response.text();
 
-    // ⚠️ Detectar si el servidor devolvió el index.html en lugar de la página real
-  // Normalmente index.html contiene <!doctype html> y un <div id="app">
+  // ⚠️ Detectar si el servidor devolvió el index.html en lugar de la página real
   const isFallbackIndex = html.includes("<!DOCTYPE html") && html.includes('<div id="app"');
 
   if (isFallbackIndex) {
     console.warn(`Página "${page}" no existe, mostrando 404`);
     navigateTo("404", true);
-    return ;
+    return;
   }
 
   const app = document.getElementById('app')!;
@@ -91,22 +117,26 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
     if (!s.src) {
       const inline = document.createElement('script');
       inline.textContent = s.textContent || '';
-      // opcional: transferir type si existe (por ejemplo text/javascript)
       if (s.type) inline.type = s.type;
       document.head.appendChild(inline);
       document.head.removeChild(inline);
     }
   });
 
-  // Inicialización por página
+  // ============================================
+  // 🎯 INICIALIZACIÓN POR PÁGINA
+  // ============================================
+  
   switch (pageBase) {
     case "home":
       renderButtons();
       break;
+      
     case "login":
       validateLogin();
       setupRegisterForm();
       break;
+      
     case "dashboard":
     case "settings":
     case "playing":
@@ -114,9 +144,9 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
     case "tournament": {
       requestAnimationFrame(async () => {
         const userResponse = await getCurrentUser();
-        if (!userResponse || !localStorage.getItem("access_token"))
-        {
+        if (!userResponse || !localStorage.getItem("access_token")) {
           console.warn(t("UserNotFound"));
+          navigateTo("login", false, true);
           return;
         }
         const user = userResponse.user;
@@ -159,6 +189,7 @@ export async function navigateTo(page: string, skipPushState = false, replace = 
       });
       break;
     }
+    
     case "404":
       renderButtons();
       redirect("home");

@@ -102,6 +102,14 @@ export default class CreateSinglePlayerGameCommand implements ICommand<
                 return Result.error(ApplicationError.PlayerHasActiveMatch);
             }
 
+            // Verificar si el usuario está en un torneo activo
+            const activeTournamentResult = await this.fastify.TournamentRepository.isUserInActiveTournament({
+                userId: userId,
+            });
+            if (activeTournamentResult.isSuccess && activeTournamentResult.value) {
+                return Result.error(ApplicationError.PlayerHasActiveTournament);
+            }
+
             const winnerScore = request.winnerScore || 5;
             const maxGameTime = request.maxGameTime || 120;
             const aiDifficulty = request.aiDifficulty || 0.95;

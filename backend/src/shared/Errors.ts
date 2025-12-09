@@ -203,4 +203,5 @@ export enum ApplicationError {
     ParticipantNotFound = 'ParticipantNotFound',
     ParticipantNotActive = 'ParticipantNotActive',
     MatchLimitReached = 'MatchLimitReached',
+    PlayerHasActiveTournament = 'PlayerHasActiveTournament',
 }

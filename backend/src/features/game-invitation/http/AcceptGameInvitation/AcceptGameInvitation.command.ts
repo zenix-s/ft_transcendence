@@ -61,7 +61,15 @@ export default class AcceptGameInvitationCommand implements ICommand<
                 return Result.error(ApplicationError.GameNotFound);
             }
 
-            // 2: Obtener el tipo de juego usando el gameTypeId del match
+            // 2: Verificar si el usuario está en un torneo activo
+            const activeTournamentResult = await this.fastify.TournamentRepository.isUserInActiveTournament({
+                userId: userId as number,
+            });
+            if (activeTournamentResult.isSuccess && activeTournamentResult.value) {
+                return Result.error(ApplicationError.PlayerHasActiveTournament);
+            }
+
+            // 3: Obtener el tipo de juego usando el gameTypeId del match
             const matchTypeId = match.matchTypeId;
             const matchType = MatchType.byId(matchTypeId);
             if (!matchType) {

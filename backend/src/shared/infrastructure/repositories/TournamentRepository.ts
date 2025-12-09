@@ -26,6 +26,7 @@ export interface ITournamentRepository {
     findById({ id }: { id: number }): Promise<Result<Tournament | null>>;
     update({ tournament }: { tournament: Tournament }): Promise<Result<Tournament>>;
     isUserAdminOfActiveTournament({ userId }: { userId: number }): Promise<Result<boolean>>;
+    isUserInActiveTournament({ userId }: { userId: number }): Promise<Result<boolean>>;
 }
 
 class TournamentRepository extends AbstractRepository implements ITournamentRepository {
@@ -411,6 +412,25 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
 
             const isAdmin = (result?.count || 0) > 0;
             return Result.success(isAdmin);
+        } catch {
+            return Result.error(ApplicationError.DatabaseServiceUnavailable);
+        }
+    }
+
+    async isUserInActiveTournament({ userId }: { userId: number }): Promise<Result<boolean>> {
+        try {
+            const result = await this.findOne<{ count: number }>(
+                `
+                    SELECT COUNT(*) as count
+                    FROM tournaments t
+                    INNER JOIN tournament_participants tp ON t.id = tp.tournament_id
+                    WHERE tp.user_id = ?
+                    AND t.status IN ('${Tournament.STATUS.UPCOMING}', '${Tournament.STATUS.ONGOING}')
+                `,
+                [userId]
+            );
+
+            return Result.success((result?.count || 0) > 0);
         } catch {
             return Result.error(ApplicationError.DatabaseServiceUnavailable);
         }

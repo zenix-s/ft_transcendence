@@ -177,10 +177,12 @@ if (toggle) {
         ) as HTMLCanvasElement;
         if (canvas) {
             const ws = getGameSocket();
+            if (!ws)
+                return;
             if (localStorage.getItem('theme') === 'dark') {
                 const borderColor = getColor('--color-primary');
                 const bgColor = getColor('--color-secondary');
-                setColors(ws?.getScene(), bgColor, borderColor);
+                setColors(ws.getScene(), bgColor, borderColor);
             } else {
                 const borderColor = getColor('--color-secondary');
                 const bgColor = getColor('--color-primary');

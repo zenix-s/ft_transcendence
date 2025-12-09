@@ -60,14 +60,19 @@ export async function modal({
         icon_msg = 'warning';
     } else if (type === 'gameFinished') {
         const winnerName = winner;
+        console.log("win=", winner);
         const scoreText = `${player1Score ?? 0} - ${player2Score ?? 0}`;
 
-        let Winner = t('Winner');
-        if (Winner === 'AI_Player') Winner = t('AI');
-        const Unknown = t('Unknown');
+        if (winnerName === undefined)
+            titleText = `${t("tie")}`;
+        else {
+            const WinnerGame = t('WinnerGame');
+            if (winner === 'AI_Player')
+                winner = t('AI');
+            titleText = `${WinnerGame}: 🏆 ${winnerName ?? t('Unknown')} 🏆`;
+        }
         const FinalScore = t('FinalScore');
         title = t('gameFinished');
-        titleText = `🏆 ${Winner}: ${winnerName ?? Unknown}`;
         text = `${FinalScore}: ${scoreText}`;
         confirmButtonText = t('Return');
         icon_msg = undefined;

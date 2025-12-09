@@ -6,9 +6,11 @@ import {
     StandardMaterial,
 } from '@babylonjs/core';
 
-export function setColors(scene: Scene, bgColor: Color3, borderColor: Color3) {
+export function setColors(scene: Scene | undefined, bgColor: Color3, borderColor: Color3) {
     console.log('primary=', borderColor, 'secondary=', bgColor);
 
+    if (!scene)
+        return;
     scene.clearColor = Color4.FromColor3(bgColor);
 
     const borders = new StandardMaterial('lineMat');

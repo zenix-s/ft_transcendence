@@ -17,13 +17,11 @@ export enum TournamentSocketActions {
 export interface TournamentWebSocketMessage {
     action: TournamentSocketActions;
     tournamentId?: number;
+    tournamentName?: string;
     userId?: number;
     targetUserId?: number;
     matchId?: number;
-    opponentId?: number | null;
-    isAgainstAI?: boolean;
     roundNumber?: number;
-    payload?: unknown;
     token?: string;
     error?: string;
 }
@@ -124,36 +122,36 @@ export class TournamentWebSocketService {
         );
     }
 
-    notifyTournamentStarted(tournamentId: number) {
+    notifyTournamentStarted(tournamentId: number, tournamentName: string) {
         this.broadcastToTournament(tournamentId, {
             action: TournamentSocketActions.TOURNAMENT_STARTED,
             tournamentId,
-            payload: { message: 'El torneo ha comenzado.' },
+            tournamentName,
         });
     }
 
-    notifyTournamentEnded(tournamentId: number) {
+    notifyTournamentEnded(tournamentId: number, tournamentName: string) {
         this.broadcastToTournament(tournamentId, {
             action: TournamentSocketActions.TOURNAMENT_ENDED,
             tournamentId,
-            payload: { message: 'El torneo ha finalizado.' },
+            tournamentName,
         });
     }
 
-    notifyMatchResult(tournamentId: number, matchId: number, winnerId: number, loserId: number) {
+    notifyMatchResult(tournamentId: number, matchId: number, tournamentName: string) {
         this.broadcastToTournament(tournamentId, {
             action: TournamentSocketActions.MATCH_RESULT,
             tournamentId,
+            tournamentName,
             matchId,
-            payload: { winnerId, loserId, message: 'Resultado de partida registrado.' },
         });
     }
 
-    notifyTournamentStateUpdated(tournamentId: number) {
+    notifyTournamentStateUpdated(tournamentId: number, tournamentName: string) {
         this.broadcastToTournament(tournamentId, {
             action: TournamentSocketActions.TOURNAMENT_STATE_UPDATED,
             tournamentId,
-            payload: { message: 'El estado del torneo ha sido actualizado.' },
+            tournamentName,
         });
     }
 
@@ -161,42 +159,33 @@ export class TournamentWebSocketService {
         tournamentId: number,
         userId: number,
         matchId: number,
-        opponentId: number | null,
-        isAgainstAI: boolean,
-        roundNumber: number
+        roundNumber: number,
+        tournamentName: string
     ) {
         this.sendToUser(userId, {
             action: TournamentSocketActions.MATCH_CREATED,
             tournamentId,
+            tournamentName,
             matchId,
-            opponentId,
-            isAgainstAI,
             roundNumber,
-            payload: {
-                message: `Tu partida de la ronda ${roundNumber} ha sido creada.`,
-            },
         });
     }
 
-    notifyNewRoundStarted(tournamentId: number, roundNumber: number) {
+    notifyNewRoundStarted(tournamentId: number, roundNumber: number, tournamentName: string) {
         this.broadcastToTournament(tournamentId, {
             action: TournamentSocketActions.NEW_ROUND_STARTED,
             tournamentId,
+            tournamentName,
             roundNumber,
-            payload: {
-                message: `Comienza la ronda ${roundNumber}.`,
-            },
         });
     }
 
-    notifyTournamentWon(tournamentId: number, winnerId: number) {
+    notifyTournamentWon(tournamentId: number, winnerId: number, tournamentName: string) {
         this.sendToUser(winnerId, {
             action: TournamentSocketActions.TOURNAMENT_WON,
             tournamentId,
+            tournamentName,
             userId: winnerId,
-            payload: {
-                message: '¡Felicidades! Has ganado el torneo.',
-            },
         });
     }
 }

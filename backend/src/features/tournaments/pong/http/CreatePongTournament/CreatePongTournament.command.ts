@@ -57,7 +57,8 @@ export class CreatePongTournamentCommand implements ICommand<
             // Paso 4: Notificar que el estado del torneo se ha actualizado
             if (this.fastify.TournamentWebSocketService?.notifyTournamentStateUpdated) {
                 this.fastify.TournamentWebSocketService.notifyTournamentStateUpdated(
-                    createTournamentResult.value
+                    createTournamentResult.value,
+                    request.name
                 );
             }
 

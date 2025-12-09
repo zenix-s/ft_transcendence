@@ -123,7 +123,10 @@ export class ActivePongTournament {
 
             // Paso 6: Notificar que el estado del torneo se ha actualizado
             if (this.fastify.TournamentWebSocketService?.notifyTournamentStateUpdated) {
-                this.fastify.TournamentWebSocketService.notifyTournamentStateUpdated(this.tournamentId);
+                this.fastify.TournamentWebSocketService.notifyTournamentStateUpdated(
+                    this.tournamentId,
+                    tournament.name
+                );
             }
 
             return Result.success(undefined);
@@ -192,12 +195,16 @@ export class ActivePongTournament {
 
             // Paso 4: Notificar que el estado del torneo se ha actualizado
             if (this.fastify.TournamentWebSocketService?.notifyTournamentStateUpdated) {
-                this.fastify.TournamentWebSocketService.notifyTournamentStateUpdated(this.tournamentId);
+                this.fastify.TournamentWebSocketService.notifyTournamentStateUpdated(
+                    this.tournamentId,
+                    tournament.name
+                );
             }
 
             this.fastify.TournamentWebSocketService.sendToUser(userId, {
                 action: TournamentSocketActions.TOURNAMENT_LEAVE,
                 tournamentId: this.tournamentId,
+                tournamentName: tournament.name,
             });
 
             return Result.success(undefined);
@@ -258,7 +265,10 @@ export class ActivePongTournament {
 
             // Paso 3: Notificar por websocket si existe el servicio
             if (this.fastify.TournamentWebSocketService?.notifyTournamentStarted) {
-                this.fastify.TournamentWebSocketService.notifyTournamentStarted(this.tournamentId);
+                this.fastify.TournamentWebSocketService.notifyTournamentStarted(
+                    this.tournamentId,
+                    tournament.name
+                );
             }
 
             // Paso 4: Crear todos los matches de la primera ronda
@@ -353,9 +363,8 @@ export class ActivePongTournament {
                     this.tournamentId,
                     player1Id,
                     matchId,
-                    player2Id || null,
-                    isAgainstAI,
-                    round.roundNumber
+                    round.roundNumber,
+                    tournament.name
                 );
 
                 if (player2Id) {
@@ -363,9 +372,8 @@ export class ActivePongTournament {
                         this.tournamentId,
                         player2Id,
                         matchId,
-                        player1Id,
-                        false,
-                        round.roundNumber
+                        round.roundNumber,
+                        tournament.name
                     );
                 }
             }
@@ -472,12 +480,11 @@ export class ActivePongTournament {
             await this.fastify.TournamentRepository.update({ tournament });
 
             // Paso 7: Notificar el resultado por websocket
-            if (this.fastify.TournamentWebSocketService?.notifyMatchResult && matchup.matchId && winnerId) {
+            if (this.fastify.TournamentWebSocketService?.notifyMatchResult && matchup.matchId) {
                 this.fastify.TournamentWebSocketService.notifyMatchResult(
                     this.tournamentId,
                     matchup.matchId,
-                    winnerId,
-                    loserId || 0
+                    tournament.name
                 );
             }
 
@@ -506,13 +513,17 @@ export class ActivePongTournament {
                 await this.fastify.TournamentRepository.update({ tournament });
 
                 if (this.fastify.TournamentWebSocketService?.notifyTournamentEnded) {
-                    this.fastify.TournamentWebSocketService.notifyTournamentEnded(this.tournamentId);
+                    this.fastify.TournamentWebSocketService.notifyTournamentEnded(
+                        this.tournamentId,
+                        tournament.name
+                    );
                 }
 
                 if (this.fastify.TournamentWebSocketService?.notifyTournamentWon) {
                     this.fastify.TournamentWebSocketService.notifyTournamentWon(
                         this.tournamentId,
-                        winner.userId
+                        winner.userId,
+                        tournament.name
                     );
                 }
 
@@ -525,7 +536,10 @@ export class ActivePongTournament {
                 await this.fastify.TournamentRepository.update({ tournament });
 
                 if (this.fastify.TournamentWebSocketService?.notifyTournamentEnded) {
-                    this.fastify.TournamentWebSocketService.notifyTournamentEnded(this.tournamentId);
+                    this.fastify.TournamentWebSocketService.notifyTournamentEnded(
+                        this.tournamentId,
+                        tournament.name
+                    );
                 }
 
                 return;
@@ -543,7 +557,8 @@ export class ActivePongTournament {
             if (this.fastify.TournamentWebSocketService?.notifyNewRoundStarted) {
                 this.fastify.TournamentWebSocketService.notifyNewRoundStarted(
                     this.tournamentId,
-                    nextRound.roundNumber
+                    nextRound.roundNumber,
+                    tournament.name
                 );
             }
 

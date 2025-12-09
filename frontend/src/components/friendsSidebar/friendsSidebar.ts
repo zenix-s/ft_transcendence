@@ -157,44 +157,57 @@ export async function initFriendsSidebar() {
                 type: 'gameCreation',
             });
             if (confirmed && typeof confirmed !== 'boolean') {
-                // ✅ confirmed es ahora un GameOptions
-                console.log('Opciones seleccionadas:', confirmed);
-
-                // Ejemplo de uso
-                /* showToast(
-          `Puntos: ${confirmed.maxPoints}, Tiempo: ${confirmed.maxTime}, Modo: ${confirmed.gameMode}`,
-          "success"
-        ); */
-
+                // Crear el juego con las opciones seleccionadas
                 const createResult = await fetchGameId(
                     confirmed.maxPoints,
                     confirmed.maxTime,
                     confirmed.gameMode
                 ); // Create game PONG --> Y si hay otro juego?
-
-                console.log(
-                    'confirmed=',
-                    confirmed,
-                    'estoy invitando en el modo=',
-                    confirmed.gameMode,
-                    JSON.stringify(createResult)
-                );
-
                 if (!createResult.isSuccess || !createResult.gameId) {
-                    //showToast(t('NoGameId'), 'error');
-                    //console.warn('NoGameId');
                     showToast(t(createResult.error || 'NoGameId'), 'error');
                     return;
                 }
 
+                // Conectarse al juego vía WebSocket
                 const token = localStorage.getItem('access_token');
                 const ws = createGameSocket(token, createResult.gameId!);
                 ws.authenticate(createResult.gameId);
 
-                if (!(await inviteMultiplayer(username, createResult.gameId))) {
-                    ws.invitationRejected();
+                // Se espera a la conexión
+                let connected: boolean = false;
+                let retries: number = 0;
+                const maxRetries: number = 5;
+                while (!connected && retries < maxRetries) {
+                    connected = ws.isConnected();
+                    if (!connected) {
+                        await new Promise((resolve) =>
+                            setTimeout(resolve, 500)
+                        );
+                        retries++;
+                    }
+                }
+
+                if (!connected) {
+                    // TODO: añadir traducción GameServerConnectionFailed
+                    showToast(t('GameServerConnectionFailed'), 'error');
                     return;
                 }
+
+                // Enviar la invitación
+                const inviteResult = await inviteMultiplayer(
+                    username,
+                    createResult.gameId
+                );
+                if (!inviteResult.isSucces) {
+                    ws.leaveGame();
+                    showToast(
+                        t(inviteResult.error || 'InvitationFailed'),
+                        'error'
+                    ); // TODO: añadir error InvitationFailed
+                    return;
+                }
+
+                showToast(t('InvitationSent'), 'success');
             }
         }
     });
@@ -207,7 +220,7 @@ export async function inviteMultiplayer(
     username: string | undefined,
     gameId: number,
     message: string = 'te invita a jugar a Pong'
-) {
+): Promise<{ isSucces: boolean; error?: string }> {
     try {
         const response = await fetch(
             apiUrl(`/game-invitation/send-invitation`),
@@ -229,17 +242,18 @@ export async function inviteMultiplayer(
 
         if (!response.ok) {
             const errorcode = data.error || 'UserNotFound';
-            if (errorcode === 'InvalidRequestData')
-                showToast(t('AlreadyInvitationInProgress'), 'error');
-            else showToast(t(errorcode), 'error');
-            return false;
+            // if (errorcode === 'InvalidRequestData')
+            //     showToast(t('AlreadyInvitationInProgress'), 'error');
+            // else showToast(t(errorcode), 'error');
+            return { isSucces: false, error: errorcode };
         }
 
-        showToast(t('InvitationSentSuccessfully'));
-        return true;
+        // showToast(t('InvitationSentSuccessfully'));
+        // return true;
+        return { isSucces: true };
     } catch {
-        showToast(t('NetworkOrServerError'), 'error');
-        return false;
+        // showToast(t('NetworkOrServerError'), 'error');
+        return { isSucces: false, error: 'NetworkOrServerError' };
     }
 }
 

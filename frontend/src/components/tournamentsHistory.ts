@@ -42,19 +42,19 @@ export async function loadTournamentsHistory(perPage: number = 5) {
 
         const activeTournamentsData: TournamentsResponse =
             await activeTournaments.json();
-        console.log(activeTournamentsData); // DB
+        //console.log(activeTournamentsData); // DB
         //return; // DB
 
         // 2. Insertar datos en el tbody
         const tbody = document.querySelector<HTMLTableSectionElement>(
             '#tournamentsTable tbody'
         )!;
-        console.log('TORNEOS RECIBIDOS:', activeTournamentsData.tournaments); // DB
+        //console.log('TORNEOS RECIBIDOS:', activeTournamentsData.tournaments); // DB
 
         // DB
-        activeTournamentsData.tournaments.forEach((t) => {
+        /* activeTournamentsData.tournaments.forEach((t) => {
             console.log('matchSettings de torneo', t.id, ':', t.matchSettings);
-        });
+        }); */
 
         tbody.innerHTML = activeTournamentsData.tournaments
             .map((tournament, i) => {
@@ -170,9 +170,9 @@ export function getParticipationButton(tournament: Tournament): string {
     const userRole = tournament.userRole; // 'participant' | 'admin' | 'admin-participant'
     const participantCount = tournament.participantCount;
 
-    console.log(
-        `Tournament ID: ${tournamentId}, isRegistered: ${isRegistered}, status: ${status}`
-    ); // DB
+    // console.log(
+    //     `Tournament ID: ${tournamentId}, isRegistered: ${isRegistered}, status: ${status}`
+    // ); // DB
 
     const openDiv = `<div class="flex flex-col md:flex-row items-center gap-2 justify-center">`;
     let htmlToReturn = '';
@@ -214,7 +214,7 @@ export async function handleParticipationJoinOrLeave(target: HTMLElement) {
 
     if (!tournamentId || !action) return;
 
-    console.log('Tournament ID:', tournamentId, 'action:', action); // DB
+    //console.log('Tournament ID:', tournamentId, 'action:', action); // DB
 
     try {
         const response = await fetch(
@@ -260,7 +260,7 @@ export async function handleParticipationStartTournament(target: HTMLElement) {
 
     if (!tournamentId || !action) return;
 
-    console.log('Tournament ID:', tournamentId, 'action:', action); // DB
+    //console.log('Tournament ID:', tournamentId, 'action:', action); // DB
 
     try {
         const response = await fetch(
@@ -306,7 +306,7 @@ export async function handleParticipationResults(target: HTMLElement) {
 
     if (!tournamentId) return;
 
-    console.log('Tournament ID:', tournamentId); // DB
+    //console.log('Tournament ID:', tournamentId); // DB
 
     try {
         const response = await fetch(

@@ -274,7 +274,9 @@ export const translations: Record<Language, Record<string, string>> = {
         TournamentStateUpdated: 'Tournament state updated',
         TournamentEnded: 'Tournament ended',
         TournamentStarted: 'Tournament started',
-        TournamentWon: 'Tournament won',
+        TournamentWon: 'You have won the tournament',
+        TournamentInviteDeclined: 'Tournament invitation declined',
+        TournamentLeave: 'Left the tournament successfully',
     },
     es: {
         start: 'Comenzar',
@@ -556,7 +558,9 @@ export const translations: Record<Language, Record<string, string>> = {
         TournamentStateUpdated: 'Estado del torneo actualizado',
         TournamentEnded: 'Torneo finalizado',
         TournamentStarted: 'Torneo iniciado',
-        TournamentWon: 'Torneo ganado',
+        TournamentWon: 'Has ganado el torneo',
+        TournamentInviteDeclined: 'Invitación al torneo rechazada',
+        TournamentLeave: 'Has salido del torneo con éxito',
     },
     fr: {
         start: 'Démarrer',
@@ -843,7 +847,9 @@ export const translations: Record<Language, Record<string, string>> = {
         TournamentStateUpdated: 'État du tournoi mis à jour',
         TournamentEnded: 'Tournoi terminé',
         TournamentStarted: 'Tournoi démarré',
-        TournamentWon: 'Tournoi gagné',
+        TournamentWon: 'Vous avez gagné le tournoi',
+        TournamentInviteDeclined: "Invitation au tournoi déclinée",
+        TournamentLeave: 'Quitter le tournoi avec succès',
     },
 };
 

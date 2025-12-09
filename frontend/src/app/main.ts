@@ -277,7 +277,8 @@ document.addEventListener('i18n-updated', async () => {
 });
 
 export async function reloadGameHistory(token: string | null) {
-    if (matchTable && token) {
+    const matchTableEl = document.getElementById('matchTable');
+    if (matchTable && token && matchTableEl) {
         const matchTableEl = matchTable.dom;
         const matchHeader =
             matchTableEl.parentElement?.querySelector<HTMLDivElement>(
@@ -308,7 +309,8 @@ export async function reloadGameHistory(token: string | null) {
 }
 
 export async function reloadTournamentsHistory() {
-    if (tournamentTable) {
+    const tournamentTableEl = document.getElementById('tournamentsTable');
+    if (tournamentTable && tournamentTableEl) {
         const tableEl = tournamentTable.dom;
         const headerDiv =
             tableEl.parentElement?.querySelector<HTMLDivElement>(

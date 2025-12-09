@@ -8,6 +8,7 @@ import { Match } from '@shared/domain/Entities/Match.entity';
 import { PongGame } from '@features/pong-game-manager/domain/PongGame.entity';
 import { TournamentRound, ITournamentMatchup } from '@shared/domain/Entities/TournamentRound.entity';
 import { CONSTANTES_APP } from '@shared/constants/ApplicationConstants';
+import { AIDifficulty } from '@features/pong-game-manager/domain/AIOpponent.entity';
 import { TournamentSocketActions } from '../websocket/tournament.websocket';
 
 export class ActivePongTournament {
@@ -120,6 +121,11 @@ export class ActivePongTournament {
                 return Result.error(updateResult.error || ApplicationError.ParticipantAdditionError);
             }
 
+            // Paso 6: Notificar que el estado del torneo se ha actualizado
+            if (this.fastify.TournamentWebSocketService?.notifyTournamentStateUpdated) {
+                this.fastify.TournamentWebSocketService.notifyTournamentStateUpdated(this.tournamentId);
+            }
+
             return Result.success(undefined);
         } catch (error) {
             return this.fastify.handleError({
@@ -184,11 +190,8 @@ export class ActivePongTournament {
                 return Result.error(updateResult.error || ApplicationError.TournamentUpdateError);
             }
 
-            // Paso 8: Notificar el cambio de estado si el torneo fue cancelado
-            if (
-                shouldCancelTournament &&
-                this.fastify.TournamentWebSocketService?.notifyTournamentStateUpdated
-            ) {
+            // Paso 4: Notificar que el estado del torneo se ha actualizado
+            if (this.fastify.TournamentWebSocketService?.notifyTournamentStateUpdated) {
                 this.fastify.TournamentWebSocketService.notifyTournamentStateUpdated(this.tournamentId);
             }
 
@@ -251,14 +254,14 @@ export class ActivePongTournament {
                 return Result.error(updateResult.error || ApplicationError.TournamentStartError);
             }
 
-            // Paso 7: Notificar por websocket que el torneo ha comenzado
+            await new Promise((resolve) => setTimeout(resolve, 5000));
+
+            // Paso 3: Notificar por websocket si existe el servicio
             if (this.fastify.TournamentWebSocketService?.notifyTournamentStarted) {
                 this.fastify.TournamentWebSocketService.notifyTournamentStarted(this.tournamentId);
             }
 
-            await new Promise((resolve) => setTimeout(resolve, 5000));
-
-            // Paso 8: Crear todos los matches de la primera ronda
+            // Paso 4: Crear todos los matches de la primera ronda
             await this.createRoundMatches(tournament, firstRound);
 
             return Result.success(undefined);
@@ -310,7 +313,7 @@ export class ActivePongTournament {
                 matchSettingsObj.maxScore || 5,
                 matchSettingsObj.maxGameTime || 120,
                 isAgainstAI,
-                isAgainstAI ? 0.95 : 0.95, // Dificultad máxima para AI
+                AIDifficulty.MEDIUM,
                 tournament.matchSettings.visualStyle
             );
 
@@ -409,9 +412,6 @@ export class ActivePongTournament {
             // Paso 3: Determinar ganador y perdedor basado en el estado FINAL del match
             let winnerId: number | null = null;
             let loserId: number | null = null;
-
-            if (match.hasPlayer(0)) {
-            }
 
             if (match.status === Match.STATUS.COMPLETED) {
                 const players = match.players;

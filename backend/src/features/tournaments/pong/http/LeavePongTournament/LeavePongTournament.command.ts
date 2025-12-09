@@ -53,12 +53,7 @@ export class LeavePongTournamentCommand implements ICommand<
                 return Result.error(leaveTournamentResult.error || ApplicationError.ParticipantNotFound);
             }
 
-            // Paso 4: Notificar que el estado del torneo se ha actualizado
-            if (this.fastify.TournamentWebSocketService?.notifyTournamentStateUpdated) {
-                this.fastify.TournamentWebSocketService.notifyTournamentStateUpdated(request.tournamentId);
-            }
-
-            // Paso 5: Verificar si el torneo fue cancelado para ajustar el mensaje
+            // Paso 4: Verificar si el torneo fue cancelado para ajustar el mensaje
             const activeTournament = this.fastify.PongTournamentManager.getActiveTournament(
                 request.tournamentId
             );

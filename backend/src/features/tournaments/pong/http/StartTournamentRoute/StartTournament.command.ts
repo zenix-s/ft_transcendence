@@ -47,16 +47,6 @@ export class StartTournamentCommand implements ICommand<IStartTournamentRequest,
                 return Result.error(startResult.error || ApplicationError.TournamentStartError);
             }
 
-            // Paso 3: Notificar por websocket si existe el servicio
-            if (this.fastify.TournamentWebSocketService?.notifyTournamentStarted) {
-                this.fastify.TournamentWebSocketService.notifyTournamentStarted(request.tournamentId);
-            }
-
-            // Paso 4: Notificar que el estado del torneo se ha actualizado
-            if (this.fastify.TournamentWebSocketService?.notifyTournamentStateUpdated) {
-                this.fastify.TournamentWebSocketService.notifyTournamentStateUpdated(request.tournamentId);
-            }
-
             return Result.success({
                 success: true,
                 message: 'Torneo iniciado correctamente',

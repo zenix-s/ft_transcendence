@@ -53,11 +53,6 @@ export class JoinPongTournamentCommand implements ICommand<
                 return Result.error(joinTournamentResult.error || ApplicationError.ParticipantAdditionError);
             }
 
-            // Paso 4: Notificar que el estado del torneo se ha actualizado
-            if (this.fastify.TournamentWebSocketService?.notifyTournamentStateUpdated) {
-                this.fastify.TournamentWebSocketService.notifyTournamentStateUpdated(request.tournamentId);
-            }
-
             return Result.success({
                 success: true,
                 message: 'Te has unido al torneo exitosamente',

@@ -426,6 +426,7 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
                     INNER JOIN tournament_participants tp ON t.id = tp.tournament_id
                     WHERE tp.user_id = ?
                     AND t.status IN ('${Tournament.STATUS.UPCOMING}', '${Tournament.STATUS.ONGOING}')
+                    AND tp.status IN ('${TournamentParticipant.STATUS.REGISTERED}', '${TournamentParticipant.STATUS.ACTIVE}')
                 `,
                 [userId]
             );

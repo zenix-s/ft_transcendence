@@ -177,6 +177,7 @@ export enum ApplicationError {
      * Jugador Ya Tiene Partida Activa - El jugador ya tiene una partida en curso o pendiente
      */
     PlayerHasActiveMatch = 'PlayerHasActiveMatch',
+    CurrentPlayerHasActiveMatch = 'CurrentPlayerHasActiveMatch',
 
     // Errores de invitaciones de juego
     InvalidGameType = 'InvalidGameType',
@@ -204,4 +205,5 @@ export enum ApplicationError {
     ParticipantNotActive = 'ParticipantNotActive',
     MatchLimitReached = 'MatchLimitReached',
     PlayerHasActiveTournament = 'PlayerHasActiveTournament',
+    CurrentPlayerHasActiveTournament = 'CurrentPlayerHasActiveTournament',
 }

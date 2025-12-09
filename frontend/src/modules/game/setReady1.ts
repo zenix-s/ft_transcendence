@@ -39,22 +39,21 @@ export function ready1() {
         let AIdiff = GameDifficulty.NORMAL;
         if (difficulty === 'easy') AIdiff = GameDifficulty.EASY;
         else if (difficulty === 'hard') AIdiff = GameDifficulty.HARD;
-        const id = await fetchSinglePlayerGameId(
+        const createResult = await fetchSinglePlayerGameId(
             Number(maxPoints),
             AIdiff,
             Number(maxTime),
             playerView
         );
-        if (!id) {
-            showToast(t('NoGameId'), 'error');
-            console.warn('NoGameId');
+        if (!createResult.isSuccess || !createResult.gameId) {
+            showToast(t(createResult.error || 'NoGameId'), 'error');
             navigateTo('dashboard', false, true);
             return;
         }
         const token = localStorage.getItem('access_token');
-        createGameSocket(token, id);
+        createGameSocket(token, createResult.gameId);
 
-        console.log('single player id =', id);
-        navigateTo(`playing?id=${id}`);
+        console.log('single player id =', createResult);
+        navigateTo(`playing?id=${createResult}`);
     });
 }

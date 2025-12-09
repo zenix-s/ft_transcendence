@@ -69,7 +69,7 @@ interface matchResultMessage {
     tournamentName: string;
     matchId: number;
     roundNumber: number;
-//     payload: payload;
+    //     payload: payload;
 }
 
 interface tournamentWonMessage {
@@ -209,7 +209,7 @@ export class TournamentWebSocketClient {
                     `🔄 [Tournaments] ${t('TournamentStateUpdated')}`,
                     msg.tournamentId
                 );
-                console.log("» Actualizando historia de torneos..."); // DB
+                console.log('» Actualizando historia de torneos...'); // DB
                 await refreshTournamentsHistory(); // Actualizar la historia de torneos
                 break;
             }
@@ -249,7 +249,9 @@ export class TournamentWebSocketClient {
 
                     navigateTo(`playing?id=${msg.matchId}`);
                 } else {
-                    console.log(`🚫 [Tournaments] ${t('TournamentInviteDeclined')}`);
+                    console.log(
+                        `🚫 [Tournaments] ${t('TournamentInviteDeclined')}`
+                    );
                     showToast(t('TournamentInviteDeclined'), 'success');
                     // Manejar rechazo (si es posible en torneos)
                 }
@@ -294,7 +296,7 @@ export class TournamentWebSocketClient {
                     'success'
                 ); */
 
-                console.log("» Actualizando historia de torneos..."); // DB
+                console.log('» Actualizando historia de torneos...'); // DB
                 await refreshTournamentsHistory();
                 break;
             }

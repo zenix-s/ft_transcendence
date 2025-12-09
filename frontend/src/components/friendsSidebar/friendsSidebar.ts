@@ -166,23 +166,35 @@ export async function initFriendsSidebar() {
           "success"
         ); */
 
-                const gameId = await fetchGameId(
+                const createResult = await fetchGameId(
                     confirmed.maxPoints,
                     confirmed.maxTime,
                     confirmed.gameMode
                 ); // Create game PONG --> Y si hay otro juego?
+
                 console.log(
                     'confirmed=',
                     confirmed,
                     'estoy invitando en el modo=',
-                    confirmed.gameMode
+                    confirmed.gameMode,
+                    JSON.stringify(createResult)
                 );
 
-                const token = localStorage.getItem('access_token');
-                const ws = createGameSocket(token, gameId);
-                ws.authenticate(gameId);
+                if (!createResult.isSuccess || !createResult.gameId) {
+                    //showToast(t('NoGameId'), 'error');
+                    //console.warn('NoGameId');
+                    showToast(t(createResult.error || 'NoGameId'), 'error');
+                    return;
+                }
 
-                inviteMultiplayer(username, gameId);
+                const token = localStorage.getItem('access_token');
+                const ws = createGameSocket(token, createResult.gameId!);
+                ws.authenticate(createResult.gameId);
+
+                if (!(await inviteMultiplayer(username, createResult.gameId))) {
+                    ws.invitationRejected();
+                    return;
+                }
             }
         }
     });

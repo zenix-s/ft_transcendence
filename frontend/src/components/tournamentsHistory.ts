@@ -233,7 +233,9 @@ export async function handleParticipationJoinOrLeave(target: HTMLElement) {
             const errorcode = data.error;
             if (errorcode === 'InvalidRequest')
                 showToast(t('ParticipantAdditionError'), 'error');
-            else if (errorcode === 'TournamentNotFound') {
+            else if (errorcode === 'PlayerHasActiveMatch') {
+                showToast(t('PlayerHasActiveMatch'), 'error');
+            } else if (errorcode === 'TournamentNotFound') {
                 showToast(t(errorcode), 'error');
                 await refreshTournamentsHistory();
             } else showToast(t(errorcode), 'error');

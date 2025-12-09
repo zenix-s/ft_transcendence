@@ -277,6 +277,12 @@ export const translations: Record<Language, Record<string, string>> = {
         TournamentWon: 'You have won the tournament',
         TournamentInviteDeclined: 'Tournament invitation declined',
         TournamentLeave: 'Left the tournament successfully',
+        PlayerHasActiveMatch: 'The player has an active match',
+        PlayerHasActiveTournament: 'The player has an active tournament',
+        CurrentPlayerHasActiveMatch:
+            'You have an active match, please finish it',
+        CurrentPlayerHasActiveTournament:
+            'You have an active tournament, please finish it',
     },
     es: {
         start: 'Comenzar',
@@ -561,6 +567,12 @@ export const translations: Record<Language, Record<string, string>> = {
         TournamentWon: 'Has ganado el torneo',
         TournamentInviteDeclined: 'Invitación al torneo rechazada',
         TournamentLeave: 'Has salido del torneo con éxito',
+        PlayerHasActiveMatch: 'El jugador tiene una partida activa',
+        PlayerHasActiveTournament: 'El jugador tiene un torneo activo',
+        CurrentPlayerHasActiveMatch:
+            'Tienes una partida activa, por favor termínala',
+        CurrentPlayerHasActiveTournament:
+            'Tienes un torneo activo, por favor termínalo',
     },
     fr: {
         start: 'Démarrer',
@@ -848,8 +860,14 @@ export const translations: Record<Language, Record<string, string>> = {
         TournamentEnded: 'Tournoi terminé',
         TournamentStarted: 'Tournoi démarré',
         TournamentWon: 'Vous avez gagné le tournoi',
-        TournamentInviteDeclined: "Invitation au tournoi déclinée",
+        TournamentInviteDeclined: 'Invitation au tournoi déclinée',
         TournamentLeave: 'Quitter le tournoi avec succès',
+        PlayerHasActiveMatch: 'Le joueur a un match actif',
+        PlayerHasActiveTournament: 'Le joueur a un tournoi actif',
+        CurrentPlayerHasActiveMatch:
+            'Vous avez un match actif, veuillez le terminer',
+        CurrentPlayerHasActiveTournament:
+            'Vous avez un tournoi actif, veuillez le terminer',
     },
 };
 

@@ -66,7 +66,7 @@ export default class AcceptGameInvitationCommand implements ICommand<
                 userId: userId as number,
             });
             if (activeTournamentResult.isSuccess && activeTournamentResult.value) {
-                return Result.error(ApplicationError.PlayerHasActiveTournament);
+                return Result.error(ApplicationError.CurrentPlayerHasActiveTournament);
             }
 
             // 3: Obtener el tipo de juego usando el gameTypeId del match

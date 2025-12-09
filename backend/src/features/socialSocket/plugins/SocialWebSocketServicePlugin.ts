@@ -27,5 +27,5 @@ const SocialWebSocketServicePlugin: FastifyPluginAsync<FastifyPluginOptions> = a
 
 export default fp(SocialWebSocketServicePlugin, {
     name: 'socialWebSocketService',
-    dependencies: ['DbConnection', 'UserRepository', 'FriendShipRepository'],
+    dependencies: ['DbConnection', 'UserRepository', 'FriendShipRepository', 'MatchRepository'],
 });

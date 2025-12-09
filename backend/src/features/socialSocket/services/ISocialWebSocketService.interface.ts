@@ -1,7 +1,19 @@
 import { WebSocket } from '@fastify/websocket';
 import { Result } from '@shared/abstractions/Result';
-import { Friend, SocialWebSocketMessage, SocialWebSocketResponse } from '../Social.types';
+import {
+    Friend,
+    SocialWebSocketMessage,
+    SocialWebSocketResponse,
+    ActiveGameOpponent,
+} from '../Social.types';
 import { IMatchSettings } from '@shared/domain/ValueObjects/MatchSettings.value';
+
+export interface CheckActiveGameResult {
+    hasActiveGame: boolean;
+    gameId?: number;
+    status?: string;
+    opponent?: ActiveGameOpponent;
+}
 
 export interface ISocialWebSocketService {
     /**
@@ -13,6 +25,11 @@ export interface ISocialWebSocketService {
      * Obtiene la lista de amigos de un usuario específico
      */
     getFriendsList(userId: number): Promise<Result<Friend[]>>;
+
+    /**
+     * Verifica si el usuario tiene un juego activo (pending o in_progress)
+     */
+    checkActiveGame(userId: number): Promise<Result<CheckActiveGameResult>>;
 
     /**
      * Actualiza el estado de conexión del usuario en la base de datos
@@ -118,6 +135,11 @@ export interface ISocialWebSocketService {
      * Envía la lista de amigos a un WebSocket
      */
     sendFriendsList(socket: WebSocket, friends: Friend[]): void;
+
+    /**
+     * Envía el resultado de la verificación de juego activo
+     */
+    sendCheckActiveGameResult(socket: WebSocket, result: CheckActiveGameResult): void;
 
     /**
      * Envía una actualización del estado de conexión de un amigo

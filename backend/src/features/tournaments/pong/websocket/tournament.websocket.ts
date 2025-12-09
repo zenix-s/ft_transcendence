@@ -103,7 +103,7 @@ export class TournamentWebSocketService {
 
     async authenticateUser(token: string): Promise<{ isSuccess: boolean; value?: number }> {
         try {
-            const decoded = await this.fastify.jwt.verify(token);
+            const decoded = this.fastify.jwt.verify(token);
             if (typeof decoded === 'object' && decoded !== null && 'id' in decoded) {
                 return { isSuccess: true, value: decoded.id as number };
             }

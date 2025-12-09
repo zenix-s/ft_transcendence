@@ -87,6 +87,14 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
                 return Result.error(ApplicationError.PlayerHasActiveMatch);
             }
 
+            // Verificar si el usuario está en un torneo activo
+            const activeTournamentResult = await this.fastify.TournamentRepository.isUserInActiveTournament({
+                userId: userId,
+            });
+            if (activeTournamentResult.isSuccess && activeTournamentResult.value) {
+                return Result.error(ApplicationError.PlayerHasActiveTournament);
+            }
+
             const gameType = MatchType.PONG;
 
             const playerIds = [userId];

@@ -7,11 +7,11 @@ import { createGameSocket } from '../game/gameSocket';
 import { modal } from '@/components/modal';
 
 // TODO: Ajustar cuando el backend esté definido
-interface payload {
+/* interface payload {
     winnerId?: number;
     loserId?: number;
     message: string;
-}
+} */
 
 interface AuthSuccessMessage {
     action: 'auth';
@@ -26,56 +26,64 @@ interface ErrorMessage {
 interface tournamentStartedMessage {
     action: 'tournamentStarted';
     tournamentId: number;
-    payload: payload;
+    tournamentName: string;
+    // payload: payload;
 }
 
 interface tournamentEndedMessage {
     action: 'tournamentEnded';
     tournamentId: number;
-    payload: payload;
+    tournamentName: string;
+    // payload: payload;
 }
 
 interface tournamentStateUpdatedMessage {
     action: 'tournamentStateUpdated';
     tournamentId: number;
-    payload: payload;
+    tournamentName: string;
+    // payload: payload;
 }
 
 interface newRoundStartedMessage {
     action: 'newRoundStarted';
     tournamentId: number;
+    tournamentName: string;
     roundNumber: number;
-    payload: payload;
+    // payload: payload;
 }
 
 interface matchCreatedMessage {
     action: 'matchCreated';
     tournamentId: number;
+    tournamentName: string;
     matchId: number;
-    opponentId: number | null;
-    isAgainstAI: boolean;
+    // opponentId: number | null;
+    // isAgainstAI: boolean;
     roundNumber: number;
-    payload: payload;
+    // payload: payload;
 }
 
 interface matchResultMessage {
     action: 'matchResult';
     tournamentId: number;
+    tournamentName: string;
     matchId: number;
     roundNumber: number;
-    payload: payload;
+//     payload: payload;
 }
 
 interface tournamentWonMessage {
     action: 'tournamentWon';
     tournamentId: number;
+    tournamentName: string;
     userId: number;
-    payload: payload;
+    // payload: payload;
 }
 
 interface tournamentLeaveMessage {
     action: 'tournamenLeave';
     tournamentId: number;
+    tournamentName: string;
 }
 
 interface Tournament {
@@ -170,11 +178,11 @@ export class TournamentWebSocketClient {
             case 'tournamentStarted': {
                 const msg = message as tournamentStartedMessage;
                 console.log(
-                    `🏆 [Tournaments] ${t('TournamentStarted')}`,
-                    msg.tournamentId
+                    `🏆 [Tournaments] ${t('TournamentStarted')}: `,
+                    msg.tournamentName
                 );
                 showToast(
-                    `${t('TournamentStarted')}: ${msg.tournamentId}`,
+                    `${t('TournamentStarted')}: ${msg.tournamentName}`,
                     'success'
                 );
                 break;
@@ -184,11 +192,11 @@ export class TournamentWebSocketClient {
             case 'tournamentEnded': {
                 const msg = message as tournamentEndedMessage;
                 console.log(
-                    `🏆 [Tournaments] ${t('TournamentEnded')}`,
-                    msg.tournamentId
+                    `🏆 [Tournaments] ${t('TournamentEnded')}: `,
+                    msg.tournamentName
                 );
                 showToast(
-                    `${t('TournamentEnded')}: ${msg.tournamentId}`,
+                    `${t('TournamentEnded')}: ${msg.tournamentName}`,
                     'success'
                 );
                 break;
@@ -201,6 +209,7 @@ export class TournamentWebSocketClient {
                     `🔄 [Tournaments] ${t('TournamentStateUpdated')}`,
                     msg.tournamentId
                 );
+                console.log("» Actualizando historia de torneos..."); // DB
                 await refreshTournamentsHistory(); // Actualizar la historia de torneos
                 break;
             }
@@ -213,7 +222,7 @@ export class TournamentWebSocketClient {
                     msg.roundNumber
                 );
                 showToast(
-                    `${t('NewRoundStarted')}: ${msg.roundNumber}`,
+                    `${t('tournament')} ${msg.tournamentName}. {t('NewRoundStarted')}: ${msg.roundNumber}`,
                     'success'
                 );
                 break;
@@ -235,17 +244,13 @@ export class TournamentWebSocketClient {
                 });
 
                 if (confirmed) {
-                    // Guardar el modo de juego en localStorage para que initGame3D() lo use
-                    const playerView = '2D';
-                    localStorage.setItem('pendingGameView', playerView);
-
                     const token = localStorage.getItem('access_token');
                     createGameSocket(token, msg.matchId);
 
-                    // Solo navegar - initGame3D() se encargará del resto
                     navigateTo(`playing?id=${msg.matchId}`);
                 } else {
-                    console.log('Invitación de torneo rechazada');
+                    console.log(`🚫 [Tournaments] ${t('TournamentInviteDeclined')}`);
+                    showToast(t('TournamentInviteDeclined'), 'success');
                     // Manejar rechazo (si es posible en torneos)
                 }
 
@@ -253,25 +258,25 @@ export class TournamentWebSocketClient {
             }
 
             // Enviado SÓLO A LOS PARTICIPANTES cuando se reporta el resultado de una partida
-            case 'matchResult': {
+            /* case 'matchResult': {
                 const msg = message as matchResultMessage;
                 console.log(
                     `📊 [Tournaments] ${t('MatchResult')}`,
                     msg.matchId
                 );
-                showToast(`${t('MatchResult')}: ${msg.matchId}`, 'success');
+                //showToast(`${t('MatchResult')}: ${msg.matchId}`, 'success');
                 break;
-            }
+            } */
 
             // Enviado SÓLO AL PARTICIPANTE que gana el torneo
             case 'tournamentWon': {
                 const msg = message as tournamentWonMessage;
                 console.log(
-                    `🏅 [Tournaments] ${t('TournamentWon')}`,
-                    msg.tournamentId
+                    `🏅 [Tournaments] ${t('TournamentWon')}: `,
+                    msg.tournamentName
                 );
                 showToast(
-                    `${t('TournamentWon')}: ${msg.tournamentId}`,
+                    `🏆 ${t('TournamentWon')}: ${msg.tournamentName} 🏆`,
                     'success'
                 );
                 break;
@@ -281,13 +286,15 @@ export class TournamentWebSocketClient {
                 const msg = message as tournamentLeaveMessage;
                 console.log(
                     `🏅 [Tournaments] ${t('TournamentLeave')}`,
-                    msg.tournamentId
+                    msg.tournamentName
                 );
-                showToast(
-                    `${t('TournamentLeave')}: ${msg.tournamentId}`,
+                // Ya se hace desde tournamentHistory.ts
+                /* showToast(
+                    `${t('TournamentLeave')}: ${msg.tournamentName}`,
                     'success'
-                );
+                ); */
 
+                console.log("» Actualizando historia de torneos..."); // DB
                 await refreshTournamentsHistory();
                 break;
             }

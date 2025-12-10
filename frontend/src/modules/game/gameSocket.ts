@@ -11,76 +11,7 @@ import { Actions } from '@/types/gameOptions';
 import { getCurrentUser } from '../users';
 import Swal from 'sweetalert2';
 import type { HTMLelements } from './gameHTMLInterfaces';
-
-export interface GameStateMessage {
-    type: 'gameState';
-    gameId: number;
-    state: GameState;
-}
-
-interface GameState {
-    gameStatus: string;
-    gameTimer: number;
-    player1: PlayerState;
-    player2: PlayerState;
-    ball: BallState;
-    arePlayersReady: boolean;
-    gameRules: GameRules;
-    isGameOver: boolean;
-    winner: Winner | null;
-    isSinglePlayer: boolean;
-    isCancelled: boolean;
-    countdownInfo: CountdownInfo;
-}
-
-interface PlayerState {
-    id: string;
-    username: string;
-    position: number;
-    score: number;
-    isReady: boolean;
-}
-
-interface BallState {
-    position: {
-        x: number;
-        y: number;
-    };
-    velocity: {
-        x: number;
-        y: number;
-    };
-}
-
-interface GameRules {
-    winnerScore: number;
-    maxGameTime: number;
-    difficulty: number;
-    visualStyle: string;
-}
-
-interface Winner {
-    id: string;
-    username: string;
-    score: number;
-}
-
-interface CountdownInfo {
-    type: string | null;
-    remainingTime: number;
-    isActive: boolean;
-}
-
-interface message {
-    action: number;
-    gameId: number;
-    token: string | null;
-}
-
-interface ErrorMessage {
-    type: 'error';
-    error: string;
-}
+import type { ErrorMessage, GameStateMessage, message } from './gameSocketInterfaces';
 
 export class GameWebSocket {
     private socket: WebSocket | null = null;

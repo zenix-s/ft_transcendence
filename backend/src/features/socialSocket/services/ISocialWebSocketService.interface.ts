@@ -1,11 +1,6 @@
 import { WebSocket } from '@fastify/websocket';
 import { Result } from '@shared/abstractions/Result';
-import {
-    Friend,
-    SocialWebSocketMessage,
-    SocialWebSocketResponse,
-    ActiveGameOpponent,
-} from '../Social.types';
+import { Friend, SocialWebSocketMessage, SocialWebSocketResponse, ActiveGameOpponent } from '../Social.types';
 import { IMatchSettings } from '@shared/domain/ValueObjects/MatchSettings.value';
 
 export interface CheckActiveGameResult {

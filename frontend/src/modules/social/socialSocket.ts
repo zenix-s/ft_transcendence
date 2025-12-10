@@ -5,11 +5,17 @@ import {
     acceptInvitation,
     rejectInvitation,
 } from '@/components/friendsSidebar/friendsSidebar';
-import { modal } from '@/components/modal';
+import { modal, activeGameModal } from '@/components/modal';
 import { showToast } from '@/components/toast';
 import type { Friend } from '@/types/friend';
 import { reloadGameHistory } from '@/app/main';
 import { createGameSocket, getGameSocket } from '../game/gameSocket';
+
+const SocialActions = {
+    AUTH: 0,
+    LIST_FRIENDS: 1,
+    CHECK_ACTIVE_GAME: 2,
+} as const;
 
 interface AuthSuccessMessage {
     type: 'authSuccess';
@@ -57,6 +63,18 @@ interface gameInvitationAcceptance {
     message: string;
 }
 
+interface CheckActiveGameResponse {
+    type: 'checkActiveGame';
+    hasActiveGame: boolean;
+    gameId?: number;
+    status?: string;
+    opponent?: {
+        id: number;
+        username: string | null;
+        avatar: string | null;
+    };
+}
+
 export class SocialWebSocketClient {
     private socket: WebSocket | null = null;
     private token: string;
@@ -99,7 +117,7 @@ export class SocialWebSocketClient {
     }
 
     private authenticate() {
-        const msg = { action: 0, token: this.token };
+        const msg = { action: SocialActions.AUTH, token: this.token };
         this.send(msg);
     }
 
@@ -114,13 +132,26 @@ export class SocialWebSocketClient {
             return;
         }
 
-        const msg = { action: 1 };
+        const msg = { action: SocialActions.LIST_FRIENDS };
         console.log('📋', t('RequestFriends'));
         this.send(msg);
     }
 
     public refreshFriendsList() {
         this.requestFriendsList();
+    }
+
+    public requestCheckActiveGame() {
+        if (!this.isAuthenticated) {
+            return;
+        }
+
+        if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+            return;
+        }
+
+        const msg = { action: SocialActions.CHECK_ACTIVE_GAME };
+        this.send(msg);
     }
 
     private send(obj: unknown) {
@@ -144,6 +175,8 @@ export class SocialWebSocketClient {
                 console.log(`✅ ${t('SuccessAuthenticated')}`, msg.userId);
                 // Mejor sólo devolver lista cuando la página lo solicite????
                 setTimeout(() => this.requestFriendsList(), 100);
+                // Check for active game after authentication
+                setTimeout(() => this.requestCheckActiveGame(), 200);
                 break;
             }
 
@@ -280,6 +313,31 @@ export class SocialWebSocketClient {
                     }
                 }
 
+                break;
+            }
+
+            case 'checkActiveGame': {
+                const msg = message as CheckActiveGameResponse;
+
+                if (!msg.hasActiveGame) {
+                    break;
+                }
+
+                // Skip if already on /playing page
+                const urlObjeto = new URL(window.location.href);
+                if (urlObjeto.pathname === '/playing') {
+                    break;
+                }
+
+                const confirmed = await activeGameModal({
+                    opponentUsername: msg.opponent?.username ?? undefined,
+                });
+
+                if (confirmed) {
+                    const token = localStorage.getItem('access_token');
+                    createGameSocket(token, msg.gameId!);
+                    navigateTo(`playing?id=${msg.gameId}`);
+                }
                 break;
             }
 

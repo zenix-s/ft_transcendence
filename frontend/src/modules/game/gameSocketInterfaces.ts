@@ -67,3 +67,13 @@ export interface ErrorMessage {
 	type: 'error';
 	error: string;
 }
+
+export interface events {
+	keyMove: (event: KeyboardEvent) => void;
+    keyStop: (event: KeyboardEvent) => void;
+    buttonUpPressed: (event: Event) => void;
+    buttonUpReleased: (event: Event) => void;
+    buttonDownPressed: (event: Event) => void;
+    buttonDownReleased: (event: Event) => void;
+	handleResize: () => void;
+}

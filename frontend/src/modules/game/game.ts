@@ -72,17 +72,6 @@ export async function initGame3D() {
         babylonElements
     );
     ws.play();
-
-    window.addEventListener('resize', () => {
-        const canvas = document.getElementById(
-            'gameCanvas'
-        ) as HTMLCanvasElement;
-        if (!canvas) {
-            console.warn(t('CanvasNotFound'));
-            return;
-        }
-        adjustCanvasSize(canvas, babylonElements.engine);
-    });
 }
 
 export function adjustCanvasSize(canvas: HTMLCanvasElement, engine: Engine) {

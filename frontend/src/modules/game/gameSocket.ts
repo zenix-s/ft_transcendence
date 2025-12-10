@@ -3,7 +3,7 @@ import { t } from '@/app/i18n';
 import { navigateTo } from '@/app/navigation';
 import { modal } from '@/components/modal';
 import { showToast } from '@/components/toast';
-import { renderValues } from './game';
+import { adjustCanvasSize, renderValues } from './game';
 import type { BabylonElements } from './gameBabylonInterfaces';
 import type { Scene } from '@babylonjs/core';
 import { endGameAndErrors } from './authAndErrors';
@@ -11,7 +11,7 @@ import { Actions } from '@/types/gameOptions';
 import { getCurrentUser } from '../users';
 import Swal from 'sweetalert2';
 import type { HTMLelements } from './gameHTMLInterfaces';
-import type { ErrorMessage, GameStateMessage, message } from './gameSocketInterfaces';
+import type { ErrorMessage, events, GameStateMessage, message } from './gameSocketInterfaces';
 
 export class GameWebSocket {
     private socket: WebSocket | null = null;
@@ -24,12 +24,7 @@ export class GameWebSocket {
     private gameMode: string | null = null;
     private htmlElements?: HTMLelements;
     private babylonElements?: BabylonElements;
-    private keyMove?: (event: KeyboardEvent) => void;
-    private keyStop?: (event: KeyboardEvent) => void;
-    private buttonUpPressed?: (event: Event) => void;
-    private buttonUpReleased?: (event: Event) => void;
-    private buttonDownPressed?: (event: Event) => void;
-    private buttonDownReleased?: (event: Event) => void;
+    private events?: events;
     private up: number;
     private down: number;
 
@@ -142,93 +137,115 @@ export class GameWebSocket {
 
     private async setEvents() {
         await this.waitForOpen();
-        this.keyMove = (event: KeyboardEvent) => {
-            const key = event.key;
-            if (key === 'ArrowUp' || key === 'w') this.up = 1;
-            if (key === 'ArrowDown' || key === 's') this.down = 1;
+        
+        this.events = {
+            // KEYS EVENTS
+            keyMove: (event: KeyboardEvent) => {
+                const key = event.key;
+                if (key === 'ArrowUp' || key === 'w') this.up = 1;
+                if (key === 'ArrowDown' || key === 's') this.down = 1;
+            },
+            keyStop: (event: KeyboardEvent) => {
+                const key = event.key;
+                if (key === 'ArrowUp' || key === 'w') this.up = 0;
+                if (key === 'ArrowDown' || key === 's') this.down = 0;
+            },
+            // BUTTONS EVENTS
+            buttonUpPressed: (event: Event) => {
+                event.preventDefault();
+                this.up = 1;
+            },
+            buttonUpReleased: (event: Event) => {
+                event.preventDefault();
+                this.up = 0;
+            },
+            buttonDownPressed: (event: Event) => {
+                event.preventDefault();
+                this.down = 1;
+            },
+            buttonDownReleased: (event: Event) => {
+                event.preventDefault();
+                this.down = 0;
+            },
+            // RESIZE EVENT
+            handleResize: () => {
+                const canvas = document.getElementById(
+                    'gameCanvas'
+                ) as HTMLCanvasElement;
+                if (!canvas || !this.babylonElements)
+                    return;
+                adjustCanvasSize(canvas, this.babylonElements.engine);
+            },
         };
-        this.keyStop = (event: KeyboardEvent) => {
-            const key = event.key;
-            if (key === 'ArrowUp' || key === 'w') this.up = 0;
-            if (key === 'ArrowDown' || key === 's') this.down = 0;
-        };
-        document.addEventListener('keyup', this.keyStop);
-        document.addEventListener('keydown', this.keyMove);
 
-        this.buttonUpPressed = (event: Event) => {
-            event.preventDefault();
-            this.up = 1;
-        };
-        this.buttonUpReleased = (event: Event) => {
-            event.preventDefault();
-            this.up = 0;
-        };
-        this.buttonDownPressed = (event: Event) => {
-            event.preventDefault();
-            this.down = 1;
-        };
-        this.buttonDownReleased = (event: Event) => {
-            event.preventDefault();
-            this.down = 0;
-        };
-        this.htmlElements?.buttons.buttonUp.addEventListener('touchstart', this.buttonUpPressed);
-        this.htmlElements?.buttons.buttonUp.addEventListener('touchend', this.buttonUpReleased);
-        this.htmlElements?.buttons.buttonDown.addEventListener('touchstart', this.buttonDownPressed);
-        this.htmlElements?.buttons.buttonDown.addEventListener('touchend', this.buttonDownReleased);
+        // KEYS EVENTS
+        document.addEventListener('keyup', this.events.keyStop);
+        document.addEventListener('keydown', this.events.keyMove);
 
-        this.htmlElements?.buttons.buttonUp.addEventListener('mousedown', this.buttonUpPressed);
-        this.htmlElements?.buttons.buttonUp.addEventListener('mouseup', this.buttonUpReleased);
-        this.htmlElements?.buttons.buttonUp.addEventListener('mouseleave', this.buttonUpReleased);
+        // BUTTONS MOBILE EVENTS
+        this.htmlElements?.buttons.buttonUp.addEventListener('touchstart', this.events.buttonUpPressed);
+        this.htmlElements?.buttons.buttonUp.addEventListener('touchend', this.events.buttonUpReleased);
+        this.htmlElements?.buttons.buttonDown.addEventListener('touchstart', this.events.buttonDownPressed);
+        this.htmlElements?.buttons.buttonDown.addEventListener('touchend', this.events.buttonDownReleased);
 
-        this.htmlElements?.buttons.buttonDown.addEventListener('mousedown', this.buttonDownPressed);
-        this.htmlElements?.buttons.buttonDown.addEventListener('mouseup', this.buttonDownReleased);
+        // BUTTONS CLICK EVENTS
+        this.htmlElements?.buttons.buttonUp.addEventListener('mousedown', this.events.buttonUpPressed);
+        this.htmlElements?.buttons.buttonUp.addEventListener('mouseup', this.events.buttonUpReleased);
+        this.htmlElements?.buttons.buttonUp.addEventListener('mouseleave', this.events.buttonUpReleased);
+
+        this.htmlElements?.buttons.buttonDown.addEventListener('mousedown', this.events.buttonDownPressed);
+        this.htmlElements?.buttons.buttonDown.addEventListener('mouseup', this.events.buttonDownReleased);
         this.htmlElements?.buttons.buttonDown.addEventListener(
             'mouseleave',
-            this.buttonDownReleased
+            this.events.buttonDownReleased
         );
+
+        // RESIZE EVENT
+        window.addEventListener('resize', this.events.handleResize);
     }
 
     public async removeEvents() {
-        document.removeEventListener('keyup', this.keyMove!);
-        document.removeEventListener('keydown', this.keyStop!);
-        this.keyMove = undefined;
-        this.keyStop = undefined;
+        if (!this.events) return;
 
-        this.htmlElements?.buttons.buttonUp.removeEventListener('touchstart', this.buttonUpPressed!);
-        this.htmlElements?.buttons.buttonUp.removeEventListener('touchend', this.buttonUpReleased!);
+        // REMOVE KEYS EVENTS
+        document.removeEventListener('keyup', this.events.keyMove!);
+        document.removeEventListener('keydown', this.events.keyStop!);
+
+        // REMOVE BUTTONS EVENTS
+        this.htmlElements?.buttons.buttonUp.removeEventListener('touchstart', this.events.buttonUpPressed!);
+        this.htmlElements?.buttons.buttonUp.removeEventListener('touchend', this.events.buttonUpReleased!);
         this.htmlElements?.buttons.buttonDown.removeEventListener(
             'touchstart',
-            this.buttonDownPressed!
+            this.events.buttonDownPressed!
         );
         this.htmlElements?.buttons.buttonDown.removeEventListener(
             'touchend',
-            this.buttonDownReleased!
+            this.events.buttonDownReleased!
         );
 
-        this.htmlElements?.buttons.buttonUp.removeEventListener('mousedown', this.buttonUpPressed!);
-        this.htmlElements?.buttons.buttonUp.removeEventListener('mouseup', this.buttonUpReleased!);
+        this.htmlElements?.buttons.buttonUp.removeEventListener('mousedown', this.events.buttonUpPressed!);
+        this.htmlElements?.buttons.buttonUp.removeEventListener('mouseup', this.events.buttonUpReleased!);
         this.htmlElements?.buttons.buttonUp.removeEventListener(
             'mouseleave',
-            this.buttonUpReleased!
+            this.events.buttonUpReleased!
         );
 
         this.htmlElements?.buttons.buttonDown.removeEventListener(
             'mousedown',
-            this.buttonDownPressed!
+            this.events.buttonDownPressed!
         );
         this.htmlElements?.buttons.buttonDown.removeEventListener(
             'mouseup',
-            this.buttonDownReleased!
+            this.events.buttonDownReleased!
         );
         this.htmlElements?.buttons.buttonDown.removeEventListener(
             'mouseleave',
-            this.buttonDownReleased!
+            this.events.buttonDownReleased!
         );
 
-        this.buttonUpPressed = undefined;
-        this.buttonUpReleased = undefined;
-        this.buttonDownPressed = undefined;
-        this.buttonDownReleased = undefined;
+        // REMOVE RESIZE EVENT
+        window.removeEventListener('resize', this.events.handleResize);
+        this.events = undefined;
     }
 
     private async handleMessage(message: unknown) {

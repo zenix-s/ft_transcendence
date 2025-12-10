@@ -1,17 +1,9 @@
 import { t } from '@/app/i18n';
-import { navigateTo } from '@/app/navigation';
-import { showToast } from '@/components/toast';
-import { Engine, Scene, HemisphericLight, Vector3 } from '@babylonjs/core';
-import type { Ball, Player, Score } from './gameData';
-import {
-    createBall,
-    createCamera,
-    createPlayerLeft,
-    createPlayerRight,
-    createScores,
-    createTable,
-} from './createGameObjs';
+import { Engine } from '@babylonjs/core';
+import type { Ball, Player, Score } from './gameBabylonInterfaces';
+import { getBabylonElements } from './gameBabylonElements';
 import { createGameSocket, getGameSocket } from './gameSocket';
+import {  getGameId, getHTMLelements } from './gameHTMLelements';
 
 export function renderValues(
     posPlayerL: number,
@@ -39,42 +31,15 @@ export function renderValues(
 }
 
 export async function initGame3D() {
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get('id');
-    if (!id) {
-        showToast(t('URLNotCorrect'), 'error');
-        console.warn(t('URLNotCorrect'));
-        navigateTo('dashboard', false, true);
+    const id = getGameId();
+    const htmlElements = getHTMLelements();
+    if (!htmlElements)
         return;
-    }
-    const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
-    if (!canvas) {
-        showToast(t('CanvasNotFound'), 'error');
-        console.warn(t('CanvasNotFound'));
-        navigateTo('dashboard', false, true);
-        return;
-    }
-    const buttonUp = document.getElementById('button-up') as HTMLButtonElement;
-    const buttonDown = document.getElementById(
-        'button-down'
-    ) as HTMLButtonElement;
-    if (!buttonUp || !buttonDown) {
-        showToast(t('ButtonsNotFound'), 'error');
-        console.warn(t('ButtonsNotFound'));
-        navigateTo('dashboard', false, true);
-        return;
-    }
 
-    const timer = document.getElementById('timer') as HTMLElement;
-    if (!timer) {
-        showToast(t('TimerNotFound'), 'error');
-        console.warn(t('TimerNotFound'));
-        navigateTo('dashboard', false, true);
-        return;
-    }
-
+    /* Comprobar que el ws existe y autenticarlo */
     let ws = getGameSocket();
     if (!ws) {
+        /* Si no existe lo crea con la autentificación ya hecha */
         const token = localStorage.getItem('access_token');
         ws = createGameSocket(token, Number(id));
         ws.setAuth();
@@ -85,7 +50,6 @@ export async function initGame3D() {
     await new Promise<void>((resolve) => {
         const interval = setInterval(() => {
             if (ws.getGameMode() != null || getGameSocket() === null) {
-                console.log('socket === ', getGameSocket() === null);
                 clearInterval(interval);
                 resolve();
             }
@@ -98,47 +62,14 @@ export async function initGame3D() {
         }, 15000);
     });
 
-    // Motor y escena
-    const engine = new Engine(canvas, true);
-    const scene = new Scene(engine);
-
-    ws.setScene(scene);
-
-    // Ajustar tamaño del canvas
-    adjustCanvasSize(canvas, engine);
-
-    // Cámara
-    createCamera(ws.getGameView(), scene, canvas);
-
-    // Luz
-    const light = new HemisphericLight('light', new Vector3(0, 1, 0), scene);
-    light.intensity = 1.2;
-
-    // Mesa
-    createTable(scene);
-
-    // JUGADORES
-    const playerLeft = createPlayerLeft(ws.getGameView(), scene);
-    const playerRight = createPlayerRight(ws.getGameView(), scene);
-
-    //SCORE
-    const scores = createScores();
-    if (!scores) return;
-
-    // PELOTA
-    const ball = createBall(ws.getGameView(), scene);
+    const babylonElements = getBabylonElements(htmlElements, ws);
+    if (!babylonElements)
+        return;
 
     ws.initializeGame(
         Number(id),
-        playerLeft,
-        playerRight,
-        scores,
-        ball,
-        engine,
-        scene,
-        buttonUp,
-        buttonDown,
-        timer
+        htmlElements,
+        babylonElements
     );
     ws.play();
 
@@ -150,11 +81,11 @@ export async function initGame3D() {
             console.warn(t('CanvasNotFound'));
             return;
         }
-        adjustCanvasSize(canvas, engine);
+        adjustCanvasSize(canvas, babylonElements.engine);
     });
 }
 
-function adjustCanvasSize(canvas: HTMLCanvasElement, engine: Engine) {
+export function adjustCanvasSize(canvas: HTMLCanvasElement, engine: Engine) {
     const width = window.innerWidth;
     const height = window.innerHeight;
 

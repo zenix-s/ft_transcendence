@@ -4,12 +4,13 @@ import { navigateTo } from '@/app/navigation';
 import { modal } from '@/components/modal';
 import { showToast } from '@/components/toast';
 import { renderValues } from './game';
-import type { Ball, Player, Score } from './gameData';
-import type { Engine, Scene } from '@babylonjs/core';
+import type { BabylonElements } from './gameBabylonInterfaces';
+import type { Scene } from '@babylonjs/core';
 import { endGameAndErrors } from './authAndErrors';
 import { Actions } from '@/types/gameOptions';
 import { getCurrentUser } from '../users';
 import Swal from 'sweetalert2';
+import type { HTMLelements } from './gameHTMLInterfaces';
 
 export interface GameStateMessage {
     type: 'gameState';
@@ -85,28 +86,21 @@ export class GameWebSocket {
     private socket: WebSocket | null = null;
     private token: string;
     private wsUrl: string;
+    private gameId: number;
     private start: number;
     private div: HTMLDivElement | null = null;
     private ready: boolean;
     private gameMode: string | null = null;
-    private player1: Player | undefined;
-    private player2: Player | undefined;
-    private scores: Score | undefined;
-    private ball: Ball | undefined;
-    private engine: Engine | undefined;
-    private scene: Scene | undefined;
-    private gameId: number;
+    private htmlElements?: HTMLelements;
+    private babylonElements?: BabylonElements;
     private keyMove?: (event: KeyboardEvent) => void;
     private keyStop?: (event: KeyboardEvent) => void;
-    private buttonUp?: HTMLButtonElement;
     private buttonUpPressed?: (event: Event) => void;
     private buttonUpReleased?: (event: Event) => void;
-    private buttonDown?: HTMLButtonElement;
     private buttonDownPressed?: (event: Event) => void;
     private buttonDownReleased?: (event: Event) => void;
     private up: number;
     private down: number;
-    private timer?: HTMLElement;
 
     constructor(token: string, id: number) {
         this.wsUrl = getWsUrl('/game/pong');
@@ -115,7 +109,7 @@ export class GameWebSocket {
         this.div = null;
         this.start = 0;
         this.up = 0;
-        this.down = 0;
+        this.down = 0;  
         this.ready = false;
     }
 
@@ -127,25 +121,23 @@ export class GameWebSocket {
         });
 
         this.socket.addEventListener('message', async (msg) => {
-            // console.log('mensaje recibido=', msg.data);
             try {
                 const data = JSON.parse(msg.data);
                 this.handleMessage(data);
             } catch (err) {
                 console.error(`❌ ${t('game')}: ${t('ErrorParsingMsg')}`, err);
-                this.engine?.stopRenderLoop();
+                this.babylonElements?.engine.stopRenderLoop();
             }
         });
 
         this.socket.onclose = () => {
-            //this.destroy();
             console.log('🔴', t('game'), ': ', t('WsClosed'));
-            this.engine?.stopRenderLoop();
+            this.babylonElements?.engine.stopRenderLoop();
         };
 
         this.socket.onerror = (err) => {
             console.error(`⚠️ ${t('game')}: ${t('WsError')}`, err);
-            this.engine?.stopRenderLoop();
+            this.babylonElements?.engine.stopRenderLoop();
         };
     }
 
@@ -248,18 +240,18 @@ export class GameWebSocket {
             event.preventDefault();
             this.down = 0;
         };
-        this.buttonUp?.addEventListener('touchstart', this.buttonUpPressed);
-        this.buttonUp?.addEventListener('touchend', this.buttonUpReleased);
-        this.buttonDown?.addEventListener('touchstart', this.buttonDownPressed);
-        this.buttonDown?.addEventListener('touchend', this.buttonDownReleased);
+        this.htmlElements?.buttons.buttonUp.addEventListener('touchstart', this.buttonUpPressed);
+        this.htmlElements?.buttons.buttonUp.addEventListener('touchend', this.buttonUpReleased);
+        this.htmlElements?.buttons.buttonDown.addEventListener('touchstart', this.buttonDownPressed);
+        this.htmlElements?.buttons.buttonDown.addEventListener('touchend', this.buttonDownReleased);
 
-        this.buttonUp?.addEventListener('mousedown', this.buttonUpPressed);
-        this.buttonUp?.addEventListener('mouseup', this.buttonUpReleased);
-        this.buttonUp?.addEventListener('mouseleave', this.buttonUpReleased);
+        this.htmlElements?.buttons.buttonUp.addEventListener('mousedown', this.buttonUpPressed);
+        this.htmlElements?.buttons.buttonUp.addEventListener('mouseup', this.buttonUpReleased);
+        this.htmlElements?.buttons.buttonUp.addEventListener('mouseleave', this.buttonUpReleased);
 
-        this.buttonDown?.addEventListener('mousedown', this.buttonDownPressed);
-        this.buttonDown?.addEventListener('mouseup', this.buttonDownReleased);
-        this.buttonDown?.addEventListener(
+        this.htmlElements?.buttons.buttonDown.addEventListener('mousedown', this.buttonDownPressed);
+        this.htmlElements?.buttons.buttonDown.addEventListener('mouseup', this.buttonDownReleased);
+        this.htmlElements?.buttons.buttonDown.addEventListener(
             'mouseleave',
             this.buttonDownReleased
         );
@@ -271,33 +263,33 @@ export class GameWebSocket {
         this.keyMove = undefined;
         this.keyStop = undefined;
 
-        this.buttonUp?.removeEventListener('touchstart', this.buttonUpPressed!);
-        this.buttonUp?.removeEventListener('touchend', this.buttonUpReleased!);
-        this.buttonDown?.removeEventListener(
+        this.htmlElements?.buttons.buttonUp.removeEventListener('touchstart', this.buttonUpPressed!);
+        this.htmlElements?.buttons.buttonUp.removeEventListener('touchend', this.buttonUpReleased!);
+        this.htmlElements?.buttons.buttonDown.removeEventListener(
             'touchstart',
             this.buttonDownPressed!
         );
-        this.buttonDown?.removeEventListener(
+        this.htmlElements?.buttons.buttonDown.removeEventListener(
             'touchend',
             this.buttonDownReleased!
         );
 
-        this.buttonUp?.removeEventListener('mousedown', this.buttonUpPressed!);
-        this.buttonUp?.removeEventListener('mouseup', this.buttonUpReleased!);
-        this.buttonUp?.removeEventListener(
+        this.htmlElements?.buttons.buttonUp.removeEventListener('mousedown', this.buttonUpPressed!);
+        this.htmlElements?.buttons.buttonUp.removeEventListener('mouseup', this.buttonUpReleased!);
+        this.htmlElements?.buttons.buttonUp.removeEventListener(
             'mouseleave',
             this.buttonUpReleased!
         );
 
-        this.buttonDown?.removeEventListener(
+        this.htmlElements?.buttons.buttonDown.removeEventListener(
             'mousedown',
             this.buttonDownPressed!
         );
-        this.buttonDown?.removeEventListener(
+        this.htmlElements?.buttons.buttonDown.removeEventListener(
             'mouseup',
             this.buttonDownReleased!
         );
-        this.buttonDown?.removeEventListener(
+        this.htmlElements?.buttons.buttonDown.removeEventListener(
             'mouseleave',
             this.buttonDownReleased!
         );
@@ -331,15 +323,15 @@ export class GameWebSocket {
                 this.countdown(data);
                 renderValues(
                     data.state.player1.position,
-                    this.player1,
+                    this.babylonElements?.playerLeft,
                     data.state.player2.position,
-                    this.player2,
+                    this.babylonElements?.playerRight,
                     data.state.player1.score,
                     data.state.player2.score,
-                    this.scores,
+                    this.babylonElements?.scores,
                     data.state.ball.position.x,
                     data.state.ball.position.y,
-                    this.ball
+                    this.babylonElements?.ball
                 );
                 break;
             }
@@ -358,15 +350,15 @@ export class GameWebSocket {
                         data.error != 'PlayerNotInGame')
                 ) {
                     this.removeEvents();
-                    this.engine?.stopRenderLoop();
+                    this.babylonElements?.engine?.stopRenderLoop();
                 }
                 await endGameAndErrors(
                     data.error,
                     this.gameId,
-                    this.player1,
-                    this.player2,
-                    this.scores,
-                    this.ball
+                    this.babylonElements?.playerLeft,
+                    this.babylonElements?.playerRight,
+                    this.babylonElements?.scores,
+                    this.babylonElements?.ball
                 );
                 break;
             }
@@ -380,42 +372,30 @@ export class GameWebSocket {
     }
 
     public setScene(scene: Scene) {
-        this.scene = scene;
+        if (!this.babylonElements)
+            return;
+        this.babylonElements.scene = scene;
     }
 
     public getScene() {
-        return this.scene;
+        return this.babylonElements?.scene;
     }
 
     public initializeGame(
         gameId: number,
-        player1: Player,
-        player2: Player,
-        scores: Score,
-        ball: Ball,
-        engine: Engine,
-        scene: Scene,
-        buttonUp: HTMLButtonElement,
-        buttonDown: HTMLButtonElement,
-        timer: HTMLElement
+        htmlElements: HTMLelements,
+        babylonElements: BabylonElements
     ) {
         this.gameId = gameId;
-        this.player1 = player1;
-        this.player2 = player2;
-        this.scores = scores;
-        this.ball = ball;
-        this.engine = engine;
-        this.scene = scene;
-        this.buttonUp = buttonUp;
-        this.buttonDown = buttonDown;
-        this.timer = timer;
+        this.babylonElements = babylonElements;
+        this.htmlElements = htmlElements;
         this.setEvents();
     }
 
     private updateTimer(data: GameStateMessage) {
         const time = data.state.gameRules.maxGameTime - data.state.gameTimer;
-        if (!this.timer) return;
-        this.timer.textContent = time.toFixed().toString();
+        if (!this.htmlElements?.timer) return;
+        this.htmlElements.timer.textContent = time.toFixed().toString();
     }
 
     public async play() {
@@ -426,7 +406,7 @@ export class GameWebSocket {
             token: this.token,
         };
         this.socket?.send(JSON.stringify(obj));
-        this.engine?.runRenderLoop(() => {
+        this.babylonElements?.engine?.runRenderLoop(() => {
             obj.action = Actions.REQUEST_STATE;
             this.socket?.send(JSON.stringify(obj));
             if (this.up == 1 && this.down == 0) {
@@ -436,7 +416,7 @@ export class GameWebSocket {
                 obj.action = Actions.MOVE_DOWN;
                 this.socket?.send(JSON.stringify(obj));
             }
-            this.scene?.render();
+            this.babylonElements?.scene?.render();
         });
     }
 
@@ -459,7 +439,6 @@ export class GameWebSocket {
         showToast(t('invitationRejected'), 'error');
         this.leaveGame();
         this.destroy();
-        //navigateTo("dashboard", false, true);
         return;
     }
 

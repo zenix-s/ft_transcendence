@@ -17,6 +17,17 @@ const SocialActions = {
     CHECK_ACTIVE_GAME: 2,
 } as const;
 
+const SocialMessageTypes = {
+    AUTH_SUCCESS: 'authSuccess',
+    FRIENDS_LIST: 'friendsList',
+    GAME_INVITATION: 'gameInvitation',
+    GAME_INVITATION_ACCEPTANCE: 'gameInvitationAcceptance',
+    GAME_INVITATION_REJECTION: 'gameInvitationRejection',
+    FRIEND_PROFILE_UPDATE: 'friendProfileUpdate',
+    FRIEND_CONNECTION_STATUS: 'friendConnectionStatus',
+    CHECK_ACTIVE_GAME: 'checkActiveGame',
+} as const;
+
 interface AuthSuccessMessage {
     type: 'authSuccess';
     userId: number;
@@ -169,7 +180,7 @@ export class SocialWebSocketClient {
         const type = (message as { type?: unknown })?.type;
 
         switch (type) {
-            case 'authSuccess': {
+            case SocialMessageTypes.AUTH_SUCCESS: {
                 const msg = message as AuthSuccessMessage;
                 this.isAuthenticated = true;
                 console.log(`✅ ${t('SuccessAuthenticated')}`, msg.userId);
@@ -180,7 +191,7 @@ export class SocialWebSocketClient {
                 break;
             }
 
-            case 'friendsList': {
+            case SocialMessageTypes.FRIENDS_LIST: {
                 const msg = message as FriendsListMessage;
                 this.friends = msg.friends;
                 console.log(`👥 ${t('FriendListReceived')}`, this.friends);
@@ -189,7 +200,7 @@ export class SocialWebSocketClient {
                 break;
             }
 
-            case 'gameInvitation': {
+            case SocialMessageTypes.GAME_INVITATION: {
                 const msg = message as GameInvitationResponse;
                 console.log(
                     `${msg.fromUsername} con id ${msg.fromUserId} te ha invitado a jugar a PONG con el número de partida ${msg.gameId} y el mensaje: ${msg.message}`
@@ -229,7 +240,7 @@ export class SocialWebSocketClient {
                 break;
             }
 
-            case 'gameInvitationAcceptance': {
+            case SocialMessageTypes.GAME_INVITATION_ACCEPTANCE: {
                 const msg = message as gameInvitationAcceptance;
                 navigateTo(`playing?id=${msg.gameId}`); // Temporal para pruebas?
                 showToast(
@@ -239,13 +250,13 @@ export class SocialWebSocketClient {
                 break;
             }
 
-            case 'gameInvitationRejection': {
+            case SocialMessageTypes.GAME_INVITATION_REJECTION: {
                 const ws = getGameSocket();
                 if (ws) ws.invitationRejected();
                 break;
             }
 
-            case 'friendProfileUpdate': {
+            case SocialMessageTypes.FRIEND_PROFILE_UPDATE: {
                 console.log('Friend profile update detected');
                 this.requestFriendsList();
 
@@ -255,7 +266,7 @@ export class SocialWebSocketClient {
                 break;
             }
 
-            case 'friendConnectionStatus': {
+            case SocialMessageTypes.FRIEND_CONNECTION_STATUS: {
                 const msg = message as FriendConnectionStatusMessage;
                 const friend = this.friends.find((f) => f.id === msg.friendId);
 
@@ -316,7 +327,7 @@ export class SocialWebSocketClient {
                 break;
             }
 
-            case 'checkActiveGame': {
+            case SocialMessageTypes.CHECK_ACTIVE_GAME: {
                 const msg = message as CheckActiveGameResponse;
 
                 if (!msg.hasActiveGame) {

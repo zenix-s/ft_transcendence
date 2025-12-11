@@ -123,7 +123,18 @@ export class TournamentWebSocketClient {
 
             case TournamentMessageTypes.ERROR: {
                 const msg = message as ErrorMessage;
-                const errorMessage = t(msg.error) !== msg.error ? t(msg.error) : msg.error;
+                const errorMessage =
+                    t(msg.error) !== msg.error ? t(msg.error) : msg.error;
+
+                console.error('Tournament WebSocket Error:', errorMessage);
+
+                // TODO: mejorar esto hace conflicto con otros sockets,
+                // deberia de hacerse a traves del /me
+                // if (msg.error === 'invalidToken') {
+                //     performLogout();
+                //     break;
+                // }
+
                 showToast(`${t('ErrorFromServer')}: ${errorMessage}`, 'error');
                 break;
             }

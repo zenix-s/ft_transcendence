@@ -26,6 +26,7 @@ const SocialMessageTypes = {
     FRIEND_PROFILE_UPDATE: 'friendProfileUpdate',
     FRIEND_CONNECTION_STATUS: 'friendConnectionStatus',
     CHECK_ACTIVE_GAME: 'checkActiveGame',
+    ERROR: 'error',
 } as const;
 
 interface AuthSuccessMessage {
@@ -84,6 +85,11 @@ interface CheckActiveGameResponse {
         username: string | null;
         avatar: string | null;
     };
+}
+
+interface ErrorMessage {
+    type: 'error';
+    error: string;
 }
 
 export class SocialWebSocketClient {
@@ -180,6 +186,22 @@ export class SocialWebSocketClient {
         const type = (message as { type?: unknown })?.type;
 
         switch (type) {
+            case SocialMessageTypes.ERROR: {
+                const msg = message as ErrorMessage;
+                const errorMessage =
+                    t(msg.error) !== msg.error ? t(msg.error) : msg.error;
+
+                // TODO: mejorar esto hace conflicto con otros sockets,
+                // deberia de hacerse a traves del /me
+                // if (msg.error === 'invalidToken') {
+                //     performLogout();
+                //     break;
+                // }
+
+                showToast(`${t('ErrorFromServer')}: ${errorMessage}`, 'error');
+                break;
+            }
+
             case SocialMessageTypes.AUTH_SUCCESS: {
                 const msg = message as AuthSuccessMessage;
                 this.isAuthenticated = true;

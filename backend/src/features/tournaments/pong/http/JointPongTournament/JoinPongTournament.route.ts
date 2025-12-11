@@ -31,7 +31,6 @@ export default async function JoinPongTournamentRoute(fastify: FastifyInstance) 
                         type: 'object',
                         properties: {
                             success: { type: 'boolean' },
-                            message: { type: 'string' },
                         },
                     },
                     400: {

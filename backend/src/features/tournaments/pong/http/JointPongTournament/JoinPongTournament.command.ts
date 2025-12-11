@@ -11,7 +11,6 @@ export interface IJoinPongTournamentRequest {
 
 export interface IJoinPongTournamentResponse {
     success: boolean;
-    message: string;
 }
 
 export class JoinPongTournamentCommand implements ICommand<
@@ -73,7 +72,6 @@ export class JoinPongTournamentCommand implements ICommand<
 
             return Result.success({
                 success: true,
-                message: 'Te has unido al torneo exitosamente',
             });
         } catch (error: unknown) {
             return this.fastify.handleError<IJoinPongTournamentResponse>({

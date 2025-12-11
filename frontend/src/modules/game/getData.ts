@@ -49,8 +49,6 @@ export async function fetchSinglePlayerGameId(
     maxTime: number,
     gameMode: string
 ): Promise<{ isSuccess: boolean; gameId?: number; error?: string }> {
-    // return fetch("https://localhost:3000/game/pong/create-singleplayer", {
-    console.log('get id=', apiUrl('/game/pong/create-singleplayer'));
     return fetch(apiUrl('/game/pong/create-singleplayer'), {
         method: 'POST',
         headers: {
@@ -69,7 +67,7 @@ export async function fetchSinglePlayerGameId(
             return response.json();
         })
         .then((data) => {
-            if (!data.ok) {
+            if (data.error) {
                 return { isSuccess: false, error: data.error };
             }
 

@@ -10,7 +10,6 @@ export interface IStartTournamentRequest {
 
 export interface IStartTournamentResponse {
     success: boolean;
-    message: string;
 }
 
 export class StartTournamentCommand implements ICommand<IStartTournamentRequest, IStartTournamentResponse> {
@@ -49,7 +48,6 @@ export class StartTournamentCommand implements ICommand<IStartTournamentRequest,
 
             return Result.success({
                 success: true,
-                message: 'Torneo iniciado correctamente',
             });
         } catch (error: unknown) {
             return this.fastify.handleError<IStartTournamentResponse>({

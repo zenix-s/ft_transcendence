@@ -6,17 +6,29 @@ import { navigateTo } from '@/app/navigation';
 import { t } from '@/app/i18n';
 import { showToast } from '@/components/toast';
 import type { GetCurrentUserResponse } from '@/types/user';
-import { createSocialSocket } from '@/modules/social/socketInstance';
+import { destroySocialSocket } from '@/modules/social/socketInstance';
 import { apiUrl } from '@/api';
 import {
     applySavedColors,
     migrateLegacyColorsToUser,
 } from '@/components/colorPicker';
 import { countInputLenght } from '@/components/inputCounter';
-import { createTournamentSocket } from '../tournament/tournamentSocketInstance';
+import { destroyTournamentSocket } from '../tournament/tournamentSocketInstance';
 import { initialize } from '@/app/main';
 
-//export let wsClient: SocialWebSocketClient | null = null;
+/**
+ * Performs complete logout cleanup: removes stored data, destroys WebSocket connections,
+ * and resets colors to defaults.
+ */
+export function performLogout() {
+    localStorage.removeItem('userId');
+    localStorage.removeItem('color_primary');
+    localStorage.removeItem('color_secondary');
+    destroySocialSocket();
+    destroyTournamentSocket();
+    localStorage.removeItem('access_token');
+    applySavedColors();
+}
 
 /* REGISTER NEW USER */
 export function setupRegisterForm() {
@@ -275,14 +287,8 @@ export async function getCurrentUser(): Promise<GetCurrentUserResponse | null> {
 function handleInvalidSession(messageKey: string) {
     if (!sessionHandled) {
         sessionHandled = true;
-        console.warn(`⚠️ Invalid session: ${messageKey}`);
         showToast(t(messageKey), 'error');
-
-        // Limpiar todo el estado de autenticación
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('userId');
-
-        // Resetear flag después de 2 segundos
+        performLogout();
         setTimeout(() => {
             sessionHandled = false;
         }, 2000);

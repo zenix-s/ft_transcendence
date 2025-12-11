@@ -284,6 +284,28 @@ export const translations: Record<Language, Record<string, string>> = {
         TournamentWon: 'You have won the tournament',
         TournamentInviteDeclined: 'Tournament invitation declined',
         TournamentLeave: 'Left the tournament successfully',
+        PlayerHasActiveMatch: 'The player has an active match',
+        PlayerHasActiveTournament: 'The player has an active tournament',
+        CurrentPlayerHasActiveMatch:
+            'You have an active match, please finish it',
+        CurrentPlayerHasActiveTournament:
+            'You have an active tournament, please finish it',
+        /* WebSocket error codes */
+        invalidFormat: 'Invalid message format',
+        unknownAction: 'Unknown action',
+        missingToken: 'Authentication token required',
+        invalidToken: 'Invalid authentication token',
+        notAuthenticated: 'Not authenticated',
+        serverError: 'Server error',
+        /* Missing tournament error codes */
+        TournamentNotAvailable: 'Tournament is not available',
+        TournamentNotInitialized: 'Tournament is not initialized',
+        ParticipantNotFound: 'Participant not found',
+        ParticipantNotActive: 'Participant is not active',
+        MatchLimitReached: 'Match limit reached',
+        TournamentCompletionError: 'Error completing tournament',
+        /* Missing UI key */
+        ErrorFromServer: 'Error from server',
     },
     es: {
         start: 'Comenzar',
@@ -575,6 +597,28 @@ export const translations: Record<Language, Record<string, string>> = {
         TournamentWon: 'Has ganado el torneo',
         TournamentInviteDeclined: 'Invitación al torneo rechazada',
         TournamentLeave: 'Has salido del torneo con éxito',
+        PlayerHasActiveMatch: 'El jugador tiene una partida activa',
+        PlayerHasActiveTournament: 'El jugador tiene un torneo activo',
+        CurrentPlayerHasActiveMatch:
+            'Tienes una partida activa, por favor termínala',
+        CurrentPlayerHasActiveTournament:
+            'Tienes un torneo activo, por favor termínalo',
+        /* WebSocket error codes */
+        invalidFormat: 'Formato de mensaje inválido',
+        unknownAction: 'Acción desconocida',
+        missingToken: 'Token de autenticación requerido',
+        invalidToken: 'Token de autenticación inválido',
+        notAuthenticated: 'No autenticado',
+        serverError: 'Error del servidor',
+        /* Missing tournament error codes */
+        TournamentNotAvailable: 'El torneo no está disponible',
+        TournamentNotInitialized: 'El torneo no está inicializado',
+        ParticipantNotFound: 'Participante no encontrado',
+        ParticipantNotActive: 'El participante no está activo',
+        MatchLimitReached: 'Límite de partidas alcanzado',
+        TournamentCompletionError: 'Error al completar el torneo',
+        /* Missing UI key */
+        ErrorFromServer: 'Error del servidor',
     },
     fr: {
         start: 'Démarrer',
@@ -869,8 +913,30 @@ export const translations: Record<Language, Record<string, string>> = {
         TournamentEnded: 'Tournoi terminé',
         TournamentStarted: 'Tournoi démarré',
         TournamentWon: 'Vous avez gagné le tournoi',
-        TournamentInviteDeclined: "Invitation au tournoi déclinée",
+        TournamentInviteDeclined: 'Invitation au tournoi déclinée',
         TournamentLeave: 'Quitter le tournoi avec succès',
+        PlayerHasActiveMatch: 'Le joueur a un match actif',
+        PlayerHasActiveTournament: 'Le joueur a un tournoi actif',
+        CurrentPlayerHasActiveMatch:
+            'Vous avez un match actif, veuillez le terminer',
+        CurrentPlayerHasActiveTournament:
+            'Vous avez un tournoi actif, veuillez le terminer',
+        /* WebSocket error codes */
+        invalidFormat: 'Format de message invalide',
+        unknownAction: 'Action inconnue',
+        missingToken: "Jeton d'authentification requis",
+        invalidToken: "Jeton d'authentification invalide",
+        notAuthenticated: 'Non authentifié',
+        serverError: 'Erreur du serveur',
+        /* Missing tournament error codes */
+        TournamentNotAvailable: "Le tournoi n'est pas disponible",
+        TournamentNotInitialized: "Le tournoi n'est pas initialisé",
+        ParticipantNotFound: 'Participant non trouvé',
+        ParticipantNotActive: "Le participant n'est pas actif",
+        MatchLimitReached: 'Limite de matchs atteinte',
+        TournamentCompletionError: 'Erreur lors de la finalisation du tournoi',
+        /* Missing UI key */
+        ErrorFromServer: 'Erreur du serveur',
     },
 };
 

@@ -1,21 +1,23 @@
 import { WebSocket } from '@fastify/websocket';
 import { FastifyInstance } from 'fastify';
 
-export enum TournamentSocketActions {
-    AUTH = 'auth',
-    TOURNAMENT_STARTED = 'tournamentStarted',
-    TOURNAMENT_ENDED = 'tournamentEnded',
-    TOURNAMENT_STATE_UPDATED = 'tournamentStateUpdated',
-    TOURNAMENT_LEAVE = 'tournamentLeave',
-    MATCH_CREATED = 'matchCreated',
-    MATCH_RESULT = 'matchResult',
-    NEW_ROUND_STARTED = 'newRoundStarted',
-    TOURNAMENT_WON = 'tournamentWon',
-    ERROR = 'error',
-}
+export const TournamentSocketActions = {
+    AUTH: 'auth',
+    TOURNAMENT_STARTED: 'tournamentStarted',
+    TOURNAMENT_ENDED: 'tournamentEnded',
+    TOURNAMENT_STATE_UPDATED: 'tournamentStateUpdated',
+    TOURNAMENT_LEAVE: 'tournamentLeave',
+    MATCH_CREATED: 'matchCreated',
+    MATCH_RESULT: 'matchResult',
+    NEW_ROUND_STARTED: 'newRoundStarted',
+    TOURNAMENT_WON: 'tournamentWon',
+    ERROR: 'error',
+} as const;
+
+export type TournamentSocketAction = (typeof TournamentSocketActions)[keyof typeof TournamentSocketActions];
 
 export interface TournamentWebSocketMessage {
-    action: TournamentSocketActions;
+    action: TournamentSocketAction;
     tournamentId?: number;
     tournamentName?: string;
     userId?: number;

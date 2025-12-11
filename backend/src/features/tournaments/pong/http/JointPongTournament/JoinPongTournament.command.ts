@@ -11,7 +11,6 @@ export interface IJoinPongTournamentRequest {
 
 export interface IJoinPongTournamentResponse {
     success: boolean;
-    message: string;
 }
 
 export class JoinPongTournamentCommand implements ICommand<
@@ -49,7 +48,7 @@ export class JoinPongTournamentCommand implements ICommand<
                 status: [Match.STATUS.PENDING, Match.STATUS.IN_PROGRESS],
             });
             if (activeMatches.length > 0) {
-                return Result.error(ApplicationError.PlayerHasActiveMatch);
+                return Result.error(ApplicationError.CurrentPlayerHasActiveMatch);
             }
 
             // Paso 3: Verificar si el usuario está en un torneo activo
@@ -57,7 +56,7 @@ export class JoinPongTournamentCommand implements ICommand<
                 userId: request.userId,
             });
             if (activeTournamentResult.isSuccess && activeTournamentResult.value) {
-                return Result.error(ApplicationError.PlayerHasActiveTournament);
+                return Result.error(ApplicationError.CurrentPlayerHasActiveTournament);
             }
 
             // Paso 4: Unirse al torneo usando el PongTournamentManager
@@ -73,7 +72,6 @@ export class JoinPongTournamentCommand implements ICommand<
 
             return Result.success({
                 success: true,
-                message: 'Te has unido al torneo exitosamente',
             });
         } catch (error: unknown) {
             return this.fastify.handleError<IJoinPongTournamentResponse>({

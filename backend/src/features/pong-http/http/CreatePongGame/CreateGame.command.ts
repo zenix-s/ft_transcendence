@@ -84,7 +84,7 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
             });
 
             if (activeMatches.length > 0) {
-                return Result.error(ApplicationError.PlayerHasActiveMatch);
+                return Result.error(ApplicationError.CurrentPlayerHasActiveMatch);
             }
 
             // Verificar si el usuario está en un torneo activo
@@ -92,7 +92,7 @@ export default class CreateGameCommand implements ICommand<ICreateGameRequest, I
                 userId: userId,
             });
             if (activeTournamentResult.isSuccess && activeTournamentResult.value) {
-                return Result.error(ApplicationError.PlayerHasActiveTournament);
+                return Result.error(ApplicationError.CurrentPlayerHasActiveTournament);
             }
 
             const gameType = MatchType.PONG;

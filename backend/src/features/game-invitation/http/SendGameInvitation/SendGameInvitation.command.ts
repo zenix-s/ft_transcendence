@@ -104,7 +104,7 @@ export default class SendGameInvitationCommand implements ICommand<
                 userId: fromUserId as number,
             });
             if (senderTournamentResult.isSuccess && senderTournamentResult.value) {
-                return Result.error(ApplicationError.PlayerHasActiveTournament);
+                return Result.error(ApplicationError.CurrentPlayerHasActiveTournament);
             }
 
             // 6: Verificar si el destinatario está en un torneo activo

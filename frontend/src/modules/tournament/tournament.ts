@@ -9,16 +9,7 @@ import { updateSliders } from '@/components/updateSliders';
 export async function tournament() {
     renderButtons();
     updateSliders();
-
-    // Si no hay formulario, createTournament devuelve null/rechaza
-    const tournamentId = await createTournament();
-    console.log('ID:', tournamentId); // DB
-    if (tournamentId === null) console.warn(t('ErrorCreatingTournament'));
-    else {
-        //showToast(t("JoinedTournamentSuccessfully")); // DB
-        console.log(`Unido al torneo con id ${tournamentId}`); // DB
-        //await joinTournament(tournamentId); // En principio no es necesario porque ya se une automáticamente
-    }
+    await createTournament();
 }
 
 /* CREATE NEW TOURNAMENT */
@@ -28,7 +19,6 @@ export async function createTournament(): Promise<number> {
             'tournamentForm'
         ) as HTMLFormElement;
         if (!tournamentForm) {
-            console.warn('Tournament creation form not found'); // DB
             reject('Form not found');
             return;
         }
@@ -90,22 +80,11 @@ export async function createTournament(): Promise<number> {
                     return;
                 }
 
-                // Conectar WebSocket ??
-                /* const token = localStorage.getItem("access_token") || "";
-				createTournamentSocket(token); */
-
                 showToast(t('TournamentCreatedSuccessfully'));
-                console.log(
-                    `Torneo creado con nombre ${tournamentname}, a ${points} puntos, ${time}s y en ${mode}.`
-                ); // DB
                 tournamentForm.reset();
 
-                // Redirigir al dashboard
                 navigateTo('dashboard');
-
-                // ✅ Devolver el id del torneo recibido
-                const tournamentId = data.tournamentId;
-                resolve(tournamentId);
+                resolve(data.tournamentId);
             } catch (err) {
                 showToast(t('NetworkOrServerError'), 'error');
                 reject(err);
@@ -115,7 +94,6 @@ export async function createTournament(): Promise<number> {
 }
 
 export async function joinTournament(tournamentId: number) {
-    console.log(tournamentId);
     try {
         const response = await fetch(
             apiUrl(`/tournaments/pong/tournaments/${tournamentId}/join`),
@@ -135,13 +113,7 @@ export async function joinTournament(tournamentId: number) {
             return;
         }
 
-        // Conectar al WebSocket del torneo
-        /* const token = localStorage.getItem("access_token") || "";
-		createTournamentSocket(token); */
-
         showToast(t('JoinedTournamentSuccessfully'));
-        console.log(`Unido al torneo con id ${tournamentId}`); // DB
-
         return;
     } catch {
         showToast(t('ErrorJoiningTournament'), 'error');

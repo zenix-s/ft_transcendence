@@ -1,5 +1,4 @@
 import { navigateTo } from '@/app/navigation';
-import { applySavedColors } from '@/components/colorPicker';
 import { modal } from '@/components/modal';
 import {
     handleParticipationJoinOrLeave,
@@ -7,8 +6,7 @@ import {
     handleParticipationStartTournament,
     refreshTournamentsHistory,
 } from '@/components/tournamentsHistory';
-import { destroySocialSocket } from '@/modules/social/socketInstance';
-import { destroyTournamentSocket } from '@/modules/tournament/tournamentSocketInstance';
+import { performLogout } from '@/modules/users/auth';
 import type { GameOptions } from '@/types/gameOptions';
 
 /**
@@ -22,19 +20,10 @@ export function setupEventListeners() {
 
         // 🔹 1. Caso especial: LOGOUT
         if (target.dataset.page === 'logout') {
-            event.preventDefault(); // Frena navegación automática
+            event.preventDefault();
             const confirmed = await modal({ type: 'logout' });
             if (confirmed) {
-                localStorage.removeItem('userId');
-                localStorage.removeItem('color_primary');
-                localStorage.removeItem('color_secondary');
-                destroySocialSocket(); // Desconectar y limpiar el WebSocket
-                destroyTournamentSocket(); // Desconectar y limpiar el WebSocket
-                localStorage.removeItem('access_token');
-
-                // Forzar colores por defecto
-                applySavedColors();
-
+                performLogout();
                 navigateTo('login');
             }
             return;
@@ -109,7 +98,6 @@ export function setupEventListeners() {
 
             // Caso startTournament
             await handleParticipationStartTournament(target);
-            console.log('Iniciar torneo - función no implementada aún.');
             return;
         }
     });

@@ -53,7 +53,6 @@ export function ready1() {
         const token = localStorage.getItem('access_token');
         createGameSocket(token, createResult.gameId);
 
-        console.log('single player id =', createResult);
-        navigateTo(`playing?id=${createResult}`);
+        navigateTo(`playing?id=${createResult.gameId}`);
     });
 }

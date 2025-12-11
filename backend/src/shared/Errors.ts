@@ -206,4 +206,10 @@ export enum ApplicationError {
     MatchLimitReached = 'MatchLimitReached',
     PlayerHasActiveTournament = 'PlayerHasActiveTournament',
     CurrentPlayerHasActiveTournament = 'CurrentPlayerHasActiveTournament',
+
+    // Errores de Social WebSocket
+    /**
+     * Error al Verificar Juego Activo - Error al verificar si el usuario tiene un juego activo
+     */
+    ErrorCheckingActiveGame = 'ErrorCheckingActiveGame',
 }

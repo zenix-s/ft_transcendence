@@ -5,11 +5,28 @@ import {
     acceptInvitation,
     rejectInvitation,
 } from '@/components/friendsSidebar/friendsSidebar';
-import { modal } from '@/components/modal';
+import { modal, activeGameModal } from '@/components/modal';
 import { showToast } from '@/components/toast';
 import type { Friend } from '@/types/friend';
 import { reloadGameHistory } from '@/app/main';
 import { createGameSocket, getGameSocket } from '../game/gameSocket';
+
+const SocialActions = {
+    AUTH: 0,
+    LIST_FRIENDS: 1,
+    CHECK_ACTIVE_GAME: 2,
+} as const;
+
+const SocialMessageTypes = {
+    AUTH_SUCCESS: 'authSuccess',
+    FRIENDS_LIST: 'friendsList',
+    GAME_INVITATION: 'gameInvitation',
+    GAME_INVITATION_ACCEPTANCE: 'gameInvitationAcceptance',
+    GAME_INVITATION_REJECTION: 'gameInvitationRejection',
+    FRIEND_PROFILE_UPDATE: 'friendProfileUpdate',
+    FRIEND_CONNECTION_STATUS: 'friendConnectionStatus',
+    CHECK_ACTIVE_GAME: 'checkActiveGame',
+} as const;
 
 interface AuthSuccessMessage {
     type: 'authSuccess';
@@ -57,6 +74,18 @@ interface gameInvitationAcceptance {
     message: string;
 }
 
+interface CheckActiveGameResponse {
+    type: 'checkActiveGame';
+    hasActiveGame: boolean;
+    gameId?: number;
+    status?: string;
+    opponent?: {
+        id: number;
+        username: string | null;
+        avatar: string | null;
+    };
+}
+
 export class SocialWebSocketClient {
     private socket: WebSocket | null = null;
     private token: string;
@@ -99,7 +128,7 @@ export class SocialWebSocketClient {
     }
 
     private authenticate() {
-        const msg = { action: 0, token: this.token };
+        const msg = { action: SocialActions.AUTH, token: this.token };
         this.send(msg);
     }
 
@@ -114,13 +143,26 @@ export class SocialWebSocketClient {
             return;
         }
 
-        const msg = { action: 1 };
+        const msg = { action: SocialActions.LIST_FRIENDS };
         console.log('📋', t('RequestFriends'));
         this.send(msg);
     }
 
     public refreshFriendsList() {
         this.requestFriendsList();
+    }
+
+    public requestCheckActiveGame() {
+        if (!this.isAuthenticated) {
+            return;
+        }
+
+        if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+            return;
+        }
+
+        const msg = { action: SocialActions.CHECK_ACTIVE_GAME };
+        this.send(msg);
     }
 
     private send(obj: unknown) {
@@ -138,16 +180,18 @@ export class SocialWebSocketClient {
         const type = (message as { type?: unknown })?.type;
 
         switch (type) {
-            case 'authSuccess': {
+            case SocialMessageTypes.AUTH_SUCCESS: {
                 const msg = message as AuthSuccessMessage;
                 this.isAuthenticated = true;
                 console.log(`✅ ${t('SuccessAuthenticated')}`, msg.userId);
                 // Mejor sólo devolver lista cuando la página lo solicite????
                 setTimeout(() => this.requestFriendsList(), 100);
+                // Check for active game after authentication
+                setTimeout(() => this.requestCheckActiveGame(), 200);
                 break;
             }
 
-            case 'friendsList': {
+            case SocialMessageTypes.FRIENDS_LIST: {
                 const msg = message as FriendsListMessage;
                 this.friends = msg.friends;
                 console.log(`👥 ${t('FriendListReceived')}`, this.friends);
@@ -156,7 +200,7 @@ export class SocialWebSocketClient {
                 break;
             }
 
-            case 'gameInvitation': {
+            case SocialMessageTypes.GAME_INVITATION: {
                 const msg = message as GameInvitationResponse;
                 console.log(
                     `${msg.fromUsername} con id ${msg.fromUserId} te ha invitado a jugar a PONG con el número de partida ${msg.gameId} y el mensaje: ${msg.message}`
@@ -196,7 +240,7 @@ export class SocialWebSocketClient {
                 break;
             }
 
-            case 'gameInvitationAcceptance': {
+            case SocialMessageTypes.GAME_INVITATION_ACCEPTANCE: {
                 const msg = message as gameInvitationAcceptance;
                 navigateTo(`playing?id=${msg.gameId}`); // Temporal para pruebas?
                 showToast(
@@ -206,13 +250,13 @@ export class SocialWebSocketClient {
                 break;
             }
 
-            case 'gameInvitationRejection': {
+            case SocialMessageTypes.GAME_INVITATION_REJECTION: {
                 const ws = getGameSocket();
                 if (ws) ws.invitationRejected();
                 break;
             }
 
-            case 'friendProfileUpdate': {
+            case SocialMessageTypes.FRIEND_PROFILE_UPDATE: {
                 console.log('Friend profile update detected');
                 this.requestFriendsList();
 
@@ -222,7 +266,7 @@ export class SocialWebSocketClient {
                 break;
             }
 
-            case 'friendConnectionStatus': {
+            case SocialMessageTypes.FRIEND_CONNECTION_STATUS: {
                 const msg = message as FriendConnectionStatusMessage;
                 const friend = this.friends.find((f) => f.id === msg.friendId);
 
@@ -280,6 +324,31 @@ export class SocialWebSocketClient {
                     }
                 }
 
+                break;
+            }
+
+            case SocialMessageTypes.CHECK_ACTIVE_GAME: {
+                const msg = message as CheckActiveGameResponse;
+
+                if (!msg.hasActiveGame) {
+                    break;
+                }
+
+                // Skip if already on /playing page
+                const urlObjeto = new URL(window.location.href);
+                if (urlObjeto.pathname === '/playing') {
+                    break;
+                }
+
+                const confirmed = await activeGameModal({
+                    opponentUsername: msg.opponent?.username ?? undefined,
+                });
+
+                if (confirmed) {
+                    const token = localStorage.getItem('access_token');
+                    createGameSocket(token, msg.gameId!);
+                    navigateTo(`playing?id=${msg.gameId}`);
+                }
                 break;
             }
 

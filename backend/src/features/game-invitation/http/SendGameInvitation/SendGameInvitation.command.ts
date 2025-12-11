@@ -108,9 +108,10 @@ export default class SendGameInvitationCommand implements ICommand<
             }
 
             // 6: Verificar si el destinatario está en un torneo activo
-            const recipientTournamentResult = await this.fastify.TournamentRepository.isUserInActiveTournament({
-                userId: targetUser.id,
-            });
+            const recipientTournamentResult =
+                await this.fastify.TournamentRepository.isUserInActiveTournament({
+                    userId: targetUser.id,
+                });
             if (recipientTournamentResult.isSuccess && recipientTournamentResult.value) {
                 return Result.error(ApplicationError.PlayerHasActiveTournament);
             }

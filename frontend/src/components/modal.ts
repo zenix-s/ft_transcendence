@@ -27,7 +27,7 @@ export async function activeGameModal({
     opponentUsername,
 }: {
     opponentUsername?: string;
-}): Promise<boolean> {
+}): Promise<boolean | 'leave'> {
     const isDark = !document.documentElement.classList.contains('dark');
     const color_modal = isDark ? '#131313' : '#fff';
     const color_back = isDark ? '#fff' : '#131313';
@@ -42,6 +42,8 @@ export async function activeGameModal({
     const confirmButtonText = `<i class="fa fa-play"></i> ${t('modalActiveGameConfirmButtonText')}`;
     const cancelButtonText = `<i class="fa fa-clock"></i> ${t('modalActiveGameCancelButtonText')}`;
 
+    const denyButtonText = `<i class="fa fa-sign-out"></i> ${t('modalActiveGameLeaveButtonText')}`;
+
     const result = await Swal.fire({
         title,
         titleText,
@@ -50,7 +52,9 @@ export async function activeGameModal({
         icon: 'info' as SweetAlertIcon,
         iconColor,
         showCancelButton: true,
+        showDenyButton: true,
         cancelButtonText,
+        denyButtonText,
         confirmButtonText,
         buttonsStyling: false,
         background: color_back,
@@ -62,12 +66,16 @@ export async function activeGameModal({
             actions: 'gap-10',
             confirmButton:
                 'px-4 py-2 rounded-lg font-medium bg-cyan-300 hover:bg-cyan-500 text-gray-800 ml-2 dark:bg-cyan-700 dark:hover:bg-cyan-900 dark:text-gray-100 transition-all duration-300',
+            denyButton:
+                'px-4 py-2 rounded-lg font-medium bg-amber-600 hover:bg-amber-800 text-white ml-2 transition-all duration-300',
             cancelButton:
                 'px-4 py-2 rounded-lg font-medium bg-rose-600 hover:bg-rose-800 text-primary ml-2 dark:bg-rose-600 dark:hover:bg-rose-800 dark:text-primary transition-all duration-300',
         },
     });
 
-    return result.isConfirmed;
+    if (result.isConfirmed) return true;
+    if (result.isDenied) return 'leave';
+    return false;
 }
 
 export async function modal({

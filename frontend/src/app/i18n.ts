@@ -167,6 +167,8 @@ export const translations: Record<Language, Record<string, string>> = {
         modalActiveGameTextNoOpponent: 'You have an active game waiting',
         modalActiveGameConfirmButtonText: 'Resume Game',
         modalActiveGameCancelButtonText: 'Later',
+        modalActiveGameLeaveButtonText: 'Leave Game',
+        GameLeft: 'You have left the game',
         //////
         modalGameCreationTitle: 'Game Creation',
         modalGameCreationTitleText: 'Configure game options',
@@ -481,6 +483,8 @@ export const translations: Record<Language, Record<string, string>> = {
         modalActiveGameTextNoOpponent: 'Tienes una partida activa esperando',
         modalActiveGameConfirmButtonText: 'Reanudar Partida',
         modalActiveGameCancelButtonText: 'Más tarde',
+        modalActiveGameLeaveButtonText: 'Abandonar Partida',
+        GameLeft: 'Has abandonado la partida',
         //////
         modalGameCreationTitle: 'Creación del juego',
         modalGameCreationTitleText: 'Configurar opciones de juego',
@@ -793,6 +797,8 @@ export const translations: Record<Language, Record<string, string>> = {
         modalActiveGameTextNoOpponent: 'Vous avez une partie active en attente',
         modalActiveGameConfirmButtonText: 'Reprendre la Partie',
         modalActiveGameCancelButtonText: 'Plus tard',
+        modalActiveGameLeaveButtonText: 'Quitter la Partie',
+        GameLeft: 'Vous avez quitté la partie',
         //////
         modalGameCreationTitle: 'Création de jeux',
         modalGameCreationTitleText: 'Définir les options de jeu',

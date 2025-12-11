@@ -366,11 +366,20 @@ export class SocialWebSocketClient {
                     opponentUsername: msg.opponent?.username ?? undefined,
                 });
 
-                if (confirmed) {
+                if (confirmed === true) {
+                    // Resume game
                     const token = localStorage.getItem('access_token');
                     createGameSocket(token, msg.gameId!);
                     navigateTo(`playing?id=${msg.gameId}`);
+                } else if (confirmed === 'leave') {
+                    // Leave game
+                    const token = localStorage.getItem('access_token');
+                    const gameSocket = createGameSocket(token, msg.gameId!);
+                    await gameSocket.authenticate(msg.gameId!);
+                    gameSocket.leaveGame();
+                    showToast(t('GameLeft'), 'success');
                 }
+                // else: "Later" - do nothing
                 break;
             }
 

@@ -161,6 +161,13 @@ export const translations: Record<Language, Record<string, string>> = {
         modalGameInvitationConfirmButtonText: 'Accept',
         modalGameInvitationCancelButtonText: 'Decline',
         //////
+        modalActiveGameTitle: 'Active Game',
+        modalActiveGameTitleText: 'You have an active game',
+        modalActiveGameText: 'You have an active game with',
+        modalActiveGameTextNoOpponent: 'You have an active game waiting',
+        modalActiveGameConfirmButtonText: 'Resume Game',
+        modalActiveGameCancelButtonText: 'Later',
+        //////
         modalGameCreationTitle: 'Game Creation',
         modalGameCreationTitleText: 'Configure game options',
         modalGameCreationConfirmButtonText: 'Invite',
@@ -446,6 +453,13 @@ export const translations: Record<Language, Record<string, string>> = {
         modalGameInvitationConfirmButtonText: 'Aceptar',
         modalGameInvitationCancelButtonText: 'Rechazar',
         //////
+        modalActiveGameTitle: 'Partida Activa',
+        modalActiveGameTitleText: 'Tienes una partida activa',
+        modalActiveGameText: 'Tienes una partida activa con',
+        modalActiveGameTextNoOpponent: 'Tienes una partida activa esperando',
+        modalActiveGameConfirmButtonText: 'Reanudar Partida',
+        modalActiveGameCancelButtonText: 'Más tarde',
+        //////
         modalGameCreationTitle: 'Creación del juego',
         modalGameCreationTitleText: 'Configurar opciones de juego',
         modalGameCreationConfirmButtonText: 'Invitar',
@@ -728,6 +742,13 @@ export const translations: Record<Language, Record<string, string>> = {
         modalGameInvitationText: 'vous a invité à jouer',
         modalGameInvitationConfirmButtonText: 'Accepter',
         modalGameInvitationCancelButtonText: 'Déclin',
+        //////
+        modalActiveGameTitle: 'Partie Active',
+        modalActiveGameTitleText: 'Vous avez une partie active',
+        modalActiveGameText: 'Vous avez une partie active avec',
+        modalActiveGameTextNoOpponent: 'Vous avez une partie active en attente',
+        modalActiveGameConfirmButtonText: 'Reprendre la Partie',
+        modalActiveGameCancelButtonText: 'Plus tard',
         //////
         modalGameCreationTitle: 'Création de jeux',
         modalGameCreationTitleText: 'Définir les options de jeu',

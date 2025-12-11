@@ -11,8 +11,10 @@ import {
     GameInvitationRejectionResponse,
     GameInvitationAcceptanceResponse,
     FriendProfileUpdateResponse,
+    CheckActiveGameResponse,
 } from '../Social.types';
-import { ISocialWebSocketService } from './ISocialWebSocketService.interface';
+import { ISocialWebSocketService, CheckActiveGameResult } from './ISocialWebSocketService.interface';
+import { Match } from '@shared/domain/Entities/Match.entity';
 import { IMatchSettings } from '@shared/domain/ValueObjects/MatchSettings.value';
 
 export class SocialWebSocketService implements ISocialWebSocketService {
@@ -56,6 +58,47 @@ export class SocialWebSocketService implements ISocialWebSocketService {
             return Result.success(friends);
         } catch (error) {
             this.fastify.log.error(error, 'Error getting friends list');
+            return Result.error(ApplicationError.InternalServerError);
+        }
+    }
+
+    async checkActiveGame(userId: number): Promise<Result<CheckActiveGameResult>> {
+        try {
+            const activeMatches = await this.fastify.MatchRepository.findUserMatches({
+                userId,
+                status: [Match.STATUS.PENDING, Match.STATUS.IN_PROGRESS],
+            });
+
+            if (activeMatches.length === 0) {
+                return Result.success({ hasActiveGame: false });
+            }
+
+            const match = activeMatches[0];
+            const opponents = match.players.filter((p) => p.userId !== userId);
+            const opponent = opponents.length > 0 ? opponents[0] : null;
+
+            let opponentAvatar: string | null = null;
+            if (opponent) {
+                const userResult = await this.fastify.UserRepository.getUser({ id: opponent.userId });
+                if (userResult.isSuccess && userResult.value) {
+                    opponentAvatar = userResult.value.avatar || null;
+                }
+            }
+
+            return Result.success({
+                hasActiveGame: true,
+                gameId: match.id,
+                status: match.status,
+                opponent: opponent
+                    ? {
+                          id: opponent.userId,
+                          username: opponent.username,
+                          avatar: opponentAvatar,
+                      }
+                    : undefined,
+            });
+        } catch (error) {
+            this.fastify.log.error(error, 'Error checking active game');
             return Result.error(ApplicationError.InternalServerError);
         }
     }
@@ -321,6 +364,17 @@ export class SocialWebSocketService implements ISocialWebSocketService {
             type: 'friendsList',
             friends,
         });
+    }
+
+    sendCheckActiveGameResult(socket: WebSocket, result: CheckActiveGameResult): void {
+        const response: CheckActiveGameResponse = {
+            type: 'checkActiveGame',
+            hasActiveGame: result.hasActiveGame,
+            ...(result.gameId !== undefined && { gameId: result.gameId }),
+            ...(result.status && { status: result.status }),
+            ...(result.opponent && { opponent: result.opponent }),
+        };
+        this.sendMessage(socket, response);
     }
 
     sendFriendConnectionStatus(

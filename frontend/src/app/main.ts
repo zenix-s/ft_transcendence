@@ -18,7 +18,7 @@ import {
     getSocialSocket,
 } from '@/modules/social/socketInstance';
 import { SocialWebSocketClient } from '@/modules/social/socialSocket';
-import { getColor, setColors } from '@/modules/game/getColors';
+import { getColor, setButtonsColors, setColors } from '@/modules/game/getColors';
 import {
     createTournamentSocket,
     getTournamentSocket,
@@ -188,6 +188,7 @@ if (toggle) {
                 const bgColor = getColor('--color-primary');
                 setColors(ws?.getScene(), bgColor, borderColor);
             }
+            setButtonsColors(ws.getButtons());
         }
         //Reload doughnut
         // Obtener el canvas

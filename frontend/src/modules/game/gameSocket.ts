@@ -329,6 +329,10 @@ export class GameWebSocket {
         return this.babylonElements?.scene;
     }
 
+    public getButtons() {
+        return (this.htmlElements?.buttons);
+    }
+
     public initializeGame(
         gameId: number,
         htmlElements: HTMLelements,

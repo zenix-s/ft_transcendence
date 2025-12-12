@@ -50,6 +50,28 @@ function getButtons() {
 		buttonUp: buttonUp,
 		buttonDown: buttonDown,
 	};
+
+	const rootStyles = getComputedStyle(document.documentElement);
+	let bgColor;
+	if (localStorage.getItem('theme') === 'dark')
+		bgColor = rootStyles.getPropertyValue('--color-primary').trim();
+	else
+		bgColor = rootStyles.getPropertyValue('--color-secondary').trim();
+	
+	let arrowColor;
+	if (localStorage.getItem('theme') === 'dark')
+		arrowColor = rootStyles.getPropertyValue('--color-secondary').trim();
+	else
+		arrowColor = rootStyles.getPropertyValue('--color-primary').trim();
+	
+	// Espera formato #RRGGBB
+	if (!arrowColor || !arrowColor.startsWith('#') || arrowColor.length !== 7)
+		arrowColor = '#FFFFFF';
+
+	buttonUp.style.backgroundColor = bgColor;
+	buttonDown.style.backgroundColor = bgColor;
+	buttonUp.style.color = arrowColor;
+	buttonDown.style.color = arrowColor;
 	return (buttons);
 }
 

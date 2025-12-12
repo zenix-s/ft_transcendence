@@ -380,17 +380,6 @@ export class GameWebSocket {
         showToast(t('invitationAcceppted'), 'success');
     }
 
-    public leaveGame() {
-        console.log("leave game");
-        const obj: message = {
-            action: Actions.AUTH,
-            gameId: this.gameId,
-            token: this.token,
-        };
-        obj.action = Actions.LEAVE_GAME;
-        this.socket?.send(JSON.stringify(obj));
-    }
-
     public invitationRejected() {
         showToast(t('invitationRejected'), 'error');
         this.leaveGame();
@@ -405,7 +394,6 @@ export class GameWebSocket {
             token: this.token,
         };
         this.socket?.send(JSON.stringify(obj));
-        this.destroy();
         // navigateTo('dashboard', false, true);
     }
 

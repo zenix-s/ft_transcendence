@@ -1,17 +1,22 @@
 import {
     ArcRotateCamera,
     Color3,
+    Engine,
+    HemisphericLight,
     Mesh,
     MeshBuilder,
     Scene,
     StandardMaterial,
     Vector3,
 } from '@babylonjs/core';
-import type { Ball, Player, Score } from './gameData';
 import { showToast } from '@/components/toast';
 import { t } from '@/app/i18n';
 import { navigateTo } from '@/app/navigation';
 import { getColor, setColors } from './getColors';
+import type { HTMLelements } from './gameHTMLInterfaces';
+import type { GameWebSocket } from './gameSocket';
+import { adjustCanvasSize } from './game';
+import type { BabylonElements, Ball, Player, Score } from './gameBabylonInterfaces';
 
 export function createBall(playerView: string | null, scene: Scene) {
     const ball_html: Mesh = MeshBuilder.CreateSphere(
@@ -166,4 +171,46 @@ export function createCamera(
     camera.inputs.removeByType('ArcRotateCameraKeyboardMoveInput');
     // zoom (rueda del ratón sigue funcionando)
     camera.lowerRadiusLimit = 13;
+}
+
+export function getBabylonElements(htmlElements: HTMLelements, ws: GameWebSocket) {
+    // Motor y escena
+    const engine = new Engine(htmlElements.canvas, true);
+    const scene = new Scene(engine);
+
+    ws.setScene(scene);
+
+    // Ajustar tamaño del canvas
+    adjustCanvasSize(htmlElements.canvas, engine);
+
+    // Cámara
+    createCamera(ws.getGameView(), scene, htmlElements.canvas);
+
+    // Luz
+    const light = new HemisphericLight('light', new Vector3(0, 1, 0), scene);
+    light.intensity = 1.2;
+
+    // Mesa
+    createTable(scene);
+
+    // JUGADORES
+    const playerLeft = createPlayerLeft(ws.getGameView(), scene);
+    const playerRight = createPlayerRight(ws.getGameView(), scene);
+
+    //SCORE
+    const scores = createScores();
+    if (!scores) return;
+
+    // PELOTA
+    const ball = createBall(ws.getGameView(), scene);
+
+    const babylonElements: BabylonElements = {
+        engine: engine,
+        scene: scene,
+        playerLeft: playerLeft,
+        playerRight: playerRight,
+        scores: scores,
+        ball: ball,
+    }
+    return (babylonElements);
 }

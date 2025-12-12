@@ -10,7 +10,6 @@ export interface ILeavePongTournamentRequest {
 
 export interface ILeavePongTournamentResponse {
     success: boolean;
-    message: string;
 }
 
 export class LeavePongTournamentCommand implements ICommand<
@@ -53,19 +52,8 @@ export class LeavePongTournamentCommand implements ICommand<
                 return Result.error(leaveTournamentResult.error || ApplicationError.ParticipantNotFound);
             }
 
-            // Paso 4: Verificar si el torneo fue cancelado para ajustar el mensaje
-            const activeTournament = this.fastify.PongTournamentManager.getActiveTournament(
-                request.tournamentId
-            );
-            const wasCancelled = !activeTournament; // Si ya no está en el mapa, fue cancelado
-
-            const message = wasCancelled
-                ? 'Has abandonado el torneo. El torneo ha sido cancelado debido a tu salida.'
-                : 'Has abandonado el torneo exitosamente';
-
             return Result.success({
                 success: true,
-                message,
             });
         } catch (error: unknown) {
             return this.fastify.handleError<ILeavePongTournamentResponse>({

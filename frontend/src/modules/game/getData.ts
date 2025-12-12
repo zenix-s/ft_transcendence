@@ -1,10 +1,11 @@
 import { apiUrl } from '@/api';
+import { showToast } from '@/components/toast';
 
-export function fetchGameId(
+export async function fetchGameId(
     matchPoints: number = 5,
     gameTime: number = 120,
     gameMode: string = '2d'
-) {
+): Promise<{ isSuccess: boolean; gameId?: number; error?: string }> {
     // return fetch("https://localhost:3000/game/pong/create", {
     return fetch(apiUrl('/game/pong/create'), {
         method: 'POST',
@@ -20,29 +21,34 @@ export function fetchGameId(
         }),
     })
         .then((response) => {
-            if (!response.ok) {
-                throw new Error('Error en la petición: ' + response.status);
-            }
+            //if (!response.ok) {
+            //    throw new Error('Error en la petición: ' + response.status);
+            //}
             return response.json();
         })
         .then((data) => {
             console.log('Respuesta del servidor:', data);
-            return data.gameId; // ✅ devolvemos el gameId
+
+            if (data.error) {
+                return { isSuccess: false, error: data.error };
+            }
+
+            //return data.gameId; // ✅ devolvemos el gameId
+            return { isSuccess: true, gameId: data.gameId };
         })
         .catch((error) => {
-            console.error('Error:', error);
-            return null;
+            console.error('Error:' + JSON.stringify(error));
+            showToast(error);
+            return { isSuccess: false, error: error.message };
         });
 }
 
-export function fetchSinglePlayerGameId(
+export async function fetchSinglePlayerGameId(
     winnerScore: number,
     aiDifficulty: number,
-    maxTime: Number,
+    maxTime: number,
     gameMode: string
-) {
-    // return fetch("https://localhost:3000/game/pong/create-singleplayer", {
-    console.log('get id=', apiUrl('/game/pong/create-singleplayer'));
+): Promise<{ isSuccess: boolean; gameId?: number; error?: string }> {
     return fetch(apiUrl('/game/pong/create-singleplayer'), {
         method: 'POST',
         headers: {
@@ -58,18 +64,17 @@ export function fetchSinglePlayerGameId(
         }),
     })
         .then((response) => {
-            if (!response.ok) {
-                throw new Error('Error en la petición: ' + response.status);
-            }
             return response.json();
         })
         .then((data) => {
-            console.log('Respuesta del servidor:', data);
-            return data.gameId; // ✅ devolvemos el gameId
+            if (data.error) {
+                return { isSuccess: false, error: data.error };
+            }
+
+            return { isSuccess: true, gameId: data.gameId };
         })
         .catch((error) => {
-            console.error('Error:', error);
-            return null;
+            return { isSuccess: false, error: error.message };
         });
 }
 

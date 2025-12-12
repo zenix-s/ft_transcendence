@@ -3,9 +3,14 @@ import { IMatchSettings } from '@shared/domain/ValueObjects/MatchSettings.value'
 export enum SocialActions {
     AUTH = 0,
     LIST_FRIENDS = 1,
+    CHECK_ACTIVE_GAME = 2,
 }
 
-export const PossibleSocialActions = [SocialActions.AUTH, SocialActions.LIST_FRIENDS];
+export const PossibleSocialActions = [
+    SocialActions.AUTH,
+    SocialActions.LIST_FRIENDS,
+    SocialActions.CHECK_ACTIVE_GAME,
+];
 
 export interface Friend {
     id: number;
@@ -83,4 +88,18 @@ export interface GameInvitationAcceptanceResponse extends SocialWebSocketRespons
     gameId: number;
     gameTypeName: string;
     message: string;
+}
+
+export interface ActiveGameOpponent {
+    id: number;
+    username: string | null;
+    avatar: string | null;
+}
+
+export interface CheckActiveGameResponse extends SocialWebSocketResponse {
+    type: 'checkActiveGame';
+    hasActiveGame: boolean;
+    gameId?: number;
+    status?: string;
+    opponent?: ActiveGameOpponent;
 }

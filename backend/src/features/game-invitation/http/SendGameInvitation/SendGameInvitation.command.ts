@@ -99,7 +99,24 @@ export default class SendGameInvitationCommand implements ICommand<
                 return Result.error(ApplicationError.CannotInviteSelf);
             }
 
-            // 5: Obtener la información del usuario que envía la invitación
+            // 5: Verificar si el remitente está en un torneo activo
+            const senderTournamentResult = await this.fastify.TournamentRepository.isUserInActiveTournament({
+                userId: fromUserId as number,
+            });
+            if (senderTournamentResult.isSuccess && senderTournamentResult.value) {
+                return Result.error(ApplicationError.CurrentPlayerHasActiveTournament);
+            }
+
+            // 6: Verificar si el destinatario está en un torneo activo
+            const recipientTournamentResult =
+                await this.fastify.TournamentRepository.isUserInActiveTournament({
+                    userId: targetUser.id,
+                });
+            if (recipientTournamentResult.isSuccess && recipientTournamentResult.value) {
+                return Result.error(ApplicationError.PlayerHasActiveTournament);
+            }
+
+            // 7: Obtener la información del usuario que envía la invitación
             const senderResult = await this.fastify.UserRepository.getUser({ id: fromUserId as number });
             if (!senderResult.isSuccess || !senderResult.value) {
                 return Result.error(ApplicationError.UserNotFound);

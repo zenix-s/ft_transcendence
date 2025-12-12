@@ -84,6 +84,10 @@ export class GameWebSocket {
         if (!this.socket) this.socket = new WebSocket(this.wsUrl);
     }
 
+    public isConnected(): boolean {
+        return this.socket?.readyState === WebSocket.OPEN;
+    }
+
     public setAuth() {
         this.ready = true;
     }
@@ -392,6 +396,17 @@ export class GameWebSocket {
         this.leaveGame();
         this.destroy();
         return;
+    }
+
+    public leaveGame() {
+        const obj: message = {
+            action: Actions.LEAVE_GAME,
+            gameId: this.gameId,
+            token: this.token,
+        };
+        this.socket?.send(JSON.stringify(obj));
+        this.destroy();
+        // navigateTo('dashboard', false, true);
     }
 
     private countdown(data: GameStateMessage) {

@@ -94,6 +94,17 @@ export default async function socialWebSocketRoutes(fastify: FastifyInstance) {
                         return;
                     }
 
+                    if (action === SocialActions.CHECK_ACTIVE_GAME) {
+                        const gameResult = await webSocketService.checkActiveGame(currentUserId);
+                        if (!gameResult.isSuccess || !gameResult.value) {
+                            webSocketService.sendError(socket, 'errorCheckingActiveGame');
+                            return;
+                        }
+
+                        webSocketService.sendCheckActiveGameResult(socket, gameResult.value);
+                        return;
+                    }
+
                     webSocketService.sendError(socket, 'unknownAction');
                 } catch (error) {
                     fastify.log.error(error, 'WebSocket message processing error');

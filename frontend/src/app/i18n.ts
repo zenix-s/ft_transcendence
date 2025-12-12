@@ -161,6 +161,15 @@ export const translations: Record<Language, Record<string, string>> = {
         modalGameInvitationConfirmButtonText: 'Accept',
         modalGameInvitationCancelButtonText: 'Decline',
         //////
+        modalActiveGameTitle: 'Active Game',
+        modalActiveGameTitleText: 'You have an active game',
+        modalActiveGameText: 'You have an active game with',
+        modalActiveGameTextNoOpponent: 'You have an active game waiting',
+        modalActiveGameConfirmButtonText: 'Resume Game',
+        modalActiveGameCancelButtonText: 'Later',
+        modalActiveGameLeaveButtonText: 'Leave Game',
+        GameLeft: 'You have left the game',
+        //////
         modalGameCreationTitle: 'Game Creation',
         modalGameCreationTitleText: 'Configure game options',
         modalGameCreationConfirmButtonText: 'Invite',
@@ -274,7 +283,31 @@ export const translations: Record<Language, Record<string, string>> = {
         TournamentStateUpdated: 'Tournament state updated',
         TournamentEnded: 'Tournament ended',
         TournamentStarted: 'Tournament started',
-        TournamentWon: 'Tournament won',
+        TournamentWon: 'You have won the tournament',
+        TournamentInviteDeclined: 'Tournament invitation declined',
+        TournamentLeave: 'Left the tournament successfully',
+        PlayerHasActiveMatch: 'The player has an active match',
+        PlayerHasActiveTournament: 'The player has an active tournament',
+        CurrentPlayerHasActiveMatch:
+            'You have an active match, please finish it',
+        CurrentPlayerHasActiveTournament:
+            'You have an active tournament, please finish it',
+        /* WebSocket error codes */
+        invalidFormat: 'Invalid message format',
+        unknownAction: 'Unknown action',
+        missingToken: 'Authentication token required',
+        invalidToken: 'Invalid authentication token',
+        notAuthenticated: 'Not authenticated',
+        serverError: 'Server error',
+        /* Missing tournament error codes */
+        TournamentNotAvailable: 'Tournament is not available',
+        TournamentNotInitialized: 'Tournament is not initialized',
+        ParticipantNotFound: 'Participant not found',
+        ParticipantNotActive: 'Participant is not active',
+        MatchLimitReached: 'Match limit reached',
+        TournamentCompletionError: 'Error completing tournament',
+        /* Missing UI key */
+        ErrorFromServer: 'Error from server',
     },
     es: {
         start: 'Comenzar',
@@ -444,6 +477,15 @@ export const translations: Record<Language, Record<string, string>> = {
         modalGameInvitationConfirmButtonText: 'Aceptar',
         modalGameInvitationCancelButtonText: 'Rechazar',
         //////
+        modalActiveGameTitle: 'Partida Activa',
+        modalActiveGameTitleText: 'Tienes una partida activa',
+        modalActiveGameText: 'Tienes una partida activa con',
+        modalActiveGameTextNoOpponent: 'Tienes una partida activa esperando',
+        modalActiveGameConfirmButtonText: 'Reanudar Partida',
+        modalActiveGameCancelButtonText: 'Más tarde',
+        modalActiveGameLeaveButtonText: 'Abandonar Partida',
+        GameLeft: 'Has abandonado la partida',
+        //////
         modalGameCreationTitle: 'Creación del juego',
         modalGameCreationTitleText: 'Configurar opciones de juego',
         modalGameCreationConfirmButtonText: 'Invitar',
@@ -556,7 +598,31 @@ export const translations: Record<Language, Record<string, string>> = {
         TournamentStateUpdated: 'Estado del torneo actualizado',
         TournamentEnded: 'Torneo finalizado',
         TournamentStarted: 'Torneo iniciado',
-        TournamentWon: 'Torneo ganado',
+        TournamentWon: 'Has ganado el torneo',
+        TournamentInviteDeclined: 'Invitación al torneo rechazada',
+        TournamentLeave: 'Has salido del torneo con éxito',
+        PlayerHasActiveMatch: 'El jugador tiene una partida activa',
+        PlayerHasActiveTournament: 'El jugador tiene un torneo activo',
+        CurrentPlayerHasActiveMatch:
+            'Tienes una partida activa, por favor termínala',
+        CurrentPlayerHasActiveTournament:
+            'Tienes un torneo activo, por favor termínalo',
+        /* WebSocket error codes */
+        invalidFormat: 'Formato de mensaje inválido',
+        unknownAction: 'Acción desconocida',
+        missingToken: 'Token de autenticación requerido',
+        invalidToken: 'Token de autenticación inválido',
+        notAuthenticated: 'No autenticado',
+        serverError: 'Error del servidor',
+        /* Missing tournament error codes */
+        TournamentNotAvailable: 'El torneo no está disponible',
+        TournamentNotInitialized: 'El torneo no está inicializado',
+        ParticipantNotFound: 'Participante no encontrado',
+        ParticipantNotActive: 'El participante no está activo',
+        MatchLimitReached: 'Límite de partidas alcanzado',
+        TournamentCompletionError: 'Error al completar el torneo',
+        /* Missing UI key */
+        ErrorFromServer: 'Error del servidor',
     },
     fr: {
         start: 'Démarrer',
@@ -725,6 +791,15 @@ export const translations: Record<Language, Record<string, string>> = {
         modalGameInvitationConfirmButtonText: 'Accepter',
         modalGameInvitationCancelButtonText: 'Déclin',
         //////
+        modalActiveGameTitle: 'Partie Active',
+        modalActiveGameTitleText: 'Vous avez une partie active',
+        modalActiveGameText: 'Vous avez une partie active avec',
+        modalActiveGameTextNoOpponent: 'Vous avez une partie active en attente',
+        modalActiveGameConfirmButtonText: 'Reprendre la Partie',
+        modalActiveGameCancelButtonText: 'Plus tard',
+        modalActiveGameLeaveButtonText: 'Quitter la Partie',
+        GameLeft: 'Vous avez quitté la partie',
+        //////
         modalGameCreationTitle: 'Création de jeux',
         modalGameCreationTitleText: 'Définir les options de jeu',
         modalGameCreationConfirmButtonText: 'Inviter',
@@ -843,7 +918,31 @@ export const translations: Record<Language, Record<string, string>> = {
         TournamentStateUpdated: 'État du tournoi mis à jour',
         TournamentEnded: 'Tournoi terminé',
         TournamentStarted: 'Tournoi démarré',
-        TournamentWon: 'Tournoi gagné',
+        TournamentWon: 'Vous avez gagné le tournoi',
+        TournamentInviteDeclined: 'Invitation au tournoi déclinée',
+        TournamentLeave: 'Quitter le tournoi avec succès',
+        PlayerHasActiveMatch: 'Le joueur a un match actif',
+        PlayerHasActiveTournament: 'Le joueur a un tournoi actif',
+        CurrentPlayerHasActiveMatch:
+            'Vous avez un match actif, veuillez le terminer',
+        CurrentPlayerHasActiveTournament:
+            'Vous avez un tournoi actif, veuillez le terminer',
+        /* WebSocket error codes */
+        invalidFormat: 'Format de message invalide',
+        unknownAction: 'Action inconnue',
+        missingToken: "Jeton d'authentification requis",
+        invalidToken: "Jeton d'authentification invalide",
+        notAuthenticated: 'Non authentifié',
+        serverError: 'Erreur du serveur',
+        /* Missing tournament error codes */
+        TournamentNotAvailable: "Le tournoi n'est pas disponible",
+        TournamentNotInitialized: "Le tournoi n'est pas initialisé",
+        ParticipantNotFound: 'Participant non trouvé',
+        ParticipantNotActive: "Le participant n'est pas actif",
+        MatchLimitReached: 'Limite de matchs atteinte',
+        TournamentCompletionError: 'Erreur lors de la finalisation du tournoi',
+        /* Missing UI key */
+        ErrorFromServer: 'Erreur du serveur',
     },
 };
 

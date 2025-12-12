@@ -4,8 +4,82 @@ import type { SweetAlertIcon } from 'sweetalert2';
 import type { GameOptions } from '@/types/gameOptions';
 import type { ActiveTournament } from '@/types/tournamentsTypes';
 
+const ModalTypes = {
+    LOGOUT: 'logout',
+    GAME_FINISHED: 'gameFinished',
+    GAME_INVITATION: 'gameInvitation',
+    SET_READY: 'setReady',
+    GAME_CREATION: 'gameCreation',
+    TOURNAMENT_RESULTS: 'tournamentResults',
+    CONFIRM_LEAVE_TOURNAMENT: 'confirmLeaveTournament',
+} as const;
+
+type ModalType = (typeof ModalTypes)[keyof typeof ModalTypes];
+
+export { ModalTypes, type ModalType };
+
+/**
+ * Modal to notify the user that they have an active game and ask if they want to resume it.
+ * @param opponentUsername - The opponent's username (optional)
+ * @returns Promise<boolean> - true if user wants to resume, false otherwise
+ */
+export async function activeGameModal({
+    opponentUsername,
+}: {
+    opponentUsername?: string;
+}): Promise<boolean | 'leave'> {
+    const isDark = !document.documentElement.classList.contains('dark');
+    const color_modal = isDark ? '#131313' : '#fff';
+    const color_back = isDark ? '#fff' : '#131313';
+    const backdrop = 'rgba(0,0,0,0.8)';
+    const iconColor = '#00d3f2';
+
+    const title = t('modalActiveGameTitle');
+    const titleText = t('modalActiveGameTitleText');
+    const text = opponentUsername
+        ? `${t('modalActiveGameText')} <strong>${opponentUsername}</strong>`
+        : t('modalActiveGameTextNoOpponent');
+    const confirmButtonText = `<i class="fa fa-play"></i> ${t('modalActiveGameConfirmButtonText')}`;
+    const cancelButtonText = `<i class="fa fa-clock"></i> ${t('modalActiveGameCancelButtonText')}`;
+
+    const denyButtonText = `<i class="fa fa-sign-out"></i> ${t('modalActiveGameLeaveButtonText')}`;
+
+    const result = await Swal.fire({
+        title,
+        titleText,
+        html: text,
+        color: color_modal,
+        icon: 'info' as SweetAlertIcon,
+        iconColor,
+        showCancelButton: true,
+        showDenyButton: true,
+        cancelButtonText,
+        denyButtonText,
+        confirmButtonText,
+        buttonsStyling: false,
+        background: color_back,
+        backdrop,
+        allowOutsideClick: true,
+        allowEscapeKey: true,
+        animation: true,
+        customClass: {
+            actions: 'gap-10',
+            confirmButton:
+                'px-4 py-2 rounded-lg font-medium bg-cyan-300 hover:bg-cyan-500 text-gray-800 ml-2 dark:bg-cyan-700 dark:hover:bg-cyan-900 dark:text-gray-100 transition-all duration-300',
+            denyButton:
+                'px-4 py-2 rounded-lg font-medium bg-amber-600 hover:bg-amber-800 text-white ml-2 transition-all duration-300',
+            cancelButton:
+                'px-4 py-2 rounded-lg font-medium bg-rose-600 hover:bg-rose-800 text-primary ml-2 dark:bg-rose-600 dark:hover:bg-rose-800 dark:text-primary transition-all duration-300',
+        },
+    });
+
+    if (result.isConfirmed) return true;
+    if (result.isDenied) return 'leave';
+    return false;
+}
+
 export async function modal({
-    type = 'logout',
+    type = ModalTypes.LOGOUT,
     player1Score,
     player2Score,
     winner,
@@ -14,14 +88,7 @@ export async function modal({
     activeTournament,
     tournamentModal = false,
 }: {
-    type?:
-        | 'logout'
-        | 'gameFinished'
-        | 'gameInvitation'
-        | 'setReady'
-        | 'gameCreation'
-        | 'tournamentResults'
-        | 'confirmLeaveTournament';
+    type?: ModalType;
     player1Score?: number;
     player2Score?: number;
     winner?: string;
@@ -50,7 +117,7 @@ export async function modal({
     let position = 'center';
 
     /* Overwrite options */
-    if (type === 'logout') {
+    if (type === ModalTypes.LOGOUT) {
         title = t('modalLogoutTitle');
         titleText = t('modalLogoutTitleText');
         text = t('modalLogoutText');
@@ -58,7 +125,7 @@ export async function modal({
         showCancelButton = true;
         cancelButtonText = t('modalLogoutCancelButtonText');
         icon_msg = 'warning';
-    } else if (type === 'gameFinished') {
+    } else if (type === ModalTypes.GAME_FINISHED) {
         const winnerName = winner;
         console.log("win=", winner);
         const scoreText = `${player1Score ?? 0} - ${player2Score ?? 0}`;
@@ -76,7 +143,7 @@ export async function modal({
         text = `${FinalScore}: ${scoreText}`;
         confirmButtonText = t('Return');
         icon_msg = undefined;
-    } else if (type === 'setReady') {
+    } else if (type === ModalTypes.SET_READY) {
         title = t('SetReady');
         let GameInfo = t('GameInfoBlue');
         if (playerColor === 'red') GameInfo = t('GameInfoRed');
@@ -88,7 +155,7 @@ export async function modal({
         cancelButtonText = t('Cancel');
         allowOutsideClick = false;
         allowEscapeKey = false;
-    } else if (type === 'gameInvitation') {
+    } else if (type === ModalTypes.GAME_INVITATION) {
         title = t('modalGameInvitationTitle');
         titleText = t('modalGameInvitationTitleText');
         const nameOfGame = gameName ? gameName : '';
@@ -102,14 +169,14 @@ export async function modal({
         icon_msg = 'question';
         allowOutsideClick = false;
         allowEscapeKey = false;
-    } else if (type === 'gameCreation') {
+    } else if (type === ModalTypes.GAME_CREATION) {
         title = t('modalGameCreationTitle');
         titleText = t('modalGameCreationTitleText');
         confirmButtonText = `<i class="fa fa-thumbs-up"></i> ${t('modalGameCreationConfirmButtonText')}`;
         showCancelButton = true;
         cancelButtonText = `<i class="fa fa-thumbs-down"></i> ${t('modalGameCreationCancelButtonText')}`;
         icon_msg = undefined;
-    } else if (type === 'tournamentResults' && activeTournament) {
+    } else if (type === ModalTypes.TOURNAMENT_RESULTS && activeTournament) {
         const tournamentName = activeTournament.name;
         title = `${t('tournament')}: ${tournamentName}`;
         titleText = `${t('tournament')}: ${tournamentName}`;
@@ -135,7 +202,7 @@ export async function modal({
       `;
         confirmButtonText = t('Return');
         icon_msg = 'info';
-    } else if (type === 'confirmLeaveTournament') {
+    } else if (type === ModalTypes.CONFIRM_LEAVE_TOURNAMENT) {
         title = t('modalConfirmLeaveTournamentTitle');
         titleText = t('modalConfirmLeaveTournamentTitle');
         text = t('modalConfirmLeaveTournamentText');
@@ -152,9 +219,9 @@ export async function modal({
 
     /* MAIN LOGIC */
     if (
-        type !== 'gameCreation' &&
-        type !== 'tournamentResults' &&
-        type !== 'gameInvitation'
+        type !== ModalTypes.GAME_CREATION &&
+        type !== ModalTypes.TOURNAMENT_RESULTS &&
+        type !== ModalTypes.GAME_INVITATION
     ) {
         const result = await Swal.fire({
             title,
@@ -173,8 +240,8 @@ export async function modal({
             allowOutsideClick: allowOutsideClick,
             allowEscapeKey: allowEscapeKey,
             animation,
-            timer: type === 'setReady' ? 30000 : undefined,
-            timerProgressBar: type === 'setReady',
+            timer: type === ModalTypes.SET_READY ? 30000 : undefined,
+            timerProgressBar: type === ModalTypes.SET_READY,
             customClass: {
                 actions: 'gap-10',
                 confirmButton:
@@ -183,7 +250,7 @@ export async function modal({
                     'px-4 py-2 rounded-lg font-medium bg-rose-600 hover:bg-rose-800 text-primary ml-2 dark:bg-rose-600 dark:hover:bg-rose-800 dark:text-primary transition-all duration-300',
             },
             didOpen: () => {
-                if (type === 'setReady') {
+                if (type === ModalTypes.SET_READY) {
                     const timerEl = Swal.getHtmlContainer()?.querySelector('b');
 
                     timerInterval = setInterval(() => {
@@ -198,12 +265,12 @@ export async function modal({
             },
         });
         if (result.isConfirmed) {
-            if (type === 'logout') {
+            if (type === ModalTypes.LOGOUT) {
                 await Swal.fire({
                     title: t('modalLogoutIsConfirmedTitle'),
                     titleText: t('modalLogoutIsConfirmedTitle'),
                     text:
-                        type === 'logout'
+                        type === ModalTypes.LOGOUT
                             ? t('modalLogoutIsConfirmedText')
                             : 'Action completed successfully.',
                     color: color_modal,
@@ -225,7 +292,7 @@ export async function modal({
         } else {
             return false;
         }
-    } else if (type === 'gameInvitation') {
+    } else if (type === ModalTypes.GAME_INVITATION) {
         const result = await Swal.fire({
             title,
             titleText,
@@ -256,7 +323,7 @@ export async function modal({
         } else {
             return false;
         }
-    } else if (type === 'gameCreation') {
+    } else if (type === ModalTypes.GAME_CREATION) {
         // Caso: gameCreation
         const { value: formValues } = await Swal.fire({
             title,
@@ -399,7 +466,7 @@ export async function modal({
 
             return formValues; // Hay que devolver los datos en lugar de true
         } else return false;
-    } else if (type === 'confirmLeaveTournament') {
+    } else if (type === ModalTypes.CONFIRM_LEAVE_TOURNAMENT) {
         // Caso: confirmLeaveTournament
         const result = await Swal.fire({
             title,

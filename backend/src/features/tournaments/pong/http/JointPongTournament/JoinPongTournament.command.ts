@@ -2,6 +2,7 @@ import { Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { ApplicationError } from '@shared/Errors';
 import { FastifyInstance } from 'fastify';
+import { Match } from '@shared/domain/Entities/Match.entity';
 
 export interface IJoinPongTournamentRequest {
     userId: number;
@@ -10,7 +11,6 @@ export interface IJoinPongTournamentRequest {
 
 export interface IJoinPongTournamentResponse {
     success: boolean;
-    message: string;
 }
 
 export class JoinPongTournamentCommand implements ICommand<
@@ -42,7 +42,24 @@ export class JoinPongTournamentCommand implements ICommand<
             // Paso 1: Validar que la solicitud
             if (!request) return Result.error(ApplicationError.BadRequest);
 
-            // Paso 2: Unirse al torneo usando el PongTournamentManager
+            // Paso 2: Verificar si el usuario tiene partidas activas
+            const activeMatches = await this.fastify.MatchRepository.findUserMatches({
+                userId: request.userId,
+                status: [Match.STATUS.PENDING, Match.STATUS.IN_PROGRESS],
+            });
+            if (activeMatches.length > 0) {
+                return Result.error(ApplicationError.CurrentPlayerHasActiveMatch);
+            }
+
+            // Paso 3: Verificar si el usuario está en un torneo activo
+            const activeTournamentResult = await this.fastify.TournamentRepository.isUserInActiveTournament({
+                userId: request.userId,
+            });
+            if (activeTournamentResult.isSuccess && activeTournamentResult.value) {
+                return Result.error(ApplicationError.CurrentPlayerHasActiveTournament);
+            }
+
+            // Paso 4: Unirse al torneo usando el PongTournamentManager
             const joinTournamentResult = await this.fastify.PongTournamentManager.addParticipant({
                 tournamentId: request.tournamentId,
                 userId: request.userId,
@@ -55,7 +72,6 @@ export class JoinPongTournamentCommand implements ICommand<
 
             return Result.success({
                 success: true,
-                message: 'Te has unido al torneo exitosamente',
             });
         } catch (error: unknown) {
             return this.fastify.handleError<IJoinPongTournamentResponse>({

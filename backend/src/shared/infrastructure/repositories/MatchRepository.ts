@@ -80,9 +80,12 @@ class MatchRepository extends AbstractRepository implements IMatchRepository {
 
     async findUserMatches({ userId, status }: { userId: number; status: string[] }): Promise<Match[]> {
         let statusCondition = '';
+        const params: (number | string)[] = [userId];
+
         if (status.length > 0) {
-            const escapedStatus = status.map((s) => `'${s.replace(/'/g, "''")}'`).join(', ');
-            statusCondition = `AND m.status IN (${escapedStatus})`;
+            const placeholders = status.map(() => '?').join(', ');
+            statusCondition = `AND m.status IN (${placeholders})`;
+            params.push(...status);
         }
 
         const result = await this.findMany<MatchRow>(
@@ -98,7 +101,7 @@ class MatchRepository extends AbstractRepository implements IMatchRepository {
                 ORDER BY
                     m.created_at DESC
             `,
-            [userId]
+            params
         );
 
         const matches: Match[] = [];

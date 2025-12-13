@@ -27,7 +27,9 @@ import { TournamentWebSocketClient } from '@/modules/tournament/tournamentSocket
 import { getCurrentUser } from '@/modules/users';
 import { showToast } from '@/components/toast';
 
-// Exponer utilidades al ámbito global
+// ====================
+// TYPE DECLARATIONS
+// ====================
 declare global {
     interface Window {
         GlitchButton: typeof GlitchButton;
@@ -35,17 +37,13 @@ declare global {
 }
 window.GlitchButton = GlitchButton;
 
-// Al cargar toda la SPA, aplica los colores guardados
-applySavedColors();
-
 // ====================
-// 🔐 VALIDACIÓN DE TOKEN
+// CONSTANTS
 // ====================
-// Páginas que NO requieren autenticación
 const PUBLIC_PAGES = ['home', 'login', '404'];
 
 // ====================
-// 🌐 INICIALIZACIÓN DE WEBSOCKETS
+// WEBSOCKET INITIALIZATION
 // ====================
 async function initSocialSocket(): Promise<SocialWebSocketClient | null> {
     const token = localStorage.getItem('access_token');
@@ -58,7 +56,6 @@ async function initSocialSocket(): Promise<SocialWebSocketClient | null> {
         ws = createSocialSocket(token);
     }
 
-    // 🔹 Esperar autenticación
     await new Promise<void>((resolve) => {
         const interval = setInterval(() => {
             if (ws?.getAuthenticated()) {
@@ -67,7 +64,6 @@ async function initSocialSocket(): Promise<SocialWebSocketClient | null> {
             }
         }, 50);
 
-        // Timeout de 15s
         setTimeout(() => {
             clearInterval(interval);
             resolve();
@@ -86,7 +82,6 @@ async function initTournamentSocket(): Promise<TournamentWebSocketClient | null>
     if (!ws) {
         console.log(`🏆 ${t('InitializingTournamentWs')}`);
         ws = createTournamentSocket(token);
-        // Esperar a que el socket se conecte y autentique antes de continuar
         await new Promise<void>((resolve) => {
             const interval = setInterval(() => {
                 if (ws?.getAuthenticated()) {
@@ -101,167 +96,19 @@ async function initTournamentSocket(): Promise<TournamentWebSocketClient | null>
 }
 
 // ====================
-// 🌐 Languajes
-// ====================
-const savedLang = localStorage.getItem('lang') as 'en' | 'es' | 'fr' | null;
-if (savedLang) {
-    setLanguage(savedLang);
-} else {
-    setLanguage('en');
-}
-
-// Render inicial de botones
-renderButtons();
-
-// Conectar selector del DOM
-const langSelector = document.getElementById(
-    'lang_selector'
-) as HTMLSelectElement | null;
-if (langSelector) {
-    langSelector.value = savedLang || currentLang;
-    langSelector.addEventListener('change', (event: Event) => {
-        const select = event.target as HTMLSelectElement;
-        setLanguage(select.value as 'en' | 'es' | 'fr');
-    });
-}
-
-// ====================
-// 🌙 Toggle dark mode
-// ====================
-const toggle = document.getElementById('dark_mode_toggle');
-
-if (toggle) {
-    toggle.addEventListener('click', () => {
-        document.documentElement.classList.toggle('dark');
-
-        // Guardar preferencia
-        if (document.documentElement.classList.contains('dark')) {
-            localStorage.setItem('theme', 'dark');
-        } else {
-            localStorage.setItem('theme', 'light');
-        }
-
-        //cambiar colores del juego
-        const canvas = document.getElementById(
-            'gameCanvas'
-        ) as HTMLCanvasElement;
-        if (canvas) {
-            const ws = getGameSocket();
-            if (!ws)
-                return;
-            if (localStorage.getItem('theme') === 'dark') {
-                const borderColor = getColor('--color-primary');
-                const bgColor = getColor('--color-secondary');
-                setColors(ws.getScene(), bgColor, borderColor);
-            } else {
-                const borderColor = getColor('--color-secondary');
-                const bgColor = getColor('--color-primary');
-                setColors(ws?.getScene(), bgColor, borderColor);
-            }
-            setButtonsColors(ws.getButtons());
-        }
-        //Reload doughnut
-        // Obtener el canvas
-        const ctx = document.getElementById(
-            'donutChart'
-        ) as HTMLCanvasElement | null;
-        if (ctx) {
-            loadChart();
-        }
-    });
-}
-
-// Aplicar preferencia previa al cargar
-if (localStorage.getItem('theme') === 'dark') {
-    document.documentElement.classList.add('dark');
-}
-
-// ====================
-// 🚀 INICIALIZACIÓN
-// ====================
-export async function initialize() {
-    // 1. Detectar página inicial
-    const initialPage = location.pathname.replace('/', '') || 'home';
-
-    // 2. Verificar si existe token y validarlo ANTES de cualquier inicialización de WebSocket
-    const token = localStorage.getItem('access_token');
-
-    if (token) {
-        // 3. Validar token independientemente del tipo de página
-        const currentUser = await getCurrentUser();
-
-        if (!currentUser) {
-            // Token inválido - getCurrentUser ya limpió via performLogout()
-            if (!PUBLIC_PAGES.includes(initialPage)) {
-                // Página privada con token inválido -> redirigir a login
-                navigateTo('login', false, true);
-            } else {
-                // Página pública con token inválido -> quedarse en la página (token ya limpiado)
-                navigateTo(initialPage, true);
-            }
-            return;
-        }
-
-        // 4. Token válido - ahora es seguro inicializar WebSockets
-        await Promise.all([initSocialSocket(), initTournamentSocket()]);
-    } else if (!PUBLIC_PAGES.includes(initialPage)) {
-        // 5. Sin token e intentando acceder a página privada -> redirigir a login
-        showToast(`${t('NoTokenFound')}`, 'error');
-        navigateTo('login', false, true);
-        return;
-    }
-
-    // 6. Navegar a la página inicial
-    navigateTo(initialPage, true);
-}
-
-// Ejecutar inicialización
-initialize();
-
-// Configurar los eventos
-setupEventListeners();
-window.addEventListener('popstate', handlePopState);
-
-// ====================
-// 🕹️ Translated buttons
+// HELPER FUNCTIONS
 // ====================
 export function renderButtons() {
     document
         .querySelectorAll<HTMLElement>('[data-button]')
         .forEach((container) => {
-            const key = container.dataset.button!; // ejemplo: "start", "game"
+            const key = container.dataset.button!;
             const page = container.dataset.page || '';
 
             container.innerHTML = '';
             container.appendChild(GlitchButton(t(key), '', page));
         });
 }
-
-// Render inicial
-renderButtons();
-
-// Cuando cambie idioma, vuelve a renderizar
-document.addEventListener('i18n-updated', async () => {
-    renderButtons();
-    //Reload doughnut
-    // Obtener el canvas
-    const ctx = document.getElementById(
-        'donutChart'
-    ) as HTMLCanvasElement | null;
-    if (ctx) {
-        loadChart();
-    }
-
-    const token = localStorage.getItem('access_token');
-
-    // Reload Game History solo si existe tabla y hay token
-    await reloadGameHistory(token);
-
-    // Reload Tournaments History solo si existe tabla y hay token
-    await reloadTournamentsHistory();
-
-    updateSliders();
-});
 
 export async function reloadGameHistory(token: string | null) {
     const matchTableEl = document.getElementById('matchTable');
@@ -276,21 +123,16 @@ export async function reloadGameHistory(token: string | null) {
                 'select.datatable-selector'
             );
 
-        // 1. Guardar página actual
         const currentPage = matchTable._currentPage ?? 0;
 
-        // 2 Guardar items por página
         const currentPerPage = matchPerPageSelect
             ? parseInt(matchPerPageSelect.value, 10)
-            : matchTable.options.perPage; // usa el valor actual de la tabla
+            : matchTable.options.perPage;
 
-        // 3. Destruir tabla
         matchTable.destroy();
 
-        // 4. Volver a cargar historial
         await loadMatchHistory(undefined, currentPerPage);
 
-        // 5. Restaurar página en la que estabas
         if (currentPage > 0) matchTable.page(currentPage);
     }
 }
@@ -308,27 +150,171 @@ export async function reloadTournamentsHistory() {
                 'select.datatable-selector'
             );
 
-        // 1. Guardar página actual
         const currentPage = tournamentTable._currentPage ?? 0;
 
-        // 2 Guardar items por página
         const currentPerPage = tournamentPerPageSelect
             ? parseInt(tournamentPerPageSelect.value, 10)
-            : tournamentTable.options.perPage; // usa el valor actual de la tabla
+            : tournamentTable.options.perPage;
 
-        // 3. Clear tbody BEFORE destroying to prevent visual glitch
         const tbody = document.querySelector<HTMLTableSectionElement>(
             '#tournamentsTable tbody'
         );
         if (tbody) tbody.innerHTML = '';
 
-        // 4. Destruir tabla
         tournamentTable.destroy();
 
-        // 5. Volver a cargar historial
         await loadTournamentsHistory(currentPerPage);
 
-        // 6. Restaurar página en la que estabas
         if (currentPage > 0) tournamentTable.page(currentPage);
     }
 }
+
+// ====================
+// SETUP FUNCTIONS
+// ====================
+function setupLanguage() {
+    const savedLang = localStorage.getItem('lang') as 'en' | 'es' | 'fr' | null;
+    if (savedLang) {
+        setLanguage(savedLang);
+    } else {
+        setLanguage('en');
+    }
+
+    const langSelector = document.getElementById(
+        'lang_selector'
+    ) as HTMLSelectElement | null;
+    if (langSelector) {
+        langSelector.value = savedLang || currentLang;
+        langSelector.addEventListener('change', (event: Event) => {
+            const select = event.target as HTMLSelectElement;
+            setLanguage(select.value as 'en' | 'es' | 'fr');
+        });
+    }
+}
+
+function setupDarkModeToggle() {
+    // Apply saved theme preference
+    if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+    }
+
+    const toggle = document.getElementById('dark_mode_toggle');
+
+    if (toggle) {
+        toggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+
+            if (document.documentElement.classList.contains('dark')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+
+            // Update game colors
+            const canvas = document.getElementById(
+                'gameCanvas'
+            ) as HTMLCanvasElement;
+            if (canvas) {
+                const ws = getGameSocket();
+                if (!ws)
+                    return;
+                if (localStorage.getItem('theme') === 'dark') {
+                    const borderColor = getColor('--color-primary');
+                    const bgColor = getColor('--color-secondary');
+                    setColors(ws.getScene(), bgColor, borderColor);
+                } else {
+                    const borderColor = getColor('--color-secondary');
+                    const bgColor = getColor('--color-primary');
+                    setColors(ws?.getScene(), bgColor, borderColor);
+                }
+                setButtonsColors(ws.getButtons());
+            }
+
+            // Reload doughnut chart
+            const ctx = document.getElementById(
+                'donutChart'
+            ) as HTMLCanvasElement | null;
+            if (ctx) {
+                loadChart();
+            }
+        });
+    }
+}
+
+function setupI18nListener() {
+    document.addEventListener('i18n-updated', async () => {
+        renderButtons();
+
+        const ctx = document.getElementById(
+            'donutChart'
+        ) as HTMLCanvasElement | null;
+        if (ctx) {
+            loadChart();
+        }
+
+        const token = localStorage.getItem('access_token');
+
+        await reloadGameHistory(token);
+
+        await reloadTournamentsHistory();
+
+        updateSliders();
+    });
+}
+
+// ====================
+// MAIN INITIALIZATION
+// ====================
+export async function initialize() {
+    // 1. Apply saved visual preferences
+    applySavedColors();
+
+    // 2. Setup language
+    setupLanguage();
+
+    // 3. Setup dark mode
+    setupDarkModeToggle();
+
+    // 4. Render translated buttons
+    renderButtons();
+
+    // 5. Detect initial page
+    const initialPage = location.pathname.replace('/', '') || 'home';
+
+    // 6. Token validation and WebSocket initialization
+    const token = localStorage.getItem('access_token');
+
+    if (token) {
+        const currentUser = await getCurrentUser();
+
+        if (!currentUser) {
+            if (!PUBLIC_PAGES.includes(initialPage)) {
+                navigateTo('login', false, true);
+            } else {
+                navigateTo(initialPage, true);
+            }
+            return;
+        }
+
+        await Promise.all([initSocialSocket(), initTournamentSocket()]);
+    } else if (!PUBLIC_PAGES.includes(initialPage)) {
+        showToast(`${t('NoTokenFound')}`, 'error');
+        navigateTo('login', false, true);
+        return;
+    }
+
+    // 7. Navigate to initial page
+    navigateTo(initialPage, true);
+
+    // 8. Setup event listeners
+    setupEventListeners();
+    window.addEventListener('popstate', handlePopState);
+
+    // 9. Setup i18n listener
+    setupI18nListener();
+}
+
+// ====================
+// ENTRY POINT
+// ====================
+initialize();

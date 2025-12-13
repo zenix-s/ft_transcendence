@@ -44,36 +44,6 @@ applySavedColors();
 // Páginas que NO requieren autenticación
 const PUBLIC_PAGES = ['home', 'login', '404'];
 
-async function validateSession(page: string): Promise<boolean> {
-    // Si es página pública, no validar
-    if (PUBLIC_PAGES.includes(page)) {
-        return true;
-    }
-
-    const token = localStorage.getItem('access_token');
-
-    // Si no hay token, redirigir a login
-    if (!token) {
-        console.warn(`${t('NoTokenFound')}`); // DB
-        showToast(`${t('NoTokenFound')}`, 'error');
-        navigateTo('login', false, true);
-        return false;
-    }
-
-    // Validar que el usuario existe
-    const currentUser = await getCurrentUser();
-    if (!currentUser) {
-        console.warn(
-            '⚠️ Invalid token or user not found. Redirecting to login...'
-        ); // DB
-        // getCurrentUser ya limpia el token y muestra el error
-        navigateTo('login', false, true);
-        return false;
-    }
-
-    return true;
-}
-
 // ====================
 // 🌐 INICIALIZACIÓN DE WEBSOCKETS
 // ====================
@@ -213,21 +183,35 @@ export async function initialize() {
     // 1. Detectar página inicial
     const initialPage = location.pathname.replace('/', '') || 'home';
 
-    // 2. Validar sesión antes de continuar
-    const isValid = await validateSession(initialPage);
+    // 2. Verificar si existe token y validarlo ANTES de cualquier inicialización de WebSocket
+    const token = localStorage.getItem('access_token');
 
-    if (!isValid) {
-        // Ya se redirigió en validateSession
+    if (token) {
+        // 3. Validar token independientemente del tipo de página
+        const currentUser = await getCurrentUser();
+
+        if (!currentUser) {
+            // Token inválido - getCurrentUser ya limpió via performLogout()
+            if (!PUBLIC_PAGES.includes(initialPage)) {
+                // Página privada con token inválido -> redirigir a login
+                navigateTo('login', false, true);
+            } else {
+                // Página pública con token inválido -> quedarse en la página (token ya limpiado)
+                navigateTo(initialPage, true);
+            }
+            return;
+        }
+
+        // 4. Token válido - ahora es seguro inicializar WebSockets
+        await Promise.all([initSocialSocket(), initTournamentSocket()]);
+    } else if (!PUBLIC_PAGES.includes(initialPage)) {
+        // 5. Sin token e intentando acceder a página privada -> redirigir a login
+        showToast(`${t('NoTokenFound')}`, 'error');
+        navigateTo('login', false, true);
         return;
     }
 
-    // 3. Si hay token válido, inicializar WebSockets
-    const token = localStorage.getItem('access_token');
-    if (token) {
-        await Promise.all([initSocialSocket(), initTournamentSocket()]);
-    }
-
-    // 4. Navegar a la página inicial
+    // 6. Navegar a la página inicial
     navigateTo(initialPage, true);
 }
 

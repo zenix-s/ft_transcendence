@@ -404,10 +404,16 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
                     FROM tournaments t
                     INNER JOIN tournament_participants tp ON t.id = tp.tournament_id
                     WHERE tp.user_id = ?
-                    AND tp.role IN ('${TournamentParticipant.ROLE.ADMIN}', '${TournamentParticipant.ROLE.ADMIN_PARTICIPANT}')
-                    AND t.status IN ('${Tournament.STATUS.UPCOMING}', '${Tournament.STATUS.ONGOING}')
+                    AND tp.role IN (?, ?)
+                    AND t.status IN (?, ?)
                 `,
-                [userId]
+                [
+                    userId,
+                    TournamentParticipant.ROLE.ADMIN,
+                    TournamentParticipant.ROLE.ADMIN_PARTICIPANT,
+                    Tournament.STATUS.UPCOMING,
+                    Tournament.STATUS.ONGOING,
+                ]
             );
 
             const isAdmin = (result?.count || 0) > 0;
@@ -425,10 +431,16 @@ class TournamentRepository extends AbstractRepository implements ITournamentRepo
                     FROM tournaments t
                     INNER JOIN tournament_participants tp ON t.id = tp.tournament_id
                     WHERE tp.user_id = ?
-                    AND t.status IN ('${Tournament.STATUS.UPCOMING}', '${Tournament.STATUS.ONGOING}')
-                    AND tp.status IN ('${TournamentParticipant.STATUS.REGISTERED}', '${TournamentParticipant.STATUS.ACTIVE}')
+                    AND t.status IN (?, ?)
+                    AND tp.status IN (?, ?)
                 `,
-                [userId]
+                [
+                    userId,
+                    Tournament.STATUS.UPCOMING,
+                    Tournament.STATUS.ONGOING,
+                    TournamentParticipant.STATUS.REGISTERED,
+                    TournamentParticipant.STATUS.ACTIVE,
+                ]
             );
 
             return Result.success((result?.count || 0) > 0);

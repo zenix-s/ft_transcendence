@@ -37,7 +37,7 @@ export async function activeGameModal({
     const title = t('modalActiveGameTitle');
     const titleText = t('modalActiveGameTitleText');
     const text = opponentUsername
-        ? `${t('modalActiveGameText')} <strong>${opponentUsername}</strong>`
+        ? `${t('modalActiveGameText')} <strong>${opponentUsername}</strong>?`
         : t('modalActiveGameTextNoOpponent');
     const confirmButtonText = `<i class="fa fa-play"></i> ${t('modalActiveGameConfirmButtonText')}`;
     const cancelButtonText = `<i class="fa fa-clock"></i> ${t('modalActiveGameCancelButtonText')}`;
@@ -127,7 +127,7 @@ export async function modal({
         icon_msg = 'warning';
     } else if (type === ModalTypes.GAME_FINISHED) {
         const winnerName = winner;
-        console.log("win=", winner);
+        // console.log("win=", winner); // DB
         const scoreText = `${player1Score ?? 0} - ${player2Score ?? 0}`;
 
         if (winnerName === undefined)
@@ -184,7 +184,7 @@ export async function modal({
         const winnerName = winnerParticipant
             ? winnerParticipant.username
             : t('Unknown');
-        console.log('Tournament Winner Name:', winnerName);
+        // console.log('Tournament Winner Name:', winnerName); // DB
         const status = activeTournament.status;
         const statusText =
             status === 'ongoing'

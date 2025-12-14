@@ -29,6 +29,12 @@ const SocialMessageTypes = {
     ERROR: 'error',
 } as const;
 
+interface ActiveGameState {
+    hasActiveGame: boolean;
+    gameId?: number;
+    opponentUsername?: string | null;
+}
+
 interface AuthSuccessMessage {
     type: 'authSuccess';
     userId: number;
@@ -105,18 +111,18 @@ export class SocialWebSocketClient {
     }
 
     connect() {
-        console.log('🔌', t('ConnectingToWs'));
+        // console.log('🔌', t('ConnectingToWs')); // DB
         this.socket = new WebSocket(this.wsUrl);
 
         this.socket.onopen = () => {
-            console.log('🟢', t('WsConnected'));
+            // console.log('🟢', t('WsConnected')); // DB
             this.authenticate();
         };
 
         this.socket.onmessage = (event: MessageEvent<string>) => {
             try {
                 const message = JSON.parse(event.data);
-                console.log('msgttt=', message);
+                // console.log('msgttt=', message); // DB
                 this.handleMessage(message);
             } catch (err) {
                 console.error(`❌ ${t('ErrorParsingMsg')}`, err);
@@ -124,7 +130,7 @@ export class SocialWebSocketClient {
         };
 
         this.socket.onclose = () => {
-            console.log('🔴', t('WsClosed'));
+            // console.log('🔴', t('WsClosed')); // DB
             this.isAuthenticated = false;
         };
 
@@ -150,7 +156,7 @@ export class SocialWebSocketClient {
         }
 
         const msg = { action: SocialActions.LIST_FRIENDS };
-        console.log('📋', t('RequestFriends'));
+        // console.log('📋', t('RequestFriends')); // DB
         this.send(msg);
     }
 
@@ -181,6 +187,10 @@ export class SocialWebSocketClient {
 
     private disconnectTimers: Map<number, NodeJS.Timeout> = new Map();
 
+    private activeGame: ActiveGameState = {
+        hasActiveGame: false,
+    };
+
     private async handleMessage(message: unknown) {
         // Detectar tipo
         const type = (message as { type?: unknown })?.type;
@@ -203,9 +213,9 @@ export class SocialWebSocketClient {
             }
 
             case SocialMessageTypes.AUTH_SUCCESS: {
-                const msg = message as AuthSuccessMessage;
+                // const msg = message as AuthSuccessMessage;
                 this.isAuthenticated = true;
-                console.log(`✅ ${t('SuccessAuthenticated')}`, msg.userId);
+                // console.log(`✅ ${t('SuccessAuthenticated')}`, msg.userId); // DB
                 // Mejor sólo devolver lista cuando la página lo solicite????
                 setTimeout(() => this.requestFriendsList(), 100);
                 // Check for active game after authentication
@@ -216,7 +226,7 @@ export class SocialWebSocketClient {
             case SocialMessageTypes.FRIENDS_LIST: {
                 const msg = message as FriendsListMessage;
                 this.friends = msg.friends;
-                console.log(`👥 ${t('FriendListReceived')}`, this.friends);
+                // console.log(`👥 ${t('FriendListReceived')}`, this.friends); // DB
                 if (this.onFriendsUpdateCallback)
                     this.onFriendsUpdateCallback([...this.friends]);
                 break;
@@ -224,12 +234,14 @@ export class SocialWebSocketClient {
 
             case SocialMessageTypes.GAME_INVITATION: {
                 const msg = message as GameInvitationResponse;
-                console.log(
+                /* console.log(
                     `${msg.fromUsername} con id ${msg.fromUserId} te ha invitado a jugar a PONG con el número de partida ${msg.gameId} y el mensaje: ${msg.message}`
-                );
+                ); */ // DB
+                
+                // Skip if already on /playing page
                 const urlObjeto = new URL(window.location.href);
                 if (urlObjeto.pathname === '/playing') {
-                    console.log('se ha rechazado la invitación');
+                    // console.log('se ha rechazado la invitación'); // DB
                     await rejectInvitation(msg.gameId);
                     break;
                 }
@@ -240,22 +252,22 @@ export class SocialWebSocketClient {
                 });
                 if (confirmed) {
                     // Definir que pasa si se ACEPTA la invitación
-                    console.log('Has aceptado la invitación');
+                    // console.log('Has aceptado la invitación'); // DB
 
                     const response = await acceptInvitation(msg.gameId);
 
                     const token = localStorage.getItem('access_token');
                     createGameSocket(token, msg.gameId);
 
-                    console.log(
+                    /* console.log(
                         'msg=',
                         msg,
                         'visual style =',
                         msg.matchSettings.visualStyle
-                    );
+                    ); */ // DB
                     if (response) navigateTo(`playing?id=${msg.gameId}`); // Enviar a la partida
                 } else {
-                    console.log('he rechazado la invitación');
+                    // console.log('he rechazado la invitación'); // DB
                     await rejectInvitation(msg.gameId);
                     // Definir que pasa si RECHAZA la invitación
                 }
@@ -279,7 +291,7 @@ export class SocialWebSocketClient {
             }
 
             case SocialMessageTypes.FRIEND_PROFILE_UPDATE: {
-                console.log('Friend profile update detected');
+                // console.log('Friend profile update detected'); // DB
                 this.requestFriendsList();
 
                 // Reload History
@@ -305,9 +317,9 @@ export class SocialWebSocketClient {
                     // Programamos desconexión real en 3s
                     const timer = setTimeout(() => {
                         friend.is_connected = false;
-                        console.log(
+                        /* console.log(
                             `🔄 ${msg.username} ${t('IsNow')} 🔴 ${t('Offline')}`
-                        );
+                        ); */ // DB
                         showToast(
                             `🔄 ${msg.username} ${t('IsNow')} 🔴 ${t('Offline')}`,
                             'success'
@@ -333,9 +345,9 @@ export class SocialWebSocketClient {
                     } else {
                         // Conexión real → mostramos toast inmediatamente
                         friend.is_connected = true;
-                        console.log(
+                        /* console.log(
                             `🔄 ${msg.username} ${t('IsNow')} 🟢 ${t('Online')}`
-                        );
+                        ); */ // DB
                         showToast(
                             `🔄 ${msg.username} ${t('IsNow')} 🟢 ${t('Online')}`,
                             'success'
@@ -352,11 +364,23 @@ export class SocialWebSocketClient {
             case SocialMessageTypes.CHECK_ACTIVE_GAME: {
                 const msg = message as CheckActiveGameResponse;
 
+                // Guardar estado
+                this.activeGame = {
+                    hasActiveGame: msg.hasActiveGame,
+                    gameId: msg.gameId,
+                    opponentUsername: msg.opponent?.username ?? null,
+                };
+
+                // Notificar a la UI
+                if (this.onActiveGameUpdateCallback) {
+                    this.onActiveGameUpdateCallback({ ...this.activeGame });
+                }
+
                 if (!msg.hasActiveGame) {
                     break;
                 }
 
-                // Skip if already on /playing page
+                /* // Skip if already on /playing page
                 const urlObjeto = new URL(window.location.href);
                 if (urlObjeto.pathname === '/playing') {
                     break;
@@ -377,14 +401,15 @@ export class SocialWebSocketClient {
                     const gameSocket = createGameSocket(token, msg.gameId!);
                     await gameSocket.authenticate(msg.gameId!);
                     gameSocket.leaveGame();
+                    gameSocket.destroy();
                     showToast(t('GameLeft'), 'success');
-                }
+                } */
                 // else: "Later" - do nothing
                 break;
             }
 
             default:
-                console.log(`📨 ${t('MsgReceived')}`, message);
+                // console.log(`📨 ${t('MsgReceived')}`, message); // DB
         }
     }
 
@@ -410,9 +435,25 @@ export class SocialWebSocketClient {
         return this.isAuthenticated;
     }
 
+    private onActiveGameUpdateCallback:
+        ((state: ActiveGameState) => void) | null = null;
+
+    public onActiveGameUpdate(
+        callback: (state: ActiveGameState) => void
+    ) {
+        this.onActiveGameUpdateCallback = callback;
+
+        // Enviar estado actual inmediatamente
+        callback({ ...this.activeGame });
+    }
+
+    public getActiveGame() {
+        return { ...this.activeGame };
+    }
+
     disconnect() {
         if (this.socket) {
-            console.log(`👋 ${t('ClosingWs')}`);
+            // console.log(`👋 ${t('ClosingWs')}`); // DB
             this.socket.close();
         }
     }

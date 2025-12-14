@@ -40,11 +40,11 @@ export async function navigateTo(
 ) {
     // Para que cuando le paso parámetros a la url las cosas funcionen
     const pageBase: string = page.split('?')[0];
-    console.log('pageBase=', pageBase);
+    //console.log('pageBase=', pageBase); // DB
 
     // 🚨 Bloquear números SOLO cuando vienen de la SPA (clicks internos)
     if (!skipPushState && !isNaN(Number(page))) {
-        console.warn(`Ignorando navegación numérica interna: ${page}`);
+        // console.warn(`Ignorando navegación numérica interna: ${page}`); // DB
         return;
     }
 

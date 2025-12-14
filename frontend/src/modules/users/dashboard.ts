@@ -2,6 +2,7 @@ import { getStats } from '@/modules/users';
 import { t } from '@/app/i18n';
 import type { User } from '@/types/user';
 import { renderAvatar } from '@/components/renderAvatar';
+import { resumeMatchBtn } from '@/components/resumeMatchBtn';
 
 export async function loadDashboard(user: User) {
     const userStats = await getStats(user.id);
@@ -26,4 +27,7 @@ export async function loadDashboard(user: User) {
     if (totalGamesElement) {
         totalGamesElement.textContent = userStats.totalMatches;
     }
+
+    // Aquí llamamos al botón de reanudar partida
+    resumeMatchBtn();
 }

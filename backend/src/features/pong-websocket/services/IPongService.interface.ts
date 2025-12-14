@@ -1,13 +1,7 @@
 import { WebSocket } from '@fastify/websocket';
-import { Result } from '@shared/abstractions/Result';
 import { WebSocketMessage, WebSocketResponse } from './PongWebSocketService';
 
 export interface IPongService {
-    /**
-     * Autentica un usuario usando token JWT
-     */
-    authenticateUser(token: string): Promise<Result<number>>;
-
     /**
      * Maneja la solicitud de estado del juego
      */

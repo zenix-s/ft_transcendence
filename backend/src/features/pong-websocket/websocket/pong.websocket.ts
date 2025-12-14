@@ -44,7 +44,7 @@ export default async function pongWebSocketRoutes(fastify: FastifyInstance) {
                             return;
                         }
 
-                        const authResult = await webSocketService.authenticateUser(token);
+                        const authResult = await fastify.authenticateWs(token);
                         if (!authResult.isSuccess) {
                             webSocketService.sendError(socket, ApplicationError.InvalidToken);
                             socket.close();

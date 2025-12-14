@@ -42,7 +42,7 @@ export default async function socialWebSocketRoutes(fastify: FastifyInstance) {
                             return;
                         }
 
-                        const authResult = await webSocketService.authenticateUser(token);
+                        const authResult = await fastify.authenticateWs(token);
                         if (!authResult.isSuccess) {
                             webSocketService.sendError(socket, 'invalidToken');
                             socket.close();

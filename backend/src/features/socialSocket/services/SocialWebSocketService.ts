@@ -22,18 +22,6 @@ export class SocialWebSocketService implements ISocialWebSocketService {
 
     constructor(private readonly fastify: FastifyInstance) {}
 
-    async authenticateUser(token: string): Promise<Result<number>> {
-        try {
-            const decoded = (await this.fastify.jwt.verify(token)) as { id?: number };
-            if (!decoded.id || typeof decoded.id !== 'number') {
-                return Result.error(ApplicationError.InvalidToken);
-            }
-            return Result.success(decoded.id);
-        } catch {
-            return Result.error(ApplicationError.InvalidToken);
-        }
-    }
-
     async getFriendsList(userId: number): Promise<Result<Friend[]>> {
         try {
             // Get friends with their user data

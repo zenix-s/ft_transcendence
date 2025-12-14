@@ -103,18 +103,6 @@ export class TournamentWebSocketService {
         );
     }
 
-    async authenticateUser(token: string): Promise<{ isSuccess: boolean; value?: number }> {
-        try {
-            const decoded = this.fastify.jwt.verify(token);
-            if (typeof decoded === 'object' && decoded !== null && 'id' in decoded) {
-                return { isSuccess: true, value: decoded.id as number };
-            }
-            return { isSuccess: false };
-        } catch {
-            return { isSuccess: false };
-        }
-    }
-
     sendAuthSuccess(socket: WebSocket, userId: number) {
         socket.send(
             JSON.stringify({
@@ -230,7 +218,7 @@ export default async function tournamentWebSocketRoutes(fastify: FastifyInstance
                             webSocketService.sendError(socket, 'missingToken');
                             return;
                         }
-                        const authResult = await webSocketService.authenticateUser(token);
+                        const authResult = await fastify.authenticateWs(token);
                         if (!authResult.isSuccess || typeof authResult.value !== 'number') {
                             webSocketService.sendError(socket, 'invalidToken');
                             socket.close();

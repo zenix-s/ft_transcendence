@@ -12,11 +12,6 @@ export interface CheckActiveGameResult {
 
 export interface ISocialWebSocketService {
     /**
-     * Autentica un usuario usando token JWT
-     */
-    authenticateUser(token: string): Promise<Result<number>>;
-
-    /**
      * Obtiene la lista de amigos de un usuario específico
      */
     getFriendsList(userId: number): Promise<Result<Friend[]>>;

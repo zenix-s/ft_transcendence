@@ -8,6 +8,9 @@ import GetPongTournamentDetailRoute from './GetPongTournamentDetail/GetPongTourn
 import StartTournamentRoute from './StartTournamentRoute/StartTournament.route';
 
 export default async function PongTournamentsHttpRoutes(fastify: FastifyInstance) {
+    // Add authentication hook for all routes in this feature
+    fastify.addHook('preHandler', fastify.authenticate);
+
     fastify.register(CreatePongTournamentRoute);
     fastify.register(JoinPongTournamentRoute);
     fastify.register(LeavePongTournamentRoute);

@@ -1,8 +1,8 @@
 <div class="scanlines"></div>
-<div class="flex min-w-screen flex-col items-center">
+<div class="flex min-w-screen flex-col items-center px-4">
     <!-- Barra superior -->
     <header
-        class="mb-16 flex w-full max-w-5xl items-center justify-between border border-cyan-400 p-4 sm:mt-24"
+        class="mb-16 flex w-full max-w-5xl items-center justify-between border border-cyan-400 p-4 mt-20 sm:mt-24"
     >
         <h1
             data-i18n="dashboard"
@@ -22,6 +22,9 @@
                     class="h-10 w-10 rounded-full border border-cyan-400 object-cover"
                 />
                 <span id="user-name" class="text-lg"><!--USER NAME--></span>
+                <button id="resume-game-btn" class="hidden w-8 h-8 pl-1 text-cyan-400 hover:text-secondary dark:hover:text-primary text-xl transition-add duration-300 ease-in-out animate-bounce border-2 rounded-full border-secondary dark:border-primary cursor-pointer" title="Resume Active Game">
+                    ▶
+                </button>
             </div>
             <nav class="flex w-full text-lg">
                 <!-- LANDSCAPE -->
@@ -79,7 +82,7 @@
 
     <!-- Botones principales -->
     <div
-        class="grid w-full max-w-5xl grid-cols-1 gap-8 px-4 md:grid-cols-[repeat(auto-fit,minmax(0,1fr))]"
+        class="grid w-full max-w-5xl grid-cols-1 gap-8 md:grid-cols-[repeat(auto-fit,minmax(0,1fr))]"
     >
         <!-- Botón 1 jugador -->
         <div

@@ -37,7 +37,7 @@ export async function activeGameModal({
     const title = t('modalActiveGameTitle');
     const titleText = t('modalActiveGameTitleText');
     const text = opponentUsername
-        ? `${t('modalActiveGameText')} <strong>${opponentUsername}</strong>`
+        ? `${t('modalActiveGameText')} <strong>${opponentUsername}</strong>?`
         : t('modalActiveGameTextNoOpponent');
     const confirmButtonText = `<i class="fa fa-play"></i> ${t('modalActiveGameConfirmButtonText')}`;
     const cancelButtonText = `<i class="fa fa-clock"></i> ${t('modalActiveGameCancelButtonText')}`;

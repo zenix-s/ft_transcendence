@@ -27,7 +27,7 @@ export async function fetchGameId(
             return response.json();
         })
         .then((data) => {
-            console.log('Respuesta del servidor:', data);
+            // console.log('Respuesta del servidor:', data); // DB
 
             if (data.error) {
                 return { isSuccess: false, error: data.error };
@@ -80,7 +80,7 @@ export async function fetchSinglePlayerGameId(
 
 export function fetchGameAlreadyFinished(gameId: number) {
     // return fetch("https://localhost:3000/match-history/final-state/" + gameId, {
-    console.log('finish=', apiUrl('/match-history/final-state/' + gameId));
+    // console.log('finish=', apiUrl('/match-history/final-state/' + gameId)); // DB
     return fetch(apiUrl('/match-history/final-state/' + gameId), {
         method: 'GET',
         headers: {
@@ -96,7 +96,7 @@ export function fetchGameAlreadyFinished(gameId: number) {
             return response.json();
         })
         .then((data) => {
-            console.log('Respuesta del servidor:', data);
+            // console.log('Respuesta del servidor:', data); // DB
             return data;
         })
         .catch((error) => {

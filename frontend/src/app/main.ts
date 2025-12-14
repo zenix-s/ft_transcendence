@@ -52,7 +52,7 @@ async function initSocialSocket(): Promise<SocialWebSocketClient | null> {
     let ws: SocialWebSocketClient | null = getSocialSocket();
 
     if (!ws) {
-        console.log(`🌐 ${t('InitializingSocialWs')}`);
+        // console.log(`🌐 ${t('InitializingSocialWs')}`); // DB
         ws = createSocialSocket(token);
     }
 
@@ -80,7 +80,7 @@ async function initTournamentSocket(): Promise<TournamentWebSocketClient | null>
     let ws: TournamentWebSocketClient | null = getTournamentSocket();
 
     if (!ws) {
-        console.log(`🏆 ${t('InitializingTournamentWs')}`);
+        // console.log(`🏆 ${t('InitializingTournamentWs')}`); // DB
         ws = createTournamentSocket(token);
         await new Promise<void>((resolve) => {
             const interval = setInterval(() => {

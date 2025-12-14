@@ -34,7 +34,7 @@ export function createBall(playerView: string | null, scene: Scene) {
         mat.emissiveColor = new Color3(1, 1, 1);
         ball_html.material = mat;
     } else ball.ball.position.y = 0.5;
-    console.log('Ball=', ball);
+    // console.log('Ball=', ball); // DB
     return ball;
 }
 
@@ -53,7 +53,7 @@ export function createScores() {
         scoreRight: right,
         pointsRight: 0,
     };
-    console.log('Scores=', scores);
+    // console.log('Scores=', scores); // DB
     return scores;
 }
 
@@ -82,7 +82,7 @@ export function createPlayerRight(playerView: string | null, scene: Scene) {
     const playerRight: Player = {
         paddle: paddle2,
     };
-    console.log('playerR', playerRight);
+    // console.log('playerR', playerRight); // DB
     return playerRight;
 }
 
@@ -111,7 +111,7 @@ export function createPlayerLeft(playerView: string | null, scene: Scene) {
     const playerLeft: Player = {
         paddle: paddle1,
     };
-    console.log('playerL', playerLeft);
+    // console.log('playerL', playerLeft); // DB
     return playerLeft;
 }
 

@@ -43,7 +43,7 @@ export class GameWebSocket {
         this.socket = new WebSocket(this.wsUrl);
 
         this.socket.addEventListener('open', () => {
-            console.log('🟢', t('game'), ': ', t('WsConnected'));
+            // console.log('🟢', t('game'), ': ', t('WsConnected')); // DB
         });
 
         this.socket.addEventListener('message', async (msg) => {
@@ -57,7 +57,7 @@ export class GameWebSocket {
         });
 
         this.socket.onclose = () => {
-            console.log('🔴', t('game'), ': ', t('WsClosed'));
+            // console.log('🔴', t('game'), ': ', t('WsClosed')); // DB
             this.babylonElements?.engine.stopRenderLoop();
         };
 
@@ -128,7 +128,7 @@ export class GameWebSocket {
             playerColor: color,
         });
         if (!userConfirmed) {
-            console.log('User canceled the modal');
+            // console.log('User canceled the modal'); // DB
             obj.action = Actions.LEAVE_GAME;
             this.socket?.send(JSON.stringify(obj));
             this.destroy();
@@ -262,7 +262,7 @@ export class GameWebSocket {
                 this.gameMode = data.state.gameRules.visualStyle;
                 this.updateTimer(data);
                 if (data.state.gameStatus === 'waiting_for_players') {
-                    console.log('NO SECOND_PLAYER');
+                    // console.log('NO SECOND_PLAYER'); // DB
                     break;
                 }
                 if (data.state.gameStatus === 'waiting_for_ready') {
@@ -290,7 +290,7 @@ export class GameWebSocket {
             case 'error': {
                 const data = message as ErrorMessage;
                 if (data.error === 'GameCancelled') {
-                    console.log('cerrar modal');
+                    // console.log('cerrar modal'); // DB
                     showToast(t('GameCancelled'), 'error');
                     Swal.close();
                 }
@@ -432,11 +432,11 @@ export class GameWebSocket {
             this.start = 0;
         }
         if (this.socket) {
-            console.log(`${t('game')}: ${t('ClosingWs')}`);
+            // console.log(`${t('game')}: ${t('ClosingWs')}`); // DB
             this.socket.close();
             this.socket = null;
         }
-        console.log(`${t('game')}: INSTANCE DELETED`);
+        // console.log(`${t('game')}: INSTANCE DELETED`); // DB
         instance = null;
     }
 }

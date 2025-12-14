@@ -34,7 +34,7 @@ async function endGame(
             console.warn(t('GameError'));
             navigateTo('dashboard', false, true);
         }
-        console.log('game = ', JSON.stringify(finished));
+        // console.log('game = ', JSON.stringify(finished)); // DB
         const score1 = finished.match?.players[0]?.score || 0;
         const score2 = finished.match?.players[1]?.score || 0;
         renderValues(

@@ -6,92 +6,114 @@ import { countInputLenght } from '@/components/inputCounter';
 import { showToast } from '@/components/toast';
 import { updateSliders } from '@/components/updateSliders';
 
-export async function tournament() {
+export function tournament() {
     renderButtons();
     updateSliders();
-    await createTournament();
+    createTournament();
 }
 
 /* CREATE NEW TOURNAMENT */
-export async function createTournament(): Promise<number> {
-    return new Promise((resolve, reject) => {
-        const tournamentForm = document.getElementById(
-            'tournamentForm'
-        ) as HTMLFormElement;
-        if (!tournamentForm) {
-            reject('Form not found');
+export function createTournament(): void {
+    const tournamentForm = document.getElementById(
+        'tournamentForm'
+    ) as HTMLFormElement | null;
+
+    if (!tournamentForm) {
+        console.error('Tournament form not found');
+        return;
+    }
+
+    /* Char counter */
+    const tournamentInput = tournamentForm.querySelector<HTMLInputElement>(
+        'input[name="tournament-name"]'
+    );
+
+    if (tournamentInput) {
+        countInputLenght(tournamentInput);
+    }
+
+    const handleSubmit = async (e: Event) => {
+        e.preventDefault();
+
+        const formData = new FormData(tournamentForm);
+
+        const tournamentname = formData.get('tournament-name');
+        const points = Number(formData.get('points-range'));
+        const time = Number(formData.get('time-range'));
+
+        const rawMode = formData.get('mode-radio');
+        const mode =
+            typeof rawMode === 'string' ? rawMode.toLowerCase() : '';
+
+        /* Validate all fields are filled */
+        if (
+            typeof tournamentname !== 'string' ||
+            !tournamentname ||
+            !Number.isFinite(points) ||
+            points <= 0 ||
+            !Number.isFinite(time) ||
+            time <= 0 ||
+            !mode
+        ) {
+            showToast(t('fillAllFields'), 'error');
             return;
         }
 
-        // Char counter
-        const tournamentInput = tournamentForm.querySelector<HTMLInputElement>(
-            'input[name="tournament-name"]'
-        );
-        countInputLenght(tournamentInput);
+        /* Validate Tournament Name
+           3–40 characters
+           Only letters, numbers, hyphens, and underscores
+        */
+        const tournamentNameRegex = /^[a-zA-Z0-9_-]{3,40}$/;
+        if (!tournamentNameRegex.test(tournamentname)) {
+            showToast(t('invalidTournamentName'), 'error');
+            return;
+        }
 
-        tournamentForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(tournamentForm);
-            const tournamentname = formData.get('tournament-name') as string;
-            const points = Number(formData.get('points-range')) as number;
-            const time = Number(formData.get('time-range')) as number;
-            const mode = (formData.get('mode-radio') as string).toLowerCase();
-
-            /* Validate all fields are filled */
-            if (!tournamentname || isNaN(points) || isNaN(time) || !mode) {
-                showToast(t('fillAllFields'), 'error');
-                return;
-            }
-
-            /* Validate Tournament Name (Regular expresion)
-			3-40 characters
-			Only letters, numbers, hyphens, and underscores
-			*/
-            const usernameRegex = /^[a-zA-Z0-9_-]{3,40}$/;
-            if (!usernameRegex.test(tournamentname)) {
-                showToast(t('invalidTournamentName'), 'error');
-                return;
-            }
-
-            /* This block of code is handling the registration process for a new user. Here's a breakdown of
-			what it does: */
-            try {
-                const response = await fetch(apiUrl(`/tournaments/pong`), {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`,
+        try {
+            const response = await fetch(apiUrl(`/tournaments/pong`), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${
+                        localStorage.getItem('access_token') || ''
+                    }`,
+                },
+                body: JSON.stringify({
+                    name: tournamentname,
+                    matchSettings: {
+                        maxScore: points,
+                        maxGameTime: time,
+                        visualStyle: mode,
                     },
-                    body: JSON.stringify({
-                        name: tournamentname,
-                        matchSettings: {
-                            maxScore: points,
-                            maxGameTime: time,
-                            visualStyle: mode,
-                        },
-                    }),
-                });
+                }),
+            });
 
-                const data = await response.json();
+            const data = await response.json();
 
-                if (!response.ok) {
-                    const errorcode = data.error || 'ErrorCreatingTournament';
-                    showToast(t(errorcode), 'error');
-                    return;
-                }
+            if (!response.ok) {
+                const errorCode =
+                    typeof data?.error === 'string'
+                        ? data.error
+                        : 'ErrorCreatingTournament';
 
-                showToast(t('TournamentCreatedSuccessfully'));
-                tournamentForm.reset();
-
-                navigateTo('dashboard');
-                resolve(data.tournamentId);
-            } catch (err) {
-                showToast(t('NetworkOrServerError'), 'error');
-                reject(err);
+                showToast(t(errorCode), 'error');
+                return;
             }
-        });
-    });
+
+            showToast(t('TournamentCreatedSuccessfully'));
+            tournamentForm.reset();
+
+            navigateTo('dashboard');
+        } catch (err) {
+            console.error(err);
+            showToast(t('NetworkOrServerError'), 'error');
+        }
+    };
+
+    // Evita listeners duplicados
+    tournamentForm.addEventListener('submit', handleSubmit, { once: true });
 }
+
 
 export async function joinTournament(tournamentId: number) {
     try {

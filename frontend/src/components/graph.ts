@@ -29,7 +29,7 @@ export async function loadChart(user?: User) {
             'donutChart'
         ) as HTMLCanvasElement | null;
         if (!ctx) {
-            console.log("Canvas 'donutChart' no encontrado.");
+            // console.log("Canvas 'donutChart' no encontrado."); // DB
             return;
         }
 

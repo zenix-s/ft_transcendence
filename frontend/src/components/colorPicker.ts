@@ -87,7 +87,7 @@ export function setupColorPicker() {
         colorSecondaryInput.value = DEFAULT_SECONDARY;
     });
 
-    console.log(`🎨 ${t('ColorPickerInitialized')}`);
+    // console.log(`🎨 ${t('ColorPickerInitialized')}`); // DB
 }
 
 /**

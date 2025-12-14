@@ -56,6 +56,8 @@ export async function loadTournamentsHistory(perPage: number = 5) {
             console.log('matchSettings de torneo', t.id, ':', t.matchSettings);
         }); */
 
+        if (!tbody) return;
+
         tbody.innerHTML = activeTournamentsData.tournaments
             .map((tournament, i) => {
                 const rowClass =

@@ -127,7 +127,7 @@ export async function modal({
         icon_msg = 'warning';
     } else if (type === ModalTypes.GAME_FINISHED) {
         const winnerName = winner;
-        console.log("win=", winner);
+        // console.log("win=", winner); // DB
         const scoreText = `${player1Score ?? 0} - ${player2Score ?? 0}`;
 
         if (winnerName === undefined)
@@ -184,7 +184,7 @@ export async function modal({
         const winnerName = winnerParticipant
             ? winnerParticipant.username
             : t('Unknown');
-        console.log('Tournament Winner Name:', winnerName);
+        // console.log('Tournament Winner Name:', winnerName); // DB
         const status = activeTournament.status;
         const statusText =
             status === 'ongoing'

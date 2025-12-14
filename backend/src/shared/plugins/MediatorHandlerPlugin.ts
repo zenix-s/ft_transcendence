@@ -1,11 +1,41 @@
-import { FastifyReply } from 'fastify/types/reply';
-import { IQuery } from '../application/abstractions/IQuery.interface';
-import { ICommand } from '../application/abstractions/ICommand.interface';
-import { FastifyInstance } from 'fastify';
+import { FastifyReply, FastifyInstance, FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
-import { ApplicationError } from '../Errors';
+import { IQuery } from '@shared/application/abstractions/IQuery.interface';
+import { ICommand } from '@shared/application/abstractions/ICommand.interface';
+import { ApplicationError } from '@shared/Errors';
 
-function getStatusCodeForError(error: string): number {
+declare module 'fastify' {
+    interface FastifyInstance {
+        handleQuery<TRequest, TResponse>({
+            query,
+            request,
+            reply,
+            successStatus,
+        }: {
+            query: IQuery<TRequest, TResponse>;
+            request: TRequest | undefined;
+            reply: FastifyReply;
+            successStatus?: number;
+        }): Promise<FastifyReply>;
+
+        handleCommand<TRequest, TResponse>({
+            command,
+            request,
+            reply,
+            successStatus,
+        }: {
+            command: ICommand<TRequest, TResponse>;
+            request: TRequest | undefined;
+            reply: FastifyReply;
+            successStatus?: number;
+        }): Promise<FastifyReply>;
+    }
+}
+
+/**
+ * Maps application error codes to HTTP status codes
+ */
+const getStatusCodeForError = (error: string): number => {
     switch (error) {
         case ApplicationError.GameNotFound:
         case ApplicationError.UserNotFound:
@@ -40,9 +70,12 @@ function getStatusCodeForError(error: string): number {
         default:
             return 409; // Default conflict status
     }
-}
+};
 
-async function handleQuery<TRequest, TResponse>({
+/**
+ * Executes a query with validation and error handling
+ */
+const handleQuery = async <TRequest, TResponse>({
     query,
     request,
     reply,
@@ -52,7 +85,7 @@ async function handleQuery<TRequest, TResponse>({
     request: TRequest | undefined;
     reply: FastifyReply;
     successStatus?: number;
-}): Promise<FastifyReply> {
+}): Promise<FastifyReply> => {
     const validationResult = query.validate(request);
     if (!validationResult.isSuccess) {
         return reply.status(400).send({ error: validationResult.error });
@@ -65,9 +98,12 @@ async function handleQuery<TRequest, TResponse>({
     }
 
     return reply.status(successStatus).send(result.value);
-}
+};
 
-async function handleCommand<TRequest, TResponse>({
+/**
+ * Executes a command with validation and error handling
+ */
+const handleCommand = async <TRequest, TResponse>({
     command,
     request,
     reply,
@@ -77,7 +113,7 @@ async function handleCommand<TRequest, TResponse>({
     request: TRequest | undefined;
     reply: FastifyReply;
     successStatus?: number;
-}): Promise<FastifyReply> {
+}): Promise<FastifyReply> => {
     const validationResult = command.validate(request);
     if (!validationResult.isSuccess) {
         return reply.status(400).send({ error: validationResult.error });
@@ -90,11 +126,13 @@ async function handleCommand<TRequest, TResponse>({
     }
 
     return reply.status(successStatus).send(result.value);
-}
+};
 
-function mediatorPlugin(fastify: FastifyInstance) {
-    fastify.decorate('handleQuery', handleQuery);
-    fastify.decorate('handleCommand', handleCommand);
-}
+const MediatorHandlerPlugin: FastifyPluginAsync = async (fastify: FastifyInstance) => {
+    fastify.decorate('handleQuery', (payload) => handleQuery(payload));
+    fastify.decorate('handleCommand', (payload) => handleCommand(payload));
+};
 
-export default fp(mediatorPlugin);
+export default fp(MediatorHandlerPlugin, {
+    name: 'mediatorHandlerPlugin',
+});

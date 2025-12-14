@@ -11,8 +11,39 @@ declare module 'fastify' {
     }
 }
 
+/**
+ * HTTP Authentication decorator - validates JWT token via request
+ */
+const authenticate = async (
+    fastify: FastifyInstance,
+    request: FastifyRequest,
+    reply: FastifyReply
+): Promise<void> => {
+    try {
+        await request.jwtVerify();
+    } catch (err) {
+        const result = fastify.handleError({ code: ApplicationError.InvalidToken, error: err });
+        reply.status(401).send({ error: result.error });
+    }
+};
+
+/**
+ * WebSocket Authentication - validates JWT token string and returns user ID
+ */
+const authenticateWs = async (fastify: FastifyInstance, token: string): Promise<Result<number>> => {
+    try {
+        const decoded = (await fastify.jwt.verify(token)) as { id?: number };
+        if (!decoded.id || typeof decoded.id !== 'number') {
+            return Result.error(ApplicationError.InvalidToken);
+        }
+        return Result.success(decoded.id);
+    } catch {
+        return Result.error(ApplicationError.InvalidToken);
+    }
+};
+
 const AuthPlugin: FastifyPluginAsync = async (fastify: FastifyInstance) => {
-    // Step 1: Register JWT plugin with configuration
+    // Register JWT plugin with configuration
     await fastify.register(fastifyJWT, {
         secret: process.env.JWT_SECRET || 'your-secret-key-change-this-in-production',
         sign: {
@@ -20,34 +51,13 @@ const AuthPlugin: FastifyPluginAsync = async (fastify: FastifyInstance) => {
         },
     });
 
-    // Step 2: HTTP Authentication Decorator
-    const authenticate = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
-        try {
-            await request.jwtVerify();
-        } catch (err) {
-            const result = fastify.handleError({ code: ApplicationError.InvalidToken, error: err });
-            reply.status(401).send({ error: result.error });
-        }
-    };
+    // Decorate fastify instance with authentication methods
+    fastify.decorate('authenticate', (request: FastifyRequest, reply: FastifyReply) =>
+        authenticate(fastify, request, reply)
+    );
+    fastify.decorate('authenticateWs', (token: string) => authenticateWs(fastify, token));
 
-    fastify.decorate('authenticate', authenticate);
-
-    // Step 3: WebSocket Authentication Method
-    const authenticateWs = async (token: string): Promise<Result<number>> => {
-        try {
-            const decoded = (await fastify.jwt.verify(token)) as { id?: number };
-            if (!decoded.id || typeof decoded.id !== 'number') {
-                return Result.error(ApplicationError.InvalidToken);
-            }
-            return Result.success(decoded.id);
-        } catch {
-            return Result.error(ApplicationError.InvalidToken);
-        }
-    };
-
-    fastify.decorate('authenticateWs', authenticateWs);
-
-    // Step 4: Lifecycle hooks
+    // Lifecycle hooks
     fastify.addHook('onClose', async (instance) => {
         instance.log.info('Cleaning up AuthPlugin');
     });

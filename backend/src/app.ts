@@ -1,8 +1,8 @@
 import { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
 import dbPlugin from '@shared/infrastructure/db/db';
-import ErrorhandlerPlugin from '@shared/utils/ErrorHandlerPlugin';
-import AppErrorHandlerPlugin from '@shared/mediators/AppErrorHandler';
+import ErrorHandlerPlugin from '@shared/plugins/ErrorHandlerPlugin';
+import AppErrorHandlerPlugin from '@shared/plugins/AppErrorHandlerPlugin';
 import { fastifyWebsocket } from '@fastify/websocket';
 import PongGameHttpRoutes from '@features/pong-http/http/pong.http';
 import GameInvitationHttpRoutes from '@features/game-invitation/http/game-invitation.http';
@@ -21,7 +21,7 @@ import fastifyMultipart from '@fastify/multipart';
 import Repositories from '@shared/infrastructure/repositories';
 import path from 'path';
 import FriendShipController from '@features/friendship/Friendship.presentation';
-import MediatorHandlerPlugin from '@shared/mediators/MediatorHandlerPlugin';
+import MediatorHandlerPlugin from '@shared/plugins/MediatorHandlerPlugin';
 import PongTournamentsHttpRoutes from '@features/tournaments/pong/http/pong-tournaments.http';
 import PongTournamentManagerPlugin from '@features/tournaments/pong/plugins/PongTournamentManagerPlugin';
 import tournamentWebSocketRoutes from '@features/tournaments/pong/websocket/tournament.websocket';
@@ -32,7 +32,7 @@ async function App(fastify: FastifyInstance) {
     fastify.register(AuthPlugin);
     fastify.register(dbPlugin);
     fastify.register(MediatorHandlerPlugin);
-    fastify.register(ErrorhandlerPlugin);
+    fastify.register(ErrorHandlerPlugin);
     fastify.register(AppErrorHandlerPlugin);
     fastify.register(Repositories);
     fastify.register(SocialWebSocketServicePlugin);

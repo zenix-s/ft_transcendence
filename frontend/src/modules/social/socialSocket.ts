@@ -29,6 +29,12 @@ const SocialMessageTypes = {
     ERROR: 'error',
 } as const;
 
+interface ActiveGameState {
+    hasActiveGame: boolean;
+    gameId?: number;
+    opponentUsername?: string | null;
+}
+
 interface AuthSuccessMessage {
     type: 'authSuccess';
     userId: number;
@@ -181,6 +187,10 @@ export class SocialWebSocketClient {
 
     private disconnectTimers: Map<number, NodeJS.Timeout> = new Map();
 
+    private activeGame: ActiveGameState = {
+        hasActiveGame: false,
+    };
+
     private async handleMessage(message: unknown) {
         // Detectar tipo
         const type = (message as { type?: unknown })?.type;
@@ -203,7 +213,7 @@ export class SocialWebSocketClient {
             }
 
             case SocialMessageTypes.AUTH_SUCCESS: {
-                const msg = message as AuthSuccessMessage;
+                // const msg = message as AuthSuccessMessage;
                 this.isAuthenticated = true;
                 // console.log(`✅ ${t('SuccessAuthenticated')}`, msg.userId); // DB
                 // Mejor sólo devolver lista cuando la página lo solicite????
@@ -354,11 +364,23 @@ export class SocialWebSocketClient {
             case SocialMessageTypes.CHECK_ACTIVE_GAME: {
                 const msg = message as CheckActiveGameResponse;
 
+                // Guardar estado
+                this.activeGame = {
+                    hasActiveGame: msg.hasActiveGame,
+                    gameId: msg.gameId,
+                    opponentUsername: msg.opponent?.username ?? null,
+                };
+
+                // Notificar a la UI
+                if (this.onActiveGameUpdateCallback) {
+                    this.onActiveGameUpdateCallback({ ...this.activeGame });
+                }
+
                 if (!msg.hasActiveGame) {
                     break;
                 }
 
-                // Skip if already on /playing page
+                /* // Skip if already on /playing page
                 const urlObjeto = new URL(window.location.href);
                 if (urlObjeto.pathname === '/playing') {
                     break;
@@ -379,8 +401,9 @@ export class SocialWebSocketClient {
                     const gameSocket = createGameSocket(token, msg.gameId!);
                     await gameSocket.authenticate(msg.gameId!);
                     gameSocket.leaveGame();
+                    gameSocket.destroy();
                     showToast(t('GameLeft'), 'success');
-                }
+                } */
                 // else: "Later" - do nothing
                 break;
             }
@@ -410,6 +433,22 @@ export class SocialWebSocketClient {
     // Para saber si alguien está o no autenticado
     public getAuthenticated() {
         return this.isAuthenticated;
+    }
+
+    private onActiveGameUpdateCallback:
+        ((state: ActiveGameState) => void) | null = null;
+
+    public onActiveGameUpdate(
+        callback: (state: ActiveGameState) => void
+    ) {
+        this.onActiveGameUpdateCallback = callback;
+
+        // Enviar estado actual inmediatamente
+        callback({ ...this.activeGame });
+    }
+
+    public getActiveGame() {
+        return { ...this.activeGame };
     }
 
     disconnect() {

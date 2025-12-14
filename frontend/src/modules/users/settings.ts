@@ -7,6 +7,7 @@ import { apiUrl } from '@/api';
 import { setupColorPicker } from '@/components/colorPicker';
 import type { User } from '@/types/user';
 import { countInputLenght } from '@/components/inputCounter';
+import { resumeMatchBtn } from '@/components/resumeMatchBtn';
 
 export async function loadSettings(user: User) {
     // ✅ activa el drag & drop
@@ -31,6 +32,9 @@ export async function loadSettings(user: User) {
 
     // Inicializar selector de color
     setupColorPicker();
+
+    // Aquí llamamos al botón de reanudar partida
+    resumeMatchBtn();
 }
 
 // Update User Name Form

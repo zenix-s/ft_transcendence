@@ -187,10 +187,10 @@ export class GameWebSocket {
         document.addEventListener('keydown', this.events.keyMove);
 
         // BUTTONS MOBILE EVENTS
-        this.htmlElements?.buttons.buttonUp.addEventListener('touchstart', this.events.buttonUpPressed);
-        this.htmlElements?.buttons.buttonUp.addEventListener('touchend', this.events.buttonUpReleased);
-        this.htmlElements?.buttons.buttonDown.addEventListener('touchstart', this.events.buttonDownPressed);
-        this.htmlElements?.buttons.buttonDown.addEventListener('touchend', this.events.buttonDownReleased);
+        this.htmlElements?.buttons.buttonUp.addEventListener('touchstart', this.events.buttonUpPressed, { passive: true });
+        this.htmlElements?.buttons.buttonUp.addEventListener('touchend', this.events.buttonUpReleased, { passive: true });
+        this.htmlElements?.buttons.buttonDown.addEventListener('touchstart', this.events.buttonDownPressed, { passive: true });
+        this.htmlElements?.buttons.buttonDown.addEventListener('touchend', this.events.buttonDownReleased, { passive: true });
 
         // BUTTONS CLICK EVENTS
         this.htmlElements?.buttons.buttonUp.addEventListener('mousedown', this.events.buttonUpPressed);

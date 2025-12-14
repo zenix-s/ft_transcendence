@@ -4,3 +4,4 @@ bbdd
 # Ignorar certificados
 *.pem
 .zed
+.claude

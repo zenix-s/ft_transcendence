@@ -27,9 +27,11 @@ import PongTournamentManagerPlugin from '@features/tournaments/pong/plugins/Pong
 import tournamentWebSocketRoutes from '@features/tournaments/pong/websocket/tournament.websocket';
 import TournamentWebSocketServicePlugin from '@features/tournaments/pong/plugins/TournamentWebSocketServicePlugin';
 import AuthPlugin from '@shared/plugins/AuthPlugin';
+import PasswordPlugin from '@shared/plugins/PasswordPlugin';
 
 async function App(fastify: FastifyInstance) {
     fastify.register(AuthPlugin);
+    fastify.register(PasswordPlugin);
     fastify.register(dbPlugin);
     fastify.register(MediatorHandlerPlugin);
     fastify.register(ErrorHandlerPlugin);

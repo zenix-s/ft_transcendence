@@ -1,6 +1,6 @@
 import { Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
-import { verifyPassword } from '@shared/utils/password.utils';
+import { verifyPassword } from '@shared/plugins/PasswordPlugin';
 import { FastifyInstance } from 'fastify';
 import { ApplicationError } from '@shared/Errors';
 

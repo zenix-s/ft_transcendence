@@ -2,7 +2,7 @@ import { FastifyInstance } from 'fastify';
 import { Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { ApplicationError } from '@shared/Errors';
-import { hashPassword } from '@shared/utils/password.utils';
+import { hashPassword } from '@shared/plugins/PasswordPlugin';
 
 export interface IPasswordUpdateRequest {
     userId: number;

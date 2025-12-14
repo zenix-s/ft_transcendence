@@ -1,7 +1,7 @@
 import fp from 'fastify-plugin';
 import { FastifyInstance } from 'fastify';
 import { SQLiteConnection } from '@shared/infrastructure/db/SQLiteConnection';
-import { hashPassword } from '@shared/utils/password.utils';
+import { hashPassword } from '@shared/plugins/PasswordPlugin';
 import { CONSTANTES_APP } from '@shared/constants/ApplicationConstants';
 import MatchType from '@shared/domain/ValueObjects/MatchType.value';
 import { Match } from '@shared/domain/Entities/Match.entity';

@@ -107,10 +107,12 @@ export default class SendGameInvitationCommand implements ICommand<
             if (senderTournamentResult.isSuccess && senderTournamentResult.value) {
                 return Result.error(ApplicationError.CurrentPlayerHasActiveTournament);
             }
-            const activeMatches = await this.matchRepository.findUserMatches({
-                userId: fromUserId as number,
-                status: [Match.STATUS.PENDING, Match.STATUS.IN_PROGRESS],
-            });
+            const activeMatches = (
+                await this.matchRepository.findUserMatches({
+                    userId: fromUserId as number,
+                    status: [Match.STATUS.PENDING, Match.STATUS.IN_PROGRESS],
+                })
+            ).filter((m) => m.id !== gameId);
 
             if (activeMatches.length > 0) {
                 return Result.error(ApplicationError.CurrentPlayerHasActiveMatch);

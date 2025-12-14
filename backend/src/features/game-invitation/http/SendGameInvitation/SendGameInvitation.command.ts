@@ -5,6 +5,7 @@ import { ApplicationError } from '@shared/Errors';
 import { ISocialWebSocketService } from '@features/socialSocket/services/ISocialWebSocketService.interface';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
 import MatchType from '@shared/domain/ValueObjects/MatchType.value';
+import { Match } from '@shared/domain/Entities/Match.entity';
 
 export interface ISendGameInvitationResponse {
     success: boolean;
@@ -106,6 +107,14 @@ export default class SendGameInvitationCommand implements ICommand<
             if (senderTournamentResult.isSuccess && senderTournamentResult.value) {
                 return Result.error(ApplicationError.CurrentPlayerHasActiveTournament);
             }
+            const activeMatches = await this.matchRepository.findUserMatches({
+                userId: fromUserId as number,
+                status: [Match.STATUS.PENDING, Match.STATUS.IN_PROGRESS],
+            });
+
+            if (activeMatches.length > 0) {
+                return Result.error(ApplicationError.CurrentPlayerHasActiveMatch);
+            }
 
             // 6: Verificar si el destinatario está en un torneo activo
             const recipientTournamentResult =
@@ -114,6 +123,15 @@ export default class SendGameInvitationCommand implements ICommand<
                 });
             if (recipientTournamentResult.isSuccess && recipientTournamentResult.value) {
                 return Result.error(ApplicationError.PlayerHasActiveTournament);
+            }
+
+            const recipientActiveMatches = await this.matchRepository.findUserMatches({
+                userId: targetUser.id,
+                status: [Match.STATUS.PENDING, Match.STATUS.IN_PROGRESS],
+            });
+
+            if (recipientActiveMatches.length > 0) {
+                return Result.error(ApplicationError.PlayerHasActiveMatch);
             }
 
             // 7: Obtener la información del usuario que envía la invitación

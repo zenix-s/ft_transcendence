@@ -5,6 +5,7 @@ import { ApplicationError } from '@shared/Errors';
 import { IMatchRepository } from '@shared/infrastructure/repositories/MatchRepository';
 import MatchType from '@shared/domain/ValueObjects/MatchType.value';
 import { ISocialWebSocketService } from '@features/socialSocket/services/ISocialWebSocketService.interface';
+import { Match } from '@shared/domain/Entities/Match.entity';
 
 export interface IAcceptGameInvitationResponse {
     success: boolean;
@@ -13,7 +14,7 @@ export interface IAcceptGameInvitationResponse {
 }
 
 export interface IAcceptGameInvitationRequest {
-    userId?: number;
+    userId: number;
     gameId: number;
 }
 
@@ -67,6 +68,15 @@ export default class AcceptGameInvitationCommand implements ICommand<
             });
             if (activeTournamentResult.isSuccess && activeTournamentResult.value) {
                 return Result.error(ApplicationError.CurrentPlayerHasActiveTournament);
+            }
+
+            const activeMatches = await this.matchRepository.findUserMatches({
+                userId: userId,
+                status: [Match.STATUS.PENDING, Match.STATUS.IN_PROGRESS],
+            });
+
+            if (activeMatches.length > 0) {
+                return Result.error(ApplicationError.CurrentPlayerHasActiveMatch);
             }
 
             // 3: Obtener el tipo de juego usando el gameTypeId del match

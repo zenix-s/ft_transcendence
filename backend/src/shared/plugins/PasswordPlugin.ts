@@ -33,6 +33,3 @@ const PasswordPlugin: FastifyPluginAsync = async (fastify: FastifyInstance) => {
 export default fp(PasswordPlugin, {
     name: 'passwordPlugin',
 });
-
-// Export raw functions for use outside Fastify context
-export { hashPassword, verifyPassword };

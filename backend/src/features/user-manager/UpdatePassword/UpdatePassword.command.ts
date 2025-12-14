@@ -2,7 +2,6 @@ import { FastifyInstance } from 'fastify';
 import { Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
 import { ApplicationError } from '@shared/Errors';
-import { hashPassword } from '@shared/plugins/PasswordPlugin';
 
 export interface IPasswordUpdateRequest {
     userId: number;
@@ -44,7 +43,7 @@ export default class PasswordUpdateCommand implements ICommand<
             }
 
             // Hash password
-            const hashedPassword = await hashPassword(password);
+            const hashedPassword = await this.fastify.hashPassword(password);
 
             // Update password in bbdd
             const updatedPassword = await this.fastify.UserRepository.updatePassword({

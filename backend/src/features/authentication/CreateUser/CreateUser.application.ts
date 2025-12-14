@@ -1,7 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
-import { hashPassword } from '@shared/plugins/PasswordPlugin';
 import { ApplicationError } from '@shared/Errors';
 
 export interface IRegisterRequest {
@@ -64,7 +63,7 @@ export default class CreateUserCommand implements ICommand<IRegisterRequest, IAu
                 return Result.error(ApplicationError.UserAlreadyExists);
             }
 
-            const hashedPassword = await hashPassword(password);
+            const hashedPassword = await this.fastify.hashPassword(password);
 
             const user = await this.fastify.UserRepository.createUser({
                 user: {

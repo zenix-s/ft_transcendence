@@ -1,7 +1,6 @@
 import fp from 'fastify-plugin';
 import { FastifyInstance } from 'fastify';
 import { SQLiteConnection } from '@shared/infrastructure/db/SQLiteConnection';
-import { hashPassword } from '@shared/plugins/PasswordPlugin';
 import { CONSTANTES_APP } from '@shared/constants/ApplicationConstants';
 import MatchType from '@shared/domain/ValueObjects/MatchType.value';
 import { Match } from '@shared/domain/Entities/Match.entity';
@@ -142,7 +141,7 @@ export default fp(
             `CREATE INDEX IF NOT EXISTS idx_tournament_participants_user ON tournament_participants(user_id)`
         );
 
-        const hashedPasswordAI = await hashPassword('AI_SYSTEM_USER_NO_LOGIN');
+        const hashedPasswordAI = await fastify.hashPassword('AI_SYSTEM_USER_NO_LOGIN');
 
         await connection.execute(
             `
@@ -187,7 +186,7 @@ export default fp(
 
         // ESTO ES PARA TESTING NO LLEVAR A PROD
         // TestUsers
-        const hashedPasswordTest = await hashPassword('1234');
+        const hashedPasswordTest = await fastify.hashPassword('1234');
         await connection.execute(
             `
                 INSERT OR IGNORE INTO users (id, username, email, password)

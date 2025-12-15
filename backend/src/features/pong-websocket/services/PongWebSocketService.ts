@@ -1,6 +1,5 @@
 import { FastifyInstance } from 'fastify';
 import { WebSocket } from '@fastify/websocket';
-import { Result } from '@shared/abstractions/Result';
 import { ApplicationError } from '@shared/Errors';
 import { Actions } from '../../pong-game-manager/Pong.types';
 import { IPongService } from './IPongService.interface';
@@ -26,18 +25,6 @@ export interface WebSocketResponse {
 
 export class PongWebSocketService implements IPongService {
     constructor(private readonly fastify: FastifyInstance) {}
-
-    async authenticateUser(token: string): Promise<Result<number>> {
-        try {
-            const decoded = (await this.fastify.jwt.verify(token)) as { id?: number };
-            if (!decoded.id || typeof decoded.id !== 'number') {
-                return Result.error(ApplicationError.InvalidToken);
-            }
-            return Result.success(decoded.id);
-        } catch {
-            return Result.error(ApplicationError.InvalidToken);
-        }
-    }
 
     async handleRequestState(gameId?: number): Promise<WebSocketResponse> {
         if (!gameId) {

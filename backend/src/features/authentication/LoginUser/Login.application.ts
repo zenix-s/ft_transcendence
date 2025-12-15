@@ -1,6 +1,5 @@
 import { Result } from '@shared/abstractions/Result';
 import { ICommand } from '@shared/application/abstractions/ICommand.interface';
-import { verifyPassword } from '@shared/utils/password.utils';
 import { FastifyInstance } from 'fastify';
 import { ApplicationError } from '@shared/Errors';
 
@@ -47,7 +46,7 @@ export default class LoginCommand implements ICommand<ILoginRequest, IAuthRespon
             }
 
             const user = userResult.value;
-            const isPasswordValid = await verifyPassword(password, user.password);
+            const isPasswordValid = await this.fastify.verifyPassword(password, user.password);
             if (!isPasswordValid) {
                 return Result.error(ApplicationError.InvalidCredentials);
             }

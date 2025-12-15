@@ -1,8 +1,12 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import { FastifyInstance, FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
-import { ApplicationError } from '../Errors';
+import { ApplicationError } from '@shared/Errors';
 
-function setupErrorHandler(fastify: FastifyInstance) {
+/**
+ * Sets up the global error handler for Fastify
+ * Handles validation errors, database errors, and returns appropriate HTTP status codes
+ */
+const setupErrorHandler = (fastify: FastifyInstance): void => {
     fastify.setErrorHandler(
         (
             error: Error & { validation?: unknown; validationContext?: unknown; statusCode?: number },
@@ -39,10 +43,12 @@ function setupErrorHandler(fastify: FastifyInstance) {
             });
         }
     );
-}
+};
 
-function AppErrorHandlerPlugin(fastify: FastifyInstance) {
+const AppErrorHandlerPlugin: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     setupErrorHandler(fastify);
-}
+};
 
-export default fp(AppErrorHandlerPlugin);
+export default fp(AppErrorHandlerPlugin, {
+    name: 'appErrorHandlerPlugin',
+});

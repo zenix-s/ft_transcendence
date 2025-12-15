@@ -1,4 +1,3 @@
-import { t } from '@/app/i18n';
 import { Engine } from '@babylonjs/core';
 import type { Ball, Player, Score } from './gameBabylonInterfaces';
 import { getBabylonElements } from './gameBabylonElements';

@@ -399,6 +399,16 @@ export class GameWebSocket {
 
     private countdown(data: GameStateMessage) {
         if (data.state.countdownInfo.isActive === true) {
+            const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
+            if (!canvas)
+            {
+                if (this.div) {
+                    this.div.remove();
+                    this.div = null;
+                    this.start = 0;
+                }
+                return;
+            }
             if (!this.div) {
                 const div_cpy = document.createElement('div');
 

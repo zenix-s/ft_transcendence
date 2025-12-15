@@ -49,6 +49,9 @@ export async function loadTournamentsHistory(perPage: number = 5) {
         const tbody = document.querySelector<HTMLTableSectionElement>(
             '#tournamentsTable tbody'
         )!;
+
+        if (!tbody) throw new Error(t('tableBodyNotFound'));
+
         //console.log('TORNEOS RECIBIDOS:', activeTournamentsData.tournaments); // DB
 
         // DB
@@ -86,6 +89,15 @@ export async function loadTournamentsHistory(perPage: number = 5) {
         `;
             })
             .join('');
+
+        // Destruir la tabla previa si existe
+        if (tournamentTable) {
+            tournamentTable.destroy();
+        }
+
+        // Obtener la tabla
+        const tableEl = document.querySelector('#tournamentsTable');
+        if (!tableEl) return;
 
         // 3. Inicializar la tabla con paginación
         tournamentTable = new DataTable('#tournamentsTable', {

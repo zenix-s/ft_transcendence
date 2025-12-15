@@ -55,6 +55,9 @@ export async function loadMatchHistory(user?: User, perPage: number = 5) {
             document.querySelector<HTMLTableSectionElement>(
                 '#matchTable tbody'
             )!;
+
+        if (!tbody) throw new Error(t('tableBodyNotFound'));
+
         tbody.innerHTML = data.matches
             .map((match) => {
                 // El oponente es "el otro" jugador
@@ -85,6 +88,15 @@ export async function loadMatchHistory(user?: User, perPage: number = 5) {
         `;
             })
             .join('');
+
+        // Destruir la tabla previa si existe
+        if (matchTable) {
+            matchTable.destroy();
+        }
+
+        // Obtener la tabla
+        const tableEl = document.querySelector('#matchTable');
+        if (!tableEl) return;
 
         // 3. Inicializar la tabla con paginación
         matchTable = new DataTable('#matchTable', {

@@ -42,6 +42,11 @@ export function resumeMatchBtn() {
 				await gameSocket.authenticate(state.gameId);
 				gameSocket.leaveGame();
 				gameSocket.destroy();
+
+                // añdir delay de 100ms para asegurar que el mensaje se envía
+                await new Promise((resolve) => setTimeout(resolve, 100));
+                ws.requestCheckActiveGame();
+
 				showToast(t('GameLeft'), 'success');
 			}
 			else {

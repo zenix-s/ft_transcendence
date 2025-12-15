@@ -111,7 +111,7 @@ export function createTournament(): void {
     };
 
     // Evita listeners duplicados
-    tournamentForm.addEventListener('submit', handleSubmit, { once: true });
+    tournamentForm.addEventListener('submit', handleSubmit);
 }
 
 

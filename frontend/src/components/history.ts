@@ -56,7 +56,7 @@ export async function loadMatchHistory(user?: User, perPage: number = 5) {
                 '#matchTable tbody'
             )!;
 
-        if (!tbody) throw new Error(t('tableBodyNotFound'));
+        if (!tbody) return;
 
         tbody.innerHTML = data.matches
             .map((match) => {

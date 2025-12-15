@@ -870,7 +870,7 @@ export const translations: Record<Language, Record<string, string>> = {
         tournament: 'Tournoi',
         configTournament: 'Créer et configurer un tournoi',
         createTournament: 'Créer un tournoi',
-        tournamentName: 'Nom du tournoi:',
+        tournamentName: 'Nom du tournoi',
         invalidTournamentName:
             'Nom du tournoi invalide:\n  - Il doit contenir entre 3 et 20 caractères.\n  - Il peut uniquement contenir des lettres, des chiffres, des tirets et des tirets bas.',
         toolTipTournamentName:

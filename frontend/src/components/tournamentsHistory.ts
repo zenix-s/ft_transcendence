@@ -50,8 +50,6 @@ export async function loadTournamentsHistory(perPage: number = 5) {
             '#tournamentsTable tbody'
         )!;
 
-        if (!tbody) throw new Error(t('tableBodyNotFound'));
-
         //console.log('TORNEOS RECIBIDOS:', activeTournamentsData.tournaments); // DB
 
         // DB

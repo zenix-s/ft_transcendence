@@ -1,6 +1,5 @@
 import { t } from "@/app/i18n";
 import { navigateTo } from "@/app/navigation";
-import { showToast } from "@/components/toast";
 import type { Buttons, HTMLelements } from "./gameHTMLInterfaces";
 
 /*
@@ -10,7 +9,6 @@ export function getGameId() {
 	const params = new URLSearchParams(window.location.search);
 	const id = params.get('id');
 	if (!id) {
-		showToast(t('URLNotCorrect'), 'error');
 		console.warn(t('URLNotCorrect'));
 		navigateTo('dashboard', false, true);
 		return;
@@ -24,7 +22,6 @@ export function getGameId() {
 function getCanvas() {
 	const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 	if (!canvas) {
-		showToast(t('CanvasNotFound'), 'error');
 		console.warn(t('CanvasNotFound'));
 		navigateTo('dashboard', false, true);
 		return;
@@ -41,7 +38,6 @@ function getButtons() {
 		'button-down'
 	) as HTMLButtonElement;
 	if (!buttonUp || !buttonDown) {
-		showToast(t('ButtonsNotFound'), 'error');
 		console.warn(t('ButtonsNotFound'));
 		navigateTo('dashboard', false, true);
 		return;
@@ -82,7 +78,6 @@ function getTimer() {
 
 	const timer = document.getElementById('timer') as HTMLElement;
 	if (!timer) {
-		showToast(t('TimerNotFound'), 'error');
 		console.warn(t('TimerNotFound'));
 		navigateTo('dashboard', false, true);
 		return;

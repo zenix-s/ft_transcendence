@@ -10,7 +10,10 @@ import { modal } from '../modal';
 import type { GameOptions } from '@/types/gameOptions';
 import { createGameSocket } from '@/modules/game/gameSocket';
 
+export let isMounted = true;
+
 export async function initFriendsSidebar() {
+
     const container = document.getElementById('friends-sidebar-container');
     if (!container)
         return console.warn('⚠️ No se encontró #friends-sidebar-container');
@@ -26,8 +29,8 @@ export async function initFriendsSidebar() {
     await new Promise((r) => requestAnimationFrame(r));
 
     // 🔹 Obtener referencias del DOM
-    const toggleBtn = document.getElementById('friends-toggle-btn')!;
-    const panel = document.getElementById('friends-panel')!;
+    const toggleBtn = document.getElementById('friends-toggle-btn');
+    const panel = document.getElementById('friends-panel');
     const addFriendForm = document.getElementById(
         'add-friend-form'
     ) as HTMLElement;
@@ -35,8 +38,8 @@ export async function initFriendsSidebar() {
         'friend-input'
     ) as HTMLInputElement;
     //const addFriendBtn = document.getElementById("add-friend-btn")!;
-    const onlineList = document.getElementById('online-friends')!;
-    const offlineList = document.getElementById('offline-friends')!;
+    const onlineList = document.getElementById('online-friends');
+    const offlineList = document.getElementById('offline-friends');
     const deleteFriendForm = document.getElementById(
         'delete-friend-form'
     ) as HTMLElement;
@@ -45,12 +48,20 @@ export async function initFriendsSidebar() {
     ) as HTMLInputElement;
     //const deleteFriendBtn = document.getElementById("delete-friend-btn")!;
 
+    if (!toggleBtn || !panel || !onlineList || !offlineList) {
+        console.warn('⚠️ Friends sidebar DOM incompleto');
+        return;
+    }
+
     function renderLists(friends: Friend[]) {
+        if (!onlineList || !offlineList) return;
+
         const render = (
             listEl: HTMLElement,
             items: Friend[],
             emptyText: string
         ) => {
+            if (!listEl) return;
             listEl.innerHTML = ''; // limpiar lista
 
             if (items.length === 0) {
@@ -112,6 +123,7 @@ export async function initFriendsSidebar() {
 
     // 🔹 Suscribirse a actualizacione
     ws.onFriendsUpdate((friends) => {
+        if (!isMounted) return;
         renderLists(friends);
     });
 
@@ -145,8 +157,8 @@ export async function initFriendsSidebar() {
     });
 
     // 🔹 Invitar a jugar
-    const inviteBtn = document.getElementById('online-friends') as HTMLElement;
-    inviteBtn?.addEventListener('click', async (event) => {
+    const onlineFriendsList = document.getElementById('online-friends') as HTMLElement;
+    onlineFriendsList?.addEventListener('click', async (event) => {
         event.preventDefault();
         const target = event.target as HTMLElement;
         if (target.classList.contains('invite-btn')) {
@@ -315,3 +327,7 @@ export async function rejectInvitation(gameId: number): Promise<boolean> {
         return false;
     }
 }
+
+export function cleanupFriendsSidebar() {
+    isMounted = false;
+}   

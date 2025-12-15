@@ -261,8 +261,6 @@ export class ActivePongTournament {
                 return Result.error(updateResult.error || ApplicationError.TournamentStartError);
             }
 
-            await new Promise((resolve) => setTimeout(resolve, 5000));
-
             // Paso 3: Notificar por websocket si existe el servicio
             if (this.fastify.TournamentWebSocketService?.notifyTournamentStarted) {
                 this.fastify.TournamentWebSocketService.notifyTournamentStarted(
@@ -270,6 +268,8 @@ export class ActivePongTournament {
                     tournament.name
                 );
             }
+
+            await new Promise((resolve) => setTimeout(resolve, 3000));
 
             // Paso 4: Crear todos los matches de la primera ronda
             await this.createRoundMatches(tournament, firstRound);
@@ -488,7 +488,7 @@ export class ActivePongTournament {
                 );
             }
 
-            await new Promise((resolve) => setTimeout(resolve, 5000));
+            await new Promise((resolve) => setTimeout(resolve, 3000));
 
             // Paso 8: Verificar si la ronda ha terminado
             if (currentRound.isComplete) {
@@ -562,7 +562,7 @@ export class ActivePongTournament {
                 );
             }
 
-            await new Promise((resolve) => setTimeout(resolve, 5000));
+            await new Promise((resolve) => setTimeout(resolve, 3000));
 
             // Paso 3: Crear todos los matches de la nueva ronda
             await this.createRoundMatches(tournament, nextRound);

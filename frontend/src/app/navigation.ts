@@ -188,8 +188,8 @@ export async function navigateTo(
                         break;
 
                     case 'setReady1':
-                        renderButtons();
                         ready1();
+                        renderButtons();
                         break;
 
                     case 'tournament':

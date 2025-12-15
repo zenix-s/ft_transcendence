@@ -27,7 +27,7 @@ export interface IUploadAvatarResponse {
 export default class UploadAvatarCommand implements ICommand<IUploadAvatarRequest, IUploadAvatarResponse> {
     private readonly uploadsDir = path.join(process.cwd(), 'uploads', 'avatars');
     private readonly maxFileSize = 5 * 1024 * 1024; // 5MB
-    private readonly allowedMimeTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+    private readonly allowedMimeTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
 
     private readonly UserRepository: IUserRepository;
 

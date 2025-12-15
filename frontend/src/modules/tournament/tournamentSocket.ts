@@ -145,6 +145,7 @@ export class TournamentWebSocketClient {
                     `${t('TournamentStarted')}: ${msg.tournamentName}`,
                     'success'
                 );
+                await refreshTournamentsHistory();
                 break;
             }
 
@@ -154,6 +155,7 @@ export class TournamentWebSocketClient {
                     `${t('TournamentEnded')}: ${msg.tournamentName}`,
                     'success'
                 );
+                await refreshTournamentsHistory();
                 break;
             }
 

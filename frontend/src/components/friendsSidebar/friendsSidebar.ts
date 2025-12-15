@@ -207,7 +207,7 @@ export async function initFriendsSidebar() {
                     return;
                 }
 
-                showToast(t('InvitationSent'), 'success');
+                showToast(t('InvitationSentSuccessfully'), 'success');
             }
         }
     });

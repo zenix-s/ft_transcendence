@@ -156,20 +156,16 @@ export class GameWebSocket {
                 if (key === 'ArrowDown' || key === 's') this.down = 0;
             },
             // BUTTONS EVENTS
-            buttonUpPressed: (event: Event) => {
-                event.preventDefault();
+            buttonUpPressed: () => {
                 this.up = 1;
             },
-            buttonUpReleased: (event: Event) => {
-                event.preventDefault();
+            buttonUpReleased: () => {
                 this.up = 0;
             },
-            buttonDownPressed: (event: Event) => {
-                event.preventDefault();
+            buttonDownPressed: () => {
                 this.down = 1;
             },
-            buttonDownReleased: (event: Event) => {
-                event.preventDefault();
+            buttonDownReleased: () => {
                 this.down = 0;
             },
             // RESIZE EVENT

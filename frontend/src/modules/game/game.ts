@@ -32,6 +32,8 @@ export function renderValues(
 
 export async function initGame3D() {
     const id = getGameId();
+    if (!id)
+        return;
     const htmlElements = getHTMLelements();
     if (!htmlElements)
         return;

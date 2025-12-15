@@ -49,20 +49,6 @@ async function endGame(
             50,
             ball
         );
-        // const playerL = finished.match.players[0].userId;
-        // const playerR = finished.match.players[1].userId;
-        // console.log(
-        //     '1=',
-        //     playerL,
-        //     ' 2=',
-        //     playerR,
-        //     ' 1=',
-        //     score1,
-        //     ' 2=',
-        //     score2,
-        //     ' winner=',
-        //     finished.match.winner?.username
-        // );
         ws?.destroy();
         navigateTo('dashboard', false, true);
         await modal({

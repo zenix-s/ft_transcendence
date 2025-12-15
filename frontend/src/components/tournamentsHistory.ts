@@ -131,7 +131,7 @@ export async function loadTournamentsHistory(perPage: number = 5) {
                 btn.id = 'refreshTournamentsBtn';
                 btn.textContent = 'Refresh';
                 btn.className =
-                    'bg-blue-600 hover:bg-blue-800 text-white font-bold py-1 px-3 rounded ml-3';
+                    'bg-blue-600 hover:bg-blue-800 text-white font-bold py-1 px-3 rounded ml-3 cursor-pointer ';
 
                 btn.addEventListener(
                     'click',
@@ -195,7 +195,7 @@ export function getParticipationButton(tournament: Tournament): string {
             status === 'ongoing' ? t('inProgress') : t('completed');
         htmlToReturn = `
         <span data-i18n="${spanText}" class="text-gray-300 font-light">${spanText}</span>
-        <button data-tournamentId="${tournamentId}" class="bg-cyan-400 hover:bg-cyan-600 text-secondary hover:text-primary font-bold py-1 px-2 rounded transition-all duration-300 ease-in-out participation-btn" data-i18n="results">Results</button>
+        <button data-tournamentId="${tournamentId}" class="bg-cyan-400 hover:bg-cyan-600 text-secondary hover:text-primary font-bold py-1 px-2 rounded transition-all duration-300 ease-in-out cursor-pointer participation-btn" data-i18n="results">Results</button>
     `;
 
         htmlToReturn = openDiv + htmlToReturn + closeDiv;
@@ -204,14 +204,14 @@ export function getParticipationButton(tournament: Tournament): string {
     }
 
     const buttonHtml = isRegistered
-        ? `<button data-tournamentId="${tournamentId}" data-userRole="${userRole}" class="bg-red-600 hover:bg-red-800 text-white font-bold py-1 px-2 rounded transition-all duration-300 ease-in-out participation-btn" data-i18n="leave">Leave</button>`
-        : `<button data-tournamentId="${tournamentId}" class="bg-green-600 hover:bg-green-800 text-white font-bold py-1 px-2 rounded transition-all duration-300 ease-in-out participation-btn" data-i18n="join">Join</button>`;
+        ? `<button data-tournamentId="${tournamentId}" data-userRole="${userRole}" class="bg-red-600 hover:bg-red-800 text-white font-bold py-1 px-2 rounded transition-all duration-300 ease-in-out cursor-pointer participation-btn" data-i18n="leave">Leave</button>`
+        : `<button data-tournamentId="${tournamentId}" class="bg-green-600 hover:bg-green-800 text-white font-bold py-1 px-2 rounded transition-all duration-300 ease-in-out cursor-pointer participation-btn" data-i18n="join">Join</button>`;
 
     htmlToReturn += buttonHtml;
 
     // Añadir botón Start solo si el usuario es admin o admin-participant
     if (userRole === 'admin' || userRole === 'admin-participant') {
-        const adminBtn = `<button data-tournamentId="${tournamentId}" data-participantCount="${participantCount}" class="bg-cyan-400 hover:bg-cyan-600 text-secondary hover:text-primary font-bold py-1 px-2 rounded transition-all duration-300 ease-in-out participation-btn" data-i18n="start">Start</button>`;
+        const adminBtn = `<button data-tournamentId="${tournamentId}" data-participantCount="${participantCount}" class="bg-cyan-400 hover:bg-cyan-600 text-secondary hover:text-primary font-bold py-1 px-2 rounded transition-all duration-300 ease-in-out cursor-pointer participation-btn" data-i18n="start">Start</button>`;
         htmlToReturn += adminBtn;
     }
 

@@ -41,6 +41,7 @@ export class GameWebSocket {
 
     connect() {
         this.socket = new WebSocket(this.wsUrl);
+        this.ready = false;
 
         this.socket.addEventListener('open', () => {
             // console.log('🟢', t('game'), ': ', t('WsConnected')); // DB
@@ -108,7 +109,6 @@ export class GameWebSocket {
         await new Promise((resolve) => setTimeout(resolve, 100));
         obj.action = Actions.REQUEST_STATE;
         this.socket?.send(JSON.stringify(obj));
-        this.ready = false;
     }
 
     private async openModal(data: GameStateMessage) {

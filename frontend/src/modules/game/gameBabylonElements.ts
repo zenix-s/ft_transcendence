@@ -9,7 +9,6 @@ import {
     StandardMaterial,
     Vector3,
 } from '@babylonjs/core';
-import { showToast } from '@/components/toast';
 import { t } from '@/app/i18n';
 import { navigateTo } from '@/app/navigation';
 import { getColor, setColors } from './getColors';
@@ -42,7 +41,6 @@ export function createScores() {
     const left = document.getElementById('scoreLeft');
     const right = document.getElementById('scoreRight');
     if (!left || !right) {
-        showToast(t('ScoresNotFound'), 'error');
         console.warn(t('ScoresNotFound'));
         navigateTo('dashboard', false, true);
         return null;

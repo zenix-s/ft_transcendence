@@ -40,6 +40,7 @@ export function resumeMatchBtn() {
 				const token = localStorage.getItem('access_token');
 				const gameSocket = createGameSocket(token, state.gameId);
 				await gameSocket.authenticate(state.gameId);
+                await new Promise((resolve) => setTimeout(resolve, 100));
 				gameSocket.leaveGame();
 				gameSocket.destroy();
 

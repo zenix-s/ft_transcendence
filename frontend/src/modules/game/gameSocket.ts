@@ -105,6 +105,7 @@ export class GameWebSocket {
             token: this.token,
         };
         this.socket?.send(JSON.stringify(obj));
+        await new Promise((resolve) => setTimeout(resolve, 100));
         obj.action = Actions.REQUEST_STATE;
         this.socket?.send(JSON.stringify(obj));
     }

@@ -108,6 +108,7 @@ export class GameWebSocket {
         await new Promise((resolve) => setTimeout(resolve, 100));
         obj.action = Actions.REQUEST_STATE;
         this.socket?.send(JSON.stringify(obj));
+        this.ready = false;
     }
 
     private async openModal(data: GameStateMessage) {

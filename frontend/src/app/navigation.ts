@@ -10,7 +10,7 @@ import { loadChart } from '@/components/graph';
 import { Tooltip } from '@/components/tooltip';
 import { loadMatchHistory } from '@/components/history';
 import { redirect } from '@/components/redirect';
-import { initFriendsSidebar } from '@/components/friendsSidebar/friendsSidebar';
+import { cleanupFriendsSidebar, initFriendsSidebar } from '@/components/friendsSidebar/friendsSidebar';
 import { getCurrentUser } from '@/modules/users';
 import { ready1 } from '@/modules/game/setReady1';
 import { t } from '@/app/i18n';
@@ -38,6 +38,9 @@ export async function navigateTo(
     skipPushState = false,
     replace = false
 ) {
+
+    cleanupFriendsSidebar();
+
     // Para que cuando le paso parámetros a la url las cosas funcionen
     const pageBase: string = page.split('?')[0];
     //console.log('pageBase=', pageBase); // DB

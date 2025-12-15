@@ -38,7 +38,7 @@ export async function navigateTo(
     skipPushState = false,
     replace = false
 ) {
-
+    // Limpiar sidebar de amigos de la página anterior
     cleanupFriendsSidebar();
 
     // Para que cuando le paso parámetros a la url las cosas funcionen

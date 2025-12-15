@@ -13,7 +13,7 @@ import { createGameSocket } from '@/modules/game/gameSocket';
 export let isMounted = true;
 
 export async function initFriendsSidebar() {
-
+    isMounted = true;
     const container = document.getElementById('friends-sidebar-container');
     if (!container)
         return console.warn('⚠️ No se encontró #friends-sidebar-container');
@@ -92,7 +92,7 @@ export async function initFriendsSidebar() {
 
                 const inviteBtn = document.createElement('button');
                 inviteBtn.className =
-                    'bg-white text-cyan-700 hover:bg-cyan-700 hover:text-white px-2 py-1 rounded transition-all duration-300 ease-in-out ml-auto invite-btn';
+                    'bg-white text-cyan-700 hover:bg-cyan-700 hover:text-white px-2 py-1 rounded transition-all duration-300 ease-in-out ml-auto invite-btn cursor-pointer';
                 inviteBtn.textContent = t('InviteToGame');
                 inviteBtn.dataset.i18n = 'InviteToGame';
                 inviteBtn.dataset.name = friend.username;

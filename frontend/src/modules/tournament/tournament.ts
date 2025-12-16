@@ -42,8 +42,7 @@ export function createTournament(): void {
         const time = Number(formData.get('time-range'));
 
         const rawMode = formData.get('mode-radio');
-        const mode =
-            typeof rawMode === 'string' ? rawMode.toLowerCase() : '';
+        const mode = typeof rawMode === 'string' ? rawMode.toLowerCase() : '';
 
         /* Validate all fields are filled */
         if (
@@ -113,7 +112,6 @@ export function createTournament(): void {
     // Evita listeners duplicados
     tournamentForm.addEventListener('submit', handleSubmit);
 }
-
 
 export async function joinTournament(tournamentId: number) {
     try {

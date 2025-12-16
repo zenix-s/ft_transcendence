@@ -2,7 +2,7 @@ import { Engine } from '@babylonjs/core';
 import type { Ball, Player, Score } from './gameBabylonInterfaces';
 import { getBabylonElements } from './gameBabylonElements';
 import { createGameSocket, getGameSocket } from './gameSocket';
-import {  getGameId, getHTMLelements } from './gameHTMLelements';
+import { getGameId, getHTMLelements } from './gameHTMLelements';
 
 export function renderValues(
     posPlayerL: number,
@@ -31,11 +31,9 @@ export function renderValues(
 
 export async function initGame3D() {
     const id = getGameId();
-    if (!id)
-        return;
+    if (!id) return;
     const htmlElements = getHTMLelements();
-    if (!htmlElements)
-        return;
+    if (!htmlElements) return;
 
     /* Comprobar que el ws existe y autenticarlo */
     let ws = getGameSocket();
@@ -64,14 +62,9 @@ export async function initGame3D() {
     });
 
     const babylonElements = getBabylonElements(htmlElements, ws);
-    if (!babylonElements)
-        return;
+    if (!babylonElements) return;
 
-    ws.initializeGame(
-        Number(id),
-        htmlElements,
-        babylonElements
-    );
+    ws.initializeGame(Number(id), htmlElements, babylonElements);
     ws.play();
 }
 

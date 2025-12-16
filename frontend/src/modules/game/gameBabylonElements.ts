@@ -15,7 +15,12 @@ import { getColor, setColors } from './getColors';
 import type { HTMLelements } from './gameHTMLInterfaces';
 import type { GameWebSocket } from './gameSocket';
 import { adjustCanvasSize } from './game';
-import type { BabylonElements, Ball, Player, Score } from './gameBabylonInterfaces';
+import type {
+    BabylonElements,
+    Ball,
+    Player,
+    Score,
+} from './gameBabylonInterfaces';
 
 export function createBall(playerView: string | null, scene: Scene) {
     const ball_html: Mesh = MeshBuilder.CreateSphere(
@@ -167,7 +172,10 @@ export function createCamera(
     camera.lowerRadiusLimit = 13;
 }
 
-export function getBabylonElements(htmlElements: HTMLelements, ws: GameWebSocket) {
+export function getBabylonElements(
+    htmlElements: HTMLelements,
+    ws: GameWebSocket
+) {
     // Motor y escena
     const engine = new Engine(htmlElements.canvas, true);
     const scene = new Scene(engine);
@@ -205,6 +213,6 @@ export function getBabylonElements(htmlElements: HTMLelements, ws: GameWebSocket
         playerRight: playerRight,
         scores: scores,
         ball: ball,
-    }
-    return (babylonElements);
+    };
+    return babylonElements;
 }

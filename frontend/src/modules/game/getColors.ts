@@ -7,39 +7,38 @@ import {
 } from '@babylonjs/core';
 import type { Buttons } from './gameHTMLInterfaces';
 
-export function setButtonsColors(buttons: Buttons | undefined)
-{
-    if (buttons === undefined)
-        return ;
+export function setButtonsColors(buttons: Buttons | undefined) {
+    if (buttons === undefined) return;
     const rootStyles = getComputedStyle(document.documentElement);
-	let bgColor;
-	if (localStorage.getItem('theme') === 'dark')
-		bgColor = rootStyles.getPropertyValue('--color-primary').trim();
-	else
-		bgColor = rootStyles.getPropertyValue('--color-secondary').trim();
-		// Espera formato #RRGGBB
-	if (!bgColor || !bgColor.startsWith('#') || bgColor.length !== 7)
-		bgColor = '#000000';
+    let bgColor;
+    if (localStorage.getItem('theme') === 'dark')
+        bgColor = rootStyles.getPropertyValue('--color-primary').trim();
+    else bgColor = rootStyles.getPropertyValue('--color-secondary').trim();
+    // Espera formato #RRGGBB
+    if (!bgColor || !bgColor.startsWith('#') || bgColor.length !== 7)
+        bgColor = '#000000';
 
-	let arrowColor;
-	if (localStorage.getItem('theme') === 'dark')
-		arrowColor = rootStyles.getPropertyValue('--color-secondary').trim();
-	else
-		arrowColor = rootStyles.getPropertyValue('--color-primary').trim();
-	
-	// Espera formato #RRGGBB
-	if (!arrowColor || !arrowColor.startsWith('#') || arrowColor.length !== 7)
-		arrowColor = '#FFFFFF';
+    let arrowColor;
+    if (localStorage.getItem('theme') === 'dark')
+        arrowColor = rootStyles.getPropertyValue('--color-secondary').trim();
+    else arrowColor = rootStyles.getPropertyValue('--color-primary').trim();
 
-	buttons.buttonUp.style.backgroundColor = bgColor;
-	buttons.buttonDown.style.backgroundColor = bgColor;
-	buttons.buttonUp.style.color = arrowColor;
-	buttons.buttonDown.style.color = arrowColor;
+    // Espera formato #RRGGBB
+    if (!arrowColor || !arrowColor.startsWith('#') || arrowColor.length !== 7)
+        arrowColor = '#FFFFFF';
+
+    buttons.buttonUp.style.backgroundColor = bgColor;
+    buttons.buttonDown.style.backgroundColor = bgColor;
+    buttons.buttonUp.style.color = arrowColor;
+    buttons.buttonDown.style.color = arrowColor;
 }
 
-export function setColors(scene: Scene | undefined, bgColor: Color3, borderColor: Color3) {
-    if (!scene)
-        return;
+export function setColors(
+    scene: Scene | undefined,
+    bgColor: Color3,
+    borderColor: Color3
+) {
+    if (!scene) return;
     scene.clearColor = Color4.FromColor3(bgColor);
 
     const borders = new StandardMaterial('lineMat');

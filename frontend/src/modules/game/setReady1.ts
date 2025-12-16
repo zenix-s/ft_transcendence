@@ -75,9 +75,9 @@ const handleTimeInput = () => {
 export function ready1() {
     // Cleanup first to ensure clean state
     cleanupReady1();
-    
+
     isInitialized = true;
-    
+
     // Initialize all elements
     readyButton = document.getElementById('ready-button');
     pointsRange = document.getElementById('points-range') as HTMLInputElement;
@@ -87,12 +87,12 @@ export function ready1() {
 
     // Add event listeners
     readyButton?.addEventListener('click', handleReadyClick, { once: true });
-    
+
     if (pointsRange && pointsValue) {
         pointsValue.textContent = pointsRange.value; // Set initial value
         pointsRange.addEventListener('input', handlePointsInput);
     }
-    
+
     if (timeRange && timeValue) {
         timeValue.textContent = timeRange.value; // Set initial value
         timeRange.addEventListener('input', handleTimeInput);
@@ -113,7 +113,7 @@ export function cleanupReady1() {
             timeRange.removeEventListener('input', handleTimeInput);
         }
     }
-    
+
     // Reset all references (always, even if not initialized)
     readyButton = null;
     pointsRange = null;

@@ -16,10 +16,10 @@ export interface Ball {
 }
 
 export interface BabylonElements {
-	engine: Engine;
-	scene: Scene;
-	playerLeft: Player;
-	playerRight: Player;
-	scores: Score;
-	ball: Ball;
+    engine: Engine;
+    scene: Scene;
+    playerLeft: Player;
+    playerRight: Player;
+    scores: Score;
+    ball: Ball;
 }

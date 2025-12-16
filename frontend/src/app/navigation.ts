@@ -10,7 +10,10 @@ import { loadChart } from '@/components/graph';
 import { Tooltip } from '@/components/tooltip';
 import { loadMatchHistory } from '@/components/history';
 import { redirect } from '@/components/redirect';
-import { cleanupFriendsSidebar, initFriendsSidebar } from '@/components/friendsSidebar/friendsSidebar';
+import {
+    cleanupFriendsSidebar,
+    initFriendsSidebar,
+} from '@/components/friendsSidebar/friendsSidebar';
 import { getCurrentUser } from '@/modules/users';
 import { ready1 } from '@/modules/game/setReady1';
 import { t } from '@/app/i18n';

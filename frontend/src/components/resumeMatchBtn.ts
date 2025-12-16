@@ -1,4 +1,4 @@
-import { getSocialSocket  } from '@/modules/social/socketInstance';
+import { getSocialSocket } from '@/modules/social/socketInstance';
 import { activeGameModal } from '@/components/modal';
 import { createGameSocket } from '@/modules/game/gameSocket';
 import { navigateTo } from '@/app/navigation';
@@ -6,7 +6,7 @@ import { showToast } from './toast';
 import { t } from '@/app/i18n';
 
 export function resumeMatchBtn() {
-    const btn = document.getElementById("resume-game-btn") as HTMLButtonElement;
+    const btn = document.getElementById('resume-game-btn') as HTMLButtonElement;
     if (!btn) return;
 
     btn.style.display = 'none';
@@ -34,25 +34,23 @@ export function resumeMatchBtn() {
                 const token = localStorage.getItem('access_token');
                 createGameSocket(token, state.gameId);
                 navigateTo(`playing?id=${state.gameId}`);
-            }
-			else if (confirmed === 'leave' && state.gameId) {
-				// Leave game
-				const token = localStorage.getItem('access_token');
-				const gameSocket = createGameSocket(token, state.gameId);
-				await gameSocket.authenticate(state.gameId);
+            } else if (confirmed === 'leave' && state.gameId) {
+                // Leave game
+                const token = localStorage.getItem('access_token');
+                const gameSocket = createGameSocket(token, state.gameId);
+                await gameSocket.authenticate(state.gameId);
                 await new Promise((resolve) => setTimeout(resolve, 100));
-				gameSocket.leaveGame();
-				gameSocket.destroy();
+                gameSocket.leaveGame();
+                gameSocket.destroy();
 
                 // añdir delay de 100ms para asegurar que el mensaje se envía
                 await new Promise((resolve) => setTimeout(resolve, 100));
                 ws.requestCheckActiveGame();
 
-				showToast(t('GameLeft'), 'success');
-			}
-			else {
-				// do nothing;
-			}
-		};
-	});
+                showToast(t('GameLeft'), 'success');
+            } else {
+                // do nothing;
+            }
+        };
+    });
 }

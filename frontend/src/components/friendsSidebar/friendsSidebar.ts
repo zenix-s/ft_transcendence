@@ -157,7 +157,9 @@ export async function initFriendsSidebar() {
     });
 
     // 🔹 Invitar a jugar
-    const onlineFriendsList = document.getElementById('online-friends') as HTMLElement;
+    const onlineFriendsList = document.getElementById(
+        'online-friends'
+    ) as HTMLElement;
     onlineFriendsList?.addEventListener('click', async (event) => {
         event.preventDefault();
         const target = event.target as HTMLElement;
@@ -330,4 +332,4 @@ export async function rejectInvitation(gameId: number): Promise<boolean> {
 
 export function cleanupFriendsSidebar() {
     isMounted = false;
-}   
+}

@@ -2,7 +2,7 @@
 <div class="flex min-w-screen flex-col items-center px-4">
     <!-- Barra superior -->
     <header
-        class="mb-16 flex w-full max-w-5xl items-center justify-between border border-cyan-400 p-4 mt-20 sm:mt-24"
+        class="mt-20 mb-16 flex w-full max-w-5xl items-center justify-between border border-cyan-400 p-4 sm:mt-24"
     >
         <h1
             data-i18n="dashboard"
@@ -22,7 +22,11 @@
                     class="h-10 w-10 rounded-full border border-cyan-400 object-cover"
                 />
                 <span id="user-name" class="text-lg"><!--USER NAME--></span>
-                <button id="resume-game-btn" class="hidden w-8 h-8 pl-1 text-cyan-400 hover:text-secondary dark:hover:text-primary text-xl transition-add duration-300 ease-in-out animate-bounce border-2 rounded-full border-secondary dark:border-primary cursor-pointer" title="Resume Active Game">
+                <button
+                    id="resume-game-btn"
+                    class="hover:text-secondary dark:hover:text-primary transition-add border-secondary dark:border-primary hidden h-8 w-8 animate-bounce cursor-pointer rounded-full border-2 pl-1 text-xl text-cyan-400 duration-300 ease-in-out"
+                    title="Resume Active Game"
+                >
                     ▶
                 </button>
             </div>
@@ -159,7 +163,7 @@
             </h2>
             <button
                 id="refreshTournamentsBtn"
-                class="text-primary rounded bg-gray-800 px-3 py-1 font-bold transition-all duration-300 ease-in-out hover:bg-gray-600 dark:bg-cyan-400 dark:text-gray-800 dark:hover:bg-cyan-600 cursor-pointer"
+                class="text-primary cursor-pointer rounded bg-gray-800 px-3 py-1 font-bold transition-all duration-300 ease-in-out hover:bg-gray-600 dark:bg-cyan-400 dark:text-gray-800 dark:hover:bg-cyan-600"
                 data-i18n="refresh"
             >
                 Refresh

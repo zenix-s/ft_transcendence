@@ -130,12 +130,10 @@ export async function modal({
         // console.log("win=", winner); // DB
         const scoreText = `${player1Score ?? 0} - ${player2Score ?? 0}`;
 
-        if (winnerName === undefined)
-            titleText = `${t("tie")}`;
+        if (winnerName === undefined) titleText = `${t('tie')}`;
         else {
             const WinnerGame = t('WinnerGame');
-            if (winner === 'AI_Player')
-                winner = t('AI');
+            if (winner === 'AI_Player') winner = t('AI');
             titleText = `${WinnerGame}: 🏆 ${winnerName ?? t('Unknown')} 🏆`;
         }
         const FinalScore = t('FinalScore');

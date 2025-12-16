@@ -11,7 +11,12 @@ import { Actions } from '@/types/gameOptions';
 import { getCurrentUser } from '../users';
 import Swal from 'sweetalert2';
 import type { HTMLelements } from './gameHTMLInterfaces';
-import type { ErrorMessage, events, GameStateMessage, message } from './gameSocketInterfaces';
+import type {
+    ErrorMessage,
+    events,
+    GameStateMessage,
+    message,
+} from './gameSocketInterfaces';
 
 export class GameWebSocket {
     private socket: WebSocket | null = null;
@@ -35,7 +40,7 @@ export class GameWebSocket {
         this.div = null;
         this.start = 0;
         this.up = 0;
-        this.down = 0;  
+        this.down = 0;
         this.ready = false;
     }
 
@@ -142,7 +147,7 @@ export class GameWebSocket {
 
     private async setEvents() {
         await this.waitForOpen();
-        
+
         this.events = {
             // KEYS EVENTS
             keyMove: (event: KeyboardEvent) => {
@@ -173,8 +178,7 @@ export class GameWebSocket {
                 const canvas = document.getElementById(
                     'gameCanvas'
                 ) as HTMLCanvasElement;
-                if (!canvas || !this.babylonElements)
-                    return;
+                if (!canvas || !this.babylonElements) return;
                 adjustCanvasSize(canvas, this.babylonElements.engine);
             },
         };
@@ -184,18 +188,49 @@ export class GameWebSocket {
         document.addEventListener('keydown', this.events.keyMove);
 
         // BUTTONS MOBILE EVENTS
-        this.htmlElements?.buttons.buttonUp.addEventListener('touchstart', this.events.buttonUpPressed, { passive: true });
-        this.htmlElements?.buttons.buttonUp.addEventListener('touchend', this.events.buttonUpReleased, { passive: true });
-        this.htmlElements?.buttons.buttonDown.addEventListener('touchstart', this.events.buttonDownPressed, { passive: true });
-        this.htmlElements?.buttons.buttonDown.addEventListener('touchend', this.events.buttonDownReleased, { passive: true });
+        this.htmlElements?.buttons.buttonUp.addEventListener(
+            'touchstart',
+            this.events.buttonUpPressed,
+            { passive: true }
+        );
+        this.htmlElements?.buttons.buttonUp.addEventListener(
+            'touchend',
+            this.events.buttonUpReleased,
+            { passive: true }
+        );
+        this.htmlElements?.buttons.buttonDown.addEventListener(
+            'touchstart',
+            this.events.buttonDownPressed,
+            { passive: true }
+        );
+        this.htmlElements?.buttons.buttonDown.addEventListener(
+            'touchend',
+            this.events.buttonDownReleased,
+            { passive: true }
+        );
 
         // BUTTONS CLICK EVENTS
-        this.htmlElements?.buttons.buttonUp.addEventListener('mousedown', this.events.buttonUpPressed);
-        this.htmlElements?.buttons.buttonUp.addEventListener('mouseup', this.events.buttonUpReleased);
-        this.htmlElements?.buttons.buttonUp.addEventListener('mouseleave', this.events.buttonUpReleased);
+        this.htmlElements?.buttons.buttonUp.addEventListener(
+            'mousedown',
+            this.events.buttonUpPressed
+        );
+        this.htmlElements?.buttons.buttonUp.addEventListener(
+            'mouseup',
+            this.events.buttonUpReleased
+        );
+        this.htmlElements?.buttons.buttonUp.addEventListener(
+            'mouseleave',
+            this.events.buttonUpReleased
+        );
 
-        this.htmlElements?.buttons.buttonDown.addEventListener('mousedown', this.events.buttonDownPressed);
-        this.htmlElements?.buttons.buttonDown.addEventListener('mouseup', this.events.buttonDownReleased);
+        this.htmlElements?.buttons.buttonDown.addEventListener(
+            'mousedown',
+            this.events.buttonDownPressed
+        );
+        this.htmlElements?.buttons.buttonDown.addEventListener(
+            'mouseup',
+            this.events.buttonDownReleased
+        );
         this.htmlElements?.buttons.buttonDown.addEventListener(
             'mouseleave',
             this.events.buttonDownReleased
@@ -213,8 +248,14 @@ export class GameWebSocket {
         document.removeEventListener('keydown', this.events.keyStop!);
 
         // REMOVE BUTTONS EVENTS
-        this.htmlElements?.buttons.buttonUp.removeEventListener('touchstart', this.events.buttonUpPressed!);
-        this.htmlElements?.buttons.buttonUp.removeEventListener('touchend', this.events.buttonUpReleased!);
+        this.htmlElements?.buttons.buttonUp.removeEventListener(
+            'touchstart',
+            this.events.buttonUpPressed!
+        );
+        this.htmlElements?.buttons.buttonUp.removeEventListener(
+            'touchend',
+            this.events.buttonUpReleased!
+        );
         this.htmlElements?.buttons.buttonDown.removeEventListener(
             'touchstart',
             this.events.buttonDownPressed!
@@ -224,8 +265,14 @@ export class GameWebSocket {
             this.events.buttonDownReleased!
         );
 
-        this.htmlElements?.buttons.buttonUp.removeEventListener('mousedown', this.events.buttonUpPressed!);
-        this.htmlElements?.buttons.buttonUp.removeEventListener('mouseup', this.events.buttonUpReleased!);
+        this.htmlElements?.buttons.buttonUp.removeEventListener(
+            'mousedown',
+            this.events.buttonUpPressed!
+        );
+        this.htmlElements?.buttons.buttonUp.removeEventListener(
+            'mouseup',
+            this.events.buttonUpReleased!
+        );
         this.htmlElements?.buttons.buttonUp.removeEventListener(
             'mouseleave',
             this.events.buttonUpReleased!
@@ -319,8 +366,7 @@ export class GameWebSocket {
     }
 
     public setScene(scene: Scene) {
-        if (!this.babylonElements)
-            return;
+        if (!this.babylonElements) return;
         this.babylonElements.scene = scene;
     }
 
@@ -329,7 +375,7 @@ export class GameWebSocket {
     }
 
     public getButtons() {
-        return (this.htmlElements?.buttons);
+        return this.htmlElements?.buttons;
     }
 
     public initializeGame(
@@ -394,9 +440,10 @@ export class GameWebSocket {
 
     private countdown(data: GameStateMessage) {
         if (data.state.countdownInfo.isActive === true) {
-            const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
-            if (!canvas)
-            {
+            const canvas = document.getElementById(
+                'gameCanvas'
+            ) as HTMLCanvasElement;
+            if (!canvas) {
                 if (this.div) {
                     this.div.remove();
                     this.div = null;

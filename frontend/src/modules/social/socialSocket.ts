@@ -237,7 +237,7 @@ export class SocialWebSocketClient {
                 /* console.log(
                     `${msg.fromUsername} con id ${msg.fromUserId} te ha invitado a jugar a PONG con el número de partida ${msg.gameId} y el mensaje: ${msg.message}`
                 ); */ // DB
-                
+
                 // Skip if already on /playing page
                 const urlObjeto = new URL(window.location.href);
                 if (urlObjeto.pathname === '/playing') {
@@ -409,7 +409,7 @@ export class SocialWebSocketClient {
             }
 
             default:
-                // console.log(`📨 ${t('MsgReceived')}`, message); // DB
+            // console.log(`📨 ${t('MsgReceived')}`, message); // DB
         }
     }
 
@@ -436,11 +436,10 @@ export class SocialWebSocketClient {
     }
 
     private onActiveGameUpdateCallback:
-        ((state: ActiveGameState) => void) | null = null;
+        | ((state: ActiveGameState) => void)
+        | null = null;
 
-    public onActiveGameUpdate(
-        callback: (state: ActiveGameState) => void
-    ) {
+    public onActiveGameUpdate(callback: (state: ActiveGameState) => void) {
         this.onActiveGameUpdateCallback = callback;
 
         // Enviar estado actual inmediatamente

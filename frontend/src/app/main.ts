@@ -18,7 +18,11 @@ import {
     getSocialSocket,
 } from '@/modules/social/socketInstance';
 import { SocialWebSocketClient } from '@/modules/social/socialSocket';
-import { getColor, setButtonsColors, setColors } from '@/modules/game/getColors';
+import {
+    getColor,
+    setButtonsColors,
+    setColors,
+} from '@/modules/game/getColors';
 import {
     createTournamentSocket,
     getTournamentSocket,
@@ -216,8 +220,7 @@ function setupDarkModeToggle() {
             ) as HTMLCanvasElement;
             if (canvas) {
                 const ws = getGameSocket();
-                if (!ws)
-                    return;
+                if (!ws) return;
                 if (localStorage.getItem('theme') === 'dark') {
                     const borderColor = getColor('--color-primary');
                     const bgColor = getColor('--color-secondary');

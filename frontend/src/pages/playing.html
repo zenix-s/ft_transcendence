@@ -1,12 +1,17 @@
 <div class="scanlines"></div>
 
-<div class="relative w-screen h-screen flex flex-col items-center justify-center bg-primary dark:bg-secondary">
-
+<div
+    class="bg-primary dark:bg-secondary relative flex h-screen w-screen flex-col items-center justify-center"
+>
     <!-- TIMER -->
     <div
         class="text-secondary dark:text-primary absolute top-18 left-1/2 flex -translate-x-1/2 transform gap-5 text-4xl font-bold"
     >
-        <div id="timerText" data-i18n="CHRONO:" class="text-shadow-redblue"></div>
+        <div
+            id="timerText"
+            data-i18n="CHRONO:"
+            class="text-shadow-redblue"
+        ></div>
         <div id="timer" class="text-shadow-redblue">0</div>
         <div data-i18n="s" class="text-shadow-redblue"></div>
     </div>
@@ -21,13 +26,10 @@
     </div>
 
     <!-- CANVAS CENTRADO -->
-    <canvas
-        id="gameCanvas"
-        class="w-full h-full bg-black"
-    ></canvas>
+    <canvas id="gameCanvas" class="h-full w-full bg-black"></canvas>
 
     <!-- BOTONES DEBAJO DEL CANVAS -->
-    <div class="flex gap-10 mt-6 text-4xl font-bold text-white lg:hidden">
+    <div class="mt-6 flex gap-10 text-4xl font-bold text-white lg:hidden">
         <button
             id="button-up"
             class="flex h-20 w-20 items-center justify-center rounded-lg bg-gray-400 text-7xl active:bg-gray-500"
@@ -41,5 +43,4 @@
             ⬇
         </button>
     </div>
-
 </div>

@@ -348,7 +348,7 @@ export async function modal({
             },
             html: `
           <div class="flex flex-col gap-4 text-left">
-          
+
           <!-- Puntos máximos -->
           <div class="flex flex-col gap-2">
             <label for="points-range" class="font-medium" role="tooltip" data-i18n="modalGameCreationmaxPoints">

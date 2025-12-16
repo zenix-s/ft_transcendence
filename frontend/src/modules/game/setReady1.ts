@@ -17,8 +17,6 @@ let timeValue: HTMLElement | null = null;
 const handleReadyClick = async (event: Event) => {
     event.preventDefault();
 
-    console.log('Ready button clicked');
-
     const difficulty = (
         document.querySelector(
             "input[name='diff-radio']:checked"

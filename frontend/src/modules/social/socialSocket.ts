@@ -5,7 +5,7 @@ import {
     acceptInvitation,
     rejectInvitation,
 } from '@/components/friendsSidebar/friendsSidebar';
-import { modal, activeGameModal } from '@/components/modal';
+import { modal } from '@/components/modal';
 import { showToast } from '@/components/toast';
 import type { Friend } from '@/types/friend';
 import { reloadGameHistory } from '@/app/main';
@@ -33,11 +33,6 @@ interface ActiveGameState {
     hasActiveGame: boolean;
     gameId?: number;
     opponentUsername?: string | null;
-}
-
-interface AuthSuccessMessage {
-    type: 'authSuccess';
-    userId: number;
 }
 
 interface FriendsListMessage {

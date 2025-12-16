@@ -209,3 +209,18 @@ objectives include:
     This major module aims to elevate the Pong game by migrating it to the server
     side, enabling interaction through both a web interface and CLI while offering an
     API for easy access to game resources and features.
+
+---
+
+- [ ] Minor module: Support on all devices.
+In this module, the main focus is to ensure that your website works seamlessly on
+all types of devices. Key features and objectives include:
+    - [ ] Ensure the website is responsive, adapting to different screen sizes and orien-
+tations, providing a consistent user experience on desktops, laptops, tablets,
+and smartphones.
+    - [ ] Ensure that users can easily navigate and interact with the website using
+different input methods, such as touchscreens, keyboards, and mice, depending
+on the device they are using.
+
+This module aims to provide a consistent and user-friendly experience on all devices,
+maximizing accessibility and user satisfaction.

@@ -43,9 +43,14 @@ const authenticateWs = async (fastify: FastifyInstance, token: string): Promise<
 };
 
 const AuthPlugin: FastifyPluginAsync = async (fastify: FastifyInstance) => {
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+        throw new Error('JWT_SECRET environment variable is required');
+    }
+
     // Register JWT plugin with configuration
     await fastify.register(fastifyJWT, {
-        secret: process.env.JWT_SECRET || 'your-secret-key-change-this-in-production',
+        secret: jwtSecret,
         sign: {
             expiresIn: '24h',
         },

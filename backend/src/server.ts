@@ -4,16 +4,16 @@ import cors from '@fastify/cors';
 import { loadEnvFile } from 'node:process';
 import fs from 'fs';
 
-const port = 3000;
-const host = '0.0.0.0';
+const port = parseInt(process.env.PORT || '3000', 10);
+const host = process.env.HOST || '0.0.0.0';
 
 const server = fastify({
     logger: {
         level: 'info',
     },
     https: {
-        key: fs.readFileSync('./certs/key.pem'),
-        cert: fs.readFileSync('./certs/cert.pem'),
+        key: fs.readFileSync(process.env.CERT_KEY_PATH || './certs/key.pem'),
+        cert: fs.readFileSync(process.env.CERT_CERT_PATH || './certs/cert.pem'),
     },
 });
 
@@ -71,8 +71,8 @@ import cors from '@fastify/cors';
 import { loadEnvFile } from 'node:process';
 import fs from 'fs';
 
-const port = 3000;
-const host = '0.0.0.0';
+const port = parseInt(process.env.PORT || '3000', 10);
+const host = process.env.HOST || '0.0.0.0';
 
 const server = fastify({
     logger: true,

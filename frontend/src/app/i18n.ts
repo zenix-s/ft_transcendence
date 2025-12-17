@@ -364,7 +364,7 @@ export const translations: Record<Language, Record<string, string>> = {
             "- Formato correcto: usuario@dominio.TLD<div class='absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2'></div>",
         toolTipPassword:
             "- Mínimo 8 caracteres.\n  - Al menos una letra mayúscula.\n  - Al menos una letra minúscula.\n  - Al menos un dígito.<div class='absolute left-1/2 -bottom-1 w-2 h-2 bg-secondary dark:bg-primary rotate-45 -translate-x-1/2'></div>",
-        win: 'Victórias',
+        win: 'Victorias',
         lose: 'Derrotas',
         gameHistory: 'Historial de partidas',
         rps: 'PPT',
